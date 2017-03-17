@@ -13,11 +13,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,17 +48,16 @@ import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
-import it.tredi.ecm.dao.enumlist.VariazioneDatiStatoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AccreditamentoStatoHistoryService;
-import it.tredi.ecm.service.AccreditamentoStatoHistoryServiceImpl;
 import it.tredi.ecm.service.DatiAccreditamentoService;
 import it.tredi.ecm.service.EmailService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
+import it.tredi.ecm.service.PdfRiepiloghiService;
 import it.tredi.ecm.service.PdfService;
 import it.tredi.ecm.service.PdfVerbaleService;
 import it.tredi.ecm.service.PersonaService;
@@ -90,6 +86,7 @@ public class AccreditamentoController {
 	@Autowired private FileService fileService;
 	@Autowired private PdfService pdfService;
 	@Autowired private PdfVerbaleService pdfVerbaleService;
+	@Autowired private PdfRiepiloghiService pdfRiepiloghiService;
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 
 	@Autowired private AccountService accountService;
@@ -662,6 +659,10 @@ public class AccreditamentoController {
 			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
 		}
 
+		if(accreditamento.isValutazioneSegreteriaAssegnamento() && accreditamento.isStandard()) {
+			creaMappaFullModificati(accreditamentoWrapper, valutazione);
+		}
+
 		//lista valutazioni per la valutazione complessiva
 		accreditamentoWrapper.setValutazioniList(valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamento.getId()));
 
@@ -765,6 +766,20 @@ public class AccreditamentoController {
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperValidate(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
+	}
+
+	//cicla i fieldValutazioneAccreditamento per capire quali ripetibili sono stati aggiunti/sostituiti nell'inserimento della nuova domanda
+	private void creaMappaFullModificati(AccreditamentoWrapper accreditamentoWrapper, Valutazione valutazione) {
+		//mappa <long, fieldValutazione> per verificare se il ripetibile ha subito una modifica "full", dal momento che proviene da un diff avrà sicuramente l'obj ref.
+		Map<Long, FieldValutazioneAccreditamento> mappaFieldFull = new HashMap<Long, FieldValutazioneAccreditamento>();
+
+		for(FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
+			if(IdFieldEnum.isFull(fva.getIdField())) {
+				mappaFieldFull.put(fva.getObjectReference(), fva);
+			}
+		}
+
+		accreditamentoWrapper.setMappaFullModificati(mappaFieldFull);
 	}
 
 	private void commonPrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper, AccreditamentoWrapperModeEnum mode){
@@ -1597,4 +1612,27 @@ public class AccreditamentoController {
 		}
 		return "redirect:/accreditamento/{accreditamentoId}/show";
 	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#id)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/riepilogo/{argument}/pdf")
+	public void pdfRiepilogoDomanda(@PathVariable Long accreditamentoId, @PathVariable String argument,
+			@RequestParam(required = false) Long valutazioneId,
+			Model model, RedirectAttributes redirectAttr, HttpServletResponse response) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/riepilogo/domanda/pdf"));
+		try {
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"Riepilogo " + argument + " - Accreditamento " + accreditamentoId +".pdf\""));
+
+			if(argument == null || !(argument.equals("domanda") || argument.equals("pianoFormativo") || argument.equals("valutazione")))
+				throw new Exception("Invalid argument");
+
+			ByteArrayOutputStream pdfOutputStream = pdfRiepiloghiService.creaOutputStreamPdfRiepilogoDomanda(accreditamentoId, argument, valutazioneId);
+			response.setContentLength(pdfOutputStream.size());
+			response.getOutputStream().write(pdfOutputStream.toByteArray());
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/riepilogo/domanda/pdf"),ex);
+			model.addAttribute("message",new Message("Errore", "Impossibile creare il pdf", "Errore creazione pdf riepilogo"));
+		}
+	}
+
 }

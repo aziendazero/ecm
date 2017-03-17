@@ -98,10 +98,10 @@ public interface ComunicazioneRepository  extends CrudRepository<Comunicazione, 
 
 	//pageable
 	@Query("SELECT c FROM Comunicazione c WHERE :userId MEMBER OF c.utentiCheDevonoLeggere ORDER BY c.dataUltimaModifica DESC")
-	Page<Comunicazione> findMessaggiNonLettiOrderByDataCreazioneDesc(@Param ("userId") Long userId, Pageable pageable);
+	Page<Comunicazione> findMessaggiNonLettiOrderByDataUltimaModificaDesc(@Param ("userId") Long userId, Pageable pageable);
 
 	//non pageble
 	@Query("SELECT c FROM Comunicazione c WHERE :userId MEMBER OF c.utentiCheDevonoLeggere ORDER BY c.dataUltimaModifica DESC")
-	Set<Comunicazione> findAllComunicazioneNonLetteOrderByDataCreazioneDesc(@Param("userId") Long userId);
+	Set<Comunicazione> findAllComunicazioneNonLetteOrderByDataUltimaModificaDesc(@Param("userId") Long userId);
 
 }

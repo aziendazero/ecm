@@ -108,13 +108,14 @@ public class EventoValidator {
 		 * -------------------
 		 * le riedizioni si devono svolgere nell'anno solare di riferimento del padre (anno data fine)
 		 * */
+		int minGiorni;
+		if(evento.getProvider().getTipoOrganizzatore().getGruppo().equals("A"))
+			minGiorni = ecmProperties.getGiorniMinEventoProviderA();
+		else minGiorni = ecmProperties.getGiorniMinEventoProviderB();
+		if(evento.isRiedizione())
+			minGiorni = ecmProperties.getGiorniMinEventoRiedizione();
 		if(evento.getStato() == EventoStatoEnum.BOZZA) {
-			int minGiorni;
-			if(evento.getProvider().getTipoOrganizzatore().getGruppo().equals("A"))
-				minGiorni = ecmProperties.getGiorniMinEventoProviderA();
-			else minGiorni = ecmProperties.getGiorniMinEventoProviderB();
 			if(evento.isRiedizione()) {
-				minGiorni = ecmProperties.getGiorniMinEventoRiedizione();
 				if(evento.getDataInizio() == null)
 					errors.rejectValue(prefix + "dataInizio", "error.empty");
 				else if(!Utils.getAuthenticatedUser().isSegreteria())
@@ -136,8 +137,10 @@ public class EventoValidator {
 			if(evento.getDataInizio() == null)
 				errors.rejectValue(prefix + "dataInizio", "error.empty");
 			//la segreteria solo può anticipare la data di un evento
-			if(evento.getDataInizio().isBefore(eventoDaDB.getDataInizio()) && !Utils.getAuthenticatedUser().isSegreteria())
-				errors.rejectValue(prefix + "dataInizio", "error.anticipazione_data_non_possibile");
+//			if(evento.getDataInizio().isBefore(eventoDaDB.getDataInizio()) && !Utils.getAuthenticatedUser().isSegreteria())
+//				errors.rejectValue(prefix + "dataInizio", "error.anticipazione_data_non_possibile");
+			if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)) && !Utils.getAuthenticatedUser().isSegreteria())
+				errors.rejectValue(prefix + "dataInizio", "error.data_inizio_non_valida");
 			if(evento.isRiedizione()) {
 				if((!Utils.getAuthenticatedUser().isSegreteria())
 						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))

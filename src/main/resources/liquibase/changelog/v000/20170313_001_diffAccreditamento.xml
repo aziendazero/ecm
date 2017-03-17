@@ -1,0 +1,224 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="20170313_001_diffAccreditamento.xml">
+	<changeSet author="tiommi (generated)" id="1489574423370-1">
+        <createTable tableName="accreditamento_diff">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="accreditamento_diffPK"/>
+            </column>
+            <column name="accreditamento_id_riferimento" type="BIGINT"/>
+            <column name="data_creazione" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="file_atto_costitutivo" type="BIGINT"/>
+            <column name="file_dichiarazione_esclusione" type="BIGINT"/>
+            <column name="file_dichiarazione_legale_rappresentante" type="BIGINT"/>
+            <column name="file_esperienza_formazione" type="BIGINT"/>
+            <column name="file_piano_qualita" type="BIGINT"/>
+            <column name="file_relazione_attivita_formativa" type="BIGINT"/>
+            <column name="file_richiesta_accreditamento_standard" type="BIGINT"/>
+            <column name="file_sistema_informatico" type="BIGINT"/>
+            <column name="file_utilizzo_sedi" type="BIGINT"/>
+            <column name="provider_id_riferimento" type="BIGINT"/>
+            <column name="dati_accreditamento_id" type="BIGINT"/>
+            <column name="delegato_legale_rappresentante_id" type="BIGINT"/>
+            <column name="legale_rappresentante_id" type="BIGINT"/>
+            <column name="provider_id" type="BIGINT"/>
+            <column name="responsabile_amministrativo_id" type="BIGINT"/>
+            <column name="responsabile_qualita_id" type="BIGINT"/>
+            <column name="responsabile_segreteria_id" type="BIGINT"/>
+            <column name="responsabile_sistema_informatico_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-2">
+        <createTable tableName="accreditamento_diff_comitato">
+            <column name="dati_accreditamento_diff_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="componente_diff_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-3">
+        <createTable tableName="accreditamento_diff_sedi">
+            <column name="dati_accreditamento_diff_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sede_diff_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-4">
+        <createTable tableName="dati_accreditamento_diff">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="dati_accreditamento_diffPK"/>
+            </column>
+            <column name="accreditamento_per_professioni" type="VARCHAR(255)"/>
+            <column name="fatturato_complessivo_valore_due" type="numeric(19, 2)"/>
+            <column name="fatturato_complessivo_valore_tre" type="numeric(19, 2)"/>
+            <column name="fatturato_complessivo_valore_uno" type="numeric(19, 2)"/>
+            <column name="fatturato_formazione_valore_due" type="numeric(19, 2)"/>
+            <column name="fatturato_formazione_valore_tre" type="numeric(19, 2)"/>
+            <column name="fatturato_formazione_valore_uno" type="numeric(19, 2)"/>
+            <column name="file_estratto_bilancio_complessivo" type="BIGINT"/>
+            <column name="file_estratto_bilancio_formazione" type="BIGINT"/>
+            <column name="file_funzionigramma" type="BIGINT"/>
+            <column name="file_organigramma" type="BIGINT"/>
+            <column name="numero_dipendenti_formazione_altro" type="INT"/>
+            <column name="numero_dipendenti_formazione_tempo_indeterminato" type="INT"/>
+            <column name="tipologia_accreditamento" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-5">
+        <createTable tableName="dati_accreditamento_diff_discipline">
+            <column name="dati_accreditamento_diff_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="disciplina_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-6">
+        <createTable tableName="dati_accreditamento_diff_procedure_formative">
+            <column name="dati_accreditamento_diff_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="procedure_formative" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-7">
+        <createTable tableName="persona_diff">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="persona_diffPK"/>
+            </column>
+            <column name="anagrafica_id" type="BIGINT"/>
+            <column name="cellulare" type="VARCHAR(255)"/>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="cognome" type="VARCHAR(255)"/>
+            <column name="coordinatore_comitato_scientifico" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="file_atto_di_nomina" type="BIGINT"/>
+            <column name="file_curriculum_vitae" type="BIGINT"/>
+            <column name="file_delega" type="BIGINT"/>
+            <column name="nome" type="VARCHAR(255)"/>
+            <column name="pec" type="VARCHAR(255)"/>
+            <column name="persona_id" type="BIGINT"/>
+            <column name="straniero" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telefono" type="VARCHAR(255)"/>
+            <column name="professione_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-8">
+        <createTable tableName="provider_diff">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="provider_diffPK"/>
+            </column>
+            <column name="codice_fiscale" type="VARCHAR(255)"/>
+            <column name="denominazione_legale" type="VARCHAR(255)"/>
+            <column name="email_struttura" type="VARCHAR(255)"/>
+            <column name="has_partitaiva" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="natura_organizzazione" type="VARCHAR(255)"/>
+            <column name="no_profit" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partita_iva" type="VARCHAR(255)"/>
+            <column name="ragione_sociale" type="VARCHAR(255)"/>
+            <column name="tipo_organizzatore" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-9">
+        <createTable tableName="sede_diff">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="sede_diffPK"/>
+            </column>
+            <column name="altro_telefono" type="VARCHAR(255)"/>
+            <column name="cap" type="VARCHAR(255)"/>
+            <column name="comune" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="fax" type="VARCHAR(255)"/>
+            <column name="indirizzo" type="VARCHAR(255)"/>
+            <column name="provincia" type="VARCHAR(255)"/>
+            <column name="sede_id" type="BIGINT"/>
+            <column name="sede_legale" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sede_operativa" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telefono" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-10">
+        <addPrimaryKey columnNames="dati_accreditamento_diff_id, componente_diff_id" tableName="accreditamento_diff_comitato"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-11">
+        <addPrimaryKey columnNames="dati_accreditamento_diff_id, sede_diff_id" tableName="accreditamento_diff_sedi"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-12">
+        <addPrimaryKey columnNames="dati_accreditamento_diff_id, disciplina_id" tableName="dati_accreditamento_diff_discipline"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-13">
+        <addUniqueConstraint columnNames="sede_diff_id" constraintName="UK_2u7l00q1v8em3kk2vemxtcynj" tableName="accreditamento_diff_sedi"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-14">
+        <addUniqueConstraint columnNames="componente_diff_id" constraintName="UK_8qt7r6v26y316t867j7p669eh" tableName="accreditamento_diff_comitato"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-15">
+        <addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="accreditamento_diff" constraintName="FK_1oisgjm7wmgr4h770b2yqcm5q" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-16">
+        <addForeignKeyConstraint baseColumnNames="sede_diff_id" baseTableName="accreditamento_diff_sedi" constraintName="FK_2u7l00q1v8em3kk2vemxtcynj" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="sede_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-17">
+        <addForeignKeyConstraint baseColumnNames="dati_accreditamento_diff_id" baseTableName="accreditamento_diff_sedi" constraintName="FK_3m2lklmjrl7yk3d98m2sdbxt1" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-18">
+        <addForeignKeyConstraint baseColumnNames="dati_accreditamento_diff_id" baseTableName="dati_accreditamento_diff_discipline" constraintName="FK_48c6tt61bdkmq9wah3gvo3wgr" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dati_accreditamento_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-19">
+        <addForeignKeyConstraint baseColumnNames="professione_id" baseTableName="persona_diff" constraintName="FK_5m6eryv1v827qvsiovdxyvb2h" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="professione"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-20">
+        <addForeignKeyConstraint baseColumnNames="dati_accreditamento_diff_id" baseTableName="dati_accreditamento_diff_procedure_formative" constraintName="FK_66mym1j3gx0kopjse27neir1c" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dati_accreditamento_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-21">
+        <addForeignKeyConstraint baseColumnNames="componente_diff_id" baseTableName="accreditamento_diff_comitato" constraintName="FK_8qt7r6v26y316t867j7p669eh" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-22">
+        <addForeignKeyConstraint baseColumnNames="legale_rappresentante_id" baseTableName="accreditamento_diff" constraintName="FK_cc6mljajecjrb505yusp0p3bf" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-23">
+        <addForeignKeyConstraint baseColumnNames="responsabile_qualita_id" baseTableName="accreditamento_diff" constraintName="FK_cdrcnj1irr7knkrapvp1f1ipv" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-24">
+        <addForeignKeyConstraint baseColumnNames="responsabile_sistema_informatico_id" baseTableName="accreditamento_diff" constraintName="FK_gqts7i76wvvbwfguhr9hwf3lf" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-25">
+        <addForeignKeyConstraint baseColumnNames="dati_accreditamento_diff_id" baseTableName="accreditamento_diff_comitato" constraintName="FK_mfu48qikw3i23i7hkv7h56l9v" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="accreditamento_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-26">
+        <addForeignKeyConstraint baseColumnNames="disciplina_id" baseTableName="dati_accreditamento_diff_discipline" constraintName="FK_nmgf06xw7j0afcr3l5bkhi8wi" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="disciplina"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-27">
+        <addForeignKeyConstraint baseColumnNames="responsabile_amministrativo_id" baseTableName="accreditamento_diff" constraintName="FK_o6aickk9a210pp88u0h4g1dmn" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-28">
+        <addForeignKeyConstraint baseColumnNames="responsabile_segreteria_id" baseTableName="accreditamento_diff" constraintName="FK_rcu17ioes9ch13uxeblbxhr7r" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-29">
+        <addForeignKeyConstraint baseColumnNames="delegato_legale_rappresentante_id" baseTableName="accreditamento_diff" constraintName="FK_rogcr5jwpk4ud746rs1gvydej" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="persona_diff"/>
+    </changeSet>
+    <changeSet author="tiommi (generated)" id="1489574423370-30">
+        <addForeignKeyConstraint baseColumnNames="dati_accreditamento_id" baseTableName="accreditamento_diff" constraintName="FK_ssbblejl662fsp5drbl312334" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="dati_accreditamento_diff"/>
+    </changeSet>
+</databaseChangeLog>

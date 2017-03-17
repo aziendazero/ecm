@@ -208,6 +208,11 @@ public class SedeController {
 		try {
 			//controllo se è possibile modificare la valutazione o meno
 			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+
+			//aggiungo flag per controllo su campi modificati all'inserimento di una nuova domanda
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			if(accreditamento.isStandard() && accreditamento.isValutazioneSegreteriaAssegnamento())
+				model.addAttribute("checkIfAccreditamentoChanged", true);
 			SedeWrapper sedeWrapper = prepareSedeWrapperValidate(sedeService.getSede(id), accreditamentoId, providerId, accreditamentoService.getStatoAccreditamento(accreditamentoId), false);
 			return goToValidate(model, sedeWrapper);
 		}catch (Exception ex){
@@ -331,15 +336,18 @@ public class SedeController {
 		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/sede/validate"));
 		try{
 			//validazione della sede
-			valutazioneValidator.validateValutazione(sedeWrapper.getMappa(), result);
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			//validator che ignora i FULL
+			if(accreditamento.isStandard() && accreditamento.isValutazioneSegreteriaAssegnamento())
+				valutazioneValidator.validateValutazioneStandard(sedeWrapper.getMappa(), result);
+			else
+				valutazioneValidator.validateValutazione(sedeWrapper.getMappa(), result);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + VALIDATE));
 				return VALIDATE;
 			}else{
-				Accreditamento accreditamento = new Accreditamento();
-				accreditamento.setId(sedeWrapper.getAccreditamentoId());
 
 				if(sedeWrapper.getMappa() != null && sedeWrapper.getMappa().containsKey(IdFieldEnum.SEDE__FULL)){
 					Boolean esitoFull = sedeWrapper.getMappa().get(IdFieldEnum.SEDE__FULL).getEsito();
@@ -541,9 +549,10 @@ public class SedeController {
 		}
 
 		//solo se la valutazione è del crecm / team leader dopo l'INTEGRAZIONE
-		if(accreditamento.getStatoUltimaIntegrazione() != null && (accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneTeamLeader() || accreditamento.isValutazioneCrecmVariazioneDati()))
+		if(accreditamento.getStatoUltimaIntegrazione() != null && (accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneTeamLeader() || accreditamento.isValutazioneCrecmVariazioneDati())){
 			stato = accreditamento.getStatoUltimaIntegrazione();
 			prepareValutazioneIntegrazioneReferee(sedeWrapper, accreditamentoId, stato, workFlowProcessInstanceId, subset);
+		}
 
 		LOGGER.info(Utils.getLogMessage("prepareSedeWrapperValidate(" + sede.getId() + "," + accreditamentoId + "," + providerId +") - exiting"));
 		return sedeWrapper;

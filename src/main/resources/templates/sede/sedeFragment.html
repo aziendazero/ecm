@@ -126,6 +126,8 @@
 			              			<div th:text="${sedeWrapper.sede.sedeLegale ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
 			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]?.modificatoInIntegrazione == false and
 			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeLegale')}__]?.modificatoInIntegrazione == true and
+			              				checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -199,6 +201,8 @@
 				              			<div th:text="${sedeWrapper.sede.sedeOperativa ? #messages.msg('label.sì') : #messages.msg('label.no')}"></div>
 				              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]?.modificatoInIntegrazione == false and
 				              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+				              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.sedeOperativa')}__]?.modificatoInIntegrazione == true and
+				              				checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 			                    	</div>
 			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 										<div class="radio">
@@ -272,6 +276,8 @@
 			              			<div th:text="${sedeWrapper.sede.provincia}"></div>
 			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.provincia')}__]?.modificatoInIntegrazione == false and
 			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.provincia')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.provincia')}__]?.modificatoInIntegrazione == true and
+			              				checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -345,6 +351,8 @@
 			              			<div th:text="${sedeWrapper.sede.comune}"></div>
 			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune')}__]?.modificatoInIntegrazione == false and
 			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.comune')}__]?.modificatoInIntegrazione == true and
+			              				checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -409,6 +417,8 @@
 			              			<div th:text="${sedeWrapper.sede.indirizzo}"></div>
 			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.indirizzo')}__]?.modificatoInIntegrazione == false and
 			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.indirizzo')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.indirizzo')}__]?.modificatoInIntegrazione == true and
+			              				checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -473,6 +483,8 @@
 			              			<div th:text="${sedeWrapper.sede.cap}"></div>
 			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.cap')}__]?.modificatoInIntegrazione == false and
 			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.cap')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.cap')}__]?.modificatoInIntegrazione == true and
+			              				checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -537,6 +549,8 @@
 			              			<div th:text="${sedeWrapper.sede.telefono}"></div>
 			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.telefono')}__]?.modificatoInIntegrazione == false and
 			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.telefono')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.telefono')}__]?.modificatoInIntegrazione == true and
+			              				checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -600,6 +614,8 @@
 			              			<div th:text="${sedeWrapper.sede.fax}"></div>
 			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.fax')}__]?.modificatoInIntegrazione == false and
 			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.fax')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.fax')}__]?.modificatoInIntegrazione == true and
+			              				checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
@@ -664,6 +680,8 @@
 			              			<div th:text="${sedeWrapper.sede.email}"></div>
 			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.email')}__]?.modificatoInIntegrazione == false and
 			              				sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.email')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+			              			<div th:if="${sedeWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('sede.email')}__]?.modificatoInIntegrazione == true and
+			              				checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">

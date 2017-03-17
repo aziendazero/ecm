@@ -257,6 +257,14 @@ public enum IdFieldEnum {
 		return nameRef.equals("full");
 	}
 
+	public static boolean isFull(IdFieldEnum idField){
+		if(idField == null)
+			return false;
+		if(idField.getNameRef() == null)
+			return false;
+		else return idField.getNameRef().equals("full");
+	}
+
 	public static Set<IdFieldEnum> getAllIdField() {
 		Set<IdFieldEnum> ids = new HashSet<IdFieldEnum>();
 		for(IdFieldEnum e : IdFieldEnum.values()){
@@ -293,17 +301,20 @@ public enum IdFieldEnum {
 			ids.add(DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO);
 			ids.add(DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE);
 			ids.add(DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE);
+			ids.add(DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO);
 
 			ids.add(DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO);
 
 			ids.add(DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO);
 			ids.add(DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE);
 			ids.add(DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE);
+			ids.add(DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE);
 
 			ids.add(DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE);
 		}else if(sezione == 3){
 			ids.add(DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO);
 			ids.add(DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO);
+			ids.add(DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI);
 			ids.add(DATI_ACCREDITAMENTO__ORGANIGRAMMA);
 			ids.add(DATI_ACCREDITAMENTO__FUNZIONIGRAMMA);
 		}
