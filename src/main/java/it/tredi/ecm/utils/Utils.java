@@ -20,6 +20,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
@@ -44,15 +46,26 @@ public class Utils {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		if(authentication == null){
-			LOGGER.info("AnonymousAuthentication found");
+			LOGGER.info("Authentication null found");
 			return null;
 		}else if(authentication instanceof AnonymousAuthenticationToken){
 			LOGGER.info("AnonymousAuthentication found");
 			return null;
+		}else if(authentication instanceof CasAuthenticationToken){
+			LOGGER.info("CasAuthentication found");
+		}else if(authentication instanceof UsernamePasswordAuthenticationToken){
+			LOGGER.info("UsernamePasswordAuthenticationToken found");
 		}
 
 		currentUser = (CurrentUser) authentication.getPrincipal();
 		return currentUser;
+	}
+
+	public static boolean isUserCasAuthenticated(){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication instanceof CasAuthenticationToken)
+			return true;
+		return false;
 	}
 
 	public static File convertFromMultiPart(MultipartFile multiPartFile){

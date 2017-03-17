@@ -32,9 +32,9 @@
 		<postgresql.version>9.4.1211</postgresql.version>
 	</properties>
 
-	<!-- profiles> <profile> <id>dev</id> <properties> <activatedProperties>dev</activatedProperties> 
-		</properties> <activation> <activeByDefault>true</activeByDefault> </activation> 
-		</profile> <profile> <id>prod</id> <properties> <activatedProperties>prod</activatedProperties> 
+	<!-- profiles> <profile> <id>dev</id> <properties> <activatedProperties>dev</activatedProperties>
+		</properties> <activation> <activeByDefault>true</activeByDefault> </activation>
+		</profile> <profile> <id>prod</id> <properties> <activatedProperties>prod</activatedProperties>
 		</properties> </profile> </profiles -->
 
 	<dependencies>
@@ -176,7 +176,7 @@
             <groupId>org.apache.santuario</groupId>
             <artifactId>xmlsec</artifactId>
             <version>1.5.1</version>
-        </dependency>	
+        </dependency>
 	<!-- 	<dependency>
 		    <groupId>org.bouncycastle</groupId>
 		    <artifactId>bcprov-jdk16</artifactId>
@@ -197,6 +197,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jersey</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-cas</artifactId><!--$NO-MVN-MAN-VER$-->
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>log4j-over-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
@@ -269,7 +279,7 @@
 				</resources>
 			</build>
 		</profile>
-		<!-- esempio di profilo da utilizzare per ambienti di test per evitare 
+		<!-- esempio di profilo da utilizzare per ambienti di test per evitare
 			di copiare le properties di altri ambienti -->
 		<profile>
 			<id>demo</id>
@@ -296,7 +306,7 @@
 				</resources>
 			</build>
 		</profile>
-		<!-- esempio di profilo da utilizzare per le build di produzione o ambienti 
+		<!-- esempio di profilo da utilizzare per le build di produzione o ambienti
 			di test per evitare di copiare le properties di altri ambienti -->
 		<profile>
 			<id>regione-prod</id>
@@ -349,7 +359,7 @@
 			</build>
 		</profile>
 	</profiles>
-	
+
 	<distributionManagement>
 		<repository>
 			<id>deployment</id>

@@ -1,10 +1,7 @@
 package it.tredi.ecm.web;
 
-import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,18 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Profile;
-import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
-import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
-import it.tredi.ecm.service.CurrentUserDetailsService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.QuotaAnnualeService;
-import it.tredi.ecm.service.QuotaAnnualeServiceImpl;
 import it.tredi.ecm.service.RelazioneAnnualeService;
 import it.tredi.ecm.service.SedutaService;
 import it.tredi.ecm.service.bean.CurrentUser;
@@ -47,8 +40,6 @@ public class LoginController {
 	@Autowired private EventoService eventoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private RelazioneAnnualeService relazioneAnnualeService;
-
-	@Autowired private CurrentUserDetailsService currentUserDetailsService;
 
 	@RequestMapping("/")
 	public String root(Locale locale) {
@@ -162,9 +153,7 @@ public class LoginController {
 
 	/** Login form. */
 	@RequestMapping(value = "/cas/login", method = RequestMethod.GET)
-	public String casLogin(HttpServletRequest request) {
-		//currentUserDetailsService.authenticateCasUser(request);
-		currentUserDetailsService.authenticateUser("LBENEDETTI",request);
+	public String casLogin() {
 		return "redirect:/home";
 	}
 }
