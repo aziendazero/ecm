@@ -718,7 +718,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamentoRepository.save(accreditamento);
 
 		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
-		AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
 
 		//setto il container dei field integrazione ad applicati
 		fieldIntegrazioneAccreditamentoService.applyIntegrazioneInContainer(accreditamentoId, stato, workFlowProcessInstanceId);
@@ -772,7 +772,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
-		AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
 
 		//controllo quali campi sono stati modificati e quali confermati
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId);
@@ -803,7 +803,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//creo una lista di fieldIntegrazione fittizia, per applicare sui fieldValutazione l'info che un campo abilitato non è stato modificato dal provider
 		//il fieldIntegrazione (che non verrà salvato su db, ma utilizzato solo per richiamare la 'sbloccaValutazioniByFieldIntegrazioneList' è realizzato valorizzando solo
-		//i cmapi: objectReference, idField, isModificato
+		//i campi: objectReference, idField, isModificato
 		Long id = -1L;
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneListFITTIZIA = new HashSet<FieldIntegrazioneAccreditamento>();
 		Set<FieldEditabileAccreditamento> fieldEditabileList = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId);
@@ -887,7 +887,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//non multi-istanza
 				field = Utils.getField(fieldValutazioni, fieldIntegrazione.getIdField());
 			}
-			if(field != null){
+			if(field != null && !field.isEnabled()){
 				field.setEsito(null);
 				field.setEnabled(true);
 				field.setNote(null);
@@ -916,7 +916,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					}
 				}
 				//modifico di conseguenza il fieldValutazione del padre
-				if(fieldVal != null) {
+				if(fieldVal != null && !fieldVal.isEnabled()) {
 					fieldVal.setEsito(null);
 					fieldVal.setEnabled(true);
 					fieldVal.setNote(null);
@@ -1606,6 +1606,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//protocollo il file
 			} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
 				//mi sono spostato da INTEGRAZIONE a VALUTAZIONE_SEGRETERIA quindi rimuovo i fieldEditabili
+				inviaIntegrazione(accreditamentoId);
 				fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 				workflowInCorso.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
 			} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
@@ -2005,12 +2006,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Account user = Utils.getAuthenticatedUser().getAccount();
-		Map<IdFieldEnum, Long> campiDaValutare = new HashMap<IdFieldEnum, Long>();
+		List<FieldValutazioneAccreditamento> campiDaValutare = new ArrayList<FieldValutazioneAccreditamento>();
 
 		//se l'utente è segreteria mi salvo tutti gli idField relativi ai fieldIntegrazione prima che questi
 		//vengano cancellati e poi approvo l'integrazione
 		if(user.isSegreteria()) {
-			campiDaValutare = getIdEnumDaEditare(accreditamentoId);
+			campiDaValutare = getFieldValutazioneDaValutare(accreditamentoId);
 			//applica modifiche
 			approvaIntegrazione(accreditamentoId);
 		}
@@ -2069,16 +2070,72 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 	}
 
-	private Map<IdFieldEnum, Long> getIdEnumDaEditare(Long accreditamentoId) {
-		Map<IdFieldEnum, Long> campiDaValutare = new HashMap<IdFieldEnum, Long>();
+	private List<FieldValutazioneAccreditamento> getFieldValutazioneDaValutare(Long accreditamentoId) {
+		List<FieldValutazioneAccreditamento> campiDaValutare = new ArrayList<FieldValutazioneAccreditamento>();
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
 		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
 
 		Set<FieldIntegrazioneAccreditamento> fieldIntegrazione = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId);
+		Map<IdFieldEnum, Boolean> idGruppi = new HashMap<IdFieldEnum, Boolean>();
 		for(FieldIntegrazioneAccreditamento fia : fieldIntegrazione) {
-			campiDaValutare.put(fia.getIdField(), fia.getObjectReference());
+			FieldValutazioneAccreditamento fieldValutazione = new FieldValutazioneAccreditamento();
+			//gestione adhoc per idField con gruppo
+			//verranno poi aggiunti alla fine
+			if(fia.getIdField().getSubSetField() == SubSetFieldEnum.DATI_ACCREDITAMENTO) {
+				Boolean result = null;
+				switch(fia.getIdField()) {
+				case DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO:
+				case DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE:
+				case DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE:
+					result = idGruppi.get(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO);
+					//non ancora aggiunto, lo aggiungo oppure se result è false lo aggiorno con true
+					if(result == null || result == false) {
+						idGruppi.put(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO, fia.isModificato());
+					}
+					break;
+				case DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO:
+				case DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE:
+				case DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE:
+					result = idGruppi.get(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE);
+					//non ancora aggiunto, lo aggiungo oppure se result è false lo aggiorno con true
+					if(result == null || result == false) {
+						idGruppi.put(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE, fia.isModificato());
+					}
+					break;
+				case DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO:
+				case DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO:
+					result = idGruppi.get(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI);
+					//non ancora aggiunto, lo aggiungo oppure se result è false lo aggiorno con true
+					if(result == null || result == false) {
+						idGruppi.put(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI, fia.isModificato());
+					}
+					break;
+				default:
+					fieldValutazione.setIdField(fia.getIdField());
+					fieldValutazione.setObjectReference(fia.getObjectReference());
+					fieldValutazione.setModificatoInIntegrazione(fia.isModificato());
+					campiDaValutare.add(fieldValutazione);
+					break;
+				}
+			}
+			else {
+				fieldValutazione.setIdField(fia.getIdField());
+				fieldValutazione.setObjectReference(fia.getObjectReference());
+				fieldValutazione.setModificatoInIntegrazione(fia.isModificato());
+				campiDaValutare.add(fieldValutazione);
+			}
 		}
+		//aggiungo tutti i field valutazione adHoc dei gruppi
+		idGruppi.forEach((key, value) -> {
+			FieldValutazioneAccreditamento fieldValutazione = new FieldValutazioneAccreditamento();
+			fieldValutazione.setIdField(key);
+			//non hanno mai obj reference
+			fieldValutazione.setObjectReference(-1);
+			fieldValutazione.setModificatoInIntegrazione(value);
+			campiDaValutare.add(fieldValutazione);
+		});
+
 		return campiDaValutare;
 	}
 

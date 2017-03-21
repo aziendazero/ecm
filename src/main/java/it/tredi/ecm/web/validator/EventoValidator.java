@@ -101,7 +101,7 @@ public class EventoValidator {
 		 * un evento può essere inserito fino a 15 giorni dalla data di inizio per il gruppo A, 30 per il gruppo B, 10 se riedizione
 		 * controllo effettutato solo da BOZZA a VALIDATO
 		 * -------------------
-		 * un evento non può essere anticipato e non gli può essere cambiato il numero di date
+		 * passati i minGiorni un evento non può essere anticipato e non gli può essere cambiato il numero di date
 		 * controllo effettutato solo da VALIDATO a VALIDATO
 		 * -------------------
 		 * la segreteria gestisce le date come vuole
@@ -114,6 +114,7 @@ public class EventoValidator {
 		else minGiorni = ecmProperties.getGiorniMinEventoProviderB();
 		if(evento.isRiedizione())
 			minGiorni = ecmProperties.getGiorniMinEventoRiedizione();
+
 		if(evento.getStato() == EventoStatoEnum.BOZZA) {
 			if(evento.isRiedizione()) {
 				if(evento.getDataInizio() == null)
@@ -131,16 +132,17 @@ public class EventoValidator {
 			}
 		}
 		else {
-			//impedisce anticipazioni di date di eventi validati e un cambio di numero di date confrontando con l'evento
+			//impedisce anticipazioni di date di eventi validati fuori dal tempo massimo e un cambio di numero di date confrontando con l'evento
 			//sul DB non ancora modificato
 			Evento eventoDaDB = eventoService.getEvento(evento.getId());
 			if(evento.getDataInizio() == null)
 				errors.rejectValue(prefix + "dataInizio", "error.empty");
-			//la segreteria solo può anticipare la data di un evento
-//			if(evento.getDataInizio().isBefore(eventoDaDB.getDataInizio()) && !Utils.getAuthenticatedUser().isSegreteria())
-//				errors.rejectValue(prefix + "dataInizio", "error.anticipazione_data_non_possibile");
-			if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)) && !Utils.getAuthenticatedUser().isSegreteria())
-				errors.rejectValue(prefix + "dataInizio", "error.data_inizio_non_valida");
+			//SOLO se ho cambiato la data faccio il controllo sul minGiorni (e non sono segreteria)
+			if(!evento.getDataInizio().isEqual(eventoDaDB.getDataInizio()) && !Utils.getAuthenticatedUser().isSegreteria()) {
+				if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)))
+					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_non_valida");
+			}
+			//se l'evento è un riedizione il numero delle date deve coincidere
 			if(evento.isRiedizione()) {
 				if((!Utils.getAuthenticatedUser().isSegreteria())
 						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))

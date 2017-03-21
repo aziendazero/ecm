@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,5 +43,5 @@ public interface ValutazioneService {
 	public Map<String, FieldValutazioniRipetibiliWrapper> getMapAllValutazioneRipetibili(Valutazione valutazione, Accreditamento accreditamento);
 	public void setEsitoForEnabledFields(Valutazione valutazione, Boolean esito) throws Exception;
 	public void valutaTuttiSi(Accreditamento accreditamento, Account account);
-	public void resetEsitoAndEnabledForSubset(Valutazione valutazioneReferee, Map<IdFieldEnum, Long> campiDaValutare);
+	public void resetEsitoAndEnabledForSubset(Valutazione valutazioneReferee, List<FieldValutazioneAccreditamento> campiDaSbloccare);
 }

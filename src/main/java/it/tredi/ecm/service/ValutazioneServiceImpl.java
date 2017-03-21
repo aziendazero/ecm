@@ -2,6 +2,7 @@ package it.tredi.ecm.service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -413,14 +414,16 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 
 	//sblocca i campi e attiva i fieldValutazione per il subset passato
 	@Override
-	public void resetEsitoAndEnabledForSubset(Valutazione valutazioneReferee, Map<IdFieldEnum, Long> subset) {
-		for(FieldValutazioneAccreditamento fva : valutazioneReferee.getValutazioni()) {
-			if(subset.containsKey(fva.getIdField()) && subset.get(fva.getIdField()) == fva.getObjectReference()) {
-				fva.setEsito(null);
-				fva.setEnabled(true);
-				fieldValutazioneAccreditamentoService.save(fva);
+	public void resetEsitoAndEnabledForSubset(Valutazione valutazione, List<FieldValutazioneAccreditamento> campiDaSbloccare) {
+		for(FieldValutazioneAccreditamento fiaDaSbloccare : campiDaSbloccare) {
+			for(FieldValutazioneAccreditamento fia : valutazione.getValutazioni()) {
+				if(fia.getIdField() == fiaDaSbloccare.getIdField() && fia.getObjectReference() == fiaDaSbloccare.getObjectReference()) {
+					fia.setEnabled(true);
+					fia.setEsito(null);
+					fia.setModificatoInIntegrazione(fiaDaSbloccare.getModificatoInIntegrazione());
+					fieldValutazioneAccreditamentoService.save(fia);
+				}
 			}
 		}
-
 	}
 }

@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -721,9 +722,9 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 			if(field.getTipoIntegrazioneEnum() == TipoIntegrazioneEnum.MODIFICA){
 				try{
 					if(field.getIdField().getGruppo().isEmpty()){
-						if(field.getNewValue().equals(getField(dst, field.getIdField().getNameRef()))){
+//						if(field.getNewValue().equals(getField(dst, field.getIdField().getNameRef())))
+						if(Objects.equals(field.getNewValue(), getField(dst, field.getIdField().getNameRef()))){
 							field.setModificato(false);
-
 							LOGGER.info(Utils.getLogMessage(field.getIdField() + " CONFERMATO"));
 						}else{
 							field.setModificato(true);
