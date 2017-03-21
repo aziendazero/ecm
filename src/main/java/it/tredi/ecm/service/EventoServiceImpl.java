@@ -136,6 +136,7 @@ public class EventoServiceImpl implements EventoService {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + " - Salvataggio"));
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
+		evento = eventoRepository.saveAndFlush(evento);
 		eventoRepository.save(evento);
 
 //		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {

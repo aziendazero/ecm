@@ -3,6 +3,7 @@ package it.tredi.ecm.dao.repository;
 import java.time.LocalDate;
 import java.util.Set;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +15,8 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 
-public interface AccreditamentoRepository extends CrudRepository<Accreditamento, Long> {
+//public interface AccreditamentoRepository extends CrudRepository<Accreditamento, Long> {
+public interface AccreditamentoRepository extends JpaRepository<Accreditamento, Long> {
 	public Set<Accreditamento> findByProviderId(Long providerId);
 	public Set<Accreditamento> findAllByProviderIdAndTipoDomanda(Long providerId, AccreditamentoTipoEnum tipoDomanda);
 	public Set<Accreditamento> findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(Long providerId, AccreditamentoTipoEnum tipoDomanda, LocalDate data);

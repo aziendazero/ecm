@@ -8,9 +8,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.TypeName;
+
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("Professione")
 @Entity
 @Getter
 @Setter
@@ -21,6 +25,7 @@ public class Professione extends BaseEntityDefaultId{
 	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;
 
+	@DiffIgnore
 	@OneToMany(mappedBy="professione")
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
 

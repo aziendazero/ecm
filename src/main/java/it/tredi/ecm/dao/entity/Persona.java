@@ -17,12 +17,19 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
+
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.TypeName;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("Persona")
 @Entity
 @NamedEntityGraph(name="graph.persona.files",
 					attributeNodes = @NamedAttributeNode(value="files", subgraph="minimalFileInfo"),
@@ -39,6 +46,7 @@ public class Persona extends BaseEntityDefaultId{
 	@ManyToOne(cascade = {CascadeType.PERSIST , CascadeType.MERGE})
 	private Anagrafica anagrafica = new Anagrafica();
 
+	@DiffIgnore
 	@JsonView(JsonViewModel.Integrazione.class)
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;

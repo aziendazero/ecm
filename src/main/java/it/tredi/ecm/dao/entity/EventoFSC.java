@@ -15,6 +15,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.TypeName;
+
 import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaGruppoFSCEnum;
@@ -23,6 +26,7 @@ import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("EventoFSC")
 @Entity
 @Getter
 @Setter
@@ -65,6 +69,7 @@ public class EventoFSC extends Evento{
 	@ElementCollection
 	private List<RiepilogoRuoliFSC> riepilogoRuoli = new ArrayList<RiepilogoRuoliFSC>();
 
+	@DiffIgnore
 	private Integer numeroTutor;
 
 }
