@@ -3,6 +3,7 @@ package it.tredi.ecm.dao.repository;
 import java.time.LocalDate;
 import java.util.Set;
 
+import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -15,6 +16,7 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 
+@JaversSpringDataAuditable
 public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Set<Evento> findAllByProviderId(Long providerId);
 	public Set<Evento> findAllByProviderIdOrderByDataUltimaModificaDesc(Long providerId);

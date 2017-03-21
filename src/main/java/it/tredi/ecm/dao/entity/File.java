@@ -17,6 +17,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.aspectj.weaver.NewFieldTypeMunger;
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.ShallowReference;
+import org.javers.core.metamodel.annotation.TypeName;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -25,6 +28,8 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("File")
+@ShallowReference
 @Entity
 @Table(name="file")
 @Getter
@@ -67,6 +72,7 @@ public class File extends BaseEntityDefaultId{
 	@JsonIgnore
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="file_id")
+	@DiffIgnore
 	private List<FileData> fileData;
 
 	@JsonIgnore public void setData(byte[] dataArray){

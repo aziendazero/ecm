@@ -5,12 +5,16 @@ import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.TypeName;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("Anagrafica")
 @Entity
 @Getter
 @Setter
@@ -40,6 +44,7 @@ public class Anagrafica extends BaseEntityDefaultId{
 		this.codiceFiscale = codiceFiscale.toUpperCase();
 	}
 
+	@DiffIgnore
 	@JsonIgnore
 	@OneToOne
 	private Provider provider;

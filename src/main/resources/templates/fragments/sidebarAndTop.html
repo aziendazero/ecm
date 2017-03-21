@@ -146,10 +146,15 @@
 		                  	<a th:href="@{/user/changePassword}" href="javascript:;">  <span th:text="#{label.cambia_password}">label.cambia_password</span></a>
 		                  </li>
 		                  <li>
-		                  	<a href="javascript:;" onclick="$('#logout').submit()"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
-		                  	<form id="logout" th:action="@{/logout}" method="post">
-								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-							</form>
+		                 	<th:block th:unless="${T(it.tredi.ecm.utils.Utils).isUserCasAuthenticated()}">
+								<a href="javascript:;" onclick="$('#logout').submit()"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+		                 		<form id="logout" th:action="@{/logout}" method="post">
+									<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+								</form>
+		                 	</th:block>
+		                 	<th:block th:if="${T(it.tredi.ecm.utils.Utils).isUserCasAuthenticated()}">
+								<a th:href="@{/cas/logout}"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+		                 	</th:block>
 		                  </li>
 		                </ul>
 		              </li>

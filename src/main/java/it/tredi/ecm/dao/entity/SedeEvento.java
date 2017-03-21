@@ -3,9 +3,13 @@ package it.tredi.ecm.dao.entity;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Embeddable;
+
+import org.javers.core.metamodel.annotation.TypeName;
+
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("SedeEvento")
 @Embeddable
 @Getter
 @Setter

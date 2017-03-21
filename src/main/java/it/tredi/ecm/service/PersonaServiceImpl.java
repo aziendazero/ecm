@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.audit.entity.PersonaAudit;
+import it.tredi.ecm.audit.entity.ProviderAudit;
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
@@ -22,6 +24,7 @@ public class PersonaServiceImpl implements PersonaService {
 
 	@Autowired private PersonaRepository personaRepository;
 	@Autowired private AnagraficaService anagraficaService;
+	@Autowired private AuditService auditService;
 
 	@Override
 	public Persona getPersona(Long id) {
@@ -61,7 +64,14 @@ public class PersonaServiceImpl implements PersonaService {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio Persona (" + persona.getRuolo() + ")"));
 		if(persona.getAnagrafica().getProvider() == null)
 			persona.getAnagrafica().setProvider(persona.getProvider());
-		personaRepository.save(persona);
+		//personaRepository.save(persona);
+		personaRepository.saveAndFlush(persona);
+		saveAuditProvider(persona);
+	}
+
+	private void saveAuditProvider(Persona persona) {
+		if(!persona.isDirty() && persona.getProvider() != null)
+			auditService.commitForCurrrentUser(new ProviderAudit(persona.getProvider()));
 	}
 
 	@Override
@@ -121,7 +131,11 @@ public class PersonaServiceImpl implements PersonaService {
 	@Transactional
 	public void delete(Long id) {
 		LOGGER.debug("Eliminazione Persona " + id);
+		//Carico la persona per vedere se devo aggiornare l'audit del provider
+		Persona persona = personaRepository.findOne(id);
 		personaRepository.delete(id);
+		personaRepository.flush();
+		saveAuditProvider(persona);
 	}
 
 	@Override

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<!-- fragment interno della audit della entity -->
+	<th:block th:fragment="audit(type)">
+		<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+		  	<th:block th:text="#{AuditCollectionChangeTypeEnum.ADDED}" />
+		  </th:block>
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+		  	<th:block th:text="#{AuditCollectionChangeTypeEnum.CHANGED}" />
+		  </th:block>
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+		  	<th:block th:text="#{AuditCollectionChangeTypeEnum.REMOVED}" />
+		  </th:block>
+		</th:block>
+	</th:block>
+
+</body>
+</html>

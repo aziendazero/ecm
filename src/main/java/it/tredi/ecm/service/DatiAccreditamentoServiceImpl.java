@@ -31,12 +31,14 @@ public class DatiAccreditamentoServiceImpl implements DatiAccreditamentoService 
 	public void save(DatiAccreditamento datiAccreditamento, Long accreditamentoId) {
 		LOGGER.debug("Salvataggio dati accreditamento.");
 		if(datiAccreditamento.isNew()){
-			datiAccreditamentoRepository.save(datiAccreditamento);
+			datiAccreditamentoRepository.saveAndFlush(datiAccreditamento);
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 			accreditamento.setDatiAccreditamento(datiAccreditamento);
 			accreditamentoService.save(accreditamento);
 		}else{
-			datiAccreditamentoRepository.save(datiAccreditamento);
+			datiAccreditamentoRepository.saveAndFlush(datiAccreditamento);
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			accreditamentoService.audit(accreditamento);
 		}
 	}
 

@@ -6,10 +6,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import org.javers.core.metamodel.annotation.TypeName;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@TypeName("Disciplina")
 @Getter
 @Setter
 public class Disciplina extends BaseEntityDefaultId{

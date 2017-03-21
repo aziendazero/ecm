@@ -22,6 +22,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import it.tredi.bonita.api.model.TaskInstanceDataModel;
+import it.tredi.ecm.audit.entity.AccreditamentoAudit;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AccreditamentoDiff;
@@ -110,6 +111,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private PersonaService personaService;
 	@Autowired private SedeService sedeService;
+	@Autowired private AuditService auditService;
 
 	@Autowired private DiffService diffService;
 
@@ -271,7 +273,17 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void save(Accreditamento accreditamento) {
 		LOGGER.debug("Salvataggio domanda di accreditamento " + accreditamento.getTipoDomanda() + " per il provider " + accreditamento.getProvider().getId());
-		accreditamentoRepository.save(accreditamento);
+		//accreditamentoRepository.save(accreditamento);
+		saveAndAudit(accreditamento);
+	}
+
+	public void saveAndAudit(Accreditamento accreditamento) {
+		accreditamentoRepository.saveAndFlush(accreditamento);
+		auditService.commitForCurrrentUser(new AccreditamentoAudit(accreditamento));
+	}
+
+	public void audit(Accreditamento accreditamento) {
+		auditService.commitForCurrrentUser(new AccreditamentoAudit(accreditamento));
 	}
 
 	@Override
@@ -353,7 +365,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			throw new Exception("Errore avvio Workflow Accreditamento per la domanda " + accreditamentoId);
 		}
 
-		accreditamentoRepository.save(accreditamento);
+		//accreditamentoRepository.save(accreditamento);
+		saveAndAudit(accreditamento);
+
 	}
 
 	@Override
@@ -367,7 +381,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		pianoFormativo.setProvider(accreditamento.getProvider());
 		pianoFormativoService.save(pianoFormativo);
 		accreditamento.setPianoFormativo(pianoFormativo);
-		accreditamentoRepository.save(accreditamento);
+		//accreditamentoRepository.save(accreditamento);
+		saveAndAudit(accreditamento);
+
 
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 		fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, null, SubSetFieldEnum.FULL, new HashSet<IdFieldEnum>(Arrays.asList(IdFieldEnum.EVENTO_PIANO_FORMATIVO__FULL)));
@@ -425,6 +441,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				}
 				accreditamento.setDataValutazioneCrecm(LocalDate.now());
 				accreditamentoRepository.save(accreditamento);
+				//saveAndAudit(accreditamento);
+
 				//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
 				Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
 				workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
@@ -444,7 +462,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				verbale.setValutatore(Utils.getAuthenticatedUser().getAccount());
 				accreditamento.setVerbaleValutazioneSulCampo(verbale);
 			}
-			accreditamentoRepository.save(accreditamento);
+			//accreditamentoRepository.save(accreditamento);
+			saveAndAudit(accreditamento);
+
 
 			//è qui che è stata settala la data di valutazione del verbale e tutti i suoi componenti???
 			// risposta: sì, ma rimane modificabile per tutta la durata di valutazione sul campo
@@ -593,7 +613,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
-		accreditamentoRepository.save(accreditamento);
+		//accreditamentoRepository.save(accreditamento);
+		saveAndAudit(accreditamento);
+
 
 		//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
 		Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
@@ -665,6 +687,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
+		//saveAndAudit(accreditamento);
+
 		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, false, usernameWorkflowValutatoriCrecm);
 	}
 
@@ -699,6 +723,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamentoRepository.save(accreditamento);
+		//saveAndAudit(accreditamento);
+
 		workflowService.eseguiTaskValutazioneSegreteriaTeamLeaderForCurrentUser(accreditamento, false, usernameWorkflowTeamLeader);
 	}
 
@@ -716,6 +742,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		else accreditamento.setPresaVisionePreavvisoDiRigetto(true);
 
 		accreditamentoRepository.save(accreditamento);
+		//saveAndAudit(accreditamento);
+
 
 		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
 		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
@@ -741,6 +769,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.getWorkflowInCorso().setGiorniIntegrazione(giorniTimer);
 		}
 		accreditamentoRepository.save(accreditamento);
+		//saveAndAudit(accreditamento);
+
 
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
@@ -756,7 +786,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " al Provider"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setGiorniPreavvisoRigetto(giorniTimer);
-		accreditamentoRepository.save(accreditamento);
+		//accreditamentoRepository.save(accreditamento);
+		saveAndAudit(accreditamento);
+
 
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
@@ -1647,7 +1679,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//TODO se si chiama il servizio di protocollazione verrà settato uno stato intermedio di attesa protocollazione
 		//TODO registrazione cronologia degli stati
-		accreditamentoRepository.save(accreditamento);
+		//accreditamentoRepository.save(accreditamento);
+		saveAndAudit(accreditamento);
 
 		//se lo stato è DINIEGO o ACCREDITATO storicizzo le valutazioni attive per la domanda
 		if(stato == AccreditamentoStatoEnum.ACCREDITATO || stato == AccreditamentoStatoEnum.DINIEGO || stato == AccreditamentoStatoEnum.CONCLUSO) {
@@ -1843,6 +1876,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		else
 			accreditamento.setNoteOsservazioniPreavvisoRigetto(file);
 		accreditamentoRepository.save(accreditamento);
+		//saveAndAudit(accreditamento);
+
 	}
 
 	@Override
@@ -1884,7 +1919,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		accreditamento.setVerbaleValutazioneSulCampoPdf(verbalePdf);
 
-		accreditamentoRepository.save(accreditamento);
+		//accreditamentoRepository.save(accreditamento);
+		saveAndAudit(accreditamento);
 
 		//TODO nemmeno qua sarebbe da assegnare la valutazione del team leader se l'accreditamento viene accreditato
 		//mentre se va in integrazione se ne va in integrazione.. si potrebbe creare la valutazione del team leader al momento in cui va in integrazione
