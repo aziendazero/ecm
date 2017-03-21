@@ -49,7 +49,7 @@ public class ProviderAudit {
 	private RagioneSocialeEnum ragioneSociale;
 	private String naturaOrganizzazione;
 	private boolean noProfit = false;
-	private ProviderStatoEnum status;
+	//private ProviderStatoEnum status;
 
 	private PersonaAudit legaleRappresentante;
 	private PersonaAudit delegatoLegaleRappresentante;
@@ -64,19 +64,20 @@ public class ProviderAudit {
 	private SedeAudit sedeLegale;
 	private Map<Long, SedeAudit> sediOperative = new HashMap<Long, SedeAudit>();
 
-	private boolean canInsertAccreditamentoStandard;
-	private LocalDate dataScadenzaInsertAccreditamentoStandard;
-
-	private boolean canInsertAccreditamentoProvvisorio;
-	private LocalDate dataRinnovoInsertAccreditamentoProvvisorio;
-
-	private boolean canInsertPianoFormativo;
-	private LocalDate dataScadenzaInsertPianoFormativo;
-
-	private boolean canInsertEvento;
-
-	private boolean canInsertRelazioneAnnuale = true;
-	private LocalDate dataScadenzaInsertRelazioneAnnuale;
+//	private boolean canInsertAccreditamentoStandard;
+//	private LocalDate dataScadenzaInsertAccreditamentoStandard;
+//
+//	private boolean canInsertAccreditamentoProvvisorio;
+//	private LocalDate dataRinnovoInsertAccreditamentoProvvisorio;
+//
+//	private boolean canInsertPianoFormativo;
+//	private LocalDate dataScadenzaInsertPianoFormativo;
+//
+//	private boolean canInsertEvento;
+//
+//	private boolean canInsertRelazioneAnnuale = true;
+//	private LocalDate dataScadenzaInsertRelazioneAnnuale;
+	private ProviderAttivitaAudit providerAttivitaAudit;
 
 	private String codiceCogeaps;
 
@@ -93,22 +94,24 @@ public class ProviderAudit {
 		this.ragioneSociale = provider.getRagioneSociale();
 		this.naturaOrganizzazione = provider.getNaturaOrganizzazione();
 		this.noProfit = provider.isNoProfit();
-		this.status = provider.getStatus();
 
+//		this.status = provider.getStatus();
 
-		this.canInsertAccreditamentoStandard = provider.isCanInsertAccreditamentoStandard();
-		this.dataScadenzaInsertAccreditamentoStandard = provider.getDataScadenzaInsertAccreditamentoStandard();
+//		this.canInsertAccreditamentoStandard = provider.isCanInsertAccreditamentoStandard();
+//		this.dataScadenzaInsertAccreditamentoStandard = provider.getDataScadenzaInsertAccreditamentoStandard();
+//
+//		this.canInsertAccreditamentoProvvisorio = provider.isCanInsertAccreditamentoProvvisorio();
+//		this.dataRinnovoInsertAccreditamentoProvvisorio = provider.getDataRinnovoInsertAccreditamentoProvvisorio();
+//
+//		this.canInsertPianoFormativo = provider.isCanInsertPianoFormativo();
+//		this.dataScadenzaInsertPianoFormativo = provider.getDataScadenzaInsertPianoFormativo();
+//
+//		this.canInsertEvento = provider.isCanInsertEvento();
+//
+//		this.canInsertRelazioneAnnuale = provider.isCanInsertRelazioneAnnuale();
+//		this.dataScadenzaInsertRelazioneAnnuale = provider.getDataScadenzaInsertRelazioneAnnuale();
 
-		this.canInsertAccreditamentoProvvisorio = provider.isCanInsertAccreditamentoProvvisorio();
-		this.dataRinnovoInsertAccreditamentoProvvisorio = provider.getDataRinnovoInsertAccreditamentoProvvisorio();
-
-		this.canInsertPianoFormativo = provider.isCanInsertPianoFormativo();
-		this.dataScadenzaInsertPianoFormativo = provider.getDataScadenzaInsertPianoFormativo();
-
-		this.canInsertEvento = provider.isCanInsertEvento();
-
-		this.canInsertRelazioneAnnuale = provider.isCanInsertRelazioneAnnuale();
-		this.dataScadenzaInsertRelazioneAnnuale = provider.getDataScadenzaInsertRelazioneAnnuale();
+		this.providerAttivitaAudit = new ProviderAttivitaAudit(provider);
 
 		this.codiceCogeaps = provider.getCodiceCogeaps();
 

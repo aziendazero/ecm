@@ -70,6 +70,8 @@ public class AuditServiceImpl implements AuditService {
 					//messageSource.getMessage("label.dati_verbale", values, Locale.getDefault())
 			}
 		} else {
+			//LOGGER.info("label_mancante");
+			LOGGER.info(labelAudit);
 			label = "??key " + labelAudit + " not found??";
 		}
 		return label;

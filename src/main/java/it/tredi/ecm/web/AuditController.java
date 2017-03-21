@@ -32,7 +32,9 @@ import it.tredi.ecm.audit.EcmTextChangeLog;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.service.AccountService;
+import it.tredi.ecm.service.AccountServiceImpl;
 import it.tredi.ecm.service.AuditService;
+import it.tredi.ecm.service.AuditServiceImpl;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 
@@ -101,7 +103,7 @@ public class AuditController {
 						.withNewObjectChanges(true)
 						.withChildValueObjects()
 						.build());
-				changeLog = javers.processChangeList(changes, new EcmTextChangeLog(entityId, entityClass));
+				//changeLog = javers.processChangeList(changes, new EcmTextChangeLog(entityId, entityClass));
 				auditInfo = javers.processChangeList(changes, new EcmAuditInfoChangeLog(entityClass, entityId, javers, auditService, accountService));
 			} else {
 				List<Change> changes = javers.findChanges(QueryBuilder
@@ -109,17 +111,94 @@ public class AuditController {
 						.withNewObjectChanges(true)
 						.withChildValueObjects()
 						.build());
-				changeLog = javers.processChangeList(changes, new EcmTextChangeLog(entityId, entityClass));
+				//changeLog = javers.processChangeList(changes, new EcmTextChangeLog(entityId, entityClass));
 				auditInfo = javers.processChangeList(changes, new EcmAuditInfoChangeLog(entityClass, entityId, javers, auditService, accountService));
 			}
 
-			auditInfo.setFullText(changeLog);
+			//auditInfo.setFullText(changeLog);
 
 			model.addAttribute("auditInfo", auditInfo);
 			return SHOW;
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /audit/entity/" + entity + "/id/" + entityId),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
+
+	@RequestMapping(value= "/auditvo/entity/{entity}/entityId/{entityId}", method = RequestMethod.GET)
+	public String auditEntity(@PathVariable String entity, @PathVariable Long entityId, @RequestParam(required = true) String pathValueObject, @RequestParam(required = false) Boolean lastCommit
+			, @RequestParam(required = false) Long commitMajorId, @RequestParam(required = false) Integer commitMinorId
+			, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /audit/entity/" + entity + "/id/" + entityId + "/pathValueObject/" + pathValueObject));
+
+		boolean showLastCommit = false;
+		if(lastCommit != null){
+			showLastCommit = lastCommit.booleanValue();
+		}
+
+		try {
+			Class entityClass = null;
+			if(entity.contains(".")) {
+				//Classe completa di package
+				entityClass = Class.forName(entity);
+			} else {
+				//Classe senza package
+				if(entity.contains("Audit"))
+					entityClass = Class.forName("it.tredi.ecm.audit.entity." + entity);
+				else
+					entityClass = Class.forName("it.tredi.ecm.dao.entity." + entity);
+			}
+			//Audit entity
+			CommitId commitId = null;
+			if(showLastCommit) {
+				JqlQuery jqlQuerySnapshot = QueryBuilder
+						.byValueObjectId(entityId, entityClass, pathValueObject)
+						.limit(1)
+						.withNewObjectChanges(true)
+						//.withChildValueObjects()
+						.build();
+				List<CdoSnapshot> lastSnapshotEventoList = javers.findSnapshots(jqlQuerySnapshot);
+				System.out.println("snapshots1.size() - " + lastSnapshotEventoList.size());
+				if(lastSnapshotEventoList.size() != 0) {
+					commitId = lastSnapshotEventoList.get(0).getCommitId();
+					System.out.println("commitId - " + commitId);
+				}
+			}
+			//per debug
+			if(commitMajorId != null && commitMinorId != null)
+				commitId = new CommitId(commitMajorId, commitMinorId);
+
+			String changeLog = null;
+			AuditInfo auditInfo = null;
+			if(commitId != null) {
+				List<Change> changes = javers.findChanges(QueryBuilder
+						.byValueObjectId(entityId, entityClass, pathValueObject)
+						.withCommitId(commitId)
+						.withNewObjectChanges(true)
+						//.withChildValueObjects()
+						.build());
+				//changeLog = javers.processChangeList(changes, new EcmTextChangeLog(entityId, entityClass));
+				auditInfo = javers.processChangeList(changes, new EcmAuditInfoChangeLog(entityClass, entityId, javers, auditService, accountService));
+			} else {
+				List<Change> changes = javers.findChanges(QueryBuilder
+						.byValueObjectId(entityId, entityClass, pathValueObject)
+						.withNewObjectChanges(true)
+						//.withChildValueObjects()
+						.build());
+				//changeLog = javers.processChangeList(changes, new EcmTextChangeLog(entityId, entityClass));
+				auditInfo = javers.processChangeList(changes, new EcmAuditInfoChangeLog(entityClass, entityId, javers, auditService, accountService));
+			}
+
+			//auditInfo.setFullText(changeLog);
+
+			model.addAttribute("auditInfo", auditInfo);
+			return SHOW;
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /audit/entity/" + entity + "/id/" + entityId + "/pathValueObject/" + pathValueObject),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";

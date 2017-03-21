@@ -29,6 +29,8 @@ public interface AccreditamentoService{
 
 	//azioni sulla domanda che corrsipondono ad avanzamenti del flusso
 	public void save(Accreditamento accreditamento);
+	public void saveAndAudit(Accreditamento accreditamento);
+	public void audit(Accreditamento accreditamento);
 	public void inserisciPianoFormativo(Long accreditamentoId);
 
 	public void inviaDomandaAccreditamento(Long accreditamentoId) throws Exception;

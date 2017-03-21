@@ -24,7 +24,8 @@ public class PersonaAudit {
 	private Anagrafica anagrafica = new Anagrafica();
 	private Ruolo ruolo;
 	private String incarico = "";
-	private Professione professione;
+	//private Professione professione;
+	private String professione;
 	//private Boolean coordinatoreComitatoScientifico;
 
 	private File curriculumVitae;
@@ -36,7 +37,10 @@ public class PersonaAudit {
 		this.anagrafica = persona.getAnagrafica();
 		this.ruolo = persona.getRuolo();
 		this.incarico= persona.getIncarico();
-		this.professione = persona.getProfessione();
+		if(persona.getProfessione() == null)
+			this.professione = null;
+		else
+			this.professione = persona.getProfessione().getNome();
 		//this.coordinatoreComitatoScientifico = persona.getCoordinatoreComitatoScientifico();
 		for(File file : persona.getFiles()) {
 			if(file.getTipo() == FileEnum.FILE_ATTO_NOMINA)

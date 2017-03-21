@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<!-- fragment interno della audit della entity -->
+	<th:block th:fragment="audit(type)">
+		<!-- th:block th:text="${prop.auditPropertyChangeInfoTypeEnum}" /><br/ -->
+		<!--  th:block th:text="${colCI.auditMapChangeTypeEnum}" /><br/ -->
+
+		<th:block th:switch="${prop.auditPropertyChangeInfoTypeEnum}">
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).MAP_VALUEOBJECT}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+				<a th:text="${colCI.key}" th:href="@{|/auditvo/entity/${colCI.addedAuditObjectInfo.entity}/entityId/${colCI.addedAuditObjectInfo.id}?pathValueObject=${colCI.addedAuditObjectInfo.valueObjectFragment}}">Mostra</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <a th:text="${colCI.previousAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.previousAuditObjectInfo.entity}/entityId/${colCI.previousAuditObjectInfo.id}?pathValueObject=${colCI.previousAuditObjectInfo.valueObjectFragment}}">prima</a>
+				a: <a th:text="${colCI.afterAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.afterAuditObjectInfo.entity}/entityId/${colCI.afterAuditObjectInfo.id}?pathValueObject=${colCI.afterAuditObjectInfo.valueObjectFragment}}">dopo</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+				<a th:text="${colCI.key}" th:href="@{|/auditvo/entity/${colCI.removedAuditObjectInfo.entity}/entityId/${colCI.removedAuditObjectInfo.id}?pathValueObject=${colCI.removedAuditObjectInfo.valueObjectFragment}}">Mostra</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).SET_VALUEOBJECT}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+				<a th:text="${colCI.addedAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.addedAuditObjectInfo.entity}/entityId/${colCI.addedAuditObjectInfo.id}?pathValueObject=${colCI.addedAuditObjectInfo.valueObjectFragment}}">Mostra</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+				da: <a th:text="${colCI.addedAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.previousAuditObjectInfo.entity}/entityId/${colCI.previousAuditObjectInfo.id}?pathValueObject=${colCI.previousAuditObjectInfo.valueObjectFragment}}">prima</a>
+				a: <a th:text="${colCI.addedAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.afterAuditObjectInfo.entity}/entityId/${colCI.afterAuditObjectInfo.id}?pathValueObject=${colCI.afterAuditObjectInfo.valueObjectFragment}}">dopo</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+				<a th:text="${colCI.addedAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.removedAuditObjectInfo.entity}/entityId/${colCI.removedAuditObjectInfo.id}?pathValueObject=${colCI.removedAuditObjectInfo.valueObjectFragment}}">Mostra</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).LIST_VALUEOBJECT}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+				<a th:text="${colCI.key}" th:href="@{|/auditvo/entity/${colCI.addedAuditObjectInfo.entity}/entityId/${colCI.addedAuditObjectInfo.id}?pathValueObject=${colCI.addedAuditObjectInfo.valueObjectFragment}}">Mostra</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <a th:text="${colCI.previousAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.previousAuditObjectInfo.entity}/entityId/${colCI.previousAuditObjectInfo.id}?pathValueObject=${colCI.previousAuditObjectInfo.valueObjectFragment}}">prima</a>
+				a: <a th:text="${colCI.afterAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.afterAuditObjectInfo.entity}/entityId/${colCI.afterAuditObjectInfo.id}?pathValueObject=${colCI.afterAuditObjectInfo.valueObjectFragment}}">dopo</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+				<a th:text="${colCI.key}" th:href="@{|/auditvo/entity/${colCI.removedAuditObjectInfo.entity}/entityId/${colCI.removedAuditObjectInfo.id}?pathValueObject=${colCI.removedAuditObjectInfo.valueObjectFragment}}">Mostra</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).ARRAY_VALUEOBJECT}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+				<a th:text="${colCI.key}" th:href="@{|/auditvo/entity/${colCI.addedAuditObjectInfo.entity}/entityId/${colCI.addedAuditObjectInfo.id}?pathValueObject=${colCI.addedAuditObjectInfo.valueObjectFragment}}">Mostra</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <a th:text="${colCI.previousAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.previousAuditObjectInfo.entity}/entityId/${colCI.previousAuditObjectInfo.id}?pathValueObject=${colCI.previousAuditObjectInfo.valueObjectFragment}}">prima</a>
+				a: <a th:text="${colCI.afterAuditObjectInfo.valueObjectFragment}" th:href="@{|/auditvo/entity/${colCI.afterAuditObjectInfo.entity}/entityId/${colCI.afterAuditObjectInfo.id}?pathValueObject=${colCI.afterAuditObjectInfo.valueObjectFragment}}">dopo</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+				<a th:text="${colCI.key}" th:href="@{|/auditvo/entity/${colCI.removedAuditObjectInfo.entity}/entityId/${colCI.removedAuditObjectInfo.id}?pathValueObject=${colCI.removedAuditObjectInfo.valueObjectFragment}}">Mostra</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).MAP_FILE}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.addedAuditObjectInfo.id}|}">Scarica File</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.previousAuditObjectInfo.id}|}">Scarica File</a>
+				a: <i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.afterAuditObjectInfo.id}|}">Scarica File</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.removedAuditObjectInfo.id}|}">Scarica File</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).SET_FILE}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.addedAuditObjectInfo.id}|}">Scarica File</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+				da: <i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.previousAuditObjectInfo.id}|}">Scarica File</a>
+				a: <i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.afterAuditObjectInfo.id}|}">Scarica File</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.removedAuditObjectInfo.id}|}">Scarica File</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).LIST_FILE}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.addedAuditObjectInfo.id}|}">Scarica File</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.previousAuditObjectInfo.id}|}">Scarica File</a>
+				a: <i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.afterAuditObjectInfo.id}|}">Scarica File</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.removedAuditObjectInfo.id}|}">Scarica File</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).ARRAY_FILE}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.addedAuditObjectInfo.id}|}">Scarica File</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.previousAuditObjectInfo.id}|}">Scarica File</a>
+				a: <i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.afterAuditObjectInfo.id}|}">Scarica File</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${colCI.removedAuditObjectInfo.id}|}">Scarica File</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).MAP_ENTITY}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<a th:text="${colCI.addedAuditObjectInfo.entity + ' (' + colCI.addedAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.addedAuditObjectInfo.entity}/entityId/${colCI.addedAuditObjectInfo.id}|}">Mostra</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <a th:text="${colCI.previousAuditObjectInfo.entity + ' (' + colCI.previousAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.previousAuditObjectInfo.entity}/entityId/${colCI.previousAuditObjectInfo.id}|}">Mostra</a>
+				a: <a th:text="${colCI.afterAuditObjectInfo.entity + ' (' + colCI.afterAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.afterAuditObjectInfo.entity}/entityId/${colCI.afterAuditObjectInfo.id}|}">Mostra</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<a th:text="${colCI.removedAuditObjectInfo.entity + ' (' + colCI.removedAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.removedAuditObjectInfo.entity}/entityId/${colCI.removedAuditObjectInfo.id}|}">Mostra</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).SET_ENTITY}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<a th:text="${colCI.addedAuditObjectInfo.entity + ' (' + colCI.addedAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.addedAuditObjectInfo.entity}/entityId/${colCI.addedAuditObjectInfo.id}|}">Mostra</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+				da: <a th:text="${colCI.previousAuditObjectInfo.entity + ' (' + colCI.previousAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.previousAuditObjectInfo.entity}/entityId/${colCI.previousAuditObjectInfo.id}|}">Mostra</a>
+				a: <a th:text="${colCI.afterAuditObjectInfo.entity + ' (' + colCI.afterAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.afterAuditObjectInfo.entity}/entityId/${colCI.afterAuditObjectInfo.id}|}">Mostra</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<a th:text="${colCI.removedAuditObjectInfo.entity + ' (' + colCI.removedAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.removedAuditObjectInfo.entity}/entityId/${colCI.removedAuditObjectInfo.id}|}">Mostra</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).LIST_ENTITY}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<a th:text="${colCI.addedAuditObjectInfo.entity + ' (' + colCI.addedAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.addedAuditObjectInfo.entity}/entityId/${colCI.addedAuditObjectInfo.id}|}">Mostra</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <a th:text="${colCI.previousAuditObjectInfo.entity + ' (' + colCI.previousAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.previousAuditObjectInfo.entity}/entityId/${colCI.previousAuditObjectInfo.id}|}">Mostra</a>
+				a: <a th:text="${colCI.afterAuditObjectInfo.entity + ' (' + colCI.afterAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.afterAuditObjectInfo.entity}/entityId/${colCI.afterAuditObjectInfo.id}|}">Mostra</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<a th:text="${colCI.removedAuditObjectInfo.entity + ' (' + colCI.removedAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.removedAuditObjectInfo.entity}/entityId/${colCI.removedAuditObjectInfo.id}|}">Mostra</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).ARRAY_ENTITY}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<a th:text="${colCI.addedAuditObjectInfo.entity + ' (' + colCI.addedAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.addedAuditObjectInfo.entity}/entityId/${colCI.addedAuditObjectInfo.id}|}">Mostra</a><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <a th:text="${colCI.previousAuditObjectInfo.entity + ' (' + colCI.previousAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.previousAuditObjectInfo.entity}/entityId/${colCI.previousAuditObjectInfo.id}|}">Mostra</a>
+				a: <a th:text="${colCI.afterAuditObjectInfo.entity + ' (' + colCI.afterAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.afterAuditObjectInfo.entity}/entityId/${colCI.afterAuditObjectInfo.id}|}">Mostra</a>
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<a th:text="${colCI.removedAuditObjectInfo.entity + ' (' + colCI.removedAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${colCI.removedAuditObjectInfo.entity}/entityId/${colCI.removedAuditObjectInfo.id}|}">Mostra</a><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).MAP_VALUE}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<th:block th:text="${colCI.addedAuditObjectInfo?.value}" /><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <th:block th:text="${colCI.previousAuditObjectInfo?.value}" />
+				a: <th:block th:text="${colCI.afterAuditObjectInfo?.value}" />
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<th:block th:text="${colCI.removedAuditObjectInfo?.value}" /><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).SET_VALUE}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.addedAuditObjectInfo?.value}" /><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+				da: <th:block th:text="${colCI.previousAuditObjectInfo?.value}" />
+				a: <th:block th:text="${colCI.afterAuditObjectInfo?.value}" />
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.removedAuditObjectInfo?.value}" /><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).LIST_VALUE}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<th:block th:text="${colCI.addedAuditObjectInfo?.value}" /><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <th:block th:text="${colCI.previousAuditObjectInfo?.value}" />
+				a: <th:block th:text="${colCI.afterAuditObjectInfo?.value}" />
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<th:block th:text="${colCI.removedAuditObjectInfo?.value}" /><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).ARRAY_VALUE}">
+			<th:block th:include="audit/operationCollectionChangeInfoFragment :: audit('show')"></th:block>
+
+			<th:block th:switch="${colCI.auditMapChangeTypeEnum}">
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).ADDED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<th:block th:text="${colCI.addedAuditObjectInfo?.value}" /><br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).CHANGED}">
+			  	<th:block th:text="${colCI.key}"/>
+				da: <th:block th:text="${colCI.previousAuditObjectInfo?.value}" />
+				a: <th:block th:text="${colCI.afterAuditObjectInfo?.value}" />
+				<br/>
+			  </th:block>
+			  <th:block th:case="${T(it.tredi.ecm.audit.AuditCollectionChangeTypeEnum).REMOVED}">
+			  	<th:block th:text="${colCI.key}"/>
+			  	<th:block th:text="${colCI.removedAuditObjectInfo?.value}" /><br/>
+			  </th:block>
+			</th:block>
+		  </th:block>
+
+		</th:block>
+	</th:block>
+
+</body>
+</html>

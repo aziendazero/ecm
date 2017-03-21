@@ -22,7 +22,11 @@ import org.javers.repository.sql.SqlRepositoryBuilder;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import it.tredi.ecm.dao.entity.Anagrafica;
+import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
+import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
+import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
+import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.PersonaEvento;
@@ -64,6 +68,10 @@ public class JaversSqlConfiguration {
 	      .registerValueObject(ValueObjectDefinitionBuilder.valueObjectDefinition(ProgrammaGiornalieroRES.class).withTypeName("ProgrammaGiornalieroRES").build())
 	      .registerValueObject(ValueObjectDefinitionBuilder.valueObjectDefinition(DettaglioAttivitaRES.class).withTypeName("DettaglioAttivitaRES").build())
 	      .registerValueObject(ValueObjectDefinitionBuilder.valueObjectDefinition(Anagrafica.class).withTypeName("Anagrafica").build())
+	      .registerValueObject(ValueObjectDefinitionBuilder.valueObjectDefinition(AnagraficaEventoBase.class).withTypeName("AnagraficaEventoBase").build())
+	      .registerValueObject(ValueObjectDefinitionBuilder.valueObjectDefinition(DettaglioAttivitaFAD.class).withTypeName("DettaglioAttivitaFAD").build())
+	      .registerValueObject(ValueObjectDefinitionBuilder.valueObjectDefinition(FaseAzioniRuoliEventoFSCTypeA.class).withTypeName("FaseAzioniRuoliEventoFSCTypeA").build())
+	      .registerValueObject(ValueObjectDefinitionBuilder.valueObjectDefinition(AzioneRuoliEventoFSC.class).withTypeName("AzioneRuoliEventoFSC").build())
 	      //.registerValueObject(ValueObjectDefinitionBuilder.valueObjectDefinition(Professione.class).withTypeName("Professione").build())
 
 	      //.registerEntity(EntityDefinitionBuilder.entityDefinition(Persona.class).withTypeName("Persona").)

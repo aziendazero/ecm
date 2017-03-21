@@ -9,7 +9,7 @@
 	<th:block th:fragment="audit(type)">
 		<div class="x_content">
 			<table id="datatable-audit"
-				class="table table-striped table-bordered dt-responsive nowrap"
+				class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-ordering-user-search"
 				cellspacing="0" width="100%">
 				<thead>
 					<tr>
@@ -27,9 +27,9 @@
 					<tr th:each="prop: ${auditInfo.auditProperties}">
 						<td th:text="${prop.userName}"></td>
 						<td th:text="${prop.account?.fullNameBase}"></td>
-						<td th:text="${prop.dataModifica == null ? '' : #dates.format(prop.dataModifica, 'yyyyMMddHHmmss')}"></td>
+						<td th:text="${prop.dataModifica}"></td>
 						<td th:text="${prop.label}"></td>
-						<td>
+						<td th:colspan="${prop.auditPropertyChangeInfoTypeEnum == T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).MAP_VALUEOBJECT ? '2' : '1'}">
 							<th:block th:switch="${prop.auditPropertyChangeInfoTypeEnum}">
 							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).VALUE}">
 							     <th:block th:text="${prop.previousAuditObjectInfo?.value}" />
@@ -40,11 +40,13 @@
 							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).ENTITY}">
 								<div th:if="${prop.previousAuditObjectInfo != null}"><a th:text="${prop.previousAuditObjectInfo.entity + ' (' + prop.previousAuditObjectInfov.id + ')'}" th:href="@{|/audit/entity/${prop.previousAuditObjectInfo.entity}/entityId/${prop.previousAuditObjectInfo.id}|}">Mostra</a></div>
 							  </th:block>
-							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).VALUEOBJECT}">
-							  <!-- Non dovrebbe verificarsi -->
+
+
+							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).MAP_VALUEOBJECT}">
+								<th:block th:each="colCI: ${prop.auditCollectionChangeInfo}">
+									<th:block th:text="${colCI.auditMapChangeTypeEnum}" /><br/>
+								</th:block>
 							  </th:block>
-
-
 
 							  <!-- th:block th:case="*">
 								<th:block th:text="${prop.auditPropertyChangeInfoTypeEnum}" /><br/>
@@ -54,7 +56,7 @@
 							  </th:block -->
 							</th:block>
 						</td>
-						<td>
+						<td th:if="${prop.auditPropertyChangeInfoTypeEnum != T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).MAP_VALUEOBJECT}">
 							<th:block th:switch="${prop.auditPropertyChangeInfoTypeEnum}">
 							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).VALUE}">
 							     <th:block th:text="${prop.afterAuditObjectInfo?.value}" />
@@ -65,15 +67,10 @@
 							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).ENTITY}">
 								<div th:if="${prop.afterAuditObjectInfo != null}"><a th:text="${prop.afterAuditObjectInfo.entity + ' (' + prop.afterAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${prop.afterAuditObjectInfo.entity}/entityId/${prop.afterAuditObjectInfo.id}|}">Mostra</a></div>
 							  </th:block>
-							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).VALUEOBJECT}">
-							  <!-- Non dovrebbe verificarsi -->
-							  </th:block>
 
-							  <th:block th:case="*">
-								<th:block th:each="colCI: ${prop.auditCollectionChangeInfo}">
-									<th:block th:include="audit/collectionChangeInfoFragment :: audit('show')"></th:block>
-								</th:block>
-							  </th:block>
+							  <!-- th:block th:case="*">
+								<th:block th:text="${prop.auditPropertyChangeInfoTypeEnum}" />
+							  </th:block -->
 
 							</th:block>
 						</td>
@@ -83,31 +80,15 @@
 				</tbody>
 			</table>
 
+
 				<br/><br/><br/><br/>
-				<!-- div class="item form-group">
+
+				<div class="item form-group">
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="white-space: pre-wrap;">
 						<div class="value" th:if="${auditInfo.fullText != null and !#strings.isEmpty(auditInfo.fullText)}" th:text="${auditInfo.fullText}"></div>
 					</div>
-				</div -->
+				</div>
 
-			<script th:inline="javascript">
-			/*<![CDATA[*/
-			    $(document).ready(function() {
-					$('#datatable-audit').DataTable( {
-						"iDisplayLength": 50,
-						//"paging":   false,
-						"order": [[ 2, "desc" ], [ 3, "asc" ]],
-				        columnDefs: [ {
-				          targets: 2,
-				          render: $.fn.dataTable.render.moment('YYYYMMDDHHmmss',  'DD/MM/YYYY HH:mm:ss' )
-				          //,
-				          //orderData: [ 2, 3 ]
-				        } ]
-				      } );
-			    });
-
-			/*]]>*/
-			</script>
 
 		</div>
 	</th:block>

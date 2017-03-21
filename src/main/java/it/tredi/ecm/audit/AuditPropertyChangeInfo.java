@@ -21,155 +21,22 @@ public class AuditPropertyChangeInfo {
 	private List<AuditLabelInfo> auditLabelInfos;
 	private String propertyLabelInfo;
 	private String label;
+	private String propertyFullPath;
 
-	private String entity;
-	private Long previousId;
-	private Long afterId;
+	private AuditObjectValueInfo previousAuditObjectInfo;
+	private AuditObjectValueInfo afterAuditObjectInfo;
+	//private String entity;
+	//private Long previousId;
+	//private Long afterId;
+	private List<AuditCollectionChangeInfo> auditCollectionChangeInfo = new ArrayList<AuditCollectionChangeInfo>();
 
 	//Per ora tenere
 	private ValueChange valueChange;
 	private ReferenceChange referenceChange;
 	//private ReferenceChange referenceChange;
 
-
-//	JaversType javersType;
-//	Javers javers;
-
-//	private String propertyOwnerObject;
-//
-//	private Class rootClass;
-//	private String fullPath;
-//	private String fullPathForLabel;
-//
-//
-//	private CommitMetadata commitMetadata;
-
-
 	AuditPropertyChangeInfo() {
 		auditLabelInfos = new ArrayList<AuditLabelInfo>();
-	}
-
-//	AuditPropertyChangeInfo(ValueChange valueChange, Javers javers, JaversType javersType, Account account) {
-//		this.valueChange = valueChange;
-//		this.account = account;
-//		this.javers = javers;
-//		this.javersType = javersType;
-//		if(valueChange.getCommitMetadata().isPresent())
-//			this.commitMetadata = valueChange.getCommitMetadata().get();
-//		//valueChange.getAffectedObject()
-//
-//		auditLabelInfos = new ArrayList<AuditLabelInfo>();
-//		setLabel(valueChange.getAffectedGlobalId(), valueChange.getPropertyName());
-//	}
-
-//	private void setLabel(GlobalId globalId, String propertyName) {
-//		LOGGER.info("propertyName: " + propertyName);
-//		propertyLabel = AuditUtils.getTypeNameWithoutPackage(globalId.getTypeName()) + "." + propertyName;
-//		//    InstanceId, UnboundedValueObjectId, ValueObjectId
-//		if(globalId instanceof InstanceId) {
-//			//propertyOwnerObject = AuditUtils.getTypeNameWithoutPackage(globalId.getTypeName());
-//			//LOGGER.info("propertyOwnerObject: " + propertyOwnerObject);
-//			InstanceId instanceId = (InstanceId)globalId;
-//			LOGGER.info("instanceId.getCdoId().toString(): " + instanceId.getCdoId().toString());
-//		} else if (globalId instanceof ValueObjectId) {
-//			ValueObjectId valueObjectId = (ValueObjectId)globalId;
-//			propertyOwnerObject = AuditUtils.getTypeNameWithoutPackage(valueObjectId.getOwnerId().getTypeName());
-//			LOGGER.info("propertyOwnerObject: " + propertyOwnerObject);
-//			//Ricavo l'albero delle label
-//			// esempi getFragment()
-//			// programma/0						propertyName: giorno		propertyOwnerObject: ProgrammaGiornalieroRES
-//			// programma/1/sede					propertyName: provincia		propertyOwnerObject: SedeEvento
-//			// programma/0/programma/1			propertyName: orarioInizio	propertyOwnerObject: DettaglioAttivitaRES
-//
-//			//splitto
-//			if(valueObjectId.getFragment().isEmpty()) {
-//				propertyLabel = propertyOwnerObject + "." + propertyName;
-//			} else {
-//				String[] split = valueObjectId.getFragment().split("/");
-//				String labelPath = propertyOwnerObject;
-//				ManagedType prevEntType = (ManagedType)javersType;
-//				for(int i = 0; i < split.length; i++) {
-//					Property prop = null;
-//					try {
-//						prop = prevEntType.getProperty(split[i]);
-//					} catch (JaversException e) {
-//
-//					}
-//					if(prop != null) {
-//						LOGGER.debug("prop.getName(): " + prop.getName());
-//						AuditLabelInfo auditLabelInfo = new AuditLabelInfo();
-//
-//						Type type = prop.getMember().getGenericResolvedType();
-//					    if(type != null) {
-//							if (type instanceof ParameterizedType) {
-//						        ParameterizedType pType = (ParameterizedType)type;
-//						        LOGGER.debug("Raw type: " + pType.getRawType() + " - ");
-//						        LOGGER.debug("Type args: " + pType.getActualTypeArguments()[0]);
-//						        prevEntType = javers.getTypeMapping(pType.getActualTypeArguments()[0]);
-//						        //TODO
-//						        //Controllare se e' una lista e fare quanto segue solo in tal caso
-//						        if(i + 1 < split.length) {
-//						        	i++;
-//						        	//se split[i] e' un intero è la posizione nella lista partendo da 0 lo aumento di 1
-//						        	String identifier = split[i];
-//						        	try {
-//						                int intIdentifier = Integer.parseInt(identifier);
-//						                identifier = Integer.toString(intIdentifier + 1);
-//						            } catch(Exception e) {
-//						            	//Non è un intero
-//						            }
-//						        	auditLabelInfo.setObjectIdentifier(identifier);
-//						        }
-//						    } else {
-//						    	LOGGER.debug("Type: " + prop.getMember().getGenericResolvedType());
-//						    }
-//							if(!labelPath.isEmpty())
-//								labelPath += ".";
-//							labelPath += prop.getName();
-//							auditLabelInfo.setPropertyLabel(labelPath);
-//
-//							auditLabelInfos.add(auditLabelInfo);
-//					    }
-//					}
-//
-////					if ((i % 2) == 0) {
-////					    //pari
-////						//auditLabelInfo.setIdentifierType(IdentifierTypeEnum.);;
-////
-////						auditLabelInfo = new AuditLabelInfo();
-////					}
-////					else {
-////					    //dispari
-////					}
-//				}
-//			}
-//
-//			LOGGER.info("valueObjectId.getFragment(): " + valueObjectId.getFragment());
-//			LOGGER.info("valueObjectId.getTypeName(): " + valueObjectId.getTypeName());
-//			LOGGER.info("valueObjectId.value(): " + valueObjectId.value());
-//			LOGGER.info("valueObjectId.getOwnerId().toString(): " + valueObjectId.getOwnerId().toString());
-//			//LOGGER.debug(valueObjectId.hasOwnerOfType(entityType));
-//		}
-//	}
-
-//	public LocalDateTime getDataModifica() {
-//		return commitMetadata.getCommitDate();
-//	}
-
-	public String getPreviousValue() {
-		if(valueChange != null) {
-			if(valueChange.getLeft() != null)
-				return valueChange.getLeft().toString();
-		}
-
-		return null;
-	}
-
-	public String getAfterValue() {
-		if(valueChange != null)
-			return valueChange.getRight().toString();
-
-		return null;
 	}
 
 	public String getExtraInfo() {
@@ -260,27 +127,36 @@ public class AuditPropertyChangeInfo {
 		this.auditPropertyChangeInfoTypeEnum = auditPropertyChangeInfoTypeEnum;
 	}
 
-	public Long getPreviousId() {
-		return previousId;
+	public AuditObjectValueInfo getPreviousAuditObjectInfo() {
+		return previousAuditObjectInfo;
 	}
 
-	public void setPreviousId(Long previousId) {
-		this.previousId = previousId;
+	public void setPreviousAuditObjectInfo(AuditObjectValueInfo previousAuditObjectInfo) {
+		this.previousAuditObjectInfo = previousAuditObjectInfo;
 	}
 
-	public Long getAfterId() {
-		return afterId;
+	public AuditObjectValueInfo getAfterAuditObjectInfo() {
+		return afterAuditObjectInfo;
 	}
 
-	public void setAfterId(Long afterId) {
-		this.afterId = afterId;
+	public void setAfterAuditObjectInfo(AuditObjectValueInfo afterAuditObjectInfo) {
+		this.afterAuditObjectInfo = afterAuditObjectInfo;
 	}
 
-	public String getEntity() {
-		return entity;
+	public List<AuditCollectionChangeInfo> getAuditCollectionChangeInfo() {
+		return auditCollectionChangeInfo;
 	}
 
-	public void setEntity(String entity) {
-		this.entity = entity;
+	public void setAuditCollectionChangeInfo(List<AuditCollectionChangeInfo> auditCollectionChangeInfo) {
+		this.auditCollectionChangeInfo = auditCollectionChangeInfo;
 	}
+
+	public String getPropertyFullPath() {
+		return propertyFullPath;
+	}
+
+	public void setPropertyFullPath(String propertyFullPath) {
+		this.propertyFullPath = propertyFullPath;
+	}
+
 }

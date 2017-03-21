@@ -14,7 +14,7 @@ public class AuditInfo {
 
 	private List<AuditPropertyChangeInfo> auditProperties = new ArrayList<AuditPropertyChangeInfo>();
 
-	private String fullText;
+	//private String fullText;
 
 	public AuditInfo(Long entityId, Class entityClass){
 		this.entityId = entityId;
@@ -37,13 +37,13 @@ public class AuditInfo {
 		this.entityClass = entityClass;
 	}
 
-	public String getFullText() {
-		return fullText;
-	}
-
-	public void setFullText(String fullText) {
-		this.fullText = fullText;
-	}
+//	public String getFullText() {
+//		return fullText;
+//	}
+//
+//	public void setFullText(String fullText) {
+//		this.fullText = fullText;
+//	}
 
 	public List<AuditPropertyChangeInfo> getAuditProperties() {
 		return auditProperties;

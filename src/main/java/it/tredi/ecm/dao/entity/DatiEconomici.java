@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.Embeddable;
 
+import org.javers.core.metamodel.annotation.TypeName;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.annotation.NumberFormat.Style;
 
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Embeddable
+@TypeName("DatiEconomici")
 @Getter
 @Setter
 public class DatiEconomici {

@@ -4,11 +4,14 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import org.javers.core.metamodel.annotation.TypeName;
+
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFADEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoInnerFADEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("VerificaApprendimentoFAD")
 @Getter
 @Setter
 @Embeddable

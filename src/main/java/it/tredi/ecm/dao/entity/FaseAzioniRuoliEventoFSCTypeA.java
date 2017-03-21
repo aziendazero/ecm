@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum;
@@ -29,6 +31,7 @@ public class FaseAzioniRuoliEventoFSCTypeA extends BaseEntity {
 	@JoinColumn(name="fase_id")
 	private List<AzioneRuoliEventoFSC> azioniRuoli = new ArrayList<AzioneRuoliEventoFSC>();
 
+	@DiffIgnore
 	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "evento_id")

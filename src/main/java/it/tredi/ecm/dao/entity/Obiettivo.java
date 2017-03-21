@@ -5,11 +5,14 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import org.javers.core.metamodel.annotation.TypeName;
+
 import it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@TypeName("Obiettivo")
 @Getter
 @Setter
 public class Obiettivo extends BaseEntity{

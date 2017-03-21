@@ -30,6 +30,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.javers.core.metamodel.annotation.ShallowReference;
@@ -111,7 +112,9 @@ public class Evento extends BaseEntity{
 	 *
 	 * 		*EVENTO inserito come RIEDIZIONE -> PREFIX dell'evento padre + #edizione
 	 * */
+	@DiffIgnore
 	private String prefix;
+	@DiffIgnore
 	private int edizione = 1;
 	public String getCodiceIdentificativo(){
 		if(edizione > 1)
@@ -140,12 +143,17 @@ public class Evento extends BaseEntity{
 	private Accreditamento accreditamento;
 
 	private String professioniEvento;
+	//@DiffIgnore
 	@ManyToMany
 	@JoinTable(name = "evento_discipline",
 				joinColumns = @JoinColumn(name = "evento_id"),
 				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
+
+	//Per Audit
+//	@Transient
+//	private Set<String> disciplineAudit = new HashSet<String>();
 
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
@@ -171,6 +179,7 @@ public class Evento extends BaseEntity{
 	//true -> dopo fineEvento
 	//false -> dopo aver pagato
 	//false -> se passano i 90 gg e non ha fatto nulla
+	@DiffIgnore
 	private Boolean sponsorUploaded = false;
 	//true -> dopo pagamento (Provider B) and attachSponsor fatto
 	//true -> dopo fineEvento (Provider A) and attachSponsor fatto
@@ -183,8 +192,10 @@ public class Evento extends BaseEntity{
 
 	@Enumerated(EnumType.STRING)
 	private EventoStatoEnum stato;//vedi descrizione in EventoStatoEnum
+	@DiffIgnore
 	private boolean validatorCheck = false; //(durante il salvataggio check di un flag per sapere se sono stati rispettati tutti i vincoli del validator)
 
+	@DiffIgnore
 	@OneToMany(mappedBy="evento", cascade=CascadeType.ALL)
 	@OrderBy("data_invio DESC")
 	private Set<RendicontazioneInviata> inviiRendicontazione = new HashSet<RendicontazioneInviata>();
@@ -200,6 +211,7 @@ public class Evento extends BaseEntity{
 	@OneToOne
 	private File reportPartecipantiCSV;
 
+	@DiffIgnore
 	@OneToOne //valorizzato solo se è la realizzazione di un evento descritto nel piano formativo
 	private EventoPianoFormativo eventoPianoFormativo;
 	public boolean isEventoDaPianoFormativo(){
@@ -310,6 +322,7 @@ public class Evento extends BaseEntity{
 
 	private Boolean autorizzazionePrivacy;
 
+	@DiffIgnore
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="evento", orphanRemoval=true)
 	private Set<AnagrafeRegionaleCrediti> anagrafeRegionaleCrediti = new HashSet<AnagrafeRegionaleCrediti>();
 

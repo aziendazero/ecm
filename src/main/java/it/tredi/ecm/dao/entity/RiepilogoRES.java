@@ -14,7 +14,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyEnumerated;
+import javax.persistence.Transient;
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.javers.core.metamodel.annotation.TypeName;
 
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
@@ -33,12 +35,23 @@ public class RiepilogoRES {
 	@Enumerated(EnumType.STRING)
 	private Set<ObiettiviFormativiRESEnum> obiettivi = new HashSet<ObiettiviFormativiRESEnum>();
 
+	//Possibile modifica per formattare il dato in Audit
+//	@Transient
+//	private Map<String, String> metodologieAudit = new HashMap<String, String>();
+
+//	public void updatemetodologieAudit() {
+//		metodologie.forEach((k, v) -> {
+//			metodologieAudit.put(k.getNome(), k.getMetodologia().getNome() + " - " + v.floatValue());
+//		});
+//	}
+//	@DiffIgnore
 	@ElementCollection
 	@MapKeyColumn(name="key_metodologia")
 	@MapKeyEnumerated(EnumType.STRING)
     @Column(name="value")
 	@CollectionTable(name="riepilogo_RES", joinColumns=@JoinColumn(name="riepilogo_res_id"))
 	private Map<MetodologiaDidatticaRESEnum, Float> metodologie = new HashMap<MetodologiaDidatticaRESEnum, Float>();
+
 
 	private Float totaleOreFrontali = 0.0f;
 	private Float totaleOreInterattive = 0.0f;

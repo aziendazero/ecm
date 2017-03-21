@@ -6,27 +6,30 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import org.javers.core.metamodel.annotation.TypeName;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@TypeName("Disciplina")
 @Getter
 @Setter
 public class Disciplina extends BaseEntity{
 	private String nome;
-	
+
 	@Column(name ="codice_cogeaps")
-	private String codiceCogeaps;	
-	
+	private String codiceCogeaps;
+
 	@OneToOne
 	private Professione professione;
-	
+
 	public Disciplina(){}
 	public Disciplina(String nome, String codiceCogeaps){
 		this.nome = nome;
 		this.codiceCogeaps = codiceCogeaps;
 	}
-	
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {

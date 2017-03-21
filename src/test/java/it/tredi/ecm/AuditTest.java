@@ -35,6 +35,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import it.tredi.ecm.audit.AuditInfo;
+import it.tredi.ecm.audit.EcmAuditInfoChangeLog;
 import it.tredi.ecm.audit.EcmTextChangeLog;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
@@ -46,7 +48,11 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
+import it.tredi.ecm.service.AccountService;
+import it.tredi.ecm.service.AccountServiceImpl;
 import it.tredi.ecm.service.AnagraficaEventoService;
+import it.tredi.ecm.service.AuditService;
+import it.tredi.ecm.service.AuditServiceImpl;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.ProviderService;
 
@@ -99,7 +105,7 @@ public class AuditTest {
 	}
 
 	@Test
-	//@Ignore
+	@Ignore
 	public void eventoAuditForCommit() throws Exception {
 		System.out.println("TypeMapping(PersonaEvento.class): " + javers.getTypeMapping(PersonaEvento.class).prettyPrint());
 
@@ -109,6 +115,15 @@ public class AuditTest {
 		eventoAuditForCommit(entityId, commitId);
 
 		System.out.println("FATTO");
+	}
+
+	@Test
+	//@Ignore
+	public void accreditamentoAuditToFile() throws Exception {
+		Long entityId = 1225L;
+		auditEntity("AccreditamentoAudit", entityId, false, null, null);
+
+		System.out.println("accreditamentoCommitToFile FATTO");
 	}
 
 	private void eventoAuditForCommit(Long eventoId, CommitId commitId) throws Exception {
@@ -206,5 +221,76 @@ public class AuditTest {
         writer.println(changeLog);
         writer.close();
     }
+
+	private void auditEntity(String entity, Long entityId, Boolean lastCommit, Long commitMajorId, Integer commitMinorId){
+		//LOGGER.info(Utils.getLogMessage("GET /audit/entity/" + entity + "/id/" + entityId));
+
+		boolean showLastCommit = false;
+		if(lastCommit != null){
+			showLastCommit = lastCommit.booleanValue();
+		}
+
+		try {
+			Class entityClass = null;
+			if(entity.contains(".")) {
+				//Classe completa di package
+				entityClass = Class.forName(entity);
+			} else {
+				//Classe senza package
+				if(entity.contains("Audit"))
+					entityClass = Class.forName("it.tredi.ecm.audit.entity." + entity);
+				else
+					entityClass = Class.forName("it.tredi.ecm.dao.entity." + entity);
+			}
+			//Audit entity
+			CommitId commitId = null;
+			if(showLastCommit) {
+				JqlQuery jqlQuerySnapshot = QueryBuilder
+						.byInstanceId(entityId,entityClass)
+						.limit(1)
+						.withNewObjectChanges(true)
+						.withChildValueObjects()
+						.build();
+				List<CdoSnapshot> lastSnapshotEventoList = javers.findSnapshots(jqlQuerySnapshot);
+				System.out.println("snapshots1.size() - " + lastSnapshotEventoList.size());
+				if(lastSnapshotEventoList.size() != 0) {
+					commitId = lastSnapshotEventoList.get(0).getCommitId();
+					System.out.println("commitId - " + commitId);
+				}
+			}
+			//per debug
+			if(commitMajorId != null && commitMinorId != null)
+				commitId = new CommitId(commitMajorId, commitMinorId);
+
+			String changeLog = null;
+			//AuditInfo auditInfo = null;
+			if(commitId != null) {
+				List<Change> changes = javers.findChanges(QueryBuilder
+						.byInstanceId(entityId,entityClass)
+						.withCommitId(commitId)
+						.withNewObjectChanges(true)
+						.withChildValueObjects()
+						.build());
+				changeLog = javers.processChangeList(changes, new EcmTextChangeLog(entityId, entityClass));
+				//auditInfo = javers.processChangeList(changes, new EcmAuditInfoChangeLog(entityClass, entityId, javers, auditService, accountService));
+			} else {
+				List<Change> changes = javers.findChanges(QueryBuilder
+						.byInstanceId(entityId,entityClass)
+						.withNewObjectChanges(true)
+						.withChildValueObjects()
+						.build());
+				changeLog = javers.processChangeList(changes, new EcmTextChangeLog(entityId, entityClass));
+				//auditInfo = javers.processChangeList(changes, new EcmAuditInfoChangeLog(entityClass, entityId, javers, auditService, accountService));
+			}
+
+			//auditInfo.setFullText(changeLog);
+			saveToFile("c:\\JAVERS_TXT_DIFF_BY_COMMIT" + entity + "-" + entityId + ".txt", changeLog);
+			//printAuditInfo("c:\\JAVERS_ECM_DIFF_BY_COMMIT" + entity + "-" + entityId + ".csv", auditInfo);
+
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
 }

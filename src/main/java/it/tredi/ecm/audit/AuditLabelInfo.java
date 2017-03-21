@@ -7,11 +7,8 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.tredi.ecm.dao.entity.Account;
 
 public class AuditLabelInfo {
-	private static Logger LOGGER = LoggerFactory.getLogger(AuditLabelInfo.class);
-
 	private String propertyLabel;
 	//private IdentifierTypeEnum identifierType;
 	private String objectIdentifier;
@@ -37,5 +34,9 @@ public class AuditLabelInfo {
 		this.objectIdentifier = objectIdentifier;
 	}
 
+	@Override
+	public String toString() {
+		return "AuditLabelInfo [propertyLabel: " + propertyLabel + "; objectIdentifier: " + objectIdentifier + "]";
+	}
 
 }
