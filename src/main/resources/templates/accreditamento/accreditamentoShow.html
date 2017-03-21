@@ -464,6 +464,7 @@
   									<li><a class="ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni" th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button"></a></li>
   									<li><a th:text="#{label.mostra_storico_valutazioni}" onclick="showStorico()" th:if="${accreditamentoWrapper.canShowValutazioneStorico}"></a></li>
   									<li><a class="ajaxCallShowAllPiano" th:text="#{label.mostra_riepilogo_piano_formativo}" data-toggle="modal" data-target=".modal-showPianoAll"></a></li>
+  									<li><a th:text="#{label.mostra_registro_operazioni}" th:href="@{|/audit/entity/AccreditamentoAudit/entityId/${accreditamentoWrapper.accreditamento.id}|}"></a></li>
 								</ul>
 							</div>
 

@@ -509,4 +509,16 @@ public class Evento extends BaseEntity {
 			return false;
 		return true;
 	}
+
+	public String getAuditEntityType() throws Exception {
+		switch(this.proceduraFormativa) {
+		case FAD:
+			return "EventoFAD";
+		case FSC:
+			return "EventoFSC";
+		case RES:
+			return "EventoRES";
+		}
+		throw new Exception("Nuovo tipo di evento: "+ this.proceduraFormativa +" NON gestito");
+	}
 }
