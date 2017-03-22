@@ -346,7 +346,16 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 	        addTableValutazione(verbaleVal, table);
 	        document.add(table);
         }
+
+        //ENDING
+        Paragraph par = new Paragraph();
+        par.setAlignment(Element.ALIGN_LEFT);
+        par.setFont(fontValoreCampo);
+        par.add(messageSource.getMessage("label.ending_verbale", null, Locale.getDefault()));
+        document.add(par);
+
 	}
+
 
 	private void addCellLabelCampoValoreDelegato(String labelCampo, DelegatoValutazioneSulCampo delegato, PdfPTable table) {
 		if(delegato != null)

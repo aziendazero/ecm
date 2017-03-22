@@ -112,8 +112,12 @@ public class PdfAnagrafeRegionaleServiceImpl implements PdfAnagrafeRegionaleServ
 
 	private void writePdf(Document document, Set<AnagrafeRegionaleCrediti> lista, BigDecimal totaleCrediti, Integer annoRiferimento, String codiceFiscale) throws Exception {
 
+		AnagrafeRegionaleCrediti primo = lista.iterator().next();
+		String nome = primo.getNome();
+		String cognome = primo.getCognome();
+
 		//TITOLO
-		Object[] values = {codiceFiscale, intFormatter.print(annoRiferimento, Locale.getDefault())};
+		Object[] values = {codiceFiscale, nome, cognome, intFormatter.print(annoRiferimento, Locale.getDefault())};
         Paragraph parTitolo = new Paragraph();
         parTitolo.setAlignment(Element.ALIGN_LEFT);
         parTitolo.setFont(fontTitolo);
