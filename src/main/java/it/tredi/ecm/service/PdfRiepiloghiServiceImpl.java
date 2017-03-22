@@ -790,7 +790,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         parComitato.setFont(fontParTitolo);
         parComitato.add(messageSource.getMessage("label.componenti_comitato_scientifico", null, Locale.getDefault()));
         document.add(parComitato);
-        //SEDE LEGALE
+        //COORDINATORE
         Persona coordinatore = provider.getCoordinatoreComitatoScientifico();
         if(coordinatore != null) {
 	        List<FieldValutazioneAccreditamento> coordinatoreVal = getOrderedFieldValutazioneBySubsetAndObjectRef(valutazione.getValutazioni(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO, coordinatore.getId());
@@ -806,7 +806,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		        document.add(table);
 	        }
         }
-        //SEDI OPERATIVE
+        //COMPONENTI
         for(Persona p : provider.getComponentiComitatoScientifico()) {
         	if(!p.isCoordinatoreComitatoScientifico()) {
                 List<FieldValutazioneAccreditamento> componenteVal = getOrderedFieldValutazioneBySubsetAndObjectRef(valutazione.getValutazioni(), SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO, p.getId());

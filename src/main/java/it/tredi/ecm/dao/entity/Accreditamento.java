@@ -308,11 +308,23 @@ public class Accreditamento extends BaseEntityDefaultId{
 	}
 
 	public boolean isProcedimentoAttivo(){
-		if(dataScadenza != null && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
+		if(dataScadenza != null && this.isStatoValido() && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;
 		return false;
 	}
 
+	private boolean isStatoValido() {
+		switch(stato) {
+		case DINIEGO:
+			return false;
+		case CONCLUSO:
+			return false;
+		case CANCELLATO:
+			return false;
+		default:
+			return true;
+		}
+	}
 	public boolean isDomandaAttiva(){
 		if(dataFineAccreditamento != null && (dataFineAccreditamento.isAfter(LocalDate.now()) || dataFineAccreditamento.isEqual(LocalDate.now())) )
 			return true;

@@ -3,6 +3,7 @@ package it.tredi.ecm.service;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -138,117 +139,44 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 	public Set<FieldValutazioneAccreditamento> getValutazioniDefault(Accreditamento accreditamento) {
 		Set<FieldValutazioneAccreditamento> defaults = new HashSet<FieldValutazioneAccreditamento>();
 
-		/*DATI DELL'ORGANIZZATORE (TAB1)*/
-		//provider
-		for(IdFieldEnum idFEProvider : IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER)) {
-			if(idFEProvider.getIdEcm() != -1) {
+		//campi senza object ref.
+		for(IdFieldEnum id : IdFieldEnum.values()) {
+			if(id.isDefaultVal()) {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setEsito(true);
-				field.setIdField(idFEProvider);
+				field.setIdField(id);
 				save(field);
 				defaults.add(field);
 			}
 		}
-		//legale rappresentante
-		for(IdFieldEnum idFELegale : IdFieldEnum.getAllFromIdToId(9, 15)) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setEsito(true);
-			field.setIdField(idFELegale);
-			save(field);
-			defaults.add(field);
-		}
-		//delegato legale rappresentante
-		if(accreditamento.getProvider().getDelegatoLegaleRappresentante() != null) {
-			for(IdFieldEnum idFEDelegato: IdFieldEnum.getAllFromIdToId(18, 23)) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setEsito(true);
-				field.setIdField(idFEDelegato);
-				save(field);
-				defaults.add(field);
-			}
-		}
+
+		//campi ripetibili (con object ref.)
 		//sedi
 		for(Sede sede : accreditamento.getProvider().getSedi()) {
-			for(IdFieldEnum idFESede : IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE)) {
+			for(IdFieldEnum idSede : IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE)) {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setEsito(true);
-				field.setIdField(idFESede);
+				field.setIdField(idSede);
 				field.setObjectReference(sede.getId());
 				save(field);
 				defaults.add(field);
 			}
 		}
-		//dati accreditamento
-		for(IdFieldEnum idFEDati : IdFieldEnum.getAllFromIdToId(33, 36)) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setEsito(true);
-			field.setIdField(idFEDati);
-			save(field);
-			defaults.add(field);
-		}
-
-		/*DATI DEI RESPONSABILI*/
-		//resp. segreteria
-		for(IdFieldEnum idFERespSegre : IdFieldEnum.getAllFromIdToId(44, 48)) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setEsito(true);
-			field.setIdField(idFERespSegre);
-			save(field);
-			defaults.add(field);
-		}
-		//resp. amministrazione
-		for(IdFieldEnum idFERespAmm : IdFieldEnum.getAllFromIdToId(51, 55)) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setEsito(true);
-			field.setIdField(idFERespAmm);
-			save(field);
-			defaults.add(field);
-		}
-		//resp. sis. informatico
-		for(IdFieldEnum idFERespSisInfo : IdFieldEnum.getAllFromIdToId(58, 62)) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setEsito(true);
-			field.setIdField(idFERespSisInfo);
-			save(field);
-			defaults.add(field);
-		}
-		//resp. qualità
-		for(IdFieldEnum idFERespQual : IdFieldEnum.getAllFromIdToId(65, 69)) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setEsito(true);
-			field.setIdField(idFERespQual);
-			save(field);
-			defaults.add(field);
-		}
 		//componenti comitato
 		for(Persona persona : accreditamento.getProvider().getComponentiComitatoScientifico()) {
-			for(IdFieldEnum idFECompScie : IdFieldEnum.getAllFromIdToId(72, 76)) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setEsito(true);
-				field.setIdField(idFECompScie);
-				field.setObjectReference(persona.getId());
-				save(field);
-				defaults.add(field);
+			for(IdFieldEnum idComponenteScietifico : IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO)) {
+				if(idComponenteScietifico.isDefaultVal()) {
+					FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+					field.setAccreditamento(accreditamento);
+					field.setEsito(true);
+					field.setIdField(idComponenteScietifico);
+					field.setObjectReference(persona.getId());
+					save(field);
+					defaults.add(field);
+				}
 			}
-			//aggiunge anche il flag isCoordinatore
-			IdFieldEnum idFlagCoordinatore = IdFieldEnum.getIdField("persona.coordinatore");
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setEsito(true);
-			field.setIdField(idFlagCoordinatore);
-			field.setObjectReference(persona.getId());
-			save(field);
-			defaults.add(field);
 		}
 
 		/*ALLEGATI*/
@@ -356,6 +284,19 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 			}
 		}
 		return allFieldsValutazione;
+	}
+
+	@Override
+	public Set<FieldValutazioneAccreditamento> getValutazioniNonDefault(Valutazione valutazione) {
+		Set<FieldValutazioneAccreditamento> result = new HashSet<FieldValutazioneAccreditamento>();
+		result.addAll(valutazione.getValutazioni());
+		Iterator<FieldValutazioneAccreditamento> iter = result.iterator();
+		while(iter.hasNext()) {
+			FieldValutazioneAccreditamento fva = iter.next();
+			if(fva.getIdField().isDefaultVal())
+				iter.remove();
+		}
+		return result;
 	}
 
 }

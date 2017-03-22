@@ -27,4 +27,6 @@ public interface FieldValutazioneAccreditamentoService {
 	//debug mode
 	public Set<FieldValutazioneAccreditamento> createAllFieldValutazioneAndSetEsito(boolean b, Accreditamento accreditamento);
 	public Set<FieldValutazioneAccreditamento> createAllFieldValutazioneAndSetEsitoAndEnabled(boolean b, boolean c, Accreditamento accreditamento);
+	public Set<FieldValutazioneAccreditamento> getValutazioniNonDefault(Valutazione valutazione);
+
 }
