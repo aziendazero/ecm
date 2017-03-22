@@ -43,8 +43,10 @@ public class AccreditamentoAudit {
 	public AccreditamentoAudit(Accreditamento accreditamento){
 		this.id = accreditamento.getId();
 		this.tipoDomanda = accreditamento.getTipoDomanda();
-		this.datiAccreditamento = new DatiAccreditamentoAudit(accreditamento.getDatiAccreditamento());
-		this.pianoFormativo = new PianoFormativoAudit(accreditamento.getPianoFormativo());
+		if(accreditamento.getDatiAccreditamento() != null)
+			this.datiAccreditamento = new DatiAccreditamentoAudit(accreditamento.getDatiAccreditamento());
+		if(accreditamento.getPianoFormativo() != null)
+			this.pianoFormativo = new PianoFormativoAudit(accreditamento.getPianoFormativo());
 	}
 
 	@Override

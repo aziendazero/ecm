@@ -96,6 +96,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 		this.adminPassword = adminPassword;
 	}
 
+	@Override
 	public String getSystemUsername() {
 		return systemUsername;
 	}

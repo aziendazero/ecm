@@ -416,16 +416,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//detacha e copia: da questo momento valutazione si riferisce alla copia storicizzata
 		valutazioneService.copiaInStorico(valutazione);
 
-		if(accreditamento.isProvvisorio()) {
-			//il referee azzera il suo contatore di valutazioni non date consecutivamente e svuota la lista
-			if (user.isReferee()) {
-				user.setValutazioniNonDate(0);
-				user.setDomandeNonValutate(new HashSet<Accreditamento>());
-				accountRepository.save(user);
-				workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
-			}
-			//la segreteria crea le valutazioni per i referee
-			if (user.isSegreteria()){
+		//il referee azzera il suo contatore di valutazioni non date consecutivamente e svuota la lista
+		//(REFEREE CHIAMA QUESTO METODO SOLO DAL PROVVISORIO)
+		if (user.isReferee()) {
+			user.setValutazioniNonDate(0);
+			user.setDomandeNonValutate(new HashSet<Accreditamento>());
+			accountRepository.save(user);
+			workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
+		}
+		//la segreteria
+		else {
+			if(accreditamento.isProvvisorio()) {
+				//crea le valutazioni per i referee
 				List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
 				for (Account a : refereeGroup) {
 					Valutazione valutazioneReferee = new Valutazione();
@@ -435,7 +437,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					valutazioneReferee.setAccreditamento(accreditamento);
 					valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
 					valutazioneService.save(valutazioneReferee);
-					//valutazioneService.saveAndFlush(valutazioneReferee);
 					emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 					usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
 				}
@@ -446,45 +447,46 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
 				Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
 				workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
-			}
-		} else if(accreditamento.isStandard()) {
-			Valutazione valutazioneReload = valutazioneService.getValutazione(valutazioneId);
-			//svuoto e riabilito la valutazione della segreteria (comunque salvata in storico)
-			valutazioneReload.setDataValutazione(null);
-			valutazioneReload.setDataOraScadenzaPossibilitaValutazione(null);
-			valutazioneReload.setValutazioneComplessiva(null);
-			valutazioneReload.getValutazioni().clear();
-			valutazioneReload.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
-			valutazioneService.save(valutazioneReload);
 
-			//segretario valutatore
-			if(verbale != null) {
-				verbale.setValutatore(Utils.getAuthenticatedUser().getAccount());
-				accreditamento.setVerbaleValutazioneSulCampo(verbale);
-			}
-			//accreditamentoRepository.save(accreditamento);
-			saveAndAudit(accreditamento);
+			} else if(accreditamento.isStandard()) {
+				Valutazione valutazioneReload = valutazioneService.getValutazione(valutazioneId);
+				//svuoto e riabilito la valutazione della segreteria (comunque salvata in storico)
+				valutazioneReload.setDataValutazione(null);
+				valutazioneReload.setDataOraScadenzaPossibilitaValutazione(null);
+				valutazioneReload.setValutazioneComplessiva(null);
+				valutazioneReload.getValutazioni().clear();
+				valutazioneReload.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
+				valutazioneService.save(valutazioneReload);
 
-
-			//è qui che è stata settala la data di valutazione del verbale e tutti i suoi componenti???
-			// risposta: sì, ma rimane modificabile per tutta la durata di valutazione sul campo
-			Set<String> dst = new HashSet<String>();
-			if(verbale != null){
-				if(verbale.getTeamLeader() != null)
-					dst.add(verbale.getTeamLeader().getEmail());
-				if(verbale.getReferenteInformatico() != null)
-					dst.add(verbale.getReferenteInformatico().getEmail());
-
-				if(verbale.getComponentiSegreteria() != null){
-					for(Account a : verbale.getComponentiSegreteria())
-						dst.add(a.getEmail());
+				//segretario valutatore
+				if(verbale != null) {
+					verbale.setValutatore(Utils.getAuthenticatedUser().getAccount());
+					accreditamento.setVerbaleValutazioneSulCampo(verbale);
 				}
-				emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
-			}
+				//accreditamentoRepository.save(accreditamento);
+				saveAndAudit(accreditamento);
 
-			//non deve creare un task di valutazione per il team leader.. deve solo mandare il flusso in valutazione sul campo con lo stesso
-			//attore (segretario) che deve inserire la valutazione sul campo.. solo se l'accreditamento va in integrazione il teamleader deve valutare
-			workflowService.eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(accreditamento, verbale.getTeamLeader().getUsernameWorkflow());
+
+				//è qui che è stata settala la data di valutazione del verbale e tutti i suoi componenti???
+				// risposta: sì, ma rimane modificabile per tutta la durata di valutazione sul campo
+				Set<String> dst = new HashSet<String>();
+				if(verbale != null){
+					if(verbale.getTeamLeader() != null)
+						dst.add(verbale.getTeamLeader().getEmail());
+					if(verbale.getReferenteInformatico() != null)
+						dst.add(verbale.getReferenteInformatico().getEmail());
+
+					if(verbale.getComponentiSegreteria() != null){
+						for(Account a : verbale.getComponentiSegreteria())
+							dst.add(a.getEmail());
+					}
+					emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
+				}
+
+				//non deve creare un task di valutazione per il team leader.. deve solo mandare il flusso in valutazione sul campo con lo stesso
+				//attore (segretario) che deve inserire la valutazione sul campo.. solo se l'accreditamento va in integrazione il teamleader deve valutare
+				workflowService.eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(accreditamento, verbale.getTeamLeader().getUsernameWorkflow());
+			}
 		}
 	}
 
@@ -877,9 +879,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 		else if(accreditamento.isPreavvisoRigetto()){
 			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), true, accreditamento.getProvider());
-		}
-		else if(accreditamento.isModificaDati()){
-			//workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
 		}
 	}
 
@@ -1564,40 +1563,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 						valutazioneService.delete(v);
 					}
 				}
-			} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER) {
-				Account accountTeamLeader = accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader();
-				String usernameWorkflowTeamLeader = accountTeamLeader.getUsernameWorkflow();
-
-				//controllo se ho gia la valutazione per lutente corrente
-				Valutazione valutazioneTL = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, accountTeamLeader.getId());
-
-				//valutazione creata per la prima volta (valutazione integrazione)
-				if(valutazioneTL == null) {
-					//Ricavo la valutazione della segreteria perche' contiene i field editabili
-					Valutazione valutazioneSegreteria = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
-					//ATTENZIONE la valutazioe restituita è detachata me è sempre lo stesso oggetto valutazioneSegreteria
-					valutazioneTL = valutazioneService.detachValutazione(valutazioneSegreteria);
-					valutazioneService.cloneDetachedValutazione(valutazioneTL);
-					//valutazioneService.setEsitoForEnabledFields(valutazioneTL, null);
-
-					valutazioneTL.setStoricizzato(false);
-					valutazioneTL.setDataValutazione(null);
-					valutazioneTL.setAccount(accountTeamLeader);
-					valutazioneTL.setAccreditamento(accreditamento);
-					valutazioneTL.setTipoValutazione(ValutazioneTipoEnum.TEAM_LEADER);
-				}
-				//mi trovo in valutazione del preavviso di rigetto
-				else {
-					valutazioneTL.setDataValutazione(null);
-				}
-				//recupero le integrazioni a partire dal container che la segreteria ha appena applicato
-				Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, accreditamento.getStatoUltimaIntegrazione(), workflowInCorso.getProcessInstanceId());
-
-				//sblocco field Valutazione a seconda dei field Integrazione
-				sbloccaValutazioneByFieldIntegrazioneList(valutazioneTL, fieldIntegrazioneList);
-
-				valutazioneService.save(valutazioneTL);
-				emailService.inviaNotificaATeamLeader(accountTeamLeader.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			}
 
 			//calcolo se la segreteria ha fatto presa visione

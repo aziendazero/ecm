@@ -5,7 +5,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.javers.core.Javers;
-import org.javers.core.metamodel.object.GlobalId;
 import org.javers.repository.jql.InstanceIdDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +26,9 @@ public class AuditServiceImpl implements AuditService {
 
 	@Autowired
 	private MessageSource messageSource;
+
+	@Autowired
+	private WorkflowService workflowService;
 
 	@Value("#{PropertyMapper.startWith('auditlabelmap', '', false)}")
 	private Map<String, String> labelForAuditLabel;
@@ -80,18 +82,27 @@ public class AuditServiceImpl implements AuditService {
 	@Override
 	public void commitForCurrrentUser(Object entity) {
 		CurrentUser user = Utils.getAuthenticatedUser();
-		javers.commit(user.getUsername(), entity);
+		if(user != null)
+			javers.commit(user.getUsername(), entity);
+		else
+			javers.commit(workflowService.getSystemUsername(), entity);
 	}
 
 	@Override
 	public void deleteForCurrrentUser(Object entity) {
 		CurrentUser user = Utils.getAuthenticatedUser();
-		javers.commitShallowDelete(user.getUsername(), entity);
+		if(user != null)
+			javers.commitShallowDelete(user.getUsername(), entity);
+		else
+			javers.commitShallowDelete(workflowService.getSystemUsername(), entity);
 	}
 
 	@Override
 	public void deleteByIdForCurrrentUser(Long entityId, Class javaClass) {
 		CurrentUser user = Utils.getAuthenticatedUser();
-		javers.commitShallowDeleteById(user.getUsername(), InstanceIdDTO.instanceId(entityId, javaClass));
+		if(user != null)
+			javers.commitShallowDeleteById(user.getUsername(), InstanceIdDTO.instanceId(entityId, javaClass));
+		else
+			javers.commitShallowDeleteById(workflowService.getSystemUsername(), InstanceIdDTO.instanceId(entityId, javaClass));
 	}
 }

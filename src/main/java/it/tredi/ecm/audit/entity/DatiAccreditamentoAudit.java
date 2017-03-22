@@ -98,7 +98,8 @@ public class DatiAccreditamentoAudit {
 
 	public DatiAccreditamentoAudit(DatiAccreditamento datiAccreditamento) {
 		this.id = datiAccreditamento.getId();
-		this.datiEconomici = new DatiEconomiciAudit(datiAccreditamento.getDatiEconomici());
+		if(datiAccreditamento.getDatiEconomici() != null)
+			this.datiEconomici = new DatiEconomiciAudit(datiAccreditamento.getDatiEconomici());
 
 		for(Disciplina disc : datiAccreditamento.getDiscipline())
 			this.discipline.add(disc.getNome());
