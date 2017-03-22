@@ -14,6 +14,7 @@
 						<h2 th:text="#{label.anagrafe_regionale_crediti}">Anagrafe Regionale Crediti</h2>
 						<div class="pull-right buttons-header">
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/anagrafeRegionaleCrediti/${annoRiferimento}/list|}"></a>
+							<a class="btn btn-primary pull-right" th:text="#{label.esporta_pdf}" th:href="@{|/anagrafeRegionaleCrediti/${codiceFiscale}/${annoRiferimento}/pdf|}"></a>
 						</div>
 						<div class="clearfix"></div>
 					</div>
