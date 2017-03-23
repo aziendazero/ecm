@@ -4,6 +4,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import org.javers.core.metamodel.annotation.TypeName;
+
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
@@ -12,6 +14,7 @@ import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("RiepilogoRuoliFSC")
 @Getter
 @Setter
 @Embeddable

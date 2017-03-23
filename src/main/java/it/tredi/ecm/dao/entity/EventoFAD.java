@@ -19,10 +19,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
+import org.javers.core.metamodel.annotation.TypeName;
+
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+@TypeName("EventoFAD")
 @Entity
 @Getter
 @Setter

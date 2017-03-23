@@ -110,61 +110,6 @@ public class AccreditamentoController {
 		dataBinder.setDisallowedFields("id");
 	}
 
-	@RequestMapping("/workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}")
-	@ResponseBody
-	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato,
-			@RequestParam(required = false) Integer numeroValutazioniNonDate, @RequestParam(required = false) String dataOraScadenzaPossibiltaValutazione,
-			@RequestParam(required = false) Boolean eseguitoDaUtente) throws Exception{
-		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato} token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato));
-
-		if(!tokenService.checkTokenAndDelete(token)) {
-			String msg = "Impossibile trovare il token passato token: " + token;
-			LOGGER.error(msg);
-			return new ResponseState(true, msg);
-		}
-
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-		if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO) {
-			if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
-				valutazioneService.updateValutazioniNonDate(accreditamentoId);
-			}
-			if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
-				//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-				Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
-				LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-				valutazioneService.dataOraScadenzaPossibilitaValutazioneCRECM(accreditamentoId, ldt);
-			}
-		} else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD) {
-			if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
-				//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-				Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
-				LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-				valutazioneService.dataOraScadenzaPossibilitaValutazione(accreditamentoId, ldt);
-			}
-		}
-
-		//modifico lo stato
-		if(eseguitoDaUtente != null){
-			accreditamentoService.changeState(accreditamentoId, stato, eseguitoDaUtente);
-		} else {
-			accreditamentoService.changeState(accreditamentoId, stato);
-		}
-
-		return new ResponseState(false, "Stato modificato");
-
-/*
-		Account account = accountRepository.findOneByUsername("provider").orElse(null);
-		if(account != null) {
-			workflowService.saveOrUpdateBonitaUserByAccount(account);
-		}
- */
-		//TODO modifica stato della domanda da parte del flusso
-		//lo facciamo cosi in modo tale da non dover disabilitare la cache di hibernate
-		//accreditamentoService.setStato(accreditamentoId, stato);
-	}
-
 	/***	Get Lista Accreditamenti per provider CORRENTE	***/
 	@RequestMapping("/provider/accreditamento/list")
 	public String getAllAccreditamentiForCurrentProvider(RedirectAttributes redirectAttrs) throws Exception{
@@ -858,7 +803,7 @@ public class AccreditamentoController {
 	public String prendiInCaricoAccreditamento(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/takeCharge"));
 		try {
-			accreditamentoService.prendiInCarica(accreditamentoId, Utils.getAuthenticatedUser());
+			accreditamentoService.prendiInCarico(accreditamentoId, Utils.getAuthenticatedUser());
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.presa_in_carico", "success"));
 			return "redirect:/accreditamento/{accreditamentoId}/validate";
 		}catch (Exception ex){
@@ -1310,6 +1255,7 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"));
 		try{
 			accreditamentoService.inviaCampiSbloccatiVariazioneDati(accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.richiesta_variazione_dati_inviata", "success"));
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/sendRichiestaIntegrazione"),ex);
@@ -1613,7 +1559,7 @@ public class AccreditamentoController {
 		return "redirect:/accreditamento/{accreditamentoId}/show";
 	}
 
-	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#id)")
+	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/riepilogo/{argument}/pdf")
 	public void pdfRiepilogoDomanda(@PathVariable Long accreditamentoId, @PathVariable String argument,
 			@RequestParam(required = false) Long valutazioneId,

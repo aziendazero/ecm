@@ -288,6 +288,7 @@
 										<!-- TODO DISABILITATO PER LA PRODUZIONE
 										<a class="btn btn-success btn-min-icon-width" th:if="${evento.canDoPagamento()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>
 										-->
+										<a class="btn btn-primary min-icon-width" th:if="${#authentication.principal.account.isSegreteria()}" th:href="@{|/audit/entity/${evento.getAuditEntityType()}/entityId/${evento.id}|}" th:title="#{label.registro_operazioni}"><i class="fa fa-book"></i></a>
 										<a class="btn btn-warning min-icon-width" th:if="${evento.canDoRendicontazione()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/rendiconto|}" th:title="#{label.rendiconto}"><i class="fa fa-file-text"></i></a>
 										<a class="btn btn-primary min-icon-width" th:if="${evento.canDoUploadSponsor()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/allegaContrattiSponsor|}" th:title="#{label.allega_contratti_sponsor}"><i class="fa fa-file"></i></a>
 										<button class="btn btn-danger min-icon-width" th:if="${evento.canEdit()}" th:onclick="|confirmDeleteEventoModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}','${evento.stato}')|" th:title="${evento.stato == T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).BOZZA} ? #{label.elimina} : #{label.annulla}"><i class="fa fa-trash"></i></button>

@@ -9,6 +9,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Where;
+
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,6 +40,7 @@ public class FieldIntegrazioneHistoryContainer extends BaseEntityDefaultId {
 
 	@OneToMany
 	@JoinColumn(name = "field_integrazione_history_container_id")
+	@Where(clause = "fittizio = 'false'")
 	private Set<FieldIntegrazioneAccreditamento> integrazioni = new HashSet<FieldIntegrazioneAccreditamento>();
 
 }

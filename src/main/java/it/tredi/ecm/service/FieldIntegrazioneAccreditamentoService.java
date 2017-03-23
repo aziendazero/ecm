@@ -27,4 +27,7 @@ public interface FieldIntegrazioneAccreditamentoService {
 	public void applyIntegrazioneInContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId);
 	public void removeFieldIntegrazioneByObjectReferenceAndContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, Long objectId);
 	public void delete(FieldIntegrazioneAccreditamento fia);
+
+	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneFittiziForAccreditamentoByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId);
+	public FieldIntegrazioneHistoryContainer getContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId);
 }

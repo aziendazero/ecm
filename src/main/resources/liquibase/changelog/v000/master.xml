@@ -87,4 +87,6 @@
 
 	<include file="20170314_001_creazione_evento_provider_sequence.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170323_001_fieldIntegrazione_fittizio.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

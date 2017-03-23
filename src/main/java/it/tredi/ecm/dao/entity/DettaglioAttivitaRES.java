@@ -18,6 +18,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
@@ -64,7 +65,9 @@ public class DettaglioAttivitaRES extends BaseEntityDefaultId implements Seriali
 	@Enumerated(EnumType.STRING)
 	private MetodologiaDidatticaRESEnum metodologiaDidattica;
 
+	@DiffIgnore
 	private long minutiAttivita;
+	@DiffIgnore
 	private float oreAttivita;
 
 	public void setAsPausa(){

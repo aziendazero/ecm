@@ -36,16 +36,16 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import org.hibernate.annotations.ColumnDefault;
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.ShallowReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
@@ -127,8 +127,10 @@ public class Evento extends BaseEntity {
 	 *
 	 * 		*EVENTO inserito come RIEDIZIONE -> PREFIX dell'evento padre + #edizione
 	 * */
+	@DiffIgnore
 	@JsonView(JsonViewModel.EventoLookup.class)
 	private String prefix;
+	@DiffIgnore
 	@JsonView(JsonViewModel.EventoLookup.class)
 	private int edizione = 1;
 	@JsonView(JsonViewModel.EventoLookup.class)
@@ -154,18 +156,25 @@ public class Evento extends BaseEntity {
 	@Column(name="anno_piano_formativo")
 	private Integer pianoFormativo;
 
+	@DiffIgnore
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;
+	@DiffIgnore
 	@ManyToOne @JoinColumn(name = "accreditamento_id")
 	private Accreditamento accreditamento;
 
 	private String professioniEvento;
+	//@DiffIgnore
 	@ManyToMany
 	@JoinTable(name = "evento_discipline",
 				joinColumns = @JoinColumn(name = "evento_id"),
 				inverseJoinColumns = @JoinColumn(name = "disciplina_id")
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
+
+	//Per Audit
+//	@Transient
+//	private Set<String> disciplineAudit = new HashSet<String>();
 
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
@@ -178,6 +187,7 @@ public class Evento extends BaseEntity {
 	/**	Fine sezione in comune con EventoPianoFormativo	**/
 
 	/**	Inizio sezione Eventi	**/
+	@DiffIgnore
 	@OneToOne
 	private Evento eventoPadre;//valorizzato solo se è una riedizione di un evento
 	public boolean isRiedizione(){
@@ -190,6 +200,7 @@ public class Evento extends BaseEntity {
 	//true -> dopo fineEvento
 	//false -> dopo aver pagato
 	//false -> se passano i 90 gg e non ha fatto nulla
+	@DiffIgnore
 	private Boolean sponsorUploaded = false;
 	//true -> dopo pagamento (Provider B) and attachSponsor fatto
 	//true -> dopo fineEvento (Provider A) and attachSponsor fatto
@@ -202,8 +213,10 @@ public class Evento extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)
 	private EventoStatoEnum stato;//vedi descrizione in EventoStatoEnum
+	@DiffIgnore
 	private boolean validatorCheck = false; //(durante il salvataggio check di un flag per sapere se sono stati rispettati tutti i vincoli del validator)
 
+	@DiffIgnore
 	@OneToMany(mappedBy="evento", cascade=CascadeType.ALL)
 	@OrderBy("data_invio DESC")
 	private Set<RendicontazioneInviata> inviiRendicontazione = new HashSet<RendicontazioneInviata>();
@@ -219,6 +232,7 @@ public class Evento extends BaseEntity {
 	@OneToOne
 	private File reportPartecipantiCSV;
 
+	@DiffIgnore
 	@OneToOne //valorizzato solo se è la realizzazione di un evento descritto nel piano formativo
 	private EventoPianoFormativo eventoPianoFormativo;
 	public boolean isEventoDaPianoFormativo(){
@@ -271,11 +285,13 @@ public class Evento extends BaseEntity {
 	@Column(name = "data_scadenza_pagamento")//data scadenza pagamento
 	private LocalDate dataScadenzaPagamento;
 
+	@DiffIgnore
 	@Column(name = "data_ultima_modifica")//data ultima_modifica
 	private LocalDateTime dataUltimaModifica;
 
 	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="responsabile_id")
+	@OrderBy("id")
 	private List<PersonaEvento> responsabili = new ArrayList<PersonaEvento>();
 
 	protected Integer numeroPartecipanti;
@@ -290,7 +306,7 @@ public class Evento extends BaseEntity {
 
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="responsabile_segreteria_id")
-	private PersonaFullEvento responsabileSegreteria = new PersonaFullEvento();
+	private PersonaFullEvento responsabileSegreteria;
 
 	@NumberFormat(pattern = "0.00")
 	private BigDecimal quotaPartecipazione;
@@ -327,6 +343,7 @@ public class Evento extends BaseEntity {
 
 	private Boolean autorizzazionePrivacy;
 
+	@DiffIgnore
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="evento", orphanRemoval=true)
 	private Set<AnagrafeRegionaleCrediti> anagrafeRegionaleCrediti = new HashSet<AnagrafeRegionaleCrediti>();
 
@@ -491,5 +508,17 @@ public class Evento extends BaseEntity {
 		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
 			return false;
 		return true;
+	}
+
+	public String getAuditEntityType() throws Exception {
+		switch(this.proceduraFormativa) {
+		case FAD:
+			return "EventoFAD";
+		case FSC:
+			return "EventoFSC";
+		case RES:
+			return "EventoRES";
+		}
+		throw new Exception("Nuovo tipo di evento: "+ this.proceduraFormativa +" NON gestito");
 	}
 }

@@ -136,6 +136,7 @@ public class EventoServiceImpl implements EventoService {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + " - Salvataggio"));
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
+		evento = eventoRepository.saveAndFlush(evento);
 		eventoRepository.save(evento);
 
 //		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
@@ -1475,7 +1476,7 @@ public class EventoServiceImpl implements EventoService {
 		riedizione.setDataScadenzaPagamento(null);
 		riedizione.setInviiRendicontazione(new HashSet<RendicontazioneInviata>());
 		riedizione.setAnagrafeRegionaleCrediti(null);
-		riedizione.setPagato(true);
+		riedizione.setPagato(false);
 		riedizione.setPagInCorso(null);
 		riedizione.setProceduraVerificaQualitaPercepita(null);
 		riedizione.setAutorizzazionePrivacy(null);

@@ -1,7 +1,10 @@
 package it.tredi.ecm.web;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.AnagrafeRegionaleCrediti;
 import it.tredi.ecm.service.AnagrafeRegionaleCreditiService;
+import it.tredi.ecm.service.PdfAnagrafeRegionaleService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 
@@ -28,6 +31,7 @@ public class AnagrafeRegionaleCreditiController {
 	private static String ANNO_LIST = "anagrafeRegionaleCrediti/anagrafeRegionaleCreditiAnnoList";
 
 	@Autowired private AnagrafeRegionaleCreditiService anagrafeRegionaleCreditiService;
+	@Autowired private PdfAnagrafeRegionaleService pdfAnagrafeRegionaleService;
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowAnagrafeRegionale(principal)")
 	@RequestMapping("/anagrafeRegionaleCrediti/list")
@@ -86,5 +90,26 @@ public class AnagrafeRegionaleCreditiController {
 			return "redirect:/home";
 		}
 	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowAnagrafeRegionale(principal)")
+	@RequestMapping("/anagrafeRegionaleCrediti/{codiceFiscale}/{annoRiferimento}/pdf")
+	public void pdfAnagrafeRegionaleCrediti(@PathVariable String codiceFiscale, @PathVariable Integer annoRiferimento,
+			Model model, RedirectAttributes redirectAttr, HttpServletResponse response) {
+		try {
+			LOGGER.info(Utils.getLogMessage("GET /anagrafeRegionaleCrediti/" + codiceFiscale + "/" + annoRiferimento + "/pdf"));
+
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"PDF Anagrafe Regionale:" + codiceFiscale + ".pdf\""));
+
+			ByteArrayOutputStream pdfOutputStream = pdfAnagrafeRegionaleService.creaOutputStreamPdfAnagrafeRegionale(codiceFiscale, annoRiferimento);
+			response.setContentLength(pdfOutputStream.size());
+			response.getOutputStream().write(pdfOutputStream.toByteArray());
+		}
+		catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /anagrafeRegionaleCrediti/" + codiceFiscale + "/" + annoRiferimento + "/pdf"),ex);
+			model.addAttribute("message",new Message("Errore", "Impossibile creare il pdf", "Errore creazione pdf Anagrafe Regionale"));
+		}
+	}
+
+
 
 }

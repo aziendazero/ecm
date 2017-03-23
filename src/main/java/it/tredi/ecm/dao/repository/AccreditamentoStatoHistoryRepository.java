@@ -9,6 +9,6 @@ import it.tredi.ecm.dao.entity.AccreditamentoStatoHistory;
 public interface AccreditamentoStatoHistoryRepository extends CrudRepository<AccreditamentoStatoHistory, Long> {
 	public Set<AccreditamentoStatoHistory> findAllByAccreditamentoIdOrderByDataFine(Long accreditamentoId);
 	public Set<AccreditamentoStatoHistory> findAllByAccreditamentoIdAndProcessInstanceIdOrderByDataFine(Long accreditamentoId, Long processInstanceId);
-	public Set<AccreditamentoStatoHistory> findAllByAccreditamentoIdAndProcessInstanceIdInOrderByDataFine(Long accreditamentoId, Set<Long> processInstanceIdList);
+	public Set<AccreditamentoStatoHistory> findAllByAccreditamentoIdAndProcessInstanceIdInOrderByDataInizio(Long accreditamentoId, Set<Long> processInstanceIdList);
 
 }

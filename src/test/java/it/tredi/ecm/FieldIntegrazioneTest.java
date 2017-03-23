@@ -1,27 +1,14 @@
 package it.tredi.ecm;
 
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.transaction.Transactional;
 
-import org.hibernate.collection.internal.PersistentSet;
-import org.hibernate.id.IdentityGenerator.GetGeneratedKeysDelegate;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
@@ -39,17 +26,17 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Anagrafica;
-import it.tredi.ecm.dao.entity.BaseEntity;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
-import it.tredi.ecm.dao.entity.FieldIntegrazione;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneHistoryContainer;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.repository.AnagraficaRepository;
@@ -58,6 +45,7 @@ import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
 import it.tredi.ecm.dao.repository.ProfessioneRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.DatiAccreditamentoService;
+import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PersonaService;
 
@@ -81,6 +69,7 @@ public class FieldIntegrazioneTest {
 	@Autowired private FieldIntegrazioneAccreditamentoRepository repoIntegrazione;
 	@Autowired private ProfessioneRepository professioneRepository;
 	@Autowired private AnagraficaRepository anagraficaRepository;
+	@Autowired private FieldIntegrazioneAccreditamentoService fiaService;
 
 	@Autowired private IntegrazioneService integrazioneService;
 
@@ -141,17 +130,6 @@ public class FieldIntegrazioneTest {
 	}
 
 	@Test
-	@Ignore
-	public void applyFieldIntegrazioneProvider() throws Exception{
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = repoIntegrazione.findAllByAccreditamentoId(304L);
-		Provider provider = new Provider();
-
-		integrazioneService.applyIntegrazioneObject(provider, fieldIntegrazioneList);
-
-		print(provider, null);
-	}
-
-	@Test
 	@Transactional
 	@Ignore
 	public void createFieldIntegrazioneDatiAccreditamento() throws Exception{
@@ -175,18 +153,6 @@ public class FieldIntegrazioneTest {
 	}
 
 	@Test
-	@Ignore
-	public void applyFieldIntegrazioneDatiAccreditamento() throws Exception{
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = repoIntegrazione.findAllByAccreditamentoId(416L);
-		//DatiAccreditamento dati = datiAccreditamentoService.getDatiAccreditamento(396L);
-		DatiAccreditamento dati = datiAccreditamentoService.getDatiAccreditamento(118L);
-
-		integrazioneService.applyIntegrazioneObject(dati, fieldIntegrazioneList);
-
-		datiAccreditamentoService.save(dati, dati.getAccreditamento().getId());
-	}
-
-	@Test
 	@Transactional
 	@Ignore
 	public void createFieldPersona() throws Exception{
@@ -205,19 +171,6 @@ public class FieldIntegrazioneTest {
 		}
 
 		repoIntegrazione.save(idIntegrazione);
-	}
-
-	@Test
-	@Ignore
-	public void applyFieldPersona() throws Exception{
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = repoIntegrazione.findAllByAccreditamentoId(416L);
-		Persona persona = personaService.getPersona(534L);
-
-		integrazioneService.applyIntegrazioneObject(persona, fieldIntegrazioneList);
-
-		print(persona, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__PROFESSIONE.getNameRef());
-
-		personaService.save(persona);
 	}
 
 	@Ignore
@@ -249,6 +202,48 @@ public class FieldIntegrazioneTest {
 	public void queryProva() throws Exception {
 		Long accreditamentoId = 1228L;
 		accreditamentoService.controllaValidazioneIntegrazione(accreditamentoId);
+	}
+
+	@Test
+	@Transactional
+	@Ignore
+	public void fittizioTest() {
+		Long accreditamentoId = 1470L;
+		Long workflowId = 44008L;
+		AccreditamentoStatoEnum stato = AccreditamentoStatoEnum.INTEGRAZIONE;
+		Set<FieldIntegrazioneAccreditamento> set = fiaService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workflowId);
+		System.out.println("NON FITTIZI:");
+		for(FieldIntegrazioneAccreditamento fi : set)
+			System.out.println(fi.getIdField().name());
+		Set<FieldIntegrazioneAccreditamento> fittizi =  fiaService.getAllFieldIntegrazioneFittiziForAccreditamentoByContainer(accreditamentoId, stato, workflowId);
+		System.out.println("Fittizi:");
+		for(FieldIntegrazioneAccreditamento fi : fittizi)
+			System.out.println(fi.getIdField().name());
+	}
+
+	@Test
+	@Transactional
+	@Ignore
+	public void integrazioneFittiziaTest() {
+		Long accreditamentoId = 1470L;
+		Long workflowId = 44008L;
+		AccreditamentoStatoEnum stato = AccreditamentoStatoEnum.INTEGRAZIONE;
+		FieldIntegrazioneHistoryContainer container = fiaService.getContainer(accreditamentoId, stato, workflowId);
+		FieldIntegrazioneAccreditamento fittizio1 = new FieldIntegrazioneAccreditamento(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__ATTO_NOMINA, accreditamentoService.getAccreditamento(accreditamentoId), -1,null);
+		FieldIntegrazioneAccreditamento fittizio2 = new FieldIntegrazioneAccreditamento(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__COGNOME, accreditamentoService.getAccreditamento(accreditamentoId), -1,null);
+		FieldIntegrazioneAccreditamento fittizio3 = new FieldIntegrazioneAccreditamento(IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__CV, accreditamentoService.getAccreditamento(accreditamentoId), -1,null);
+		List<FieldIntegrazioneAccreditamento> list = new ArrayList<FieldIntegrazioneAccreditamento>();
+		list.add(fittizio1);
+		list.add(fittizio2);
+		list.add(fittizio3);
+		fiaService.save(list);
+		container.getIntegrazioni().addAll(list);
+		fiaService.saveContainer(container);
+		for(FieldIntegrazioneAccreditamento f : container.getIntegrazioni())
+			System.out.println(f.getIdField().name());
+		container = fiaService.getContainer(accreditamentoId, stato, workflowId);
+		for(FieldIntegrazioneAccreditamento f : container.getIntegrazioni())
+			System.out.println(f.getIdField().name());
 	}
 
 

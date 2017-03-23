@@ -154,55 +154,6 @@ public class ProviderController {
 		}
 	}
 
-	/*** WORKFLOW ***/
-	@RequestMapping("/workflow/token/{token}/provider/{providerId}")
-	@ResponseBody
-	public ResponseState GetProviderUsers(@PathVariable("token") String token, @PathVariable("providerId") Long providerId) throws Exception{
-		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/provider/{providerId} token: " + token + "; providerId: " + providerId));
-
-		if(!tokenService.checkTokenAndDelete(token)) {
-			String msg = "Impossibile trovare il token passato token: " + token;
-			LOGGER.error(msg);
-			return new ResponseState(true, msg);
-		}
-		//recupero la lista degli usernamebonita degli utenti del provider
-		Provider provider = providerService.getProvider(providerId);
-
-		if(provider == null) {
-			String msg = "Impossibile trovare il provider passato providerId: " + providerId;
-			LOGGER.error(msg);
-			return new ResponseState(true, msg);
-		}
-
-		ResponseUsername responseUsername = new ResponseUsername();
-		Set<String> usernames = new HashSet<>();
-		//if(provider.getAccount() != null && provider.getAccount().getUsernameWorkflow() != null && !provider.getAccount().getUsernameWorkflow().isEmpty())
-		//	usernames.add(provider.getAccount().getUsernameWorkflow());
-		if(provider.getAccounts() != null && !provider.getAccounts().isEmpty()) {
-			for(Account account : provider.getAccounts()) {
-				usernames.add(account.getUsernameWorkflow());
-			}
-		}
-
-		responseUsername.setUserNames(usernames);
-		ResponseState responseState = new ResponseState(false, "Elenco usernames");
-		ObjectMapper objMapper = new ObjectMapper();
-	    String responseUsernameJson = objMapper.writeValueAsString(responseUsername);
-	    responseState.setJsonObject(responseUsernameJson);
-
-		return responseState;
-
-/*
-		Account account = accountRepository.findOneByUsername("provider").orElse(null);
-		if(account != null) {
-			workflowService.saveOrUpdateBonitaUserByAccount(account);
-		}
- */
-		//TODO modifica stato della domanda da parte del flusso
-		//lo facciamo cosi in modo tale da non dover disabilitare la cache di hibernate
-		//accreditamentoService.setStato(accreditamentoId, stato);
-	}
-
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#id)")
 	@RequestMapping("/provider/{id}/show/all")
 	public String showProvider(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
