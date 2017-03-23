@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import it.tredi.ecm.service.bean.CurrentUser;
 
 @Component
 public class UserChangePasswordCheckFilter extends GenericFilterBean  {
-	
+
 	protected final Logger LOGGER = LoggerFactory.getLogger(UserChangePasswordCheckFilter.class);
 
 	public void destroy() {
@@ -35,18 +36,17 @@ public class UserChangePasswordCheckFilter extends GenericFilterBean  {
 		if (!(response instanceof HttpServletResponse)) {
 			throw new ServletException("Can only process HttpServletResponse");
 		}
-		
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		if(authentication != null){
+
+		if(authentication != null && (authentication instanceof UsernamePasswordAuthenticationToken)){
 			if( authentication.getPrincipal() instanceof CurrentUser) {
 				CurrentUser currentUser = (CurrentUser) authentication.getPrincipal();
-
-				if(currentUser.getAccount().isPasswordExpired()) 
+				if(currentUser.getAccount().isPasswordExpired())
 					redirect = true;
-			} 
-			
-			if(((HttpServletRequest)request).getServletPath().startsWith("/user/changePassword")) 
+			}
+
+			if(((HttpServletRequest)request).getServletPath().startsWith("/user/changePassword"))
 				redirect = false;
 		}else{
 			redirect = false;
