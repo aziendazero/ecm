@@ -63,6 +63,8 @@ public class Utils {
 
 	public static boolean isUserCasAuthenticated(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication == null)
+			return false;
 		if(authentication instanceof CasAuthenticationToken)
 			return true;
 		return false;
