@@ -47,4 +47,5 @@ public interface ValutazioneService {
 
 	//post refactoring
 	public void initializeFieldValutazioni(Valutazione valutazione, Accreditamento accreditamento);
+	public void sbloccaValutazioneByFieldIntegrazioneList(Valutazione valutazione, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList);
 }

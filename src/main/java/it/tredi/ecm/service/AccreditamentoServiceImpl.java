@@ -408,7 +408,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		for (Account a : referee) {
 			Valutazione valutazioneReferee = new Valutazione(a, accreditamento, ValutazioneTipoEnum.REFEREE);
 			//setta i campi valutati positivamente di default
-			valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
+			//valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
+			valutazioneService.initializeFieldValutazioni(valutazioneReferee, accreditamento);
 			valutazioneService.save(valutazioneReferee);
 			emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
@@ -684,6 +685,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio valutazione segreteria e riassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
 		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
+		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
 
 		approvaIntegrazione(accreditamentoId);
 
@@ -696,6 +699,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			if(a.isReferee()) {
 				usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
 				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, a.getId());
+				valutazioneService.sbloccaValutazioneByFieldIntegrazioneList(valutazione, fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazionePerSbloccoValutazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId));
 				valutazione.setDataValutazione(null);
 				valutazioneService.save(valutazione);
 				emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
@@ -957,8 +961,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 
 		//setto il flag per vedere se ci sono state modifiche di integrazione nei field valutazioni, elimino il vecchio esisto e li riabilito
-		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
-		sbloccaValutazioniByFieldIntegrazioneList(valutazioni, container.getIntegrazioni());
+		Valutazione valutazione = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
+		valutazioneService.sbloccaValutazioneByFieldIntegrazioneList(valutazione, container.getIntegrazioni());
 
 		//TODO non spacca niente???
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
@@ -987,66 +991,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 	}
 
-	//metodo che gestisce l'abilitazione dei fieldValutazione a seconda dei fieldIntegrazione (applica per tutte le valutazioni passate)
-	private void sbloccaValutazioniByFieldIntegrazioneList(Set<Valutazione> valutazioni, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) {
-		for(Valutazione valutazione : valutazioni){
-			sbloccaValutazioneByFieldIntegrazioneList(valutazione, fieldIntegrazioneList);
-		}
-	}
 
-	//metodo che gestisce l'abilitazione dei fieldValutazione a seconda dei fieldIntegrazione
-	private void sbloccaValutazioneByFieldIntegrazioneList(Valutazione valutazione, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) {
-		Set<FieldValutazioneAccreditamento> fieldValutazioni = valutazione.getValutazioni();
-		for(FieldIntegrazioneAccreditamento fieldIntegrazione : fieldIntegrazioneList){
-			FieldValutazioneAccreditamento field = null;
-			LOGGER.debug(Utils.getLogMessage("Sblocco valutazione per " + fieldIntegrazione.getIdField()));
-			if(fieldIntegrazione.getObjectReference() != -1){
-				//multi-istanza
-				field = Utils.getField(fieldValutazioni, fieldIntegrazione.getObjectReference(), fieldIntegrazione.getIdField());
-			}else{
-				//non multi-istanza
-				field = Utils.getField(fieldValutazioni, fieldIntegrazione.getIdField());
-			}
-			if(field != null && !field.isEnabled()){
-				field.setEsito(null);
-				field.setEnabled(true);
-				field.setNote(null);
-				if(fieldIntegrazione.isModificato())
-					field.setModificatoInIntegrazione(true);
-				else
-					field.setModificatoInIntegrazione(false);
-				fieldValutazioni.add(field);
-			}
-		}
-		//ciclo per gli idField enum cercado quelli raggruppati (prendo il padre)
-		for(IdFieldEnum id : IdFieldEnum.values()) {
-			FieldIntegrazioneAccreditamento fieldInteg = null;
-			FieldValutazioneAccreditamento fieldVal = null;
-			boolean modificato = false;
-			if(!id.getGruppo().isEmpty()) {
-				//controllo se ci sono fieldIntegrazione attivi per i figli
-				for(IdFieldEnum idGruppo : id.getGruppo()) {
-					fieldInteg = Utils.getField(fieldIntegrazioneList, idGruppo);
-					if(fieldInteg != null) {
-						//se ci sono mi faccio dare il fieldValutazione del padre
-						fieldVal = Utils.getField(fieldValutazioni, id);
-						if(fieldVal != null && fieldInteg.isModificato()) {
-							modificato = true;
-						}
-					}
-				}
-				//modifico di conseguenza il fieldValutazione del padre
-				if(fieldVal != null && !fieldVal.isEnabled()) {
-					fieldVal.setEsito(null);
-					fieldVal.setEnabled(true);
-					fieldVal.setNote(null);
-					fieldVal.setModificatoInIntegrazione(modificato);
-				}
-			}
-		}
-		valutazione.setValutazioni(fieldValutazioni);
-		valutazioneService.save(valutazione);
-	}
 
 	@Override
 	public DatiAccreditamento getDatiAccreditamentoForAccreditamentoId(Long accreditamentoId) throws Exception{

@@ -183,4 +183,13 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 		LOGGER.debug(Utils.getLogMessage("Recupero Field Integrazione FITTIZI dal container relativo all'accreditamento " + accreditamentoId + " in stato " + stato));
 		return fieldIntegrazioneAccreditamentoRepository.findAllFittiziByContainer(accreditamentoId, stato.name(), workFlowProcessInstanceId);
 	}
+
+	@Override
+	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazionePerSbloccoValutazioneForAccreditamentoByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId){
+		LOGGER.debug(Utils.getLogMessage("Recupero Field Integrazione Per sblocco valutazione dal container relativo all'accreditamento " + accreditamentoId + " in stato " + stato));
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = new HashSet<FieldIntegrazioneAccreditamento>();
+		fieldIntegrazioneList.addAll(getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId));
+		fieldIntegrazioneList.addAll(getAllFieldIntegrazioneFittiziForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId));
+		return fieldIntegrazioneList;
+	}
 }

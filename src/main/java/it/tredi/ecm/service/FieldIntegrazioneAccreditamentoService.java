@@ -30,4 +30,6 @@ public interface FieldIntegrazioneAccreditamentoService {
 
 	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneFittiziForAccreditamentoByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId);
 	public FieldIntegrazioneHistoryContainer getContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId);
+
+	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazionePerSbloccoValutazioneForAccreditamentoByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId);
 }

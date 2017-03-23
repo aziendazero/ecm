@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneHistoryContainer;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
@@ -52,6 +53,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private AlertEmailService alertEmailService;
 	@PersistenceContext EntityManager entityManager;
 	@Autowired private MessageSource messageSource;
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -436,10 +438,67 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		else {
 			valutazione.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, accreditamento));
 			Long accreditamentoId = accreditamento.getId();
-			Long workflowProcessId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
 			AccreditamentoStatoEnum statoIntegrazione = accreditamento.getStatoUltimaIntegrazione();
 
+			Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazionePerSbloccoValutazioneForAccreditamentoByContainer(accreditamentoId, statoIntegrazione, workFlowProcessInstanceId);
+			sbloccaValutazioneByFieldIntegrazioneList(valutazione, fieldIntegrazioneList);
 		}
+	}
+
+
+	//metodo che gestisce l'abilitazione dei fieldValutazione a seconda dei fieldIntegrazione
+	public void sbloccaValutazioneByFieldIntegrazioneList(Valutazione valutazione, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) {
+		Set<FieldValutazioneAccreditamento> fieldValutazioni = valutazione.getValutazioni();
+		for(FieldIntegrazioneAccreditamento fieldIntegrazione : fieldIntegrazioneList){
+			FieldValutazioneAccreditamento field = null;
+			LOGGER.debug(Utils.getLogMessage("Sblocco valutazione per " + fieldIntegrazione.getIdField()));
+			if(fieldIntegrazione.getObjectReference() != -1){
+				//multi-istanza
+				field = Utils.getField(fieldValutazioni, fieldIntegrazione.getObjectReference(), fieldIntegrazione.getIdField());
+			}else{
+				//non multi-istanza
+				field = Utils.getField(fieldValutazioni, fieldIntegrazione.getIdField());
+			}
+			if(field != null && !field.isEnabled()){
+				field.setEsito(null);
+				field.setEnabled(true);
+				field.setNote(null);
+				if(fieldIntegrazione.isModificato())
+					field.setModificatoInIntegrazione(true);
+				else
+					field.setModificatoInIntegrazione(false);
+				fieldValutazioni.add(field);
+			}
+		}
+		//ciclo per gli idField enum cercado quelli raggruppati (prendo il padre)
+		for(IdFieldEnum id : IdFieldEnum.values()) {
+			FieldIntegrazioneAccreditamento fieldInteg = null;
+			FieldValutazioneAccreditamento fieldVal = null;
+			boolean modificato = false;
+			if(!id.getGruppo().isEmpty()) {
+				//controllo se ci sono fieldIntegrazione attivi per i figli
+				for(IdFieldEnum idGruppo : id.getGruppo()) {
+					fieldInteg = Utils.getField(fieldIntegrazioneList, idGruppo);
+					if(fieldInteg != null) {
+						//se ci sono mi faccio dare il fieldValutazione del padre
+						fieldVal = Utils.getField(fieldValutazioni, id);
+						if(fieldVal != null && fieldInteg.isModificato()) {
+							modificato = true;
+						}
+					}
+				}
+				//modifico di conseguenza il fieldValutazione del padre
+				if(fieldVal != null && !fieldVal.isEnabled()) {
+					fieldVal.setEsito(null);
+					fieldVal.setEnabled(true);
+					fieldVal.setNote(null);
+					fieldVal.setModificatoInIntegrazione(modificato);
+				}
+			}
+		}
+		valutazione.setValutazioni(fieldValutazioni);
+		save(valutazione);
 	}
 
 
