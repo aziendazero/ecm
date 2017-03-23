@@ -30,6 +30,7 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamentoDiff;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneHistoryContainer;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
@@ -58,6 +59,7 @@ import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoDiffRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.dao.repository.DatiAccreditamentoDiffRepository;
+import it.tredi.ecm.dao.repository.FieldIntegrazioneHistoryContainerRepository;
 import it.tredi.ecm.dao.repository.PersonaDiffRepository;
 import it.tredi.ecm.dao.repository.ProviderDiffRepository;
 import it.tredi.ecm.dao.repository.SedeDiffRepository;
@@ -389,6 +391,67 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		fieldEditabileService.insertFieldEditabileForAccreditamento(accreditamentoId, null, SubSetFieldEnum.FULL, new HashSet<IdFieldEnum>(Arrays.asList(IdFieldEnum.EVENTO_PIANO_FORMATIVO__FULL)));
 	}
 
+	/* La segreteria invia la prima valutazione della domanda di accreditamento provvisoria
+	 * blocca e storicizza la valutazione, crea le valutazioni dei referee, manda avanti il flusso a VALUTAZIONE_CRECM */
+	@Override
+	@Transactional
+	public void inviaValutazioneSegreteriaAssegnamentoProvvisoria(Long accreditamentoId, String valutazioneComplessiva, Set<Account> referee) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Assegnamento domanda di Accreditamento Provvisoria" + accreditamentoId + " ad un gruppo CRECM"));
+		Account user = Utils.getAuthenticatedUser().getAccount();
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, user.getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		bloccaAndStoricizzaValutazione(valutazione, valutazioneComplessiva, accreditamento.getStato());
+
+		//crea le valutazioni per i referee
+		List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
+		for (Account a : referee) {
+			Valutazione valutazioneReferee = new Valutazione(a, accreditamento, ValutazioneTipoEnum.REFEREE);
+			//setta i campi valutati positivamente di default
+			valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
+			valutazioneService.save(valutazioneReferee);
+			emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
+			usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
+		}
+		accreditamento.setDataValutazioneCrecm(LocalDate.now());
+		accreditamentoRepository.save(accreditamento);
+		//saveAndAudit(accreditamento);
+
+		//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
+		Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
+		workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
+	}
+
+	@Override
+	@Transactional
+	public void inviaValutazioneCrecmProvvisoria(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
+		Account user = Utils.getAuthenticatedUser().getAccount();
+		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, user.getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		bloccaAndStoricizzaValutazione(valutazione, valutazioneComplessiva, accreditamento.getStato());
+
+		user.setValutazioniNonDate(0);
+		user.setDomandeNonValutate(new HashSet<Accreditamento>());
+		accountRepository.save(user);
+		workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
+	}
+
+	private void bloccaAndStoricizzaValutazione(Valutazione valutazione, String valutazioneComplessiva, AccreditamentoStatoEnum stato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Bloccaggio e storicizzazione della valutazione: " + valutazione.getId()));
+		//setta la data
+		valutazione.setDataValutazione(LocalDateTime.now());
+		//disabilito tutti i filedValutazioneAccreditamento
+		for (FieldValutazioneAccreditamento fva : valutazione.getValutazioni()) {
+			fva.setEnabled(false);
+		}
+		valutazione.setValutazioneComplessiva(valutazioneComplessiva);
+		valutazione.setAccreditamentoStatoValutazione(stato);
+		valutazioneService.saveAndFlush(valutazione);
+		//detacha e copia: da questo momento valutazione si riferisce alla copia storicizzata
+		valutazioneService.copiaInStorico(valutazione);
+	}
+
 	@Override
 	@Transactional
 	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup, VerbaleValutazioneSulCampo verbale) throws Exception {
@@ -430,12 +493,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//crea le valutazioni per i referee
 				List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
 				for (Account a : refereeGroup) {
-					Valutazione valutazioneReferee = new Valutazione();
+					Valutazione valutazioneReferee = new Valutazione(a, accreditamento, ValutazioneTipoEnum.REFEREE);
 					//setta i campi valutati positivamente di default
 					valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
-					valutazioneReferee.setAccount(a);
-					valutazioneReferee.setAccreditamento(accreditamento);
-					valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
 					valutazioneService.save(valutazioneReferee);
 					emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 					usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
@@ -595,7 +655,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 
 	@Override
-	//ritorna il numero di referee che non hanno valutato
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Riassegnamento domanda di Accreditamento " + accreditamentoId + " ad un ALTRO gruppo CRECM"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -603,12 +662,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		// crea le valutazioni per i nuovi referee
 		List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
 		for (Account a : refereeGroup) {
-			Valutazione valutazioneReferee = new Valutazione();
-			//setta i campi valutati positivamente di default
-			valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
-			valutazioneReferee.setAccount(a);
-			valutazioneReferee.setAccreditamento(accreditamento);
-			valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
+			Valutazione valutazioneReferee = new Valutazione(a, accreditamento, ValutazioneTipoEnum.REFEREE);
+			//medoto per la gestione delle valutazioni
+			valutazioneService.initializeFieldValutazioni(valutazioneReferee, accreditamento);
 			valutazioneService.save(valutazioneReferee);
 			emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 			usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
@@ -618,17 +674,46 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//accreditamentoRepository.save(accreditamento);
 		saveAndAudit(accreditamento);
 
-
 		//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
 		Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
 		workflowService.eseguiTaskAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
+	}
+
+	@Override
+	public void inviaValutazioneSegreteriaProvvisorio(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Salvataggio valutazione segreteria e riassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
+		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+
+		approvaIntegrazione(accreditamentoId);
+
+		bloccaAndStoricizzaValutazione(valutazioneSegreteria, valutazioneComplessiva, accreditamento.getStato());
+
+		//elimino le date delle vecchie valutazioni
+		Set<Account> valutatori = valutazioneService.getAllValutatoriForAccreditamentoId(accreditamentoId);
+		List<String> usernameWorkflowValutatoriCrecm = new ArrayList<String>();
+		for(Account a : valutatori) {
+			if(a.isReferee()) {
+				usernameWorkflowValutatoriCrecm.add(a.getUsernameWorkflow());
+				Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, a.getId());
+				valutazione.setDataValutazione(null);
+				valutazioneService.save(valutazione);
+				emailService.inviaNotificaAReferee(a.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
+			}
+		}
+
+		accreditamento.setDataValutazioneCrecm(LocalDate.now());
+		accreditamentoRepository.save(accreditamento);
+		//saveAndAudit(accreditamento);
+
+		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, false, usernameWorkflowValutatoriCrecm);
 	}
 
 	//TODO al secondo giro e al terzo questo sarebbe il valuta domanda della segreteria.. sarebbe da fare un corrispettivo per lo standard
 	//dove al primo giro crea la valutazione del team leader e al terzo la riassegna..
 	@Override
 	public void assegnaStessoGruppoCrecm(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
-		LOGGER.debug(Utils.getLogMessage("Riassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
+		LOGGER.debug(Utils.getLogMessage("Salvataggio valutazione segreteria e riassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
 		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
@@ -807,9 +892,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
 		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneAccreditamentoService.getContainer(accreditamentoId, stato, workFlowProcessInstanceId);
 
 		//controllo quali campi sono stati modificati e quali confermati
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, workFlowProcessInstanceId);
+		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList = container.getIntegrazioni();
 		integrazioneService.checkIfFieldIntegrazioniConfirmedForAccreditamento(accreditamentoId, fieldIntegrazioneList);
 		fieldIntegrazioneAccreditamentoService.saveSet(fieldIntegrazioneList);
 
@@ -820,26 +906,24 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(fieldModificati != null && !fieldModificati.isEmpty()){
 			//elimina data valutazione se flusso di accreditamento
 			if(!accreditamento.isVariazioneDati()) {
-				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
-				for(Valutazione valutazione : valutazioni){
-					if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
-						valutazione.setDataValutazione(null);
-						valutazioneService.save(valutazione);
-					}
-				}
+				Valutazione valutazione = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
+				valutazione.setDataValutazione(null);
+				valutazioneService.save(valutazione);
+//				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+//				for(Valutazione valutazione : valutazioni){
+//					if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
+//						valutazione.setDataValutazione(null);
+//						valutazioneService.save(valutazione);
+//					}
+//				}
 			}
 		}
 
-		//setto il flag per vedere se ci sono state modifiche di integrazione nei field valutazioni, elimino la vecchia valutazione e li riabilito
-		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
-		sbloccaValutazioniByFieldIntegrazioneList(valutazioni, fieldIntegrazioneList);
-
-
-		//creo una lista di fieldIntegrazione fittizia, per applicare sui fieldValutazione l'info che un campo abilitato non è stato modificato dal provider
-		//il fieldIntegrazione (che non verrà salvato su db, ma utilizzato solo per richiamare la 'sbloccaValutazioniByFieldIntegrazioneList' è realizzato valorizzando solo
-		//i campi: objectReference, idField, isModificato
-		Long id = -1L;
-		Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneListFITTIZIA = new HashSet<FieldIntegrazioneAccreditamento>();
+		//salvo la lista di fieldIntegrazione fittizia, per applicare sui fieldValutazione l'info che un campo abilitato non è stato modificato dal provider
+		//il fieldIntegrazione verrà utilizzato solo per richiamare la 'sbloccaValutazioniByFieldIntegrazioneList' è realizzato valorizzando solo
+		//i campi: objectReference, idField, isModificato, isFittizio
+//		Long id = -1L;
+		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneListFITTIZIA = new ArrayList<FieldIntegrazioneAccreditamento>();
 		Set<FieldEditabileAccreditamento> fieldEditabileList = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId);
 		if(fieldEditabileList != null){
 			for(FieldEditabileAccreditamento fieldEditabile : fieldEditabileList){
@@ -859,17 +943,22 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 						fieldIntegrazione = new FieldIntegrazioneAccreditamento(fieldEditabile.getIdField(), fieldEditabile.getAccreditamento(), null,null);
 					}
 					fieldIntegrazione.setModificato(false);
-					fieldIntegrazione.setId(id--);
-
+//					fieldIntegrazione.setId(id--);
+					fieldIntegrazione.setFittizio(true);
 					fieldIntegrazioneListFITTIZIA.add(fieldIntegrazione);
 				}
 			}
 
 			if(fieldIntegrazioneListFITTIZIA != null && !fieldIntegrazioneListFITTIZIA.isEmpty()){
-				sbloccaValutazioniByFieldIntegrazioneList(valutazioni, fieldIntegrazioneListFITTIZIA);
-				fieldIntegrazioneListFITTIZIA.clear();
+				fieldIntegrazioneAccreditamentoService.save(fieldIntegrazioneListFITTIZIA);
+				container.getIntegrazioni().addAll(fieldIntegrazioneListFITTIZIA);
+				fieldIntegrazioneAccreditamentoService.saveContainer(container);
 			}
 		}
+
+		//setto il flag per vedere se ci sono state modifiche di integrazione nei field valutazioni, elimino il vecchio esisto e li riabilito
+		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+		sbloccaValutazioniByFieldIntegrazioneList(valutazioni, container.getIntegrazioni());
 
 		//TODO non spacca niente???
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
@@ -1574,14 +1663,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		} else if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
 			if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
 				//Ricavo la seduta
-				Seduta seduta = null;
-				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
-					//Prendo la seduta con data maggiore della data di avvio del flusso
-					if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
-						if(valCom.getSeduta().getData().isAfter(workflowInCorso.getDataAvvio()))
-							seduta = valCom.getSeduta();
-					}
-				}
+//				Seduta seduta = null;
+//				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
+//					//Prendo la seduta con data maggiore della data di avvio del flusso
+//					if(valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
+//						if(valCom.getSeduta().getData().isAfter(workflowInCorso.getDataAvvio()))
+//							seduta = valCom.getSeduta();
+//					}
+//				}
 				Set<FieldEditabileAccreditamento> fieldEditabiliAccreditamento = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamento.getId());
 				List<String> listaCriticita = new ArrayList<String>();
 				fieldEditabiliAccreditamento.forEach(v -> {
@@ -1681,43 +1770,36 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public void prendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception{
+	public void prendiInCarico(Long accreditamentoId, CurrentUser currentUser) throws Exception{
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		Account segretarioEcm = currentUser.getAccount();
+		Valutazione valutazione = new Valutazione(segretarioEcm, accreditamento, ValutazioneTipoEnum.SEGRETERIA_ECM);
 
-		workflowService.prendiTaskInCarica(currentUser, accreditamento);
-
-		Valutazione valutazione = new Valutazione();
-
+		//gestione diff
 		if(accreditamento.isStandard()) {
 			//prendo l'ultimo diff dell'accreditamento
 			AccreditamentoDiff diffOld = diffService.findLastDiffByProviderId(accreditamento.getProvider().getId());
 			if(diffOld == null)
 				throw new Exception("Ultimo diff per il provider " + accreditamento.getProvider().getId() + " non trovato!");
-			//gestione diff
+			//creo il diff della domanda che sto prendendo in carico
 			AccreditamentoDiff diffNew = diffService.creaAllDiffAccreditamento(accreditamento);
-			//va a prendere le valutazioni generate durante il diff del nuovo accreditamento col vecchio
+			//crea le valutazioni a seconda del confronto tra i due diff
 			Set<FieldValutazioneAccreditamento> valutazioniDiff = diffService.confrontaDiffAccreditamento(diffOld, diffNew);
-			//gestione valutazioni di default
+			//crea le valutazioni di default
 			Set<FieldValutazioneAccreditamento> valutazioniDefault = fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento);
 			//gestione intersezione default e diff
 			valutazione.setValutazioni(handleValutazioniDefaultDiff(valutazioniDiff, valutazioniDefault));
 		}
+		//accreditamento provvisorio
 		else {
 			//setta i campi valutati positivamente di default
 			valutazione.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
 		}
 
-		//utente corrente che prende in carico
-		Account segretarioEcm = currentUser.getAccount();
-		valutazione.setAccount(segretarioEcm);
-
-		//accreditamento
-		valutazione.setAccreditamento(accreditamento);
-
-		//tipo di valutatore
-		valutazione.setTipoValutazione(ValutazioneTipoEnum.SEGRETERIA_ECM);
-
 		valutazioneService.save(valutazione);
+
+		//flusso Bonita
+		workflowService.prendiTaskInCarica(currentUser, accreditamento);
 	}
 
 	private Set<FieldValutazioneAccreditamento> handleValutazioniDefaultDiff(Set<FieldValutazioneAccreditamento> valutazioniDiff, Set<FieldValutazioneAccreditamento> valutazioniDefault) {
@@ -1857,7 +1939,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio verbale valutazione sul campo della domanda di Accreditamento " + accreditamentoId));
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-		Account user = Utils.getAuthenticatedUser().getAccount();
 
 		//setta la data
 		valutazione.setDataValutazione(LocalDateTime.now());
@@ -1971,11 +2052,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		workflowService.createWorkflowAccreditamentoVariazioneDati(Utils.getAuthenticatedUser(), accreditamento);
 
 		//si crea già anche la valutazione per la segreteria che sancisce la presa in carico
-		Valutazione valutazioneSegreteria = new Valutazione();
-		valutazioneSegreteria.setAccount(segreteria);
-		valutazioneSegreteria.setAccreditamento(accreditamento);
+		Valutazione valutazioneSegreteria = new Valutazione(segreteria, accreditamento, ValutazioneTipoEnum.SEGRETERIA_ECM);
 		valutazioneSegreteria.setAccreditamentoStatoValutazione(null);
-		valutazioneSegreteria.setTipoValutazione(ValutazioneTipoEnum.SEGRETERIA_ECM);
 		valutazioneSegreteria.setStoricizzato(false);
 		//setta tutti gli esiti a true e bloccati
 		valutazioneSegreteria.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, valutazioneSegreteria.getAccreditamento()));
@@ -2051,11 +2129,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, valutatore, 1, destinazioneVariazioneDati);
 
 				//creo la valutazione per il referee
-				Valutazione valutazioneReferee = new Valutazione();
-				valutazioneReferee.setAccount(refereeVariazioneDati);
-				valutazioneReferee.setAccreditamento(accreditamento);
+				Valutazione valutazioneReferee = new Valutazione(refereeVariazioneDati, accreditamento, ValutazioneTipoEnum.REFEREE);
 				valutazioneReferee.setAccreditamentoStatoValutazione(null);
-				valutazioneReferee.setTipoValutazione(ValutazioneTipoEnum.REFEREE);
 				valutazioneReferee.setStoricizzato(false);
 				//setta tutti gli esiti a true e bloccati
 				valutazioneReferee.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, accreditamento));

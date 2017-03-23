@@ -42,7 +42,7 @@ public interface AccreditamentoService{
 	public void inserisciPianoFormativo(Long accreditamentoId);
 
 	public void inviaDomandaAccreditamento(Long accreditamentoId) throws Exception;
-	public void prendiInCarica(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	public void prendiInCarico(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public void inviaValutazioneDomanda(Long accreditamentoId, String valutazioneComplessiva, Set<Account> refereeGroup, VerbaleValutazioneSulCampo verbale) throws Exception;
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup) throws Exception;
 	public void inserisciInValutazioneCommissioneForSystemUser(Long accreditamentoId) throws Exception;
@@ -126,4 +126,9 @@ public interface AccreditamentoService{
 	public Accreditamento getLastAccreditamentoForProviderId(Long providerId);
 
 	public String[] controllaValidazioneIntegrazione(Long accreditamentoId) throws Exception;
+
+	//post refactoring
+	public void inviaValutazioneSegreteriaAssegnamentoProvvisoria(Long accreditamentoId, String valutazioneComplessiva, Set<Account> referee) throws Exception;
+	public void inviaValutazioneCrecmProvvisoria(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
+	public void inviaValutazioneSegreteriaProvvisorio(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 }

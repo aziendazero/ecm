@@ -14,16 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
-import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.FieldValutazioneAccreditamentoRepository;
 import it.tredi.ecm.utils.Utils;
@@ -34,6 +32,8 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 
 	@Autowired private FieldValutazioneAccreditamentoRepository fieldValutazioneAccreditamentoRepository;
 	@Autowired private ValutazioneService valutazioneService;
+	@Autowired private SedeService sedeService;
+	@Autowired private PersonaService personaService;
 
 	@Override
 	public Set<FieldValutazioneAccreditamento> getAllFieldValutazioneForAccreditamento(Long accreditamentoId) {
@@ -259,7 +259,8 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 			allFieldsValutazione.add(field);
 		}
 		//ripetibili
-		for(Sede sede : accreditamento.getProvider().getSedi()) {
+		Long providerId = accreditamento.getProvider().getId();
+		for(Sede sede : sedeService.getSediFromIntegrazione(providerId)) {
 			for(IdFieldEnum idFESede : IdFieldEnum.getAllForSubset(SubSetFieldEnum.SEDE)) {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
@@ -271,7 +272,7 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 				allFieldsValutazione.add(field);
 			}
 		}
-		for(Persona persona : accreditamento.getProvider().getComponentiComitatoScientifico()) {
+		for(Persona persona : personaService.getComponentiComitatoScientificoFromIntegrazione(providerId)) {
 			for(IdFieldEnum idFECompScie : IdFieldEnum.getAllForSubset(SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO)) {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);

@@ -26,6 +26,7 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -51,8 +52,6 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@Autowired private AlertEmailService alertEmailService;
 	@PersistenceContext EntityManager entityManager;
 	@Autowired private MessageSource messageSource;
-	@Autowired private SedeService sedeService;
-	@Autowired private PersonaService personaService;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -424,6 +423,22 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 					fieldValutazioneAccreditamentoService.save(fia);
 				}
 			}
+		}
+	}
+
+	@Override
+	public void initializeFieldValutazioni(Valutazione valutazione, Accreditamento accreditamento) {
+		LOGGER.debug(Utils.getLogMessage("Creazione fieldValutazioni per valutazione: " + valutazione.getId()));
+
+		if(accreditamento.getStatoUltimaIntegrazione() == null) {
+			valutazione.setValutazioni(fieldValutazioneAccreditamentoService.getValutazioniDefault(accreditamento));
+		}
+		else {
+			valutazione.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, accreditamento));
+			Long accreditamentoId = accreditamento.getId();
+			Long workflowProcessId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+			AccreditamentoStatoEnum statoIntegrazione = accreditamento.getStatoUltimaIntegrazione();
+
 		}
 	}
 

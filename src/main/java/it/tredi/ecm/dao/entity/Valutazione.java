@@ -24,6 +24,15 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Valutazione extends BaseEntityDefaultId{
+
+
+	public Valutazione(){}
+	public Valutazione(Account account, Accreditamento accreditamento, ValutazioneTipoEnum tipo) {
+		this.account = account;
+		this.accreditamento = accreditamento;
+		this.tipoValutazione = tipo;
+	}
+
 	@Column(name="data_valutazione")
 	@JsonView(JsonViewModel.Valutazione.class)
 	private LocalDateTime dataValutazione;

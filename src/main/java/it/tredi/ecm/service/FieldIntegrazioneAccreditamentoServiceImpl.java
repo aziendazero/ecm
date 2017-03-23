@@ -146,6 +146,12 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	}
 
 	@Override
+	public FieldIntegrazioneHistoryContainer getContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId) {
+		LOGGER.debug(Utils.getLogMessage("Recuper container per accreditamento: " + accreditamentoId + " in stato: " + stato + " del workflow: " + processInstanceId));
+		return fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStato(accreditamentoId, processInstanceId, stato);
+	}
+
+	@Override
 	public void applyIntegrazioneInContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId) {
 		LOGGER.debug(Utils.getLogMessage("Segno il container dei Field Integrazione come applicato"));
 		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, processInstanceId, stato);
@@ -171,5 +177,10 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	public void delete(FieldIntegrazioneAccreditamento fia) {
 		LOGGER.debug(Utils.getLogMessage("Eliminazione FieldIntegrazioneAccreditamento: " + fia.getId()));
 		fieldIntegrazioneAccreditamentoRepository.delete(fia);
+	}
+	@Override
+	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneFittiziForAccreditamentoByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero Field Integrazione FITTIZI dal container relativo all'accreditamento " + accreditamentoId + " in stato " + stato));
+		return fieldIntegrazioneAccreditamentoRepository.findAllFittiziByContainer(accreditamentoId, stato.name(), workFlowProcessInstanceId);
 	}
 }

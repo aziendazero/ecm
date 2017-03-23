@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public abstract class FieldIntegrazione extends Field{
-	
+
 	@Type(type = "serializable")
 	private Object newValue;
 	@Column(name="data_modifica")
@@ -26,7 +26,8 @@ public abstract class FieldIntegrazione extends Field{
 	@Enumerated(EnumType.STRING)
 	private TipoIntegrazioneEnum tipoIntegrazioneEnum;
 	private boolean modificato = false;
-	
+	private boolean fittizio = false;
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {

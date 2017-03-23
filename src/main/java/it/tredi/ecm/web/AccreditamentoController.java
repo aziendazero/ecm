@@ -803,7 +803,7 @@ public class AccreditamentoController {
 	public String prendiInCaricoAccreditamento(@PathVariable Long accreditamentoId, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/takeCharge"));
 		try {
-			accreditamentoService.prendiInCarica(accreditamentoId, Utils.getAuthenticatedUser());
+			accreditamentoService.prendiInCarico(accreditamentoId, Utils.getAuthenticatedUser());
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.presa_in_carico", "success"));
 			return "redirect:/accreditamento/{accreditamentoId}/validate";
 		}catch (Exception ex){

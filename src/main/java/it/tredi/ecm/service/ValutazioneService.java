@@ -44,4 +44,7 @@ public interface ValutazioneService {
 	public void setEsitoForEnabledFields(Valutazione valutazione, Boolean esito) throws Exception;
 	public void valutaTuttiSi(Accreditamento accreditamento, Account account);
 	public void resetEsitoAndEnabledForSubset(Valutazione valutazioneReferee, List<FieldValutazioneAccreditamento> campiDaSbloccare);
+
+	//post refactoring
+	public void initializeFieldValutazioni(Valutazione valutazione, Accreditamento accreditamento);
 }
