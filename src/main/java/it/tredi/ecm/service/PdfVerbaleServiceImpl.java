@@ -154,12 +154,13 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 		document.add(Chunk.NEWLINE);
 
         //FONT AWESOME IMAGES
-        imgCheck = Image.getInstance("src/main/resources/static/images/check.png");
+        imgCheck = Image.getInstance("/resources/static/images/check.png");
         imgCheck.scaleAbsolute(16f, 16f);
-        imgRemove = Image.getInstance("src/main/resources/static/images/remove.png");
+        imgRemove = Image.getInstance("/resources/static/images/remove.png");
         imgRemove.scaleAbsolute(15f, 15f);
-        imgQuestion = Image.getInstance("src/main/resources/static/images/question.png");
+        imgQuestion = Image.getInstance("/resources/static/images/question.png");
         imgQuestion.scaleAbsolute(15f, 15f);
+
 
 		//secondo paragrafo VALUTAZIONI
         Valutazione valutazioneSulCampo = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamento.getId());
