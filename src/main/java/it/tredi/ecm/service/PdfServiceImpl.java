@@ -440,8 +440,10 @@ public class PdfServiceImpl implements PdfService {
             if(integrazioneInfo.getListaCriticita() != null && integrazioneInfo.getListaCriticita().size() > 0) {
 	            list = new List(List.ORDERED);
 	            list.setIndentationLeft(indentationLeftList);
-	            for(String criticita : integrazioneInfo.getListaCriticita())
+	            for(String criticita : integrazioneInfo.getListaCriticita()) {
+
 	            	list.add(getListItem(criticita, fontListItemBold));
+	            }
 	            document.add(list);
             }
             //Note seduta

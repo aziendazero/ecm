@@ -428,6 +428,9 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		}
 	}
 
+	/* Inizializza la valutazione di un utente (in genere crecm o team leader) che non ha ancora mai valutato da 0 la domanda
+	 * se ci troviamo in uno stato SUCCESSIVO ad un'integrazione, crea una valutazione completamente valutata positivamente e sblocca/flagga
+	 * solo i campi relativi all'integrazione */
 	@Override
 	public void initializeFieldValutazioni(Valutazione valutazione, Accreditamento accreditamento) {
 		LOGGER.debug(Utils.getLogMessage("Creazione fieldValutazioni per valutazione: " + valutazione.getId()));

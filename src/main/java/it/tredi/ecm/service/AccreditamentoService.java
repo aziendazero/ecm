@@ -111,14 +111,14 @@ public interface AccreditamentoService{
 
 	public void saveFileNoteOsservazioni(Long fileId, Long accreditamentoId);
 	public Set<Accreditamento> getAllDomandeNonValutateByRefereeId(Long refereeId);
-	public void inviaValutazioneSulCampo(Long accreditamentoId, String valutazioneComplessiva, File verbaleFirmatoPdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception;
+	public void inviaValutazioneSulCampoStandard(Long accreditamentoId, String valutazioneComplessiva, File verbaleFirmatoPdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception;
 	public void saveSottoscriventeVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew);
 	public void editScheduleVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew);
 
 	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate dataSeduta, Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception;
 
 	public void inviaEmailConvocazioneValutazioneSulCampo(Long accreditamentoId) throws Exception;
-	public void inviaValutazioneTeamLeader(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
+	public void inviaValutazioneTeamLeaderStandard(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 	public void avviaFlussoVariazioneDati(Accreditamento accreditamento) throws Exception;
 	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId) throws Exception;
 	public void inviaValutazioneVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception;
@@ -128,7 +128,11 @@ public interface AccreditamentoService{
 	public String[] controllaValidazioneIntegrazione(Long accreditamentoId) throws Exception;
 
 	//post refactoring
-	public void inviaValutazioneSegreteriaAssegnamentoProvvisoria(Long accreditamentoId, String valutazioneComplessiva, Set<Account> referee) throws Exception;
-	public void inviaValutazioneCrecmProvvisoria(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
+	public void inviaValutazioneSegreteriaAssegnamentoProvvisorio(Long accreditamentoId, String valutazioneComplessiva, Set<Account> referee) throws Exception;
+	public void inviaValutazioneCrecmProvvisorio(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 	public void inviaValutazioneSegreteriaProvvisorio(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
+	public void inviaValutazioneSegreteriaAssegnamentoStandard(Long accreditamentoId, String valutazioneComplessiva, VerbaleValutazioneSulCampo verbale) throws Exception;
+	public void inviaValutazioneSegreteriaStandard(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
+	public void inviaValutazioneSegreteriaVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception;
+	public void inviaValutazioneCrecmVariazioneDati(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 }
