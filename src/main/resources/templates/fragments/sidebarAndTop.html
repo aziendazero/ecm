@@ -159,7 +159,12 @@
 		                </ul>
 		              </li>
 		              <li class="">
-					    <a target="new" href="http://wiki.3di.it/doku.php?id=documentazione_3di:progetto_ecm:manuale" th:text="#{label.help}"></a>
+					  	<th:block th:if="${#authentication.principal.isSegreteria()}">
+					    	<a target="new" href="http://wiki.3di.it/doku.php?id=documentazione_3di:progetto_ecm:indice&amp;s[]=manuale&amp;s[]=ecm&amp;s[]=segreteria" th:text="#{label.help}"></a>
+					  	</th:block>
+						<th:block th:unless="${#authentication.principal.isSegreteria()}">
+					    	<a target="new" href="http://wiki.3di.it/doku.php?id=documentazione_3di:progetto_ecm:manuale" th:text="#{label.help}"></a>
+					  	</th:block>
 					  </li>
 					  <li class="">
 					    <a target="new" href="https://salute.regione.veneto.it/web/ecm/moduli-e-documenti" th:text="#{label.moduli} + '/' + #{label.documenti}"></a>
