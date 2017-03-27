@@ -21,15 +21,15 @@ import it.tredi.ecm.utils.Utils;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@Ignore
 @ActiveProfiles("abarducci")
 @WithUserDetails("segreteria")
 @Rollback(false)
+@Ignore
 public class CloneTest {
 
 	@Autowired
 	private EventoService eventoService;
-	
+
 	@Test
 	@Ignore
 	@Transactional
@@ -37,11 +37,11 @@ public class CloneTest {
 		Evento evento = eventoService.getEvento(1910L);
 		//Evento eventoClone = SerializationUtils.clone(evento);
 		Evento eventoClone = (Evento)Utils.copy(evento);
-		
+
 		System.out.println("evento.getProvider().getId(): " + evento.getProvider().getId());
 		System.out.println("eventoClone.getProvider().getId(): " + eventoClone.getProvider().getId());
 	}
-	
+
 
 
 }

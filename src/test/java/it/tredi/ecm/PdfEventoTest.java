@@ -29,10 +29,10 @@ import it.tredi.ecm.web.bean.EventoWrapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@Ignore
 @ActiveProfiles("abarducci")
 @WithUserDetails("segreteria")
 //@Rollback(false)
+@Ignore
 public class PdfEventoTest {
 	private static Logger LOGGER = LoggerFactory.getLogger(WorkflowServiceImpl.class);
 

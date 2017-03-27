@@ -63,7 +63,7 @@ import it.tredi.ecm.service.ProviderService;
 @ActiveProfiles("abarducci")
 //@WithUserDetails("provider")
 @Rollback(false)
-//@Ignore
+@Ignore
 public class AuditTest {
 
 	@Autowired private EventoRepository eventoRepository;

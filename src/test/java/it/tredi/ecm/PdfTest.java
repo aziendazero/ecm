@@ -50,10 +50,10 @@ import it.tredi.ecm.service.ValutazioneService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@Ignore
 @ActiveProfiles("abarducci")
 @WithUserDetails("segreteria")
 @Rollback(false)
+@Ignore
 public class PdfTest {
 
 	@Autowired
