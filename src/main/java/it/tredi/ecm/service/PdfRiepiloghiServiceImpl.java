@@ -607,11 +607,15 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         document.add(Chunk.NEWLINE);
 
         //FONT AWESOME IMAGES
-        imgCheck = Image.getInstance("/resources/static/images/check.png");
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        String checkPath = classLoader.getResource("check.png").getPath();
+        String removePath = classLoader.getResource("remove.png").getPath();
+        String questionPath = classLoader.getResource("question.png").getPath();
+        imgCheck = Image.getInstance(checkPath);
         imgCheck.scaleAbsolute(16f, 16f);
-        imgRemove = Image.getInstance("/resources/static/images/remove.png");
+        imgRemove = Image.getInstance(removePath);
         imgRemove.scaleAbsolute(15f, 15f);
-        imgQuestion = Image.getInstance("/resources/static/images/question.png");
+        imgQuestion = Image.getInstance(questionPath);
         imgQuestion.scaleAbsolute(15f, 15f);
 
         //INFORMAZIONI DEL PROVIDER
