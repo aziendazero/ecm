@@ -142,7 +142,8 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 		for(Account a : verbale.getComponentiSegreteria()) {
 			addCellLabelCampoValoreStringWithParam("label.componente_segreteria_numero", new Object[]{(Object)counter}, a.getFullNameBase(), tableFields);
 		}
-		addCellLabelCampoValoreString("label.referente_informatico", verbale.getReferenteInformatico().getFullNameBase(), tableFields);
+		if(verbale.getReferenteInformatico() != null)
+			addCellLabelCampoValoreString("label.referente_informatico", verbale.getReferenteInformatico().getFullNameBase(), tableFields);
 		if(verbale.getIsPresenteLegaleRappresentante() != null) {
 			if(verbale.getIsPresenteLegaleRappresentante())
 				addCellLabelCampoValoreLegaleRappr("label.sottoscrivente", accreditamento.getProvider().getLegaleRappresentante(), tableFields);
@@ -164,7 +165,6 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
         imgRemove.scaleAbsolute(15f, 15f);
         imgQuestion = Image.getInstance(questionPath);
         imgQuestion.scaleAbsolute(15f, 15f);
-
 
 		//secondo paragrafo VALUTAZIONI
         Valutazione valutazioneSulCampo = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamento.getId());
