@@ -37,7 +37,7 @@ import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 @ActiveProfiles("abarducci")
 //@WithUserDetails("provider")
 @Rollback(false)
-//@Ignore
+@Ignore
 public class EventoTest {
 
 	@Autowired private AnagraficaEventoService anagraficaEventoService;

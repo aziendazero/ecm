@@ -48,9 +48,9 @@ import it.tredi.ecm.web.bean.PersonaWrapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@Ignore
 @ActiveProfiles("dev")
 @WithUserDetails("admin")
+@Ignore
 public class PersonaTest {
 
 	@Autowired
@@ -62,7 +62,7 @@ public class PersonaTest {
 	@Autowired private AccreditamentoRepository accreditamentoRepository;
 	@Autowired private ProviderRepository providerRepository;
 	@Autowired private AccountRepository accountRepository;
-	
+
 	private Long personaId;
 	private Long providerId;
 	private Long accreditamentoId;
@@ -72,7 +72,7 @@ public class PersonaTest {
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 	}
-	
+
 	@Before
 	public void init() {
 		Persona persona = new Persona();
@@ -85,7 +85,7 @@ public class PersonaTest {
 		persona.getAnagrafica().setPec("vrossi@pec.com");
 		persona.setRuolo(Ruolo.RESPONSABILE_SEGRETERIA);
 		personaService.save(persona);
-		
+
 		Provider provider = new Provider();
 		provider.setDenominazioneLegale("VR 46");
 		provider.setPartitaIva("00464646460");
@@ -94,7 +94,7 @@ public class PersonaTest {
 		provider.addPersona(persona);
 		//provider.setAccount(account);
 		providerService.save(provider);
-		
+
 		Account account = new Account();
 		account.setUsername("junit");
 		account.setPassword("junit");
@@ -103,9 +103,9 @@ public class PersonaTest {
 		account.setCognome("Provider");
 		account.setProvider(provider);
 		accountRepository.save(account);
-		
+
 		personaService.save(persona);
-		
+
 		try {
 			Accreditamento accreditamento = accreditamentoService.getNewAccreditamentoForProvider(provider.getId(),AccreditamentoTipoEnum.PROVVISORIO);
 			this.personaId = persona.getId();
@@ -115,7 +115,7 @@ public class PersonaTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@After
 	public void clean(){
 		accreditamentoRepository.delete(this.accreditamentoId);
@@ -127,19 +127,19 @@ public class PersonaTest {
 	public void editPersona() throws Exception {
 		ResultActions actions = this.mockMvc.perform(get("/accreditamento/{accreditamentoId}/provider/{providerId}/persona/{personaId}/edit",accreditamentoId,providerId,personaId));
 		ModelAndView modelAndView =  actions.andExpect(status().isOk()).andReturn().getModelAndView();
-		
+
 		PersonaWrapper wrapper = (PersonaWrapper) modelAndView.getModel().get("personaWrapper");
 		assertEquals(personaId, wrapper.getPersona().getId());
 		assertEquals("Rossi", wrapper.getPersona().getAnagrafica().getCognome());
 		assertEquals("Valentino", wrapper.getPersona().getAnagrafica().getNome());
 		assertEquals("VLNRSS79B16V466R", wrapper.getPersona().getAnagrafica().getCodiceFiscale());
 		assertEquals(0, wrapper.getFiles().size());
-		
+
 		//lancio salvataggio con errori
 		wrapper.getPersona().getAnagrafica().setCognome("");
 		wrapper.getPersona().getAnagrafica().setNome("PLUTO");
 		salvaPersona(wrapper);
-		
+
 		assertEquals(personaId, wrapper.getPersona().getId());
 		assertEquals("", wrapper.getPersona().getAnagrafica().getCognome());
 		assertEquals("PLUTO", wrapper.getPersona().getAnagrafica().getNome());
@@ -151,19 +151,19 @@ public class PersonaTest {
 		wrapper.getPersona().getAnagrafica().setCognome("Romano");
 		wrapper.getPersona().getAnagrafica().setNome("");
 		salvaPersona(wrapper);
-		
+
 		assertEquals(personaId, wrapper.getPersona().getId());
 		assertEquals("Romano", wrapper.getPersona().getAnagrafica().getCognome());
 		assertEquals("", wrapper.getPersona().getAnagrafica().getNome());
 		assertEquals("VLNRSS79B16V466R", wrapper.getPersona().getAnagrafica().getCodiceFiscale());
 		assertEquals(0, wrapper.getFiles().size());
 		assertNotNull(wrapper.getDelega().getId());
-				
+
 		wrapper.getPersona().getAnagrafica().setCognome("Jorge");
 		wrapper.getPersona().getAnagrafica().setNome("Lorenzo");
 		uploadFile(FileEnum.FILE_CV,0L);
 		salvaPersona(wrapper);
-		
+
 		assertEquals(personaId, wrapper.getPersona().getId());
 		assertEquals("Jorge", wrapper.getPersona().getAnagrafica().getCognome());
 		assertEquals("Lorenzo", wrapper.getPersona().getAnagrafica().getNome());
@@ -195,7 +195,7 @@ public class PersonaTest {
 			printPersona(persona);
 			printWrapper(wrapper);
 		}
-		else{ 
+		else{
 			System.out.println("SALVATAGGIO RIUSCITO CORRETTAMENTE");
 			System.out.println("----DATABASE----");
 			printPersona(persona);
@@ -204,8 +204,8 @@ public class PersonaTest {
 	}
 
 	public void uploadFile(FileEnum tipo, Long fileId) throws Exception {
-		FileInputStream inputFile = new FileInputStream("C:\\Users\\dpranteda\\Pictures\\Balocco.jpg");  
-		MockMultipartFile multiPartFile = new MockMultipartFile("multiPartFile", "wlf.jpg", "multipart/form-data", inputFile); 
+		FileInputStream inputFile = new FileInputStream("C:\\Users\\dpranteda\\Pictures\\Balocco.jpg");
+		MockMultipartFile multiPartFile = new MockMultipartFile("multiPartFile", "wlf.jpg", "multipart/form-data", inputFile);
 
 		ResultActions actions = this.mockMvc.perform(fileUpload("/file/upload")
 				.file(multiPartFile)
@@ -218,7 +218,7 @@ public class PersonaTest {
 
 		System.out.println(response);
 	}
-	
+
 	private void printWrapper(PersonaWrapper wrapper){
 		System.out.println("----WRAPPER---");
 		printPersona(wrapper.getPersona());
