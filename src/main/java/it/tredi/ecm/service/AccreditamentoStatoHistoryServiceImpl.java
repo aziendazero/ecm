@@ -22,13 +22,13 @@ public class AccreditamentoStatoHistoryServiceImpl implements AccreditamentoStat
 	@Override
 	public Set<AccreditamentoStatoHistory> getAllByAccreditamentoId(Long accreditamentoId) {
 		LOGGER.info("Recupero history accreditamento");
-		return accreditamentoStatoHistoryRepository.findAllByAccreditamentoIdOrderByDataFine(accreditamentoId);
+		return accreditamentoStatoHistoryRepository.findAllByAccreditamentoIdOrderByDataInizio(accreditamentoId);
 	}
 
 	@Override
 	public Set<AccreditamentoStatoHistory> getAllByAccreditamentoIdAndProcessInstanceId(Long accreditamentoId, Long processInstanceId) {
 		LOGGER.info("Recupero history accreditamento " + accreditamentoId + " per il workflow " + processInstanceId);
-		return accreditamentoStatoHistoryRepository.findAllByAccreditamentoIdAndProcessInstanceIdOrderByDataFine(accreditamentoId, processInstanceId);
+		return accreditamentoStatoHistoryRepository.findAllByAccreditamentoIdAndProcessInstanceIdOrderByDataInizio(accreditamentoId, processInstanceId);
 	}
 
 	@Override
