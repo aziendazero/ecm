@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<professioni>
+	<p id="1">Medico chirurgo</p>
+	<p id="2">Odontoiatra</p>	
+	<p id="3">Farmacista</p>
+	<p id="4">Veterinario</p>	
+	<p id="5">Psicologo</p>	
+	<p id="6">Biologo</p>	
+	<p id="7">Chimico</p>	
+	<p id="8">Fisico</p>	
+	<p id="9">Assistente sanitario</p>	
+	<p id="10">Dietista</p>	
+	<p id="11">Educatore professionale</p>	
+	<p id="12">Fisioterapista</p>	
+	<p id="13">Igienista dentale</p>	
+	<p id="14">Infermiere</p>	
+	<p id="15">Infermiere pediatrico</p>	
+	<p id="16">Logopedista</p>	
+	<p id="17">Ortottista/assistente di oftalmologia</p>	
+	<p id="18">Ostetrica/o</p>	
+	<p id="19">Podologo</p>	
+	<p id="20">Tecnico audiometrista</p>	
+	<p id="21">Tecnico audioprotesista</p>	
+	<p id="22">Tecnico della fisiopatologia cardiocircolatoria e perfusione cardiovascolare</p>	
+	<p id="23">Tecnico della prevenzione nell'ambiente e nei luoghi di lavoro</p>	
+	<p id="24">Tecnico della riabilitazione psichiatrica</p>	
+	<p id="25">Tecnico di neurofisiopatologia</p>	
+	<p id="26">Tecnico ortopedico</p>	
+	<p id="27">Tecnico sanitario di radiologia medica</p>	
+	<p id="28">Tecnico sanitario laboratorio biomedico</p>	
+	<p id="29">Terapista della neuro e psicomotricita' dell'eta' evolutiva</p>	
+	<p id="30">Terapista occupazionale</p>																											
+</professioni>

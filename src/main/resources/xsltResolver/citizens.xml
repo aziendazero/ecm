@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<dataroot>
+	<evento cod_evento="14-200000" cod_edi="1" cod_org="14"
+		cod_accr="050" data_ini="2017-02-12" data_fine="2017-02-19" ore="19"
+		crediti="3.8" tipo_form="3" tipo_eve="E" cod_obi="23" num_part="201"
+		cod_tipologia_form="3">
+		<partecipante cod_fisc="LCNLSE84B55H501K" nome="Mario"
+			cognome="Rossi" ruolo="P" lib_dip="D" cred_acq="03.0" data_acq="2017-02-19"
+			part_reclutato="1" sponsor="Ciao Sponsor">
+			<professione cod_prof="11">
+				<disciplina>83</disciplina>
+			</professione>
+		</partecipante>
+		<partecipante cod_fisc="RSSMRA80A01F205X" nome="Antonio"
+			cognome="Verdi" ruolo="D" lib_dip="L" cred_acq="03.0" data_acq="2017-02-19"
+			part_reclutato="0" sponsor="Ciao Sponsor">
+			<professione cod_prof="11">
+				<disciplina>83</disciplina>
+			</professione>
+		</partecipante>
+	</evento>
+</dataroot>

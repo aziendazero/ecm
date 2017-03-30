@@ -6,6 +6,90 @@
 </head>
 <body>
 	<div layout:fragment="content">
+
+		<!-- modale show XSLT  -->
+		<div id="xslt-modal" class="modal fade modal-xslt" data-model-index="2" role="dialog" style="z-index: 9999;">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" th:text="#{label.report_rendicontazione}">Report della Rendicontanzione</h4>
+					</div>
+					<div id="contentModalXSLT" class="modal-body">
+						<!-- risultato della view XSLT chiamata con ajax -->
+					</div>
+					<div class="modal-footer">
+						<button class="pull-right btn btn-primary" onclick="closeModaleXSLT()" th:text="#{label.chiudi}"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- modale rendicontazioni precedenti  -->
+		<div id="rendicontazioniPrecedenti-modal" class="modal fade modal-rendicontazioniPrecedenti" data-model-index="1" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" th:text="#{label.invii_precedenti}">Invii precedenti</h4>
+					</div>
+					<div class="modal-body">
+						<div th:each="rendicontazione, row:${eventoWrapperRendiconto.evento.inviiRendicontazione}">
+							<div th:if="${row.index != 0}">
+								<div class="row with-margin-top" th:if="${rendicontazione.dataInvio}">
+									<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
+										<span class="label-show" th:text="#{label.data_invio}"></span>
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+										<div class="value"><span th:text="${#temporals.format(rendicontazione.dataInvio, 'dd/MM/yyyy HH:mm')}" /></div>
+									</div>
+								</div>
+								<div class="row with-margin-top" th:if="${rendicontazione.accountInvio}">
+									<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
+										<span class="label-show" th:text="#{label.utente}"></span>
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+										<div class="value"><span th:text="${rendicontazione.accountInvio.fullName}"/></div>
+									</div>
+								</div>
+								<div class="row with-margin-top" th:if="${rendicontazione.result}">
+									<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
+										<span class="label-show" th:text="#{label.risultato}"></span>
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+										<div class="value">
+											<span th:text="${rendicontazione.result.nome}"/>
+											<input type="hidden" th:id="${'statoElaborazioneJsonResponse-' + row.index}" th:value="${rendicontazione.response}"/>
+											<i th:if="${rendicontazione.result == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum).ERROR}" class="fa fa-list-alt" th:id="${'statoElaborazioneErroreBloccante-' + row.index}"></i>
+										</div>
+									</div>
+								</div>
+								<div class="row with-margin-top">
+									<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
+										<span class="label-show" th:text="#{label.reportPartecipantiXML}"></span>
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+										<div class="value col-xs-10"><i class="fa fa-download"> </i> <a th:text="${rendicontazione.fileRendicontazione.nomeFile}" th:href="@{|/file/${rendicontazione.fileRendicontazione.id}|}"></a></div>
+										<button class="btn btn-success pull-right" th:text="#{label.mostra}" th:onclick="|mostraXSLT(${eventoWrapperRendiconto.evento.ultimaRendicontazioneInviata.fileRendicontazione.id})|"></button>
+									</div>
+								</div>
+								<div class="divider" th:unless="${row.last}"></div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button onclick="closeInviiPrecedenti()" class="btn btn-primary pull-right" th:text="#{label.chiudi}"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -161,70 +245,13 @@
 						<div class="item form-group with-margin-top" th:if="${#lists.size(eventoWrapperRendiconto.evento.inviiRendicontazione)>1}">
 							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-7"></div>
 							<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
+								<button class="btn btn-success" th:text="#{label.mostra}" th:onclick="|mostraXSLT(${eventoWrapperRendiconto.evento.ultimaRendicontazioneInviata.fileRendicontazione.id})|"></button>
 								<button class="btn btn-primary" th:text="#{label.mostra_invii_precedenti}" data-toggle="modal" data-target=".modal-rendicontazioniPrecedenti"></button>
 							</div>
 						</div>
 						<div th:unless="${eventoWrapperRendiconto.evento.ultimaRendicontazioneInviata}" class="value" th:text="#{label.nessuna_rendicontazione_inviata}"></div>
 					</div>
-
-					<!-- modale rendicontazioni precedenti  -->
-					<div id="rendicontazioniPrecedenti-modal" class="modal fade modal-rendicontazioniPrecedenti" data-model-index="1" role="dialog">
-						<div class="modal-dialog modal-lg">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal">
-										<span aria-hidden="true">×</span>
-									</button>
-									<h4 class="modal-title" th:text="#{label.invii_precedenti}">Invii precedenti</h4>
-								</div>
-								<div class="modal-body">
-									<div th:each="rendicontazione, row:${eventoWrapperRendiconto.evento.inviiRendicontazione}">
-										<div th:if="${row.index != 0}">
-											<div class="row with-margin-top" th:if="${rendicontazione.dataInvio}">
-												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
-													<span class="label-show" th:text="#{label.data_invio}"></span>
-												</label>
-												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-													<div class="value"><span th:text="${#temporals.format(rendicontazione.dataInvio, 'dd/MM/yyyy HH:mm')}" /></div>
-												</div>
-											</div>
-											<div class="row with-margin-top" th:if="${rendicontazione.accountInvio}">
-												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
-													<span class="label-show" th:text="#{label.utente}"></span>
-												</label>
-												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-													<div class="value"><span th:text="${rendicontazione.accountInvio.fullName}"/></div>
-												</div>
-											</div>
-											<div class="row with-margin-top" th:if="${rendicontazione.result}">
-												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
-													<span class="label-show" th:text="#{label.risultato}"></span>
-												</label>
-												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-													<div class="value">
-														<span th:text="${rendicontazione.result.nome}"/>
-														<input type="hidden" th:id="${'statoElaborazioneJsonResponse-' + row.index}" th:value="${rendicontazione.response}"/>
-														<i th:if="${rendicontazione.result == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum).ERROR}" class="fa fa-list-alt" th:id="${'statoElaborazioneErroreBloccante-' + row.index}"></i>
-													</div>
-												</div>
-											</div>
-											<div class="row with-margin-top">
-												<label class="col-lg-4 col-md-4 col-sm-4 col-xs-7">
-													<span class="label-show" th:text="#{label.reportPartecipantiXML}"></span>
-												</label>
-												<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-													<div class="value"><i class="fa fa-download"> </i> <a th:text="${rendicontazione.fileRendicontazione.nomeFile}" th:href="@{|/file/${rendicontazione.fileRendicontazione.id}|}"></a></div>
-												</div>
-											</div>
-											<div class="divider"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
 				</div>
-
 			</div>
 
 			<div class="col-lg-12 col-xs-12">
@@ -271,6 +298,17 @@
 
 					});
 
+					$('#stocazzo').DataTable({
+						"bFilter" : false,
+						"bPaginate": false,
+						"bInfo" : false,
+					});
+
+					$('#xslt-modal').on('hidden.bs.modal', function () {
+						$("#contentModalXSLT").empty().html("");
+					})
+
+
 					//json cogeaps stato elaborazione response (ultimo invio)
 					if (typeof($('#statoElaborazioneJsonResponse').val()) != 'undefined') {
 					    var obj = $.parseJSON($('#statoElaborazioneJsonResponse').val());
@@ -291,6 +329,22 @@
 				function spinCog() {
 					$(".fa-cog").addClass("fa-spin");
 				}
+
+				function mostraXSLT(idFile) {
+					var url = [[@{|/provider/${eventoWrapperRendiconto.providerId}/evento/${eventoWrapperRendiconto.evento.id}/viewXSLT/|}]] + idFile;
+					$("#contentModalXSLT").load(url, function(data) {
+						$("#xslt-modal").modal("show");
+					});
+				}
+
+				function closeModaleXSLT() {
+					$("#xslt-modal").modal("hide");
+				}
+
+				function closeInviiPrecedenti() {
+					$("#rendicontazioniPrecedenti-modal").modal("hide");
+				}
+
 			/*]]>*/
 		</script>
 	</div>

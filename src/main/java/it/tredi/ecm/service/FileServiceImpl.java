@@ -13,12 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.FileData;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.repository.FileRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.Message;
 
 @Service
 public class FileServiceImpl implements FileService{
@@ -78,6 +80,22 @@ public class FileServiceImpl implements FileService{
 			return fileCopiato;
 		}
 		else return null;
+	}
+
+	@Override
+	public byte[] sbustaP7mById(Long fileId) throws Exception {
+		File file = getFile(fileId);
+
+		if(file == null)
+			throw new Exception("File: " + fileId + " is null");
+
+		String fileName = file.getNomeFile().trim().toUpperCase();
+
+		byte[] xmlSbustato = null;
+		if (fileName.endsWith(".XML") || fileName.endsWith(".XML.P7M") || fileName.endsWith(".XML.ZIP.P7M")) {
+			xmlSbustato = XmlReportValidator.extractXml(fileName, file.getData());
+		}
+		return xmlSbustato;
 	}
 
 //	@Override

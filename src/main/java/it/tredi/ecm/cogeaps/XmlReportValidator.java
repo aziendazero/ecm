@@ -56,7 +56,7 @@ public class XmlReportValidator {
 		}
 	}
 
-	private static byte []extractXml(String fileName, byte []data) throws Exception {
+	public static byte []extractXml(String fileName, byte []data) throws Exception {
 		//se P7M -> sbusto
 		if (fileName.trim().toUpperCase().endsWith(".P7M"))
 			data = extraxtFromP7m(data);

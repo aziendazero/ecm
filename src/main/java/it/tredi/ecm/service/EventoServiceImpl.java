@@ -1151,9 +1151,9 @@ public class EventoServiceImpl implements EventoService {
 		return riedizione;
 	}
 
-	//si può fareeeeeee (Iomminstein mode on)... sigh devo proprio andare in vacanza...
+	//sigh devo proprio andare in vacanza...
 	/* funzione di detach ad hoc (detachare veramente tutto ricorsivamente non conviene proprio a
-	 * causa di Entity come Provider e Accreditamento presenti in Evento.
+	 * causa di Entity come Provider e Accreditamento presenti in Evento.che innesterebbero un loop di detach)
 	 * */
 	@Override
 	public Evento detachEvento(Evento eventoPadre) throws Exception{

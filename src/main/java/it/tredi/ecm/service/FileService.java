@@ -11,4 +11,5 @@ public interface FileService {
 	public HashMap<FileEnum,Long> getModelFileIds();
 	public File copyFile(File file) throws CloneNotSupportedException;
 	//public void deleteById(Long id);
+	public byte[] sbustaP7mById(Long fileId) throws Exception;
 }
