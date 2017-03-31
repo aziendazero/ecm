@@ -152,11 +152,11 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		DatiEconomici datiEconomici = dati.getDatiEconomici();
 
 		//TITOLO
-		Object[] values = {accreditamento.getTipoDomanda().getNome(), longFormatter.print(accreditamento.getId(), Locale.getDefault()), accreditamento.getStato().getNome(), provider.getDenominazioneLegale()};
+		Object[] values = {accreditamento.getTipoDomanda().getNome(), provider.getDenominazioneLegale(), longFormatter.print(provider.getId(), Locale.getDefault())};
         Paragraph parTitolo = new Paragraph();
         parTitolo.setAlignment(Element.ALIGN_LEFT);
         parTitolo.setFont(fontTitolo);
-        parTitolo.add(messageSource.getMessage("label.riepilogo_domandaTipo_domandaId_domandaStato_providerDenominazione", values, Locale.getDefault()));
+        parTitolo.add(messageSource.getMessage("label.riepilogo_domandaTipo_providerDenominazione_providerId", values, Locale.getDefault()));
         document.add(parTitolo);
 
         document.add(Chunk.NEWLINE);
@@ -543,11 +543,11 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		Provider provider = accreditamento.getProvider();
 
 		//TITOLO
-		Object[] values = {intFormatter.print(accreditamento.getPianoFormativo().getAnnoPianoFormativo(), Locale.getDefault()), accreditamento.getTipoDomanda().getNome(), longFormatter.print(accreditamento.getId(), Locale.getDefault()), provider.getDenominazioneLegale()};
+		Object[] values = {intFormatter.print(accreditamento.getPianoFormativo().getAnnoPianoFormativo(), Locale.getDefault()), accreditamento.getTipoDomanda().getNome(), provider.getDenominazioneLegale(), longFormatter.print(provider.getId(), Locale.getDefault())};
         Paragraph parTitolo = new Paragraph();
         parTitolo.setAlignment(Element.ALIGN_LEFT);
         parTitolo.setFont(fontTitolo);
-        parTitolo.add(messageSource.getMessage("label.riepilogo_pf_domandaTipo_domandaId_providerDenominazione", values, Locale.getDefault()));
+        parTitolo.add(messageSource.getMessage("label.riepilogo_pf_domandaTipo_providerDenominazione_providerId", values, Locale.getDefault()));
         document.add(parTitolo);
 
         document.add(Chunk.NEWLINE);
@@ -579,11 +579,11 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		Provider provider = accreditamento.getProvider();
 
 		//TITOLO
-		Object[] values = {valutazione.getAccount().getFullName(), accreditamento.getTipoDomanda().getNome(), longFormatter.print(accreditamento.getId(), Locale.getDefault()), provider.getDenominazioneLegale()};
+		Object[] values = {valutazione.getAccount().getFullName(), accreditamento.getTipoDomanda().getNome(), provider.getDenominazioneLegale(), longFormatter.print(provider.getId(), Locale.getDefault())};
         Paragraph parTitolo = new Paragraph();
         parTitolo.setAlignment(Element.ALIGN_LEFT);
         parTitolo.setFont(fontTitolo);
-        parTitolo.add(messageSource.getMessage("label.riepilogo_valutazione_domandaTipo_domandaId_providerDenominazione_valutatoreFullNome", values, Locale.getDefault()));
+        parTitolo.add(messageSource.getMessage("label.riepilogo_valutazione_valutatoreFullNome_domandaTipo_providerDenominazione_providerId", values, Locale.getDefault()));
         document.add(parTitolo);
 
         document.add(Chunk.NEWLINE);

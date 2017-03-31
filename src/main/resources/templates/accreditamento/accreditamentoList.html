@@ -105,6 +105,7 @@
 										<div th:text="${accreditamento.stato.nome}">Accettata</div>
 										<div th:if="${accreditamento.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" th:text="${'entro il ' + #temporals.format(accreditamento.dataIntegrazioneInizio.plusDays(accreditamento.giorniIntegrazione), 'dd/MM/yyyy')}"></div>
 										<div th:if="${accreditamento.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).PREAVVISO_RIGETTO}" th:text="${'entro il ' + #temporals.format(accreditamento.dataPreavvisoRigettoInizio.plusDays(accreditamento.giorniPreavvisoRigetto), 'dd/MM/yyyy')}"></div>
+										<div th:if="${accreditamento.isModificaDati()}" th:text="${'variazione dati entro il ' + #temporals.format(accreditamento.getWorkflowInCorso().dataAvvio.plusDays(@ecmProperties.getGiorniVariazioneDatiAccreditamento()), 'dd/MM/yyyy')}"></div>
 									</td>
 
 									<td th:text="${accreditamento.dataInvio == null} ? '' : ${#temporals.format(accreditamento.dataInvio, 'dd/MM/yyyy')}">22/05/2014</td>

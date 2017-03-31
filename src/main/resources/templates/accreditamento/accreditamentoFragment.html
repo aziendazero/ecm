@@ -1420,7 +1420,6 @@
 						</div>
 						<!-- TAB 8 -->
 						<div th:if="${!#authentication.principal.account.isProvider() and showOnly and accreditamentoWrapper.accreditamento.isStoriaFlussoPresente()}" role="tabpanel" class="tab-pane fade" id="tab_content8" aria-labelledby="tab8">
-							<!--  TAB 7 -->
 							<div class="row">
 								<div class="col-xs-12">
 
@@ -1495,7 +1494,8 @@
 													<tr th:each="history, row : ${accreditamentoHistoryDecadenzaList}">
 														<td th:text="${history.dataInizio != null} ? ${#temporals.format(history.dataInizio,'dd/MM/yyyy - HH:mm')} : ''"></td>
 														<td th:unless="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome}"></td>
-														<td th:if="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome + ' ' + (history?.presaVisione ? #messages.msg('label.presa_visione_segreteria') : '')}"></td>
+														<td th:unless="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome}"></td>
+														<td th:if="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome + ' ' + #messages.msg('label.provider_ha_richiesto_conclusione_procedimento')}"></td>
 														<!-- td th:text="${history?.account?.username}"></td -->
 													</tr>
 												</tbody>

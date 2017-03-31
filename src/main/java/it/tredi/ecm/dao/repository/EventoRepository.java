@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.repository.query.Param;
 
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 
@@ -45,6 +46,8 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Evento findOneByPrefix(String prefix);
 	public Evento findOneByPrefixAndEdizione(String prefix, int edizione);
 
-	public Set<Evento> findAllByContenutiEvento(ContenutiEventoEnum contenutiEvento);
-	public Integer countAllByContenutiEvento(ContenutiEventoEnum contenutiEvento);
+	public Integer countAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum medicineNonConvenzionale, Obiettivo nonConvenzionale);
+	public Set<Evento> findAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum medicineNonConvenzionale, Obiettivo nonConvenzionale);
+	public Integer countAllByContenutiEvento(ContenutiEventoEnum alimentazionePrimaInfanzia);
+	public Set<Evento> findAllByContenutiEvento(ContenutiEventoEnum alimentazionePrimaInfanzia);
 }

@@ -2,7 +2,6 @@ package it.tredi.ecm.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,12 +47,12 @@ import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -117,6 +116,8 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private EcmProperties ecmProperties;
 
 	@Autowired private PersonaEventoService personaEventoService;
+
+	@Autowired private ObiettivoService obiettivoService;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -1969,12 +1970,16 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public Set<Evento> getEventiMedicineNonConvenzionali(){
 		LOGGER.debug("Recupero eventi con medicine non convenzionali");
-		return eventoRepository.findAllByContenutiEvento(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE);
+		//l'obiettivo 1042 è un obiettivo nazionale (medicine non convenzionali)
+		Obiettivo nonConvenzionale = obiettivoService.getObiettivo(1042L);
+		return eventoRepository.findAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE, nonConvenzionale);
 	}
 
 	@Override
 	public Integer countAllEventiMedicineNonConvenzionali(){
 		LOGGER.debug("Conteggio eventi con medicine non convenzionali");
-		return eventoRepository.countAllByContenutiEvento(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE);
+		//l'obiettivo 1042 è un obiettivo nazionale (medicine non convenzionali)
+		Obiettivo nonConvenzionale = obiettivoService.getObiettivo(1042L);
+		return eventoRepository.countAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE, nonConvenzionale);
 	}
 }
