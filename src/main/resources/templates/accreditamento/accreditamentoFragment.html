@@ -1168,27 +1168,53 @@
 												</tbody>
 											</table>
 
-											<div class="divider"></div>
+											<table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"  th:classappend="${'datatable-responsive-accreditamento-'+mode}">
+												<thead>
+													<tr>
+														<th th:text="#{label.osservazioni_provider_team_leader}">Sottoscrivente della Valutazione sul Campo</th>
+														<th th:text="#{label.stato_inserimento}">label.stato_valutazione</th>
+														<th th:if="${hasActionButtons}" th:text="#{label.azioni}">label.azioni</th>
+													</tr>
+												</thead>
+												<tbody>
+													<!-- OSSERVAZIONI -->
+													<tr>
+														<td><div th:text="#{label.osservazioni}"></div></td>
+														<td	th:if="${accreditamentoWrapper.osservazioniStato}">
+															<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
+														</td>
+														<td	th:unless="${accreditamentoWrapper.osservazioniStato}">
+															<i class="fa table-icon fa-remove grey" th:title="#{label.facoltativo}"></i>
+														</td>
+														<td th:if="${valutabile}">
+															<a th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbaleValutazioneSulCampo/${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.id}/insertOsservazioni|}" class="btn btn-primary btn-table single"><i class="fa" th:classappend="${accreditamentoWrapper.canValutaDomanda ? 'fa-pencil': 'fa-eye'}"></i> <span th:text="${accreditamentoWrapper.canValutaDomanda} ? #{label.inserisci} : #{label.mostra}">Valuta/Mostra</span></a>
+														</td>
+													</tr>
 
-											<div class="item form-group">
-												<label class="col-lg-2 col-md-2 col-sm-4 col-xs-4" for="osservazioniTeam">
-													<span th:text="#{label.osservazioni_team_valutazione}"></span>
-												</label>
-												<textarea class="required" id="osservazioniTeam" rows="4" name="osservazioniTeam"
-													style="resize: none;" th:field="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.datiValutazioneSulCampo.osservazioniTeamValutazione}">
-												</textarea>
-											</div>
+												</tbody>
+											</table>
 
-											<div class="divider"></div>
+<!-- 											<div class="divider"></div> -->
 
-											<div class="item form-group">
-												<label class="col-lg-2 col-md-2 col-sm-4 col-xs-4" for="osservazioniProvider">
-													<span th:text="#{label.osservazioni_del_provider}"></span>
-												</label>
-												<textarea class="required" id="osservazioniProvider" rows="4" name="osservazioniProvider"
-													style="resize: none;" th:field="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.datiValutazioneSulCampo.osservazioniDelProvider}">
-												</textarea>
-											</div>
+<!-- 											<div class="item form-group"> -->
+<!-- 												<label class="col-lg-2 col-md-2 col-sm-4 col-xs-4" for="osservazioniTeam"> -->
+<!-- 													<span th:text="#{label.osservazioni_team_valutazione}"></span> -->
+<!-- 												</label> -->
+<!-- 												<textarea class="required" id="osservazioniTeam" rows="4" name="osservazioniTeam" -->
+<!-- 													style="resize: none;" th:field="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.datiValutazioneSulCampo.osservazioniTeamValutazione}"> -->
+<!-- 												</textarea> -->
+<!-- 											</div> -->
+
+<!-- 											<div class="divider"></div> -->
+
+<!-- 											<div class="item form-group"> -->
+<!-- 												<label class="col-lg-2 col-md-2 col-sm-4 col-xs-4" for="osservazioniProvider"> -->
+<!-- 													<span th:text="#{label.osservazioni_del_provider}"></span> -->
+<!-- 												</label> -->
+<!-- 												<textarea class="required" id="osservazioniProvider" rows="4" name="osservazioniProvider" -->
+<!-- 													style="resize: none;" th:field="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.datiValutazioneSulCampo.osservazioniDelProvider}"> -->
+<!-- 												</textarea> -->
+<!-- 											</div> -->
 										</div>
 									</div>
 								</div>

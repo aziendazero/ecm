@@ -1113,7 +1113,8 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 
 	private void addTableValutazione(List<FieldValutazioneAccreditamento> orderedVal, PdfPTable table) throws Exception {
 		for(FieldValutazioneAccreditamento fva : orderedVal) {
-			addCellSubTable(intFormatter.print(fva.getIdField().getIdEcm(), Locale.getDefault()), table);
+//			addCellSubTable(intFormatter.print(fva.getIdField().getIdEcm(), Locale.getDefault()), table);
+			addCellSubTable(intFormatter.print(fva.getId(), Locale.getDefault()), table);
 			addCellSubTable(messageSource.getMessage("IdFieldEnum_valutazione." + fva.getIdField().name(), null, Locale.getDefault()), table);
 			addCellSubTable(getIconForValutazione(fva.getEsito()), table);
 			addCellSubTable(getNoteForValutazione(fva.getNote()), table);
@@ -1123,7 +1124,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 	private List<FieldValutazioneAccreditamento> getOrderedFieldValutazioneBySubset(Set<FieldValutazioneAccreditamento> valutazioni, SubSetFieldEnum subset) {
 		List<FieldValutazioneAccreditamento> result = new ArrayList<FieldValutazioneAccreditamento>();
 		for(FieldValutazioneAccreditamento fva : valutazioni) {
-			if(fva.getIdField().getSubSetField() == subset  && fva.getIdField().getIdEcm() != -1)
+			if(fva.getIdField().getSubSetField() == subset && fva.getIdField().getIdEcm() != -1)
 				result.add(fva);
 		}
 		result.sort((fva1, fva2) -> Integer.compare(fva1.getIdField().getIdEcm(), fva2.getIdField().getIdEcm()));
@@ -1143,7 +1144,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 	private List<FieldValutazioneAccreditamento> getOrderedFieldValutazioneTipologiaFormativa(Set<FieldValutazioneAccreditamento> valutazioni, Set<IdFieldEnum> setIdField) {
 		List<FieldValutazioneAccreditamento> result = new ArrayList<FieldValutazioneAccreditamento>();
 		for(FieldValutazioneAccreditamento fva : valutazioni) {
-			if(setIdField.contains(fva.getIdField()))
+			if(setIdField.contains(fva.getIdField()) && fva.getIdField().getIdEcm() != -1)
 				result.add(fva);
 		}
 		result.sort((fva1, fva2) -> Integer.compare(fva1.getIdField().getIdEcm(), fva2.getIdField().getIdEcm()));

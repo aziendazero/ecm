@@ -1490,3 +1490,7 @@ li.listStyle-elenco > label{
 	margin-bottom: 0 !important;
 	font-size: 14px !important;
 }
+
+.removeOption {
+	color: red !important;
+}

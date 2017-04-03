@@ -276,6 +276,7 @@ public class EmailServiceImpl implements EmailService {
 		Context context = new Context();
 		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
 		context.setVariable("data", data);
+		context.setVariable("provider", provider);
 		String message = templateEngine.process("convocazioneValutazioneSulCampo", context);
 
 		for(String email : valutatori){

@@ -35,9 +35,11 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DelegatoValutazioneSulCampo;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 
 @Service
@@ -125,12 +127,14 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 
         Object[] values = {accreditamento.getProvider().getCodiceIdentificativoUnivoco(), accreditamento.getProvider().getDenominazioneLegale()};
         VerbaleValutazioneSulCampo verbale = accreditamento.getVerbaleValutazioneSulCampo();
+        Provider provider = accreditamento.getProvider();
+
 
         //primo paragrafo INFO
         Paragraph parTitolo = new Paragraph();
         parTitolo.setAlignment(Element.ALIGN_LEFT);
         parTitolo.setFont(fontTitolo);
-        parTitolo.add(messageSource.getMessage("label.dati_verbale", values, Locale.getDefault()));
+        parTitolo.add(messageSource.getMessage("label.accreditamento_standard_verbale_visita_in_loco", values, Locale.getDefault()));
         document.add(parTitolo);
 
 		PdfPTable tableFields = getTableFields();
@@ -138,9 +142,8 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 		addCellLabelCampoValoreString("label.sede", verbale.getSede().getAddressNameFull(), tableFields);
 		addCellLabelCampoValoreString("label.componente_crec_team_leader", verbale.getTeamLeader().getFullNameBase(), tableFields);
 		addCellLabelCampoValoreString("label.osservatore_regionale", verbale.getOsservatoreRegionale().getFullNameBase(), tableFields);
-		int counter = 1;
 		for(Account a : verbale.getComponentiSegreteria()) {
-			addCellLabelCampoValoreStringWithParam("label.componente_segreteria_numero", new Object[]{(Object)counter}, a.getFullNameBase(), tableFields);
+			addCellLabelCampoValoreStringWithParam("label.componente_segreteria_ecm", null, a.getFullNameBase(), tableFields);
 		}
 		if(verbale.getReferenteInformatico() != null)
 			addCellLabelCampoValoreString("label.referente_informatico", verbale.getReferenteInformatico().getFullNameBase(), tableFields);
@@ -188,7 +191,7 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 	        Paragraph par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_LEFT);
 	        par.setFont(fontParTitolo);
-	        par.add(messageSource.getMessage("label.legale_rappresentante", null, Locale.getDefault()));
+	        par.add(messageSource.getMessage("label.legale_rappresentante", null, Locale.getDefault()) + ": " + provider.getLegaleRappresentante().getAnagrafica().getFullName());
 	        document.add(par);
 	        PdfPTable table = getTableFieldsValutazione();
 	        addTableValutazione(legaleRapprVal, table);
@@ -197,11 +200,11 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 
 	    //DELEGATO LEGALE RAPPRESENTANTE
         List<FieldValutazioneAccreditamento> delegatoLegaleRapprVal = getOrderedFieldValutazioneBySubset(valutazioniNonDefault, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE);
-	    if(!delegatoLegaleRapprVal.isEmpty()) {
+	    if(!delegatoLegaleRapprVal.isEmpty() && provider.getDelegatoLegaleRappresentante() != null) {
 	        Paragraph par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_LEFT);
 	        par.setFont(fontParTitolo);
-	        par.add(messageSource.getMessage("label.delegato_legale_rappresentante", null, Locale.getDefault()));
+	        par.add(messageSource.getMessage("label.delegato_legale_rappresentante", null, Locale.getDefault()) + ": " + provider.getDelegatoLegaleRappresentante().getAnagrafica().getFullName());
 	        document.add(par);
 	        PdfPTable table = getTableFieldsValutazione();
 	        addTableValutazione(delegatoLegaleRapprVal, table);
@@ -234,13 +237,13 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 	        document.add(table);
         }
 
-	  //RESPONSABILE SEGRETERIA
+	    //RESPONSABILE SEGRETERIA
 	    List<FieldValutazioneAccreditamento> respSegreteriaVal = getOrderedFieldValutazioneBySubset(valutazioniNonDefault, SubSetFieldEnum.RESPONSABILE_SEGRETERIA);
 	    if(!respSegreteriaVal.isEmpty()) {
 	        Paragraph par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_LEFT);
 	        par.setFont(fontParTitolo);
-	        par.add(messageSource.getMessage("label.responsabile_segreteria", null, Locale.getDefault()));
+	        par.add(messageSource.getMessage("label.responsabile_segreteria", null, Locale.getDefault()) + ": " + provider.getPersonaByRuolo(Ruolo.RESPONSABILE_SEGRETERIA).getAnagrafica().getFullName());
 	        document.add(par);
 	        PdfPTable table = getTableFieldsValutazione();
 	        addTableValutazione(respSegreteriaVal, table);
@@ -253,7 +256,7 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 	        Paragraph par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_LEFT);
 	        par.setFont(fontParTitolo);
-	        par.add(messageSource.getMessage("label.responsabile_amministrativo", null, Locale.getDefault()));
+	        par.add(messageSource.getMessage("label.responsabile_amministrativo", null, Locale.getDefault()) + ": " + provider.getPersonaByRuolo(Ruolo.RESPONSABILE_AMMINISTRATIVO).getAnagrafica().getFullName());
 	        document.add(par);
 	        PdfPTable table = getTableFieldsValutazione();
 	        addTableValutazione(respAmministrativoVal, table);
@@ -266,7 +269,7 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 	        Paragraph par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_LEFT);
 	        par.setFont(fontParTitolo);
-	        par.add(messageSource.getMessage("label.responsabile_sistema_informatico", null, Locale.getDefault()));
+	        par.add(messageSource.getMessage("label.responsabile_sistema_informatico", null, Locale.getDefault()) + ": " + provider.getPersonaByRuolo(Ruolo.RESPONSABILE_SISTEMA_INFORMATICO).getAnagrafica().getFullName());
 	        document.add(par);
 	        PdfPTable table = getTableFieldsValutazione();
 	        addTableValutazione(respSistemaInfoVal, table);
@@ -279,7 +282,7 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 	        Paragraph par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_LEFT);
 	        par.setFont(fontParTitolo);
-	        par.add(messageSource.getMessage("label.responsabile_qualita", null, Locale.getDefault()));
+	        par.add(messageSource.getMessage("label.responsabile_qualita", null, Locale.getDefault()) + ": " + provider.getPersonaByRuolo(Ruolo.RESPONSABILE_QUALITA).getAnagrafica().getFullName());
 	        document.add(par);
 	        PdfPTable table = getTableFieldsValutazione();
 	        addTableValutazione(respQualitaVal, table);
@@ -352,12 +355,96 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 	        document.add(table);
         }
 
+        document.add(Chunk.NEWLINE);
+
+        //OSSERVAZIONI DEL TEAM DI VALUTAZIONE
+        String osservazioniTeamValutazione =  verbale.getDatiValutazioneSulCampo().getOsservazioniTeamValutazione();
+        if(osservazioniTeamValutazione != null && !osservazioniTeamValutazione.isEmpty()) {
+        	Paragraph parNoteTeamTitolo = new Paragraph();
+        	parNoteTeamTitolo.setAlignment(Element.ALIGN_LEFT);
+        	parNoteTeamTitolo.setFont(fontParTitolo);
+        	parNoteTeamTitolo.add(messageSource.getMessage("label.osservazioni_team_valutazione", null, Locale.getDefault()));
+            document.add(parNoteTeamTitolo);
+
+            Paragraph parNoteTeam = new Paragraph();
+            parNoteTeam.setAlignment(Element.ALIGN_LEFT);
+            parNoteTeam.setFont(fontValoreCampo);
+            parNoteTeam.add(osservazioniTeamValutazione);
+	        document.add(parNoteTeam);
+        }
+
+        document.add(Chunk.NEWLINE);
+
+        //OSSERVAZIONI PROVIDER
+        String osservazioniProvider =  verbale.getDatiValutazioneSulCampo().getOsservazioniDelProvider();
+        if(osservazioniProvider != null && !osservazioniProvider.isEmpty()) {
+        	Paragraph parNoteProviderTitolo = new Paragraph();
+        	parNoteProviderTitolo.setAlignment(Element.ALIGN_LEFT);
+        	parNoteProviderTitolo.setFont(fontParTitolo);
+        	parNoteProviderTitolo.add(messageSource.getMessage("label.osservazioni_del_provider", null, Locale.getDefault()));
+            document.add(parNoteProviderTitolo);
+
+            Paragraph parNoteProvider = new Paragraph();
+            parNoteProvider.setAlignment(Element.ALIGN_LEFT);
+            parNoteProvider.setFont(fontValoreCampo);
+            parNoteProvider.add(osservazioniProvider);
+	        document.add(parNoteProvider);
+        }
+
+        document.add(Chunk.NEWLINE);
+        document.add(Chunk.NEWLINE);
+
         //ENDING
-        Paragraph par = new Paragraph();
-        par.setAlignment(Element.ALIGN_LEFT);
-        par.setFont(fontValoreCampo);
-        par.add(messageSource.getMessage("label.ending_verbale", null, Locale.getDefault()));
-        document.add(par);
+        Paragraph parFirma = new Paragraph();
+        parFirma.setAlignment(Element.ALIGN_LEFT);
+        parFirma.setFont(fontValoreCampo);
+        parFirma.add(messageSource.getMessage("label.ending_verbale", null, Locale.getDefault()));
+        document.add(parFirma);
+
+        //FIRMA CRECM
+        Paragraph parFirmaCrecm = new Paragraph();
+        parFirmaCrecm.setAlignment(Element.ALIGN_LEFT);
+        parFirmaCrecm.setFont(fontValoreCampo);
+        String[] valuesFirmaCrecm = {messageSource.getMessage("label.componente_crecm", null, Locale.getDefault()), verbale.getTeamLeader().getFullNameBase()};
+        parFirmaCrecm.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaCrecm, Locale.getDefault()));
+        document.add(parFirmaCrecm);
+
+        //FIRMA OSSERVATORIO REGIONALE
+        Paragraph parFirmaOssRegionale = new Paragraph();
+        parFirmaOssRegionale.setAlignment(Element.ALIGN_LEFT);
+        parFirmaOssRegionale.setFont(fontValoreCampo);
+        String[] valuesFirmaOssRegionale = {messageSource.getMessage("label.componente_osservatorio_regionale", null, Locale.getDefault()), verbale.getOsservatoreRegionale().getFullNameBase()};
+        parFirmaOssRegionale.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaOssRegionale, Locale.getDefault()));
+        document.add(parFirmaOssRegionale);
+
+        //FIRMA COMPONENTI SEGRETERIA
+        for(Account a : verbale.getComponentiSegreteria()) {
+        	Paragraph parFirmaECM = new Paragraph();
+        	parFirmaECM.setAlignment(Element.ALIGN_LEFT);
+        	parFirmaECM.setFont(fontValoreCampo);
+            String[] valuesFirmaECM = {messageSource.getMessage("label.componente_segreteria_ecm", null, Locale.getDefault()), a.getFullNameBase()};
+            parFirmaECM.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaECM, Locale.getDefault()));
+            document.add(parFirmaECM);
+        }
+
+        //FIRMA LEGALE RAPPRESENTANTE
+        if(verbale.getIsPresenteLegaleRappresentante()) {
+        	Paragraph parFirmaLegale = new Paragraph();
+        	parFirmaLegale.setAlignment(Element.ALIGN_LEFT);
+        	parFirmaLegale.setFont(fontValoreCampo);
+            String[] valuesFirmaLegale = {messageSource.getMessage("label.legale_rappresentante_del_provider", null, Locale.getDefault()), accreditamento.getProvider().getLegaleRappresentante().getAnagrafica().getFullName()};
+            parFirmaLegale.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaLegale, Locale.getDefault()));
+            document.add(parFirmaLegale);
+        }
+        else {
+        	Paragraph parFirmaDelegato = new Paragraph();
+        	parFirmaDelegato.setAlignment(Element.ALIGN_LEFT);
+        	parFirmaDelegato.setFont(fontValoreCampo);
+            String[] valuesFirmaDelegato = {messageSource.getMessage("label.delegato_legale_rappresentante_del_provider", null, Locale.getDefault()), verbale.getDelegato().getNome() + verbale.getDelegato().getCognome()};
+            parFirmaDelegato.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaDelegato, Locale.getDefault()));
+            document.add(parFirmaDelegato);
+        }
+
 
 	}
 

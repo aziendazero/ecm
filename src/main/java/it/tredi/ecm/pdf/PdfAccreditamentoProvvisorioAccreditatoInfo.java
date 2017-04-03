@@ -50,10 +50,20 @@ public class PdfAccreditamentoProvvisorioAccreditatoInfo {
 			//accreditamentoInfo.setNumeroProtocollo(numeroProtocollo);
 		}
 
-		if(sedutaIntegrazione != null) {
+		if(accreditamento.isProvvisorio()) {
+			if(sedutaIntegrazione != null) {
+				integrazioneInfo = new PdfInfoIntegrazioneRigetto();
+				integrazioneInfo.setDataSedutaCommissione(sedutaIntegrazione.getData());
+				integrazioneInfo.setVerbaleNumero(sedutaIntegrazione.getNumeroVerbale());
+				integrazioneInfo.setEseguitaDaProvider(accreditamento.getIntegrazioneEseguitaDaProvider());
+				if(accreditamento.getRichiestaIntegrazione() != null) {
+					integrazioneInfo.setDataProtocollo(accreditamento.getRichiestaIntegrazione().getProtocollo().getData());
+					integrazioneInfo.setNumeroProtocollo(accreditamento.getRichiestaIntegrazione().getProtocollo().getNumero().toString());
+				}
+			}
+		}
+		else if(accreditamento.isStandard()) {
 			integrazioneInfo = new PdfInfoIntegrazioneRigetto();
-			integrazioneInfo.setDataSedutaCommissione(sedutaIntegrazione.getData());
-			integrazioneInfo.setVerbaleNumero(sedutaIntegrazione.getNumeroVerbale());
 			integrazioneInfo.setEseguitaDaProvider(accreditamento.getIntegrazioneEseguitaDaProvider());
 			if(accreditamento.getRichiestaIntegrazione() != null) {
 				integrazioneInfo.setDataProtocollo(accreditamento.getRichiestaIntegrazione().getProtocollo().getData());
@@ -66,7 +76,7 @@ public class PdfAccreditamentoProvvisorioAccreditatoInfo {
 			rigettoInfo.setDataSedutaCommissione(sedutaPreavvisoRigetto.getData());
 			rigettoInfo.setVerbaleNumero(sedutaPreavvisoRigetto.getNumeroVerbale());
 			rigettoInfo.setEseguitaDaProvider(accreditamento.getPreavvisoRigettoEseguitoDaProvider());
-			if(accreditamento.getRichiestaIntegrazione() != null) {
+			if(accreditamento.getRichiestaPreavvisoRigetto() != null) {
 				rigettoInfo.setDataProtocollo(accreditamento.getRichiestaPreavvisoRigetto().getProtocollo().getData());
 				rigettoInfo.setNumeroProtocollo(accreditamento.getRichiestaPreavvisoRigetto().getProtocollo().getNumero().toString());
 			}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.osservazioni_sulla_valutazione_sul_campo}">Osservazioni sulla Valutazione sul Campo</h2>
+						<div class="pull-right buttons-header">
+							<label th:if="${canValutaDomanda}" class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/validate?tab=tab6|}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+
+					<div class="x_content">
+						<div class="form-horizontal form-label-left">
+							<form id="formVerbale" class="form-horizontal form-label-left"
+								th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/verbaleValutazioneSulCampo/${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.id}/osservazioni/save|}"
+								method="post" enctype="multipart/form-data"
+								novalidate="novalidate">
+
+								<input type="hidden" th:field="${accreditamentoWrapper.accreditamento}" />
+								<input type="hidden" th:field="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo}" />
+
+								<div class="item form-group">
+									<label class="col-lg-2 col-md-2 col-sm-4 col-xs-4" for="osservazioniTeam">
+										<span th:text="#{label.osservazioni_team_valutazione}"></span>
+									</label>
+									<textarea class="required" id="osservazioniTeam" rows="4" name="osservazioniTeam"
+										style="resize: none;" th:field="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.datiValutazioneSulCampo.osservazioniTeamValutazione}">
+									</textarea>
+								</div>
+
+								<div class="divider"></div>
+
+								<div class="item form-group">
+									<label class="col-lg-2 col-md-2 col-sm-4 col-xs-4" for="osservazioniProvider">
+										<span th:text="#{label.osservazioni_del_provider}"></span>
+									</label>
+									<textarea class="required" id="osservazioniProvider" rows="4" name="osservazioniProvider"
+										style="resize: none;" th:field="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.datiValutazioneSulCampo.osservazioniDelProvider}">
+									</textarea>
+								</div>
+
+								<input id="submitButton" type="submit" style="display: none;" />
+
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

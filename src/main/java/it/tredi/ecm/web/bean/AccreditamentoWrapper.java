@@ -114,6 +114,7 @@ public class AccreditamentoWrapper {
 
 	private boolean valutazioneSulCampoStato = false;
 	private boolean sottoscriventeStato;
+	private boolean osservazioniStato;
 
 	private boolean tuttiEventiValutati = true;
 
@@ -751,8 +752,12 @@ public class AccreditamentoWrapper {
 			sezione4Stato = valutazioneSulCampoStato && sottoscriventeStato;
 
 			//stato di valutazione completa
-			if(accreditamento.isValutazioneSulCampo())
+			if(accreditamento.isValutazioneSulCampo()) {
 				canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato && sezione4Stato);
+				String osservazioniProvider = accreditamento.getVerbaleValutazioneSulCampo().getDatiValutazioneSulCampo().getOsservazioniDelProvider();
+				String osservazioniTeamValutazione = accreditamento.getVerbaleValutazioneSulCampo().getDatiValutazioneSulCampo().getOsservazioniTeamValutazione();
+				osservazioniStato = (osservazioniProvider != null && !osservazioniProvider.isEmpty()) || (osservazioniTeamValutazione != null && !osservazioniTeamValutazione.isEmpty()) ? true : false;
+			}
 			else
 				canSendValutazione = (sezione1Stato && sezione2Stato && sezione3Stato);
 

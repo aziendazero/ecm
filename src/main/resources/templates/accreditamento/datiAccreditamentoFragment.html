@@ -178,11 +178,11 @@
 			                    	<div class="margin-valutabile text-center col-lg-4 col-md-3 col-sm-7 col-xs-7">
 				              			<div th:each="proceduraFormativa, row : ${proceduraFormativaList}">
 											<div th:if="${#lists.contains(datiAccreditamentoWrapper.datiAccreditamento.procedureFormative, proceduraFormativa)}" th:text="${proceduraFormativa.nome}"></div>
-											<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.modificatoInIntegrazione == false and
-												datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
-											<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.modificatoInIntegrazione == true and
-												checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 										</div>
+										<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.modificatoInIntegrazione == false and
+											datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.enabled == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.non_integrato_dal_provider}"></div>
+										<div th:if="${datiAccreditamentoWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('datiAccreditamento.procedureFormative')}__]?.modificatoInIntegrazione == true and
+											checkIfAccreditamentoChanged == true}" class="fa fa-exclamation-circle orange big-icon" th:title="#{label.cambiato_dal_provider}"></div>
 			                    	</div>
 			                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 										<div class="radio">

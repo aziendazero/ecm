@@ -60,11 +60,13 @@
 									method="post" enctype="multipart/form-data"
 									novalidate="novalidate">
 
-									<h4 th:text="#{label.inserisci_valutazione_complessiva}"></h4>
-									<div class="item modalAlert form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.valutazioneComplessiva')} ? 'bad'">
-										<textarea th:field="${accreditamentoWrapper.valutazioneComplessiva}"></textarea>
-										<div th:if="${#fields.hasErrors('accreditamentoWrapper.valutazioneComplessiva')}" class="alert" th:errors="${accreditamentoWrapper.valutazioneComplessiva}"></div>
-									</div>
+									<th:block th:unless="${accreditamentoWrapper.accreditamento.isValutazioneSulCampo()}">
+										<h4 th:text="#{label.inserisci_valutazione_complessiva}"></h4>
+										<div class="item modalAlert form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.valutazioneComplessiva')} ? 'bad'">
+											<textarea th:field="${accreditamentoWrapper.valutazioneComplessiva}"></textarea>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.valutazioneComplessiva')}" class="alert" th:errors="${accreditamentoWrapper.valutazioneComplessiva}"></div>
+										</div>
+									</th:block>
 
 									<th:block th:if="${#authentication.principal.hasProfile('SEGRETERIA')
 										and accreditamentoWrapper.accreditamento.isValutazioneSegreteriaAssegnamento()
@@ -201,10 +203,12 @@
 													th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.referenteInformatico}"
 													data-width="100%"
 													data-style="btn-primary"
-													data-size="10" title="Seleziona il Referente Informatico..."
-													th:remove="all-but-first">
+													data-size="10" title="Seleziona il Referente Informatico...">
 													<option th:each="referente, row: ${accreditamentoWrapper.referentiInformatici}"
 														th:value="${referente.id}" th:text="${referente.getFullNameBase()}">
+													</option>
+													<option th:unless="${#lists.contains(accreditamentoWrapper.accreditamento.datiAccreditamento.procedureFormative, T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD)}"
+														th:value="${-1L}" th:text="#{label.rimuovi}" onclick="asd()" class="removeOption">
 													</option>
 												</select>
 											</div>
@@ -464,6 +468,13 @@
 					$('#componentiSegreteria').selectpicker({
 						selectAllText : 'Seleziona tutti',
 						deselectAllText : 'Deseleziona tutti',
+					});
+
+					$('#referenteInformatico').on('change', function(){
+					    var selected = $(this).find("option:selected").val();
+					    if(selected == -1) {
+							$(this).selectpicker('deselectAll');
+					    }
 					});
 
 			    });

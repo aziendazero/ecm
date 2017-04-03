@@ -1669,7 +1669,7 @@ public class PdfServiceImpl implements PdfService {
 
             // mostrare solo se accreditamento avvunuto con integrazione
             if(accreditatoInfo.getIntegrazioneInfo() != null) {
-				msgFormat = new MessageFormat("VISTA la documentazione prodotta da parte del Provider NOME PROVIDER per il tramite del legale rappresentante pro-tempore in ossequio alla richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii.;");
+				msgFormat = new MessageFormat("VISTA la documentazione prodotta da parte del Provider {0} per il tramite del legale rappresentante pro-tempore in ossequio alla richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii.;");
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
             }
 

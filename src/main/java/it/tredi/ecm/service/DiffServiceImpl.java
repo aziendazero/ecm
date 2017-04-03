@@ -407,6 +407,8 @@ public class DiffServiceImpl implements DiffService {
 		if(personaNew == null)
 			return fieldValutazioneModificati;
 
+		Long objRef = ruolo == Ruolo.COMPONENTE_COMITATO_SCIENTIFICO ? personaNew.getPersonaId() : -1L;
+
 		//check se stessa persona o se persona è stata aggiunta (vedi delegato legale rappresentante)
 		if((personaOld == null) ||
 				(personaOld.getPersonaId().longValue() != personaNew.getPersonaId().longValue())) {
@@ -414,7 +416,7 @@ public class DiffServiceImpl implements DiffService {
 			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 			field.setAccreditamento(accreditamento);
 			field.setIdField(Utils.getFullFromRuolo(ruolo));
-			field.setObjectReference(personaNew.getPersonaId());
+			field.setObjectReference(objRef);
 			field.setModificatoInIntegrazione(true);
 			fieldValutazioneAccreditamentoService.save(field);
 			fieldValutazioneModificati.add(field);
@@ -424,7 +426,7 @@ public class DiffServiceImpl implements DiffService {
 			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 			field.setAccreditamento(accreditamento);
 			field.setIdField(Utils.getFullFromRuolo(ruolo));
-			field.setObjectReference(personaNew.getPersonaId());
+			field.setObjectReference(objRef);
 			field.setModificatoInIntegrazione(true);
 			fieldValutazioneAccreditamentoService.save(field);
 			fieldValutazioneModificati.add(field);
@@ -437,7 +439,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.cognome", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -448,7 +450,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.nome", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -459,7 +461,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.codiceFiscale", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -470,7 +472,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.telefono", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -481,7 +483,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.cellulare", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -492,7 +494,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.email", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -503,7 +505,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.pec", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -514,7 +516,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("persona.professione", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -525,7 +527,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("persona.coordinatore", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -536,7 +538,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("attoNomina", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -547,7 +549,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("cv", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);
@@ -558,7 +560,7 @@ public class DiffServiceImpl implements DiffService {
 				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 				field.setAccreditamento(accreditamento);
 				field.setIdField(IdFieldEnum.getIdField("delega", ruolo));
-				field.setObjectReference(personaNew.getPersonaId());
+				field.setObjectReference(objRef);
 				field.setModificatoInIntegrazione(true);
 				fieldValutazioneAccreditamentoService.save(field);
 				fieldValutazioneModificati.add(field);

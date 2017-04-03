@@ -129,10 +129,12 @@
 													th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.referenteInformatico}"
 													data-width="100%"
 													data-style="btn-primary"
-													data-size="10" title="Seleziona il Referente Informatico..."
-													th:remove="all-but-first">
+													data-size="10" title="Seleziona il Referente Informatico...">
 													<option th:each="referente, row: ${accreditamentoWrapper.referentiInformatici}"
 														th:value="${referente.id}" th:text="${referente.getFullNameBase()}">
+													</option>
+													<option th:unless="${#lists.contains(accreditamentoWrapper.accreditamento.datiAccreditamento.procedureFormative, T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD)}"
+														th:value="${-1L}" th:text="#{label.rimuovi}" onclick="asd()" class="removeOption">
 													</option>
 												</select>
 											</div>
@@ -533,6 +535,13 @@
 
 					$(".radioLegale").on("ifChecked", function() {
 						mostraNascondiLegaleDelegato($(this).val());
+					});
+
+					$('#referenteInformatico').on('change', function(){
+					    var selected = $(this).find("option:selected").val();
+					    if(selected == -1) {
+							$(this).selectpicker('deselectAll');
+					    }
 					});
 
 			    });

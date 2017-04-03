@@ -34,6 +34,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.DatiValutazioneSulCampo;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
@@ -1095,6 +1096,27 @@ public class AccreditamentoController {
 		}
 	}
 
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/verbaleValutazioneSulCampo/{verbaleValutazioneSulCampoId}/insertOsservazioni")
+	public String insertOsservazioniValutazioniSulCampo(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper,
+			@PathVariable Long accreditamentoId, @PathVariable Long verbaleValutazioneSulCampoId,
+			Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/insertOsservazioni"));
+		try {
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+			prepareAccreditamentoWrapperOsservazioni(wrapper, accreditamento, false);
+			model.addAttribute("accreditamentoWrapper", wrapper);
+			model.addAttribute("canValutaDomanda", accreditamentoService.canUserValutaDomanda(accreditamentoId, Utils.getAuthenticatedUser()));
+			return "accreditamento/accreditamentoOsservazioniVerbale";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/insertOsservazioni"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}
+	}
+
 	private void prepareAccreditamentoWrapperSottoscrivente(AccreditamentoWrapper wrapper, Accreditamento accreditamento, Boolean hasErrors) {
 		if(!hasErrors) {
 			wrapper.setVerbaleValutazioneSulCampo(accreditamento.getVerbaleValutazioneSulCampo());
@@ -1104,6 +1126,13 @@ public class AccreditamentoController {
 		}
 		wrapper.setAccreditamento(accreditamento);
 		wrapper.setLegaleRappresentante(accreditamento.getProvider().getLegaleRappresentante());
+	}
+
+	private void prepareAccreditamentoWrapperOsservazioni(AccreditamentoWrapper wrapper, Accreditamento accreditamento, Boolean hasErrors) {
+		if(!hasErrors) {
+			wrapper.setVerbaleValutazioneSulCampo(accreditamento.getVerbaleValutazioneSulCampo());
+		}
+		wrapper.setAccreditamento(accreditamento);
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
@@ -1180,6 +1209,29 @@ public class AccreditamentoController {
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
 				return "redirect:/accreditamento/{accreditamentoId}/validate";
 			}
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/save"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/verbaleValutazioneSulCampo/{verbaleValutazioneSulCampoId}/osservazioni/save", method = RequestMethod.POST)
+	public String saveOsservazioniVerbaleSulCampo(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
+			@PathVariable Long accreditamentoId, @PathVariable Long verbaleValutazioneSulCampoId, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/"));
+		try {
+			//salvataggio delle osservazioni (già presenti nella accreditamento -> verbale valutazione sul campo -> dati verbale -> osservazioni
+			accreditamentoService.save(wrapper.getAccreditamento());
+
+			redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.osservazioni_salvate", "success"));
+			redirectAttrs.addFlashAttribute("currentTab","tab6");
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/validate"));
+			return "redirect:/accreditamento/{accreditamentoId}/validate";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/verbaleValutazioneSulCampo/" + verbaleValutazioneSulCampoId + "/save"),ex);
 			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);

@@ -138,19 +138,25 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 	@Override
 	public Set<FieldValutazioneAccreditamento> getValutazioniDefault(Accreditamento accreditamento) {
 		Set<FieldValutazioneAccreditamento> defaults = new HashSet<FieldValutazioneAccreditamento>();
-
-		//campi senza object ref.
+		//campi di default senza object ref.
 		for(IdFieldEnum id : IdFieldEnum.values()) {
-			if(id.isDefaultVal()) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setEsito(true);
-				field.setIdField(id);
-				save(field);
-				defaults.add(field);
+			if(id.getSubSetField() != SubSetFieldEnum.SEDE
+					&& id.getSubSetField() != SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO
+					&& id.isDefaultVal()) {
+				//se l'id appartiene a quelli del delegato legale prima di inserirlo controllo che questi esista
+				if(id.getSubSetField() == SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE
+						&& accreditamento.getProvider().getDelegatoLegaleRappresentante() == null)
+					continue;
+				else {
+					FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+					field.setAccreditamento(accreditamento);
+					field.setEsito(true);
+					field.setIdField(id);
+					save(field);
+					defaults.add(field);
+				}
 			}
 		}
-
 		//campi ripetibili (con object ref.)
 		//sedi
 		for(Sede sede : accreditamento.getProvider().getSedi()) {
@@ -178,7 +184,6 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 				}
 			}
 		}
-
 		/*ALLEGATI*/
 		//allegati
 		boolean noDichiarazioneEsclusione = true;
@@ -219,7 +224,6 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 			save(field);
 			defaults.add(field);
 		}
-
 		return defaults;
 	}
 
@@ -233,7 +237,8 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 		Set<FieldValutazioneAccreditamento> allFieldsValutazione = new HashSet<FieldValutazioneAccreditamento>();
 		for(IdFieldEnum id : IdFieldEnum.values()) {
 			//gestisco i ripetibili a parte
-			if(id.getSubSetField() == SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO || id.getSubSetField() == SubSetFieldEnum.SEDE)
+			if(id.getSubSetField() == SubSetFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO
+					|| id.getSubSetField() == SubSetFieldEnum.SEDE)
 				continue;
 			//inserisco la valutazione sul campo solo se sono nello stato giusto
 			if(!accreditamento.isValutazioneSulCampo()) {
@@ -244,11 +249,16 @@ public class FieldValutazioneAccreditamentoServiceImpl implements FieldValutazio
 			//con else if non entra mai
 			//else if(accreditamento.isProvvisorio()) {
 			if(accreditamento.isProvvisorio()) {
-				if(id == IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD || id == IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA)
+				if(id == IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD
+						|| id == IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA)
 					continue;
 			}
 			//full esclusi
 			if(id.getIdEcm() == -1)
+				continue;
+			//se si tratta di un idFeild relativo al delegato legale, controllo che questi esista
+			if(id.getSubSetField() == SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE
+					&& accreditamento.getProvider().getDelegatoLegaleRappresentante() == null)
 				continue;
 			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 			field.setAccreditamento(accreditamento);
