@@ -21,6 +21,7 @@ import lombok.Setter;
 public class RiepilogoRuoliFSC {
 
 	public static final float TRAINING_INDIVIDUALIZZATO_MAX_CREDITI = 30f;
+	public static final float TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_TUTOR = 50f;
 	public static final float GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI = 50f;
 	public static final float PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI = 50f;
 	public static final float ATTIVITA_DI_RICERCA_MAX_CREDITI = 3f;
@@ -77,7 +78,7 @@ public class RiepilogoRuoliFSC {
 					{
 						/*
 						 * PARTECIPANTI:	1 credito ogni ora (max 30) NON FRAZIONABILE
-						 * TUTOR:			1 credito ogni 6 ore
+						 * TUTOR:			1 credito ogni 6 ore (max 50)
 						 * ESPERTO:			1 credito ogni ora (max 'crediti evento')
 						 * COORDINATORE		1 credito ogni ora (max 'crediti evento')
 						 *
@@ -89,18 +90,19 @@ public class RiepilogoRuoliFSC {
 												crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI : crediti;
 								break;
 
-							case TUTOR: crediti = 1 * (int) (tempoDedicato/6) ;
+							case TUTOR: 		crediti = 1 * (int) (tempoDedicato/6);
+												crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_TUTOR) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_TUTOR : crediti;
 								break;
 
-							case ESPERTO: 	crediti = 1 * (int) tempoDedicato;
-											crediti = (crediti > f) ? f : crediti;
+							case ESPERTO: 		crediti = 1 * (int) tempoDedicato;
+												crediti = (crediti > f) ? f : crediti;
 								break;
 
 							case COORDINATORE: 	crediti = 1 * (int) tempoDedicato;
 												crediti = (crediti > f) ? f : crediti;
 								break;
 
-							default:	crediti = 0.0f;
+							default:			crediti = 0.0f;
 								break;
 						}
 					}
