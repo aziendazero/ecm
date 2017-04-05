@@ -283,4 +283,16 @@ public class EmailServiceImpl implements EmailService {
 			send(ecmProperties.getEmailSegreteriaEcm(),email, "Convocazione Valutazione Sul Campo", message, true);
 		}
 	}
+
+	@Override
+	public void inviaNotificaNuovaComunicazioneForProvider(String fullName, String email) throws Exception {
+		LOGGER.info("Invio notifica a Legale/Delegato per nuova Comunicazione");
+		Context context = new Context();
+		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
+		context.setVariable("fullName", fullName);
+		String message = templateEngine.process("nuovaComunicazioneForProvider", context);
+
+		send(ecmProperties.getEmailSegreteriaEcm(), email, "Nuova Comunicazione per il suo Provider", message, true);
+
+	}
 }

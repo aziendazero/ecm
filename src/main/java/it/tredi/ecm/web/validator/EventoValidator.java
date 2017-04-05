@@ -1,10 +1,12 @@
 package it.tredi.ecm.web.validator;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -1349,6 +1351,7 @@ public class EventoValidator {
 			boolean errorePartecipanteAudit = false;
 			boolean atLeastOnePartecipante = false;
 			boolean atLeastOneTutor = false;
+			boolean atLeastOneRuoloRipetuto = false;
 
 			Map<RuoloFSCEnum, Float> checkOrePartecipante = new HashMap<RuoloFSCEnum, Float>();
 
@@ -1370,9 +1373,12 @@ public class EventoValidator {
 				}
 
 				//hasErrors
-				if(validationResults[0]) {
+				if(validationResults[0] || validationResults[3]) {
 					errors.rejectValue(prefix + "azioniRuoli["+counter+"]", "");
-					atLeastOneErrorAzione = true;
+					if(validationResults[0])
+						atLeastOneErrorAzione = true;
+					if(validationResults[3])
+						atLeastOneRuoloRipetuto = true;
 				}
 				if(validationResults[1]) {
 					atLeastOnePartecipante = true;
@@ -1396,7 +1402,7 @@ public class EventoValidator {
 				 }
 			}
 
-			if(atLeastOneErrorAzione)
+			if(atLeastOneErrorAzione || atLeastOneRuoloRipetuto)
 				errors.rejectValue(prefix + "azioniRuoli", "error.campi_con_errori_azione_ruoli"+tipologiaEvento);
 			else if(errorePartecipanteAudit) {
 				errors.rejectValue(prefix + "azioniRuoli", "error.partecipanti_AUDIT_ore");
@@ -1406,26 +1412,27 @@ public class EventoValidator {
 	}
 
 	//validate azioniRuoli delle FasiAzioniRuoliFSC
-	//ritorna un array di boolean -> boolean[] {hasError, hasPartecipante, hasTutor}
+	//ritorna un array di boolean -> boolean[] {hasError, hasPartecipante, hasTutor, ruoloRipetuto}
 	private boolean[] validateAzioneRuoliFSC(AzioneRuoliEventoFSC azioneRuoli, TipologiaEventoFSCEnum tipologiaEvento) {
 
 		//parte in comune
 		if(azioneRuoli.getAzione() == null || azioneRuoli.getAzione().isEmpty())
-			return new boolean[] {true, false, false};
+			return new boolean[] {true, false, false, false};
 		if(azioneRuoli.getObiettivoFormativo() == null)
-			return new boolean[] {true, false, false};
+			return new boolean[] {true, false, false, false};
 		if(azioneRuoli.getRisultatiAttesi() == null || azioneRuoli.getRisultatiAttesi().isEmpty())
-			return new boolean[] {true, false, false};
+			return new boolean[] {true, false, false, false};
 		if(azioneRuoli.getMetodiDiLavoro() == null || azioneRuoli.getMetodiDiLavoro().isEmpty())
-			return new boolean[] {true, false, false};
+			return new boolean[] {true, false, false, false};
 		if(azioneRuoli.getRuoli() == null || azioneRuoli.getRuoli().isEmpty())
-			return new boolean[] {true, false, false};
+			return new boolean[] {true, false, false, false};
 
 		//parti specifiche
 		int numCoordinatori = 0;
 		int numResponsabili = 0;
 		boolean hasPartecipante = false;
 		boolean hasTutor = false;
+		boolean ruoloRipetuto = false;
 		if(tipologiaEvento != null) switch(tipologiaEvento) {
 
 			//caso 1) tipologiaEvento == TRAINING_INDIVIDUALIZZATO
@@ -1437,15 +1444,15 @@ public class EventoValidator {
 
 				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
 					if(r.getTempoDedicato() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					if(r.getRuolo() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					else {
 						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE)
 							numCoordinatori++;
 						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 							if(r.getTempoDedicato() < 1)
-								return new boolean[] {true, hasPartecipante, hasTutor};
+								return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 							else
 								hasPartecipante = true;
 						}
@@ -1454,7 +1461,7 @@ public class EventoValidator {
 					}
 				}
 				if(numCoordinatori > 1)
-					return new boolean[] {true, hasPartecipante, hasTutor};
+					return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 
 			break;
 
@@ -1468,17 +1475,17 @@ public class EventoValidator {
 
 				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
 					if(r.getTempoDedicato() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					if(r.getRuolo() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					else {
 						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE)
 							numCoordinatori++;
 						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 							if(r.getTempoDedicato() < 2)
-								return new boolean[] {true, hasPartecipante, hasTutor};
+								return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 							else if((r.getTempoDedicato() % 2) != 0f)
-								return new boolean[] {true, hasPartecipante, hasTutor};
+								return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 							hasPartecipante = true;
 						}
 					}
@@ -1486,7 +1493,7 @@ public class EventoValidator {
 				//caso particolare (qua le fasi sono come le azioni per le altre tipologie,
 				//quindi controllo che nella riga ci sia almeno 1 ruolo Partecipante)
 				if(numCoordinatori > 1)
-					return new boolean[] {true, hasPartecipante, hasTutor};
+					return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 
 			break;
 
@@ -1500,9 +1507,9 @@ public class EventoValidator {
 
 				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
 					if(r.getTempoDedicato() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					if(r.getRuolo() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					else {
 						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 							hasPartecipante = true;
@@ -1512,7 +1519,7 @@ public class EventoValidator {
 					}
 				}
 				if(numResponsabili > 1)
-					return new boolean[] {true, hasPartecipante, hasTutor};
+					return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 
 			break;
 
@@ -1524,9 +1531,9 @@ public class EventoValidator {
 
 				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
 					if(r.getTempoDedicato() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					if(r.getRuolo() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					else {
 						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 							hasPartecipante = true;
@@ -1544,9 +1551,9 @@ public class EventoValidator {
 
 				for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
 					if(r.getTempoDedicato() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					if(r.getRuolo() == null)
-						return new boolean[] {true, hasPartecipante, hasTutor};
+						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					else {
 						if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 //							if(r.getTempoDedicato() < 2)
@@ -1562,7 +1569,18 @@ public class EventoValidator {
 
 		}
 
-		return new boolean[] {false, hasPartecipante, hasTutor};
+		//controllo che non vi siano Ruoli ripetuti nella stessa azione
+		//TODO per ottimizzare si potrebbe mettere tutto lo switch in un unico ciclo for dei ruoli (non si ciclerebbe 2 volte)
+		List<RuoloFSCEnum> ruoliList = new ArrayList<RuoloFSCEnum>();
+		Set<RuoloFSCEnum> ruoliSet = new HashSet<RuoloFSCEnum>();
+		for(RuoloOreFSC r : azioneRuoli.getRuoli()) {
+			ruoliList.add(r.getRuolo());
+		}
+		ruoliSet.addAll(ruoliList);
+		if(ruoliList.size() > ruoliSet.size())
+			ruoloRipetuto = true;
+
+		return new boolean[] {false, hasPartecipante, hasTutor, ruoloRipetuto};
 	}
 
 	//validate tabella ruoli FSC

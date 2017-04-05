@@ -75,4 +75,5 @@ public interface EventoService {
 	public Set<Evento> getEventiAlimentazionePrimaInfanzia();
 	public Integer countAllEventiMedicineNonConvenzionali();
 	public Set<Evento> getEventiMedicineNonConvenzionali();
+	public boolean checkIfRESAndWorkshopOrCorsoAggiornamentoAndInterettivoSelected(Evento evento);
 }

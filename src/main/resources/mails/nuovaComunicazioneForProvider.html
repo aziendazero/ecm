@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title th:remove="all">Nuova Comunicazione per il suo Provider</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <p>Gentile <span th:text="${fullName}"></span></p>
+    <p>
+    	&egrave; presente una nuova comunicazione nell' <b><a th:href="${applicationBaseUrl}">applicativo ECM</a></b> della Regione Veneto.
+    </p>
+    <p>
+    	Per visualizzarla &egrave; necessario collegarsi all'applicativo.
+    </p>
+    <p>
+      Distinti Saluti, <br />
+      <em>Segreteria ECM</em>
+    </p>
+  </body>
+</html>

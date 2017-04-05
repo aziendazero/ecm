@@ -17,6 +17,7 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.ComunicazioneService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
@@ -40,6 +41,7 @@ public class LoginController {
 	@Autowired private EventoService eventoService;
 	@Autowired private PianoFormativoService pianoFormativoService;
 	@Autowired private RelazioneAnnualeService relazioneAnnualeService;
+	@Autowired private ComunicazioneService comunicazioneService;
 
 	@RequestMapping("/")
 	public String root(Locale locale) {
@@ -85,6 +87,7 @@ public class LoginController {
 					wrapper.setAccreditamentiInPreavvisoRigetto(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.PREAVVISO_RIGETTO, wrapper.getProviderId()));
 					wrapper.setNomeProvider(providerService.getProvider(providerService.getProviderIdByAccountId(currentUser.getAccount().getId())).getDenominazioneLegale()); //TODO fare con query
 					wrapper.setEventiBozza(eventoService.countAllEventiByProviderIdAndStato(currentUser.getAccount().getProvider().getId(), EventoStatoEnum.BOZZA));
+					wrapper.setNuoviMessaggi(comunicazioneService.countAllMessaggiNonLetti(currentUser.getAccount().getId()));
 					break;
 				case RESPONSABILE_SEGRETERIA_ECM:
 				case SEGRETERIA:

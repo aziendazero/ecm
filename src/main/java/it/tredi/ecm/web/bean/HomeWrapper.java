@@ -26,6 +26,7 @@ public class HomeWrapper {
 	private Integer accreditamentiInPreavvisoRigetto;
 	private String nomeProvider;
 	private Integer eventiBozza;
+	private Long nuoviMessaggi;
 
 	//Segreteria
 	private Boolean isSegreteria;

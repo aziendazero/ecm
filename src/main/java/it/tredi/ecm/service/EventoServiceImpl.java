@@ -65,6 +65,7 @@ import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
+import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
@@ -1981,5 +1982,22 @@ public class EventoServiceImpl implements EventoService {
 		//l'obiettivo 1042 è un obiettivo nazionale (medicine non convenzionali)
 		Obiettivo nonConvenzionale = obiettivoService.getObiettivo(1042L);
 		return eventoRepository.countAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE, nonConvenzionale);
+	}
+
+	@Override
+	public boolean checkIfRESAndWorkshopOrCorsoAggiornamentoAndInterettivoSelected(Evento evento) {
+		if(evento instanceof EventoRES) {
+			EventoRES eventoRes = (EventoRES) evento;
+			if(eventoRes.getTipologiaEventoRES() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
+					|| eventoRes.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO) {
+				for(ProgrammaGiornalieroRES prog : eventoRes.getProgramma()) {
+					for(DettaglioAttivitaRES dettaglio : prog.getProgramma()) {
+						if(dettaglio.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA)
+							return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

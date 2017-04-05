@@ -1749,12 +1749,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			accreditamento.setStatoVariazioneDati(stato);
 			//non e' prevista la presa visione della segreteria
 		} else if(workflowInCorso.getTipo() == TipoWorkflowEnum.DECADENZA) {
+			if(stato == AccreditamentoStatoEnum.INS_ODG) {
+				//messo in ODG per discussione commissione ECM
+				gestioneChiusuraAccreditamento(accreditamento);
+			}
 			if(stato == AccreditamentoStatoEnum.CANCELLATO) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
 			}
-			if(stato == AccreditamentoStatoEnum.INS_ODG)
-				gestioneChiusuraAccreditamento(accreditamento);
 			accreditamento.setStato(stato);
 		}
 
