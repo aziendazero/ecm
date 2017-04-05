@@ -156,6 +156,32 @@
 								<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.canInsertRelazioneAnnuale') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertRelazioneAnnuale')}" class="alert" th:text="#{error.empty}"></div>
 							</div>
 							<div class="divider"></div>
+							<div class="item form-group">
+								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.pagamento_con_myPay_settings}"></label>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+									<div class="col-xs-6">
+										<div class="radio">
+											<label>
+												<input id="myPay-y" type="radio" class="flat" th:value="${true}" th:field="${impostazioniProviderWrapper.canMyPay}" />
+												<span th:text="#{label.abilita}">abilita</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input id="myPay-n" type="radio" class="flat" th:value="${false}" th:field="${impostazioniProviderWrapper.canMyPay}" />
+												<span th:text="#{label.disabilita}">disabilita</span>
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input id="myPay-d" type="radio" class="flat" th:value="${null}" th:field="${impostazioniProviderWrapper.canMyPay}" />
+												<span th:text="#{label.default}">default</span>
+											</label>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="divider"></div>
 							<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.stato')} ? 'bad'">
 								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.stato_del_provider}"></label>
 								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-6"></div>
@@ -299,7 +325,7 @@
 										<a th:href="@{|/provider/${provider.id}/pagamento/list|}" class="btn btn-primary min-icon-width" th:title="#{label.contributo_annuale_provider}"><i class="fa fa-euro"> </i></a>
 										<button type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalImpostazioni(${provider.id}, ${provider.canInsertPianoFormativo}, ${provider.canInsertEvento},
 											${provider.canInsertAccreditamentoStandard}, ${provider.canInsertAccreditamentoProvvisorio}, ${provider.canInsertRelazioneAnnuale}, '${provider.status}', '${provider.dataScadenzaInsertPianoFormativo}', '${provider.dataScadenzaInsertAccreditamentoStandard}',
-											'${provider.dataRinnovoInsertAccreditamentoProvvisorio}', '${provider.dataScadenzaInsertRelazioneAnnuale}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
+											'${provider.dataRinnovoInsertAccreditamentoProvvisorio}', '${provider.dataScadenzaInsertRelazioneAnnuale}', ${provider.myPay})|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
 										<button type="button" class="btn btn-danger min-icon-width" th:onclick="|openModalConfermaBloccoProvider(${provider.id})|" th:title="#{label.blocca}" th:unless="${provider.isBloccato()}"><i class="fa fa-times-circle"> </i></button>
 										<button type="button" class="btn btn-danger min-icon-width disabled" th:title="#{label.blocca}" th:if="${provider.isBloccato()}"><i class="fa fa-times-circle"> </i></button>
 									</td>
@@ -342,15 +368,13 @@
 				    if([[${impostazioniProviderWrapper != null && impostazioniProviderWrapper.submitError == true}]])
 				    	$("#scadenze-provider").modal("show");
 
-					 if([[${impostazioniProviderWrapper != null && impostazioniProviderWrapper.motivazioneError == true}]])
+					if([[${impostazioniProviderWrapper != null && impostazioniProviderWrapper.motivazioneError == true}]])
 					    $("#blocca-provider").modal("show");
-
-
 				})
 
 			    function openModalImpostazioni(idProvider,
 						canInsertPF, canInsertEventi, canInsertDomanda, canInsertDomandaProv, canInsertRelazione,
-						status, dataPF, dataDomanda, dataDomandaProv, dataRelazione) {
+						status, dataPF, dataDomanda, dataDomandaProv, dataRelazione, myPay) {
 					cleanForm();
 					//action
 					$("#scadenze-provider").modal("show");
@@ -377,12 +401,17 @@
 						$("#radioRelazione-Si").iCheck("check")
 					else
 						$("#radioRelazione-No").iCheck("check")
+					if(myPay == null)
+						$("#myPay-d").iCheck("check")
+					else if(myPay)
+						$("#myPay-y").iCheck("check")
+					else
+						$("#myPay-n").iCheck("check")
 					//status del provider
 					$("#statoSelect").val(status);
 					$("#statoSelect").selectpicker("refresh");
 					//gestione date
 					//parse + format
-
 					if(dataPF != "null" && dataPF != "undefined"){
 						var dataScadenzaPF = moment(dataPF, "YYYY-MM-DD", true).format("DD/MM/YYYY");
 						$("#dataPF").val(dataScadenzaPF);

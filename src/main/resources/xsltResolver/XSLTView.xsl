@@ -14,7 +14,7 @@
     <body>
       <h2>Partecipanti</h2>
 
-	<table id="stocazzo" class="no-order table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+	<table id="tableXSLT" class="no-order table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 		<thead>
 			<tr>
 				<th>Nome</th>

@@ -89,4 +89,8 @@
 
 	<include file="20170323_001_fieldIntegrazione_fittizio.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170405_001_flagMyPay.xml" relativeToChangelogFile="true"/>
+
+	<include file="20170405_002_quietanza_pagamento.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
@@ -199,5 +200,16 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 			for(Provider p : provideList)
 				createPagamentoProviderPerQuotaAnnuale(p.getId(), annoInCorso, false);
 		}
+	}
+
+	@Override
+	public void salvaQuietanzaPagamento(File quietanzaPagamento, Long quotaAnnualeId) {
+		LOGGER.info("Salvataggio della Quietanza di Pagamento per la quotaAnnuale: " + quotaAnnualeId);
+		QuotaAnnuale quota = quotaAnnualeRepository.findOne(quotaAnnualeId);
+		quota.getPagamento().setQuietanza(quietanzaPagamento);
+		quota.getPagamento().setDataPagamento(LocalDate.now());
+		quota.setPagato(true);
+		pagamentoService.save(quota.getPagamento());
+		save(quota);
 	}
 }

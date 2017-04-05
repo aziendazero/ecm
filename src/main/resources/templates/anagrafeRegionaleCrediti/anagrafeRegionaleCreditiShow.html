@@ -34,6 +34,7 @@
 								<tr>
 									<th th:text="#{label.data}">Codice fiscale</th>
 									<th th:text="#{label.titolo_evento}">Nome</th>
+									<th th:text="#{label.id_evento}">Id Evento</th>
 									<th th:text="#{label.crediti_acquisiti}">Cognome</th>
 									<th th:text="#{label.ruolo}">Cognome</th>
 								</tr>
@@ -42,6 +43,7 @@
 								<tr th:each="anagrafe, row : ${anagrafeRegionaleCreditiList}">
 									<td th:text="${#temporals.format(anagrafe.data, 'dd/MM/yyyy')}">Codice fiscale</td>
 									<td th:text="${anagrafe.evento.titolo}">Cognome</td>
+									<td th:text="${anagrafe.evento.getCodiceIdentificativo()}"></td>
 									<td th:text="${anagrafe.crediti}">Cognome</td>
 									<td th:text="${anagrafe.ruolo}">Cognome</td>
 								</tr>

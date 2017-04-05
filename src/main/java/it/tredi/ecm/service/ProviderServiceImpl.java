@@ -599,6 +599,7 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setCanInsertAccreditamentoStandard(wrapper.getCanInsertDomandaStandard());
 		provider.setCanInsertAccreditamentoProvvisorio(wrapper.getCanInsertDomandaProvvisoria());
 		provider.setCanInsertRelazioneAnnuale(wrapper.getCanInsertRelazioneAnnuale());
+		provider.setMyPay(wrapper.getCanMyPay());
 		//date scadenza permessi
 		if(provider.isCanInsertPianoFormativo())
 			provider.setDataScadenzaInsertPianoFormativo(wrapper.getDataScadenzaInsertPianoFormativo());
@@ -695,9 +696,6 @@ public class ProviderServiceImpl implements ProviderService {
 		Accreditamento accreditamento = accreditamentoService.getLastAccreditamentoForProviderId(providerId);
 		accreditamento.setFileDecadenza(wrapper.getAllegatoDecadenza());
 		accreditamentoService.save(accreditamento);
-
-
-
 	}
 
 	@Override

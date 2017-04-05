@@ -21,6 +21,7 @@ public class ImpostazioniProviderWrapper {
 	private Boolean canInsertDomandaStandard;
 	private Boolean canInsertDomandaProvvisoria;
 	private Boolean canInsertRelazioneAnnuale;
+	private Boolean canMyPay;
 
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate dataScadenzaInsertPianoFormativo;

@@ -51,6 +51,8 @@ public class ProviderAttivitaAudit {
 
 	private boolean canInsertEvento;
 
+	private Boolean myPay;
+
 	private boolean canInsertRelazioneAnnuale = true;
 	private LocalDate dataScadenzaInsertRelazioneAnnuale;
 
@@ -69,6 +71,8 @@ public class ProviderAttivitaAudit {
 		this.dataScadenzaInsertPianoFormativo = provider.getDataScadenzaInsertPianoFormativo();
 
 		this.canInsertEvento = provider.isCanInsertEvento();
+
+		this.myPay = provider.getMyPay();
 
 		this.canInsertRelazioneAnnuale = provider.isCanInsertRelazioneAnnuale();
 		this.dataScadenzaInsertRelazioneAnnuale = provider.getDataScadenzaInsertRelazioneAnnuale();
