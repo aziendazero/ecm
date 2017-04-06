@@ -58,5 +58,8 @@ public class Pagamento extends BaseEntityDefaultId{
 	private Date dataEsitoSingoloPagamento;
 	private String identificativoUnivocoRiscosse;
 
+	@OneToOne
+	private File quietanza;
+
 
 }

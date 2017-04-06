@@ -71,6 +71,8 @@ public enum FileEnum {
 
 	FILE_DECADENZA (55, "Documento di decadenza"),
 
+	FILE_QUIETANZA_PAGAMENTO(56, "Quietanza di Pagamento"),
+
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, "");
 

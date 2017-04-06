@@ -26,7 +26,7 @@ public interface ComunicazioneService {
 	List<Comunicazione> getUltimi10MessaggiNonLetti(Long id);
 	long countAllMessaggiNonLetti(Long id);
 	Map<String, Set<Account>> getAllDestinatariDisponibili(Long id);
-	void send(Comunicazione comunicazione, File allegato);
+	void send(Comunicazione comunicazione, File allegato) throws Exception;
 	boolean canAccountRespondToComunicazione(Account account, Comunicazione comunicazione);
 	boolean canAccountSeeResponse(Account account, ComunicazioneResponse response);
 	boolean canAccountCloseComunicazione(Account account, Comunicazione comunicazione);

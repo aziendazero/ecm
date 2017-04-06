@@ -30,4 +30,5 @@ public interface EmailService {
 
 	public void inviaNotificaATeamLeader(String referee, String provider) throws Exception;
 	public void inviaConvocazioneValutazioneSulCampo(Set<String> valutatori,LocalDate data, String provider) throws Exception;
+	public void inviaNotificaNuovaComunicazioneForProvider(String fullName, String email) throws Exception;
 }

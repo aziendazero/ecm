@@ -7,6 +7,37 @@
 <body>
 	<div layout:fragment="content">
 		<div class="row">
+
+			<div id="modalQuietanza" class="modal fade modal-quietanza" data-model-index="1" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel1" th:text="#{label.allega_quietanza_di_pagamento}"></h4>
+						</div>
+						<div class="modal-body">
+							<form id="form-blocca-provider" class="form-horizontal"
+								method="post" enctype="multipart/form-data"
+								novalidate="novalidate">
+								<div class="item form-group" id="fileQuietanza">
+									<th:block th:include="fragments/allegatiext :: allegatiext(quietanzaWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_QUIETANZA_PAGAMENTO}', quietanzaPagamento, null, null, null, false, null, false)" ></th:block>
+								</div>
+								<div></div>
+
+								<input id="submitButton" type="submit" style="display: none;" />
+								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+							</form>
+						</div>
+						<div class="modal-footer">
+							<label for="submitButton" class="btn btn-success pull-right" th:text="#{label.applica}">Applica</label>
+							<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title">
@@ -16,7 +47,7 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<table th:unless="${#lists.isEmpty(quoteAnnualiList)}" id="datatable-pagamentiProvider" class="table table-striped table-bordered dt-responsive nowrap datatable-responsive" cellspacing="0" width="100%">
+						<table th:unless="${#lists.isEmpty(quoteAnnualiList)}" id="datatable-pagamentiProvider" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
 									<th th:text="#{label.causale}">Inserimento Domanda Accreditamento Standard</th>
@@ -42,7 +73,9 @@
 									<td th:text="${quotaAnnuale.pagamento.dataPagamento == null} ? '' : ${#temporals.format(quotaAnnuale.pagamento.dataPagamento,'dd/MM/yyyy')}">abilitato/non abilitato</td>
 									<td>
 										<!-- TODO DISABILITATO PER LA PRODUZIONE -->
-										<a th:unless="${quotaAnnuale.pagato or quotaAnnuale.provider.isGruppoA()}" class="btn btn-success btn-table double" th:href="@{|/provider/${providerId}/pagamento/${quotaAnnuale.id}/paga|}"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
+										<a th:unless="${quotaAnnuale.pagato or quotaAnnuale.provider.myPay == false or (quotaAnnuale.provider.myPay == null and quotaAnnuale.provider.isGruppoA())}" class="btn btn-success btn-table single" th:href="@{|/provider/${providerId}/pagamento/${quotaAnnuale.id}/paga|}"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
+										<button th:if="${!quotaAnnuale.pagato and (quotaAnnuale.provider.myPay == null or quotaAnnuale.provider.myPay == false) and quotaAnnuale.provider.isGruppoA()}" class="btn btn-success btn-table single" th:onclick="|openModaleAllegaQuietanza(${quotaAnnuale.id})|"><i class="fa fa-file"> </i> <span th:text="#{label.allega_quietanza}"> </span></button>
+										<a th:if="${quotaAnnuale.pagato and (quotaAnnuale.provider.myPay == null or quotaAnnuale.provider.myPay == false) and quotaAnnuale.provider.isGruppoA() and (quotaAnnuale.pagamento.quietanza != null)}" class="btn btn-primary btn-table single" th:href="@{|/file/${quotaAnnuale.pagamento.quietanza.id}|}"><i class="fa fa-file-text"> </i> <span th:text="#{label.visualizza_quietanza}"> </span></a>
 									</td>
 								</tr>
 							</tbody>
@@ -56,6 +89,52 @@
 				</div>
 			</div>
 		</div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			$(document).ready(function() {
+		    	$('#datatable-pagamentiProvider').DataTable({
+					"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+					"ordering" : false,
+					"columnDefs": [
+						{ "targets": 5, "width": "150px", "sClass": "center" },
+					],
+				});
+
+		    	$("#modalQuietanza").on("hide.bs.modal", function() {
+		    		closeModaleAllegaQuietanza();
+		    	})
+
+		    	if([[${quietanzaWrapper.submitError != null and quietanzaWrapper.submitError == true}]])
+		    		showErrorInModal();
+		    });
+
+			function openModaleAllegaQuietanza(id) {
+				$("#modalQuietanza").modal("show");
+				$("#modalQuietanza form").attr("action", [[@{|/provider/${providerId}/pagamento/|}]] + id + "/quietanzaPagamento/save")
+			}
+
+			function closeModaleAllegaQuietanza() {
+				$("#modalQuietanza form")[0].reset();
+				$("#modalQuietanza form").attr("action", "");
+				$("#quietanzaPagamento\\.id").val('');
+				$("#quietanzaPagamento\\.nomeFile").val('');
+				$("#quietanzaPagamento_label").text([[#{label.nessun_file_selezionato}]]).removeAttr('href');
+			}
+
+			function showErrorInModal() {
+				var $messageAlert = $("<div class='alert'></div>");
+				$messageAlert.text([[#{error.empty}]]);
+				var $item = $("#quietanzaPagamento").closest(".item")
+				$item.find(".alert").remove();
+ 				$item.append($messageAlert);
+				$item.addClass("bad");
+				$("#modalQuietanza").modal("show");
+			}
+
+		/*]]>*/
+		</script>
 	</div>
 </body>
 </html>

@@ -353,6 +353,39 @@
 					}
 				});
 
+				//cerco di capire se sto usando un browser o spazzatura
+				var ua = window.navigator.userAgent;
+			    var isIE = (ua.indexOf("MSIE ") + ua.indexOf("Trident/") + ua.indexOf("Edge/")) > -3;
+
+			    //funzione di show per le option e gli optgroup che sovrascrive quella di jQuery per gestire la spazzatura
+				$.fn.mShow2 = function() {
+			        this.removeClass('hidden').show();
+			        if ( isIE ) {
+			            this.each(function(index, option) {
+			                // Remove <span> to make it compatible with IE
+			                if($(option).parent().is('span')) {
+			                    $(option).parent().replaceWith(option);
+			                }
+			                $(option).show();
+			            });
+			        }
+			        return this;
+			    };
+
+			  	//funzione di hide per le option e gli optgroup che sovrascrive quella di jQuery per gestire la spazzatura
+			    $.fn.mHide2 = function() {
+			        this.addClass('hidden').hide();
+			        if ( isIE ) {
+			            this.each(function(index, option) {
+			                // Wrap with <span> to make it compatible with IE
+			                if(!$(option).parent().is('span')) {
+			                    $(option).wrap('<span>').hide();
+			                }
+			            });
+			        }
+			        return this;
+			    };
+
 				function removeAlerts() {
 					$(".destinatari-container").removeClass('bad-remade').find('div.alert').fadeOut(150, function() {
 						$(this).remove();
@@ -422,11 +455,10 @@
 					else {
 						$.each(criteria, function(index, group) {
 							var $optgroup = $("#optgroup").find('optgroup[label="'+ group +'"]');
-							$optgroup.show();
-							$optgroup.prop('disabled', false);
-							var $options = $optgroup.children();
+							$optgroup.mShow2().prop('disabled', false);
+							var $options = $optgroup.find('option');
 							$options.each(function(i, option) {
-								$(option).show().prop('disabled', false).removeClass("hidden");
+								$(option).mShow2().prop('disabled', false);
 							})
 						})
 					}
@@ -434,25 +466,23 @@
 				}
 
 				function hideAllOptgroups() {
-					$("#optgroup > optgroup").each(function(index, optgroup) {
+					$("#optgroup optgroup").each(function(index, optgroup) {
 						var $optgroup = $(optgroup);
-						$optgroup.hide();
-						$optgroup.prop('disabled', true);
-						var $options = $optgroup.children();
+						$optgroup.mHide2().prop('disabled', true);
+						var $options = $optgroup.find('option');
 						$options.each(function(i, option) {
-							$(option).hide().prop('disabled', true).addClass("hidden");
+							$(option).mHide2().prop('disabled', true);
 						})
 					})
 				}
 
 				function showAllOptgroups() {
-					$("#optgroup > optgroup").each(function(index, optgroup) {
+					$("#optgroup optgroup").each(function(index, optgroup) {
 						var $optgroup = $(optgroup);
-						$optgroup.show();
-						$optgroup.prop('disabled', false);
-						var $options = $optgroup.children();
+						$optgroup.mShow2().prop('disabled', false);
+						var $options = $optgroup.find('option');
 						$options.each(function(i, option) {
-							$(option).show().prop('disabled', false).removeClass("hidden");
+							$(option).mShow2().prop('disabled', false);
 						})
 					})
 				}
@@ -477,21 +507,21 @@
 						showAllProviders();
 					}
 					else {
-						var $providers = $('#optgroup > optgroup[label="Provider"] > option');
+						var $providers = $('#optgroup optgroup[label="Provider"] option');
 						$providers.each(function(i, provider) {
 							var $provider = $(provider);
 							//condizione di ricerca in AND
 							if(descrittoreFiltro.gruppo != "" && descrittoreFiltro.tipo != "") {
 								if(descrittoreFiltro.gruppo == $provider.attr("gruppo") && descrittoreFiltro.tipo == $provider.attr("tipo")) {
-									$provider.show().prop("disabled", false).removeClass("hidden");
+									$provider.mShow2().prop("disabled", false);
 								}
 							}
 							else {
 								if($provider.attr("gruppo") != "" && descrittoreFiltro.gruppo == $provider.attr("gruppo")) {
-									$provider.show().prop("disabled", false).removeClass("hidden");
+									$provider.mShow2().prop("disabled", false);
 								}
 								if($provider.attr("tipo") != "" && descrittoreFiltro.tipo == $provider.attr("tipo")) {
-									$provider.show().prop("disabled", false).removeClass("hidden");
+									$provider.mShow2().prop("disabled", false);
 								}
 							}
 						})
@@ -499,16 +529,16 @@
 				}
 
 				function hideAllProviders() {
-					var $providers = $('#optgroup > optgroup[label="Provider"] > option');
+					var $providers = $('#optgroup optgroup[label="Provider"] option');
 					$providers.each(function(index, provider) {
-						$(provider).hide().prop("disabled", true).addClass("hidden");
+						$(provider).mHide2().prop("disabled", true);
 					})
 				}
 
 				function showAllProviders() {
-					var $providers = $('#optgroup > optgroup[label="Provider"] > option');
+					var $providers = $('#optgroup optgroup[label="Provider"] option');
 					$providers.each(function(index, provider) {
-						$(provider).show().prop("disabled", false).removeClass("hidden");
+						$(provider).mShow2().prop("disabled", false);
 					})
 				}
 

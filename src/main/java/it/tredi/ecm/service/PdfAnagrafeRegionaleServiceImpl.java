@@ -149,13 +149,14 @@ public class PdfAnagrafeRegionaleServiceImpl implements PdfAnagrafeRegionaleServ
 	}
 
 	private PdfPTable getTableAnagrafeRegionaleCrediti() throws DocumentException {
-		PdfPTable tableFields = new PdfPTable(4);
+		PdfPTable tableFields = new PdfPTable(5);
 		tableFields.setWidthPercentage(100);
-		tableFields.setWidths(new float[]{0.5f, 2, 1, 0.5f});
+		tableFields.setWidths(new float[]{0.5f, 2, 0.2f, 1, 0.5f});
 		tableFields.setSpacingBefore(spacingBefore);
 		tableFields.setSpacingAfter(spacingAfter);
 		addCellIntestaSubTableByString(messageSource.getMessage("label.data", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
 		addCellIntestaSubTableByString(messageSource.getMessage("label.titolo_evento", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.id_evento", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
 		addCellIntestaSubTableByString(messageSource.getMessage("label.crediti_acquisiti", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
 		addCellIntestaSubTableByString(messageSource.getMessage("label.ruolo", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
 		return tableFields;
@@ -179,6 +180,7 @@ public class PdfAnagrafeRegionaleServiceImpl implements PdfAnagrafeRegionaleServ
 		for(AnagrafeRegionaleCrediti arc : lista) {
 			addCellSubTable(dateTimeFormatter.format(arc.getData()), table);
 			addCellSubTable(arc.getEvento().getTitolo(), table);
+			addCellSubTable(arc.getEvento().getCodiceIdentificativo(), table);
 			addCellSubTable(valutaFormatter.print(arc.getCrediti(), Locale.getDefault()), table);
 			addCellSubTable(arc.getRuolo(), table);
 		}

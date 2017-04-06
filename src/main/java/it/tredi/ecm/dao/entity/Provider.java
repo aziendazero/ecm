@@ -79,6 +79,10 @@ public class Provider extends BaseEntity{
 	private String codiceFiscale;
 	private String emailStruttura;
 
+	//boolean che serve ai provider di tipo A per decidere se possono pagare con myPay
+	//(null si guarda la tipologia del provider, default: B sì, A no)
+	private Boolean myPay;
+
 	public Long getCodiceIdentificativoUnivoco(){
 		return this.getId();
 	}

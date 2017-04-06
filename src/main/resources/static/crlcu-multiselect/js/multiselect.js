@@ -8,6 +8,15 @@
  * Licensed under the MIT license (https://github.com/crlcu/multiselect/blob/master/LICENSE)
  */
 
+
+
+
+ /* NB
+  *
+  * tiommi: LIBRERIA PATCHATA PRATICAMENTE OVUNQUE (soprattutto moveToRight e search non gestivano gli optgroup)
+  *
+  */
+
 if (typeof jQuery === 'undefined') {
     throw new Error('multiselect requires jQuery');
 }
@@ -151,8 +160,8 @@ if (typeof jQuery === 'undefined') {
                         if (this.value) {
                             var $toShow = self.$left.find('option:enabled:search("' + this.value + '")').mShow();
                             var $toHide = self.$left.find('option:enabled:not(:search("' + this.value + '"))').mHide();
-                            var $grpHide= self.$left.find('option:enabled.hidden').parent('optgroup').not($(":visible").parent()).mHide();
-                            var $grpShow= self.$left.find('option:enabled:not(.hidden)').parent('optgroup').mShow();
+                            var $grpHide= $toHide.parents('optgroup').mHide();
+                            var $grpShow= $toShow.parents('optgroup').mShow();
                         } else {
                             self.$left.find('option:enabled, optgroup:enabled').mShow();
                         }
@@ -165,8 +174,8 @@ if (typeof jQuery === 'undefined') {
                         if (this.value) {
                             var $toShow = self.$right.find('option:enabled:search("' + this.value + '")').mShow();
                             var $toHide = self.$right.find('option:enabled:not(:search("' + this.value + '"))').mHide();
-                            var $grpHide= self.$right.find('option:enabled.hidden').parent('optgroup').not($(":visible").parent()).mHide();
-                            var $grpShow= self.$right.find('option:enabled:not(.hidden)').parent('optgroup').mShow();
+                            var $grpHide= $toHide.parents('optgroup').mHide();
+                            var $grpShow= $toShow.parents('optgroup').mShow();
                         } else {
                             self.$right.find('option:enabled, optgroup:enabled').mShow();
                         }
@@ -265,7 +274,7 @@ if (typeof jQuery === 'undefined') {
                 self.actions.$rightAll.on('click', function(e) {
                     e.preventDefault();
 
-                    var $options = self.$left.children(':not(span):not(.hidden)');
+                    var $options = self.$left.children(':not(span):not(.hidden):not(:disabled)');
 
                     if ( $options.length ) {
                         self.moveToRight($options, e);
@@ -277,7 +286,7 @@ if (typeof jQuery === 'undefined') {
                 self.actions.$leftAll.on('click', function(e) {
                     e.preventDefault();
 
-                    var $options = self.$right.children(':not(span):not(.hidden)');
+                    var $options = self.$right.children(':not(span):not(.hidden):not(:disabled)');
 
                     if ( $options.length ) {
                         self.moveToLeft($options, e);
@@ -289,7 +298,7 @@ if (typeof jQuery === 'undefined') {
                 self.actions.$rightAllOpt.on('click', function(e) {
                     e.preventDefault();
 
-                    var $options = self.$left.find('option:not(.hidden)');
+                    var $options = self.$left.find('option:not(.hidden):not(:disabled)');
 
                     if ( $options.length ) {
                         self.moveToRight($options, e);
@@ -301,7 +310,7 @@ if (typeof jQuery === 'undefined') {
                 self.actions.$leftAllOpt.on('click', function(e) {
                     e.preventDefault();
 
-                    var $options = self.$right.find('option:not(.hidden)');
+                    var $options = self.$right.find('option:not(.hidden):not(:disabled)');
 
                     if ( $options.length ) {
                         self.moveToLeft($options, e);

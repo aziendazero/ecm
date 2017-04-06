@@ -374,13 +374,20 @@ public class EventoController {
 			}
 			else {
 				if(Utils.getAuthenticatedUser().isSegreteria() &&
+						evento.isValidatorCheck() &&
 						(eventoWrapper.getCreditiOld() !=  evento.getCrediti() || evento.getConfermatiCrediti() == false)) {
-					//la segreteria potrebbe aver modificato i crediti dell'evento e va notificato
+					//la segreteria potrebbe aver modificato i crediti dell'evento (già accreditato) e va notificato
 					model.addAttribute("creditiModificati", true);
 					model.addAttribute("oldValueCrediti", eventoWrapper.getCreditiOld());
 					model.addAttribute("newValueCrediti", evento.getCrediti());
 					model.addAttribute("creditiProposti", eventoWrapper.getCreditiProposti());
-					eventoWrapper.setEvento(evento);
+					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+					return EDIT;
+				}
+				else if (eventoService.checkIfRESAndWorkshopOrCorsoAggiornamentoAndInterettivoSelected(evento)) {
+					//va notificato che si stanno inserendo metodologie didattiche interattive (workshop)
+					//e che il rapporto tutor docenti dovrebbe essere 1 a 25 massimo
+					model.addAttribute("RESWorkshopInterattivo", true);
 					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 					return EDIT;
 				}
@@ -411,7 +418,8 @@ public class EventoController {
 	public String validaEventoConfirm(@ModelAttribute EventoWrapper eventoWrapper, BindingResult result, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate/confirm"));
 		try {
-			Evento evento = eventoWrapper.getEvento();
+			//gestione dei campi ripetibili
+			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 
 			evento.setStato(EventoStatoEnum.VALIDATO);
 			evento.setValidatorCheck(true);

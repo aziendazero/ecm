@@ -31,6 +31,7 @@ import it.tredi.ecm.dao.entity.SedeDiff;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.Ruolo;
+import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoDiffRepository;
 import it.tredi.ecm.dao.repository.DatiAccreditamentoDiffRepository;
 import it.tredi.ecm.dao.repository.PersonaDiffRepository;
@@ -883,6 +884,26 @@ public class DiffServiceImpl implements DiffService {
 			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
 			field.setAccreditamento(accreditamento);
 			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE);
+			field.setModificatoInIntegrazione(true);
+			fieldValutazioneAccreditamentoService.save(field);
+			fieldValutazioneModificati.add(field);
+		}
+
+		//numero dipendenti formazione tempo indeterminato
+		if(!Objects.equals(datiOld.getNumeroDipendentiFormazioneTempoIndeterminato(), datiNew.getNumeroDipendentiFormazioneTempoIndeterminato())) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO);
+			field.setModificatoInIntegrazione(true);
+			fieldValutazioneAccreditamentoService.save(field);
+			fieldValutazioneModificati.add(field);
+		}
+
+		//numero dipendenti formazione altro
+		if(!Objects.equals(datiOld.getNumeroDipendentiFormazioneAltro(), datiNew.getNumeroDipendentiFormazioneAltro())) {
+			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+			field.setAccreditamento(accreditamento);
+			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO);
 			field.setModificatoInIntegrazione(true);
 			fieldValutazioneAccreditamentoService.save(field);
 			fieldValutazioneModificati.add(field);

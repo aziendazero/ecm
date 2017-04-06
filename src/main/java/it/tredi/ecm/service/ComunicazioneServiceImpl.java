@@ -25,6 +25,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.repository.ComunicazioneRepository;
@@ -39,6 +40,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	@Autowired private AccountService accountService;
 	@Autowired private ComunicazioneRepository comunicazioneRepository;
 	@Autowired private ComunicazioneResponseRepository comunicazioneResponseRepository;
+	@Autowired private EmailService emailService;
 	@PersistenceContext EntityManager entityManager;
 
 	@Override
@@ -272,11 +274,12 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		return destinatariDisponibili;
 	}
 
+	//tiommi 04-04-2017 : dashboard in comune tra gli utenti
 	//tiommi 06/03/2017 a seguito richiesta MEV in cui le comunicazioni sono gestite per gruppi provider e segreteria
 	//salvataggio comunicazione, controllo mittente, se è provider aggiungo i segretari ai destinatari
 	//aggiungo anche la data di invio
 	@Override
-	public void send(Comunicazione comunicazione, File allegato) {
+	public void send(Comunicazione comunicazione, File allegato) throws Exception {
 		//inserisco gli id dei destinatari tra gli utenti che non hanno ancora letto la comunicazione
 		Set<Long> utentiCheDevonoLeggere =  new HashSet<Long>();
 		//gestioni mittente NON segreteria (possono inviare solo a segreteria)
@@ -290,13 +293,8 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			Set<Account> membriSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
 			for(Account s : membriSegreteria)
 				utentiCheDevonoLeggere.add(s.getId());
-			//se ad inviare è un provider aggiungo agli utenti che devono leggere tutti gli altri utenti del provider stesso
+			//se ad inviare è un provider
 			if(comunicazione.getMittente().isProvider()) {
-				Set<Account> providerUsers = accountService.getAllByProviderId(comunicazione.getMittente().getProvider().getId());
-				for(Account pu : providerUsers) {
-					if(pu.getId() != comunicazione.getMittente().getId() && !pu.isProviderAccountComunicazioni())
-						utentiCheDevonoLeggere.add(pu.getId());
-				}
 				//aggiungo il fake account del provider
 				Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(comunicazione.getMittente().getProvider());
 				comunicazione.setFakeAccountComunicazioni(providerComunicazioni);
@@ -306,10 +304,6 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		else {
 			comunicazione.setInviatoAllaSegreteria(false);
 			for (Account a : comunicazione.getDestinatari()) {
-				Set<Account> membriSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
-				for(Account s : membriSegreteria)
-					if(s.getId() != comunicazione.getMittente().getId())
-						utentiCheDevonoLeggere.add(s.getId());
 				//tiommi 06/03/2017 a seguito richiesta MEV in cui le comunicazioni sono gestite per gruppi provider e segreteria
 				//se trovo un provider aggiungo agli utenti che devono leggere tutti gli utenti del provider
 				//N.B. la segreteria può aprire comunicazioni con il provider solo attraverso fake account comunicazione provider
@@ -318,6 +312,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 					for(Account pu : providerUsers)
 						if(!pu.isProviderAccountComunicazioni())
 							utentiCheDevonoLeggere.add(pu.getId());
+					inviaMailLegaleProvider(a.getProvider());
 				}
 				else
 					utentiCheDevonoLeggere.add(a.getId());
@@ -332,6 +327,29 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		if (allegato != null && !allegato.isNew())
 			comunicazione.setAllegatoComunicazione(allegato);
 		comunicazioneRepository.save(comunicazione);
+	}
+
+	//contollo se il provider ha il legale rappresentante e il delegato del legale rappresentante e in caso
+	//positivo li avvisa che è stata inviata una nuova comunicazione al loro Provider
+	private void inviaMailLegaleProvider(Provider provider) {
+		Persona legale = provider.getLegaleRappresentante();
+		Persona delegato = provider.getDelegatoLegaleRappresentante();
+		if(legale != null) {
+			try {
+				emailService.inviaNotificaNuovaComunicazioneForProvider(legale.getAnagrafica().getFullName(), legale.getAnagrafica().getEmail());
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("ERRORE nell'invio della mail al legale rappresentante del Provider " + provider.getId()));
+			}
+		}
+		if(delegato != null) {
+			try {
+				emailService.inviaNotificaNuovaComunicazioneForProvider(delegato.getAnagrafica().getFullName(), delegato.getAnagrafica().getEmail());
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("ERRORE nell'invio della mail al delegato del legale rappresentante del Provider " + provider.getId()));
+			}
+		}
 	}
 
 	@Override
@@ -376,15 +394,31 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		return false;
 	}
 
+	//tiommi 04-04-2017 : dashboard in comune tra gli utenti
 	@Override
 	public void contrassegnaComeLetta(Long id) {
 		Comunicazione comunicazione = getComunicazioneById(id);
 		Set<Long> utentiCheDevonoLeggere = comunicazione.getUtentiCheDevonoLeggere();
-		utentiCheDevonoLeggere.remove(Utils.getAuthenticatedUser().getAccount().getId());
+		Account user = Utils.getAuthenticatedUser().getAccount();
+		//tolgo l'utente che ha archiviato
+		utentiCheDevonoLeggere.remove(user.getId());
+		//se l'utente è provider tolgo tutti gli utenti del suo provider
+		if(user.isProviderVisualizzatore()) {
+			Set<Account> providerUsers = accountService.getAllByProviderId(user.getProvider().getId());
+			for(Account pu : providerUsers)
+				utentiCheDevonoLeggere.remove(pu.getId());
+		}
+		//se l'utente è segreteria tolgo tutti gli utenti segreteria
+		else if(user.isSegreteria()) {
+			Set<Account> segreteriaUsers = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
+			for(Account s : segreteriaUsers)
+				utentiCheDevonoLeggere.remove(s.getId());
+		}
 		comunicazione.setUtentiCheDevonoLeggere(utentiCheDevonoLeggere);
 		comunicazioneRepository.save(comunicazione);
 	}
 
+	//tiommi 04-04-2017 : dashboard in comune tra gli utenti
 	//salvataggio risposta per la comunicazione il cui id è passato come parametro
 	@Override
 	public void reply(ComunicazioneResponse risposta, Long id, File allegato) {
@@ -397,35 +431,32 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			risposta.setAllegatoRisposta(allegato);
 		risposte.add(risposta);
 		Set<Long> utentiCheDevonoLeggere = comunicazione.getUtentiCheDevonoLeggere();
-		//risposta di un utente NON segreteria, allerto i membri della segreteria e
-		// se l'utente è un provider gli altri membri del provider
+		//risposta di un utente NON segreteria, allerto i membri della segreteria
 		if(!risposta.getMittente().isSegreteria()) {
 			//aggiungo ai destinatari il fake account segreteria comunicazioni
 			Set<Account> destinatari = new HashSet<Account>();
 			destinatari.add(accountService.getAccountComunicazioniSegretereria());
 			risposta.setDestinatari(destinatari);
 			risposta.setInviatoAllaSegreteria(true);
+			//allerto tutti i segreteria (dashboard)
 			for(Account a : accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA))
 				utentiCheDevonoLeggere.add(a.getId());
 			if(risposta.getMittente().isProvider()) {
-				for(Account pu : accountService.getAllByProviderId(risposta.getMittente().getProvider().getId())) {
-					if(pu.getId() != risposta.getMittente().getId())
-						utentiCheDevonoLeggere.add(pu.getId());
-				}
-				//aggiungo il fake account del provider
+				//aggiungo il fake account del provider come mittente
 				Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(risposta.getMittente().getProvider());
 				risposta.setFakeAccountComunicazioni(providerComunicazioni);
+				//rimuovo tutti gli utenti del provider dagli utenti che devono leggere
+				Set<Account> providerUsers = accountService.getAllByProviderId(risposta.getMittente().getProvider().getId());
+				for(Account pu : providerUsers)
+					utentiCheDevonoLeggere.remove(pu.getId());
 			}
 		}
-		//risposta di un utente segreteria, allerto tutti gli altri utenti segreteria e i destinatari della risposta
+		//risposta di un utente segreteria, allerto tutti i destinatari della risposta
 		// se tra questi vi sono provider, allerto tutti gli utenti del provider.
 		else{
 			risposta.setInviatoAllaSegreteria(false);
-			for(Account a : accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA)) {
-				if(a.getId() != risposta.getMittente().getId())
-					utentiCheDevonoLeggere.add(a.getId());
-			}
 			for(Account a : risposta.getDestinatari())
+				//allerto della nuova comunicazione
 				if(a.isProviderAccountComunicazioni()) {
 					Set<Account> providerUsers = accountService.getAllByProviderId(a.getProvider().getId());
 					for(Account pu : providerUsers)
@@ -436,18 +467,31 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			//aggiungo il fake account della segreteria
 			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
 			risposta.setFakeAccountComunicazioni(segreteriaComunicazioni);
+			//rimuovo tutti gli utenti segreteria dagli utenti che devono leggere
+			Set<Account> segreteriaUsers = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
+			for(Account s : segreteriaUsers)
+				utentiCheDevonoLeggere.remove(s.getId());
 		}
 		//tolgo l'utente che ha mandato la risposta dagli utenti che devono leggere
-		comunicazione.getUtentiCheDevonoLeggere().remove(risposta.getMittente().getId());
+		utentiCheDevonoLeggere.remove(risposta.getMittente().getId());
+		comunicazione.setUtentiCheDevonoLeggere(utentiCheDevonoLeggere);
 		comunicazioneResponseRepository.save(risposta);
 		comunicazione.setRisposte(risposte);
 		comunicazioneRepository.save(comunicazione);
 	}
 
+	//tiommi 04-04-2017 : dashboard in comune tra gli utenti
 	@Override
 	public void chiudiComunicazioneById(Long id) {
 		Comunicazione comunicazione = comunicazioneRepository.findOne(id);
 		comunicazione.setChiusa(true);
+		//NB solo la segreteria può chiamare questo metodo, rimuovo tutti gli utenti segreteria (come se avesse letto)
+		//ma non gli utenti provider
+		Set<Long> utentiCheDevonoLeggere = comunicazione.getUtentiCheDevonoLeggere();
+		Set<Account> segreteriaUsers = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
+		for(Account s : segreteriaUsers)
+			utentiCheDevonoLeggere.remove(s.getId());
+		comunicazione.setUtentiCheDevonoLeggere(utentiCheDevonoLeggere);
 		comunicazioneRepository.save(comunicazione);
 	}
 
