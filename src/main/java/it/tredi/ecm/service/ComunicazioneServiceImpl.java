@@ -445,6 +445,10 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 				//aggiungo il fake account del provider come mittente
 				Account providerComunicazioni = accountService.getAccountComunicazioniProviderForProvider(risposta.getMittente().getProvider());
 				risposta.setFakeAccountComunicazioni(providerComunicazioni);
+				//rimuovo tutti gli utenti del provider dagli utenti che devono leggere
+				Set<Account> providerUsers = accountService.getAllByProviderId(risposta.getMittente().getProvider().getId());
+				for(Account pu : providerUsers)
+					utentiCheDevonoLeggere.remove(pu.getId());
 			}
 		}
 		//risposta di un utente segreteria, allerto tutti i destinatari della risposta
@@ -452,6 +456,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		else{
 			risposta.setInviatoAllaSegreteria(false);
 			for(Account a : risposta.getDestinatari())
+				//allerto della nuova comunicazione
 				if(a.isProviderAccountComunicazioni()) {
 					Set<Account> providerUsers = accountService.getAllByProviderId(a.getProvider().getId());
 					for(Account pu : providerUsers)
@@ -462,9 +467,14 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			//aggiungo il fake account della segreteria
 			Account segreteriaComunicazioni = accountService.getAccountComunicazioniSegretereria();
 			risposta.setFakeAccountComunicazioni(segreteriaComunicazioni);
+			//rimuovo tutti gli utenti segreteria dagli utenti che devono leggere
+			Set<Account> segreteriaUsers = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
+			for(Account s : segreteriaUsers)
+				utentiCheDevonoLeggere.remove(s.getId());
 		}
 		//tolgo l'utente che ha mandato la risposta dagli utenti che devono leggere
-		comunicazione.getUtentiCheDevonoLeggere().remove(risposta.getMittente().getId());
+		utentiCheDevonoLeggere.remove(risposta.getMittente().getId());
+		comunicazione.setUtentiCheDevonoLeggere(utentiCheDevonoLeggere);
 		comunicazioneResponseRepository.save(risposta);
 		comunicazione.setRisposte(risposte);
 		comunicazioneRepository.save(comunicazione);
