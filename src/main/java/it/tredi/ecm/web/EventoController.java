@@ -2,6 +2,7 @@ package it.tredi.ecm.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -96,6 +98,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ErrorsAjaxWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.ModificaOrarioAttivitaWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 import it.tredi.ecm.web.bean.SponsorWrapper;
@@ -233,7 +236,7 @@ public class EventoController {
 		}
 	}
 
-	private String goToList(Model model, Long providerId) {
+	private String goToList(Model model, Long providerId) throws AccreditamentoNotFoundException {
 		String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
 		model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
 		model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
@@ -1538,7 +1541,7 @@ public class EventoController {
 	public String modificaAttivita(@PathVariable("target") String target,
 									@PathVariable("addAttivitaTo") String addAttivitaTo,
 									@PathVariable("modificaElemento") Integer modificaElemento,
-											@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+									@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
 			int elementoIndex = Integer.valueOf(modificaElemento).intValue();
@@ -1780,4 +1783,17 @@ public class EventoController {
 		return eventi;
 	}
 
+	@RequestMapping(value="/provider/{providerId}/evento/{eventoId}/updateOrari", method=RequestMethod.POST)
+	   public String updateOrari(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper,
+			   Model model, RedirectAttributes redirectAttrs,
+			   @RequestBody ModificaOrarioAttivitaWrapper jsonObj) {
+		try{
+			eventoService.updateOrariAttivita(jsonObj, eventoWrapper);
+			return EDIT + " :: attivitaRES";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: attivitaRES";
+		}
+	}
 }

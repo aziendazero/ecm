@@ -8,7 +8,9 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.web.bean.EventoWrapper;
+import it.tredi.ecm.web.bean.ModificaOrarioAttivitaWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 
@@ -35,7 +37,7 @@ public interface EventoService {
 	//TODO Questo metodo puo' diventare private
 	public void retrieveProgrammaAndAddJoin(EventoWrapper eventoWrapper);
 	public void aggiornaDati(EventoWrapper eventoWrapper);
-	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId);
+	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) throws AccreditamentoNotFoundException;
 
 	//TODO chiedere 1 mese di ferie almeno (joe19 mode on)
 	public Evento prepareRiedizioneEvento(Evento evento) throws Exception;
@@ -76,4 +78,7 @@ public interface EventoService {
 	public Integer countAllEventiMedicineNonConvenzionali();
 	public Set<Evento> getEventiMedicineNonConvenzionali();
 	public boolean checkIfRESAndWorkshopOrCorsoAggiornamentoAndInterettivoSelected(Evento evento);
+
+	//MEV riedizioni
+	public void updateOrariAttivita(ModificaOrarioAttivitaWrapper jsonObj, EventoWrapper eventoWrapper);
 }

@@ -16,6 +16,7 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 
 @JaversSpringDataAuditable
 public interface EventoRepository extends JpaRepository<Evento, Long> {
@@ -39,7 +40,6 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(Long providerId, LocalDate now);
 	public Set<Evento> findAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
 	public Integer countAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
-	public Set<Evento> findAllByProviderIdAndStatoNotAndDataInizioBeforeAndDataFineAfter(Long providerId, EventoStatoEnum bozza, LocalDate now, LocalDate startOfYear);
 
 	public Set<Evento> findAllByConfermatiCreditiFalseAndStato(EventoStatoEnum stato);
 	public Integer countAllByConfermatiCreditiFalseAndStato(EventoStatoEnum stato);
@@ -50,4 +50,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Set<Evento> findAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum medicineNonConvenzionale, Obiettivo nonConvenzionale);
 	public Integer countAllByContenutiEvento(ContenutiEventoEnum alimentazionePrimaInfanzia);
 	public Set<Evento> findAllByContenutiEvento(ContenutiEventoEnum alimentazionePrimaInfanzia);
+
+	//MEV RIEDIZIONI 04/2017
+	public Set<Evento> findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(Long providerId, EventoStatoEnum bozza, EventoStatoEnum cancellato, Set<ProceduraFormativa> procedureFormative, LocalDate fineAnnoScorso);
 }

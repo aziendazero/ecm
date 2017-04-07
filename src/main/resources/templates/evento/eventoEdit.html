@@ -915,17 +915,30 @@
 					break;
 					case "datatable-responsive-programmaRES": buttonColumn = 8;
 				}
-				$('.'+target).DataTable({
+				var table = $('.'+target).DataTable({
 					"bFilter" : false,
 					"bInfo" : false,
 					"bPaginate" : false,
-					"ordering" : false,
-					"columnDefs": [{
-						"targets": buttonColumn,
+					"ordering" : true,
+					"columnDefs": [
+						{"targets": buttonColumn,
 						"width": "1px",
 						"sClass": "center",
-						"responsivePriority": 1
-					}]
+						"responsivePriority": 1},
+						{"targets": 0,
+						"orderable": true},
+						{"targets": "no-sort", //gestione con classe (in tutti i sensi :) )
+						"orderable": false},
+					]
+			    });
+
+				$('.datatable-responsive-programmaRES tbody').on('click', 'tr', function () {
+			        if ($(this).hasClass('selected')) {
+			            $(this).removeClass('selected');
+			        }
+			        else {
+			            $(this).addClass('selected');
+			        }
 			    });
 		  	}
 
@@ -1383,16 +1396,16 @@
 						<th th:text="#{label.stato_cv}">CV</th>
 						<th style="padding-right: 8px;">
 							<div class="evento-button-container">
-								<a th:unless="${isRiedizione or isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary evento-table-button" onclick="openLookupPersona('responsabiliScientifici','base')" data-toggle="modal" data-target=".modal-lookup-persona">
+								<a th:unless="${isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary evento-table-button" onclick="openLookupPersona('responsabiliScientifici','base')" data-toggle="modal" data-target=".modal-lookup-persona">
 									<span><i class="fa fa-search"></i></span>
 								</a>
-								<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-responsabiliScientifici" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('responsabiliScientifici','base',false,undefined,true)" data-toggle="modal" data-target=".modal-add-persona">
+								<a th:unless="${isEditSemiBloccato}" id="add-responsabiliScientifici" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('responsabiliScientifici','base',false,undefined,true)" data-toggle="modal" data-target=".modal-add-persona">
 									<span><i class="fa fa-plus"></i></span>
 								</a>
-								<a th:if="${isRiedizione or isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary disabled evento-table-button">
+								<a th:if="${isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary disabled evento-table-button">
 									<span><i class="fa fa-search"></i></span>
 								</a>
-								<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-responsabiliScientifici" class="btn btn-success disabled evento-table-button">
+								<a th:if="${isEditSemiBloccato}" id="add-responsabiliScientifici" class="btn btn-success disabled evento-table-button">
 									<span><i class="fa fa-plus"></i></span>
 								</a>
 							</div>
@@ -1418,16 +1431,16 @@
 							</th:block>
 						</td>
 						<td>
-							<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
+							<a th:unless="${isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-							<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+							<a th:unless="${isEditSemiBloccato}" onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
-							<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+							<a th:if="${isEditSemiBloccato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-							<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+							<a th:if="${isEditSemiBloccato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1776,19 +1789,19 @@
 						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.programma')}__}"></div>
 						<div class="item form-group" style="clear:both; padding:2px;"></div>
 						<div th:attr="data-programma-id=__${data.key}__" class="item div-programma-id form-group" style="clear:both">
-							<table class="datatable-responsive-programmaRES table table-striped no-order table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+							<table class="datatable-responsive-programmaRES table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 								th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad-table'">
 								<thead>
 									<tr>
 										<th th:text="#{label.orario_inizio}">ORARIO INIZIO</th>
-										<th th:text="#{label.orario_fine}">ORARIO FINE</th>
-										<th th:text="#{label.argomento}">ARGOMENTO</th>
-										<th th:text="#{label.docenti}">Docenti</th>
-										<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
-										<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
-										<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
-										<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
-										<th>
+										<th th:text="#{label.orario_fine}" class="no-sort">ORARIO FINE</th>
+										<th th:text="#{label.argomento}" class="no-sort">ARGOMENTO</th>
+										<th th:text="#{label.docenti}" class="no-sort">Docenti</th>
+										<th th:text="#{label.risultato_atteso}" class="no-sort">RISULTATAO ATTESO</th>
+										<th th:text="#{label.tipologia_obiettivi_formativi}" class="no-sort">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
+										<th th:text="#{label.metodologia_didattica}" class="no-sort">METODOLOGIA DIDATTICA</th>
+										<th th:text="#{label.ore_attivita}" class="no-sort">ORE ATTIVITA'</th>
+										<th class="no-sort">
 											<div class="evento-button-container">
 												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-plus"></i></span>
@@ -1814,6 +1827,12 @@
 												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_registrazione_partecipanti}">
 													<span><i class="fa fa-group"></i></span>
 												</a>
+												<button type="button" th:unless="${isEditSemiBloccato}" onclick="selezionaTutteAttivita($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.seleziona_tutti}">
+													<span><i class="fa fa-list-ol"></i></span>
+												</button>
+												<button type="button" th:unless="${isEditSemiBloccato}" onclick="openModaleSpostaOrario($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.sposta_orario_selezionati}">
+													<span><i class="fa fa-clock-o"></i></span>
+												</button>
 											</div>
 										</th>
 									</tr>
@@ -1834,13 +1853,13 @@
 										<!-- <td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td> -->
 										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita)}"></td>
 										<td>
-											<a th:unless="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento() or attivita.isRegistrazionePartecipanti()))}" onclick="modificaAttivitaFrom('attivitaRES',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}" data-toggle="modal" data-target=".modal-add-attivitaRES">
+											<a th:unless="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento() or attivita.isRegistrazionePartecipanti()))}" onclick="event.cancelBubble=true;modificaAttivitaFrom('attivitaRES',this);" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
 											<a th:if="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento() or attivita.isRegistrazionePartecipanti()))}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
-											<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+											<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="event.cancelBubble=true;removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 												<span><i class="fa fa-trash"></i></span>
 											</a>
 											<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
@@ -1891,12 +1910,12 @@
 									th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'programmaEventoFSC['+__${status.index}__+'].azioniRuoli')} ? 'bad-table'">
 									<thead>
 										<tr>
-											<th th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azione}">AZIONE</th>
-											<th th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fase}">FASE</th>
-											<th th:text="#{label.obiettivo_formativo}">OBIETTIVO FORMATIVO</th>
-											<th th:text="#{label.risultati_attesi}">RISULTATAO ATTESO</th>
-											<th th:text="#{label.metodi_di_lavoro}">METODO DI LAVORO</th>
-											<th th:text="#{label.ruoli_coinvolti}">RUOLI COINVOLTI</th>
+											<th th:if="${fase != T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.azione}" >AZIONE</th>
+											<th th:if="${fase == T(it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum).CAMPO_LIBERO}" th:text="#{label.fase}"  class="no-sort">FASE</th>
+											<th th:text="#{label.obiettivo_formativo}" class="no-sort">OBIETTIVO FORMATIVO</th>
+											<th th:text="#{label.risultati_attesi}" class="no-sort">RISULTATAO ATTESO</th>
+											<th th:text="#{label.metodi_di_lavoro}" class="no-sort">METODO DI LAVORO</th>
+											<th th:text="#{label.ruoli_coinvolti}" class="no-sort">RUOLI COINVOLTI</th>
 											<th>
 												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__,undefined,true)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
 													<span><i class="fa fa-plus"></i></span>
@@ -1974,11 +1993,11 @@
 							<thead>
 								<tr>
 									<th th:text="#{label.argomento}">ARGOMENTO</th>
-									<th th:text="#{label.docente_tutor}">Docente / Tutor</th>
-									<th th:text="#{label.risultato_atteso}">RISULTATAO ATTESO</th>
-									<th th:text="#{label.tipologia_obiettivi_formativi}">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
-									<th th:text="#{label.metodologia_didattica}">METODOLOGIA DIDATTICA</th>
-									<th th:text="#{label.ore_attivita}">ORE ATTIVITA'</th>
+									<th th:text="#{label.docente_tutor}" class="no-sort">Docente / Tutor</th>
+									<th th:text="#{label.risultato_atteso}" class="no-sort">RISULTATAO ATTESO</th>
+									<th th:text="#{label.tipologia_obiettivi_formativi}" class="no-sort">TIPOLOGIA DI OBIETTIVI FORMATIVI</th>
+									<th th:text="#{label.metodologia_didattica}" class="no-sort">METODOLOGIA DIDATTICA</th>
+									<th th:text="#{label.ore_attivita}" class="no-sort">ORE ATTIVITA'</th>
 									<th>
 										<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" onclick="openAddAttivitaTo('attivitaFAD',undefined,true)" data-toggle="modal" data-target=".modal-add-attivitaFAD">
 											<span><i class="fa fa-plus"></i></span>

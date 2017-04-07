@@ -1494,3 +1494,11 @@ li.listStyle-elenco > label{
 .removeOption {
 	color: red !important;
 }
+
+table.dataTable tbody tr.selected {
+	background-color: #B0BED9 !important;
+}
+
+.modal-body{
+	min-height: 150px;
+}
