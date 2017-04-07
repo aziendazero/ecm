@@ -57,6 +57,7 @@ public class MultiHttpSecurityConfig {
         private static final String CAS_URL_LOGIN = "cas.service.login";
         private static final String CAS_URL_PREFIX = "cas.url.prefix";
         private static final String CAS_SERVICE_URL = "app.service.security";
+        private static final String CAS_URL_VALIDATION = "cas.service.validation";
 
         private static final String CAS_URL_LOGOUT = "cas.service.logout";
         private static final String APP_SERVICE_HOME = "app.service.home";
@@ -99,7 +100,7 @@ public class MultiHttpSecurityConfig {
 
         @Bean
     	public Cas20ServiceTicketValidator cas20ServiceTicketValidator() {
-    		return new Cas20ServiceTicketValidator(env.getRequiredProperty(CAS_URL_PREFIX));
+    		return new Cas20ServiceTicketValidator(env.getRequiredProperty(CAS_URL_VALIDATION));
     	}
 
         @Bean
