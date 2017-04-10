@@ -83,6 +83,13 @@ public class EcmAppConfiguration {
 	@Value("${giorni.variazione.dati.accreditamento}")
 	private int giorniVariazioneDatiAccreditamento = 10;
 
+	@Value("${http.proxy.protocol}")
+	private String proxyProtocol = "http";
+	@Value("${http.proxy.address}")
+	private String proxyAddress = "";
+	@Value("${http.proxy.port}")
+	private int proxyPort = 8000;
+
 	@Bean
 	public EcmProperties ecmProperties(){
 		EcmProperties ecmProperties = new EcmProperties();
@@ -121,6 +128,10 @@ public class EcmAppConfiguration {
 		ecmProperties.setRelazioneAnnualeMeseFineModifica(relazioneAnnualeMeseFineModifica);
 		ecmProperties.setValutazioniNonDateLimit(valutazioniNonDateLimit);
 		ecmProperties.setGiorniVariazioneDatiAccreditamento(giorniVariazioneDatiAccreditamento);
+
+		ecmProperties.setProxyProtocol(proxyProtocol);
+		ecmProperties.setProxyAddress(proxyAddress);
+		ecmProperties.setProxyPort(proxyPort);
 		return ecmProperties;
 	}
 

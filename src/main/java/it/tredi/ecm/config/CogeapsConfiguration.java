@@ -12,25 +12,28 @@ public class CogeapsConfiguration {
 
     @Value("${cogeaps.protocol}")
     private String protocol;
-    
+
     @Value("${cogeaps.host}")
     private String host;
-    
+
     @Value("${cogeaps.port}")
     private int port;
-    
+
     @Value("${cogeaps.rest_service.carica}")
     private String carica_service;
-    
+
     @Value("${cogeaps.rest_service.stato_elaborazione}")
     private String stato_elaborazione_service;
-    
+
     @Value("${cogeaps.username}")
     private String username;
-    
+
     @Value("${cogeaps.password}")
     private String password;
-    
+
+    @Value("${cogeaps.proxy.attivo}")
+    private boolean proxyAttivo;
+
     @Bean
     public CogeapsWsRestClient cogeapsWsRestClient() {
     	CogeapsWsRestClient cogeapsWsRestClient = new CogeapsWsRestClient();
@@ -41,6 +44,7 @@ public class CogeapsConfiguration {
     	cogeapsWsRestClient.setStato_elaborazione_service(stato_elaborazione_service);
     	cogeapsWsRestClient.setUsername(username);
     	cogeapsWsRestClient.setPassword(password);
+    	cogeapsWsRestClient.setProxyAttivo(proxyAttivo);
     	return cogeapsWsRestClient;
     }
 

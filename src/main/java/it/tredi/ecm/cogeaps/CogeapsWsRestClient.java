@@ -6,6 +6,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -21,6 +22,8 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import it.tredi.ecm.service.bean.EcmProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,9 +38,11 @@ public class CogeapsWsRestClient {
     private String stato_elaborazione_service;
     private String username;
     private String password;
+    private boolean proxyAttivo;
 
     public static final Logger LOGGER = Logger.getLogger(CogeapsWsRestClient.class);
 
+    @Autowired private EcmProperties ecmProperties;
     @Autowired private ObjectMapper jacksonObjectMapper;
 
 	public  CogeapsCaricaResponse carica(String reportFileName, byte []xmlReport, String codOrg) throws Exception {
@@ -49,7 +54,7 @@ public class CogeapsWsRestClient {
 
 		LOGGER.info("Executing cogeaps request: " + complete_url);
 
-        HttpHost target = new HttpHost(host, port, protocol);
+		HttpHost target = new HttpHost(host, port, protocol);
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), new UsernamePasswordCredentials(username, password));
         CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
@@ -65,6 +70,15 @@ public class CogeapsWsRestClient {
             localContext.setAuthCache(authCache);
 
             HttpPost httpPost = new HttpPost(complete_url);
+
+            LOGGER.info("proxyAttivo: " + proxyAttivo);
+            if(proxyAttivo){
+    			HttpHost proxy = new HttpHost(ecmProperties.getProxyAddress(), ecmProperties.getProxyPort(), ecmProperties.getProxyProtocol());
+    			RequestConfig config = RequestConfig.custom()
+                        .setProxy(proxy)
+                        .build();
+    			httpPost.setConfig(config);
+    		}
 
             //file allegato
             ByteArrayBody bab = new ByteArrayBody(xmlReport, reportFileName);
@@ -102,7 +116,7 @@ public class CogeapsWsRestClient {
 
 		LOGGER.info("Executing cogeaps request: " + complete_url);
 
-        HttpHost target = new HttpHost(host, port, protocol);
+		HttpHost target = new HttpHost(host, port, protocol);
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), new UsernamePasswordCredentials(username, password));
         CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
@@ -118,6 +132,15 @@ public class CogeapsWsRestClient {
             localContext.setAuthCache(authCache);
 
             HttpGet httpGet = new HttpGet(complete_url);
+
+            LOGGER.info("proxyAttivo: " + proxyAttivo);
+            if(proxyAttivo){
+    			HttpHost proxy = new HttpHost(ecmProperties.getProxyAddress(), ecmProperties.getProxyPort(), ecmProperties.getProxyProtocol());
+    			RequestConfig config = RequestConfig.custom()
+                        .setProxy(proxy)
+                        .build();
+                httpGet.setConfig(config);
+    		}
 
             //invio richiesta GET
             CloseableHttpResponse response = httpclient.execute(target, httpGet, localContext);
@@ -140,6 +163,5 @@ public class CogeapsWsRestClient {
             httpclient.close();
         }
 	}
-
 }
 
