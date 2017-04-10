@@ -18,6 +18,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +54,10 @@ public class CogeapsWsRestClient {
 			complete_url = protocol + "://" + host +  carica_service + "/" + codOrg;
 
 		LOGGER.info("Executing cogeaps request: " + complete_url);
+		LOGGER.info("proxyAttivo: " + proxyAttivo);
 
 		HttpHost target = new HttpHost(host, port, protocol);
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), new UsernamePasswordCredentials(username, password));
-        CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+		CloseableHttpClient httpclient = buildHttpClient(target, proxyAttivo);
         try {
             // Create AuthCache instance
             AuthCache authCache = new BasicAuthCache();
@@ -70,15 +70,6 @@ public class CogeapsWsRestClient {
             localContext.setAuthCache(authCache);
 
             HttpPost httpPost = new HttpPost(complete_url);
-
-            LOGGER.info("proxyAttivo: " + proxyAttivo);
-            if(proxyAttivo){
-    			HttpHost proxy = new HttpHost(ecmProperties.getProxyAddress(), ecmProperties.getProxyPort(), ecmProperties.getProxyProtocol());
-    			RequestConfig config = RequestConfig.custom()
-                        .setProxy(proxy)
-                        .build();
-    			httpPost.setConfig(config);
-    		}
 
             //file allegato
             ByteArrayBody bab = new ByteArrayBody(xmlReport, reportFileName);
@@ -115,11 +106,10 @@ public class CogeapsWsRestClient {
 			complete_url = protocol + "://" + host +  stato_elaborazione_service + "?nomeFile=" + fileName;
 
 		LOGGER.info("Executing cogeaps request: " + complete_url);
+		LOGGER.info("proxyAttivo: " + proxyAttivo);
 
 		HttpHost target = new HttpHost(host, port, protocol);
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), new UsernamePasswordCredentials(username, password));
-        CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+		CloseableHttpClient httpclient = buildHttpClient(target, proxyAttivo);
         try {
             // Create AuthCache instance
             AuthCache authCache = new BasicAuthCache();
@@ -132,15 +122,6 @@ public class CogeapsWsRestClient {
             localContext.setAuthCache(authCache);
 
             HttpGet httpGet = new HttpGet(complete_url);
-
-            LOGGER.info("proxyAttivo: " + proxyAttivo);
-            if(proxyAttivo){
-    			HttpHost proxy = new HttpHost(ecmProperties.getProxyAddress(), ecmProperties.getProxyPort(), ecmProperties.getProxyProtocol());
-    			RequestConfig config = RequestConfig.custom()
-                        .setProxy(proxy)
-                        .build();
-                httpGet.setConfig(config);
-    		}
 
             //invio richiesta GET
             CloseableHttpResponse response = httpclient.execute(target, httpGet, localContext);
@@ -163,5 +144,79 @@ public class CogeapsWsRestClient {
             httpclient.close();
         }
 	}
+
+	private CloseableHttpClient buildHttpClient(HttpHost target, boolean proxyEnabled){
+		/* AUTENTICAZIONE COGEAPS */
+		CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), new UsernamePasswordCredentials(username, password));
+
+        /* HTTP CLIENT */
+        CloseableHttpClient httpclient = null;
+
+        if(proxyEnabled){
+			/* SETTO PROXY */
+        	HttpHost proxy = new HttpHost(ecmProperties.getProxyHost(), ecmProperties.getProxyPort(),ecmProperties.getProxyProtocol());
+	        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+	        if(ecmProperties.isProxyAuthenticated()){
+	        	/* PROXY NECESSITA AUTHENTICAZIONE */
+	        	credsProvider.setCredentials(new AuthScope(proxy.getHostName(), proxy.getPort()), new UsernamePasswordCredentials(ecmProperties.getProxyUsername(), ecmProperties.getProxyPassword()));
+	        }
+	       return httpclient = HttpClients.custom()
+	        		.setRoutePlanner(routePlanner)
+	        		.setDefaultCredentialsProvider(credsProvider)
+	        		.build();
+		}else{
+			return httpclient = HttpClients.custom()
+	        		.setDefaultCredentialsProvider(credsProvider)
+	        		.build();
+		}
+	}
+
+	public String testProxy(boolean withProxy, boolean withProxyAuthentication) throws Exception {
+		String complete_url = "";
+		if(port != -1)
+			complete_url = protocol + "://" + host + ":" + port;
+		else
+			complete_url = protocol + "://" + host;
+
+		LOGGER.info("Executing cogeaps request: " + complete_url);
+		LOGGER.info("proxyAttivo: " + withProxy);
+		LOGGER.info("withProxyAuthentication: " + withProxyAuthentication);
+
+		HttpHost target = new HttpHost(host, port, protocol);
+		CloseableHttpClient httpclient = buildHttpClient(target, withProxy);
+
+        try {
+            // Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+            // Generate BASIC scheme object and add it to the local auth cache
+            BasicScheme basicAuth = new BasicScheme();
+            authCache.put(target, basicAuth);
+
+            // Add AuthCache to the execution context
+            HttpClientContext localContext = HttpClientContext.create();
+            localContext.setAuthCache(authCache);
+
+            HttpGet httpGet = new HttpGet(complete_url);
+
+            //invio richiesta GET
+            CloseableHttpResponse response = httpclient.execute(target, httpGet, localContext);
+
+            try {
+            	String response_s = EntityUtils.toString(response.getEntity());
+            	LOGGER.info("cogeaps http response code: " + response.getStatusLine());
+                LOGGER.info("cogeaps response: " + response_s);
+
+                return response_s;
+            }
+            finally {
+                response.close();
+            }
+        }
+        finally {
+            httpclient.close();
+        }
+	}
+
 }
 

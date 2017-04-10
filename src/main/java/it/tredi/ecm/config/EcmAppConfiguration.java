@@ -85,10 +85,17 @@ public class EcmAppConfiguration {
 
 	@Value("${http.proxy.protocol}")
 	private String proxyProtocol = "http";
-	@Value("${http.proxy.address}")
-	private String proxyAddress = "";
+	@Value("${http.proxy.host}")
+	private String proxyHost = "";
 	@Value("${http.proxy.port}")
 	private int proxyPort = 8000;
+	@Value("${http.proxy.authenticated}")
+	private boolean proxyAuthenticated = false;
+	@Value("${http.proxy.username}")
+	private String proxyUsername = "";
+	@Value("${http.proxy.password}")
+	private String proxyPassword = "";
+
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -130,8 +137,11 @@ public class EcmAppConfiguration {
 		ecmProperties.setGiorniVariazioneDatiAccreditamento(giorniVariazioneDatiAccreditamento);
 
 		ecmProperties.setProxyProtocol(proxyProtocol);
-		ecmProperties.setProxyAddress(proxyAddress);
+		ecmProperties.setProxyHost(proxyHost);
 		ecmProperties.setProxyPort(proxyPort);
+		ecmProperties.setProxyAuthenticated(proxyAuthenticated);
+		ecmProperties.setProxyUsername(proxyUsername);
+		ecmProperties.setProxyPassword(proxyPassword);
 		return ecmProperties;
 	}
 

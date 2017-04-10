@@ -1,7 +1,5 @@
 package it.tredi.ecm.service.bean;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,8 +40,11 @@ public class EcmProperties {
 	private int RelazioneAnnualeGiornoFineModifica;
 	private int RelazioneAnnualeMeseFineModifica;
 	private int valutazioniNonDateLimit;
-	public int giorniVariazioneDatiAccreditamento;
+	private int giorniVariazioneDatiAccreditamento;
 	private String proxyProtocol;
-	private String proxyAddress;
+	private String proxyHost;
 	private int proxyPort;
+	private boolean proxyAuthenticated;
+	private String proxyUsername;
+	private String proxyPassword;
 }
