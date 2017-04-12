@@ -1992,7 +1992,7 @@ public class EventoServiceImpl implements EventoService {
 					|| eventoRes.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO) {
 				for(ProgrammaGiornalieroRES prog : eventoRes.getProgramma()) {
 					for(DettaglioAttivitaRES dettaglio : prog.getProgramma()) {
-						if(dettaglio.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA)
+						if(!dettaglio.isExtraType() && dettaglio.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA)
 							return true;
 					}
 				}
