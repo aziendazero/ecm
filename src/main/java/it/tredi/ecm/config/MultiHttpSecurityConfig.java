@@ -1,23 +1,12 @@
 package it.tredi.ecm.config;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
-import javax.servlet.Filter;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.jasig.cas.client.authentication.AuthenticationFilter;
 import org.jasig.cas.client.session.SingleSignOutFilter;
-import org.jasig.cas.client.util.HttpServletRequestWrapperFilter;
-import org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
-import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
-import org.jasig.cas.client.validation.Saml11TicketValidator;
-import org.jasig.cas.client.validation.TicketValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,20 +20,16 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import it.tredi.ecm.service.AccountServiceImpl;
 import it.tredi.ecm.service.CasUserDetailService;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -53,6 +38,8 @@ public class MultiHttpSecurityConfig {
     @Configuration
     @Order(1)
     public static class SecurityCASConfig extends WebSecurityConfigurerAdapter {
+
+    	private static Logger LOGGER = LoggerFactory.getLogger(SecurityCASConfig.class);
 
         private static final String CAS_URL_LOGIN = "cas.service.login";
         private static final String CAS_URL_PREFIX = "cas.url.prefix";
@@ -87,17 +74,6 @@ public class MultiHttpSecurityConfig {
     		return new CasUserDetailService();
     	}
 
-//        @Bean
-//    	public SessionAuthenticationStrategy sessionStrategy() {
-//    		SessionAuthenticationStrategy sessionStrategy = new SessionFixationProtectionStrategy();
-//    		return sessionStrategy;
-//    	}
-//
-//        @Bean
-//    	public Saml11TicketValidator casSamlServiceTicketValidator() {
-//    		return new Saml11TicketValidator(env.getRequiredProperty(CAS_URL_PREFIX));
-//    	}
-
         @Bean
     	public Cas20ServiceTicketValidator cas20ServiceTicketValidator() {
     		return new Cas20ServiceTicketValidator(env.getRequiredProperty(CAS_URL_VALIDATION));
@@ -129,11 +105,12 @@ public class MultiHttpSecurityConfig {
 
     	@Bean
     	public LogoutFilter requestCasGlobalLogoutFilter() {
+    		LOGGER.info("Cas Logout Filter");
     		LogoutFilter logoutFilter = new LogoutFilter(env.getRequiredProperty(CAS_URL_LOGOUT) + "?service="
     				+ env.getRequiredProperty(APP_SERVICE_HOME), new SecurityContextLogoutHandler());
-    		// logoutFilter.setFilterProcessesUrl("/logout");
-    		// logoutFilter.setFilterProcessesUrl("/j_spring_cas_security_logout");
-    		logoutFilter.setLogoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"));
+
+    		logoutFilter.setFilterProcessesUrl("/cas/logout");
+    		//logoutFilter.setLogoutRequestMatcher(new AntPathRequestMatcher("/cas/logout", "GET"));
     		return logoutFilter;
     	}
 
@@ -149,12 +126,12 @@ public class MultiHttpSecurityConfig {
 					.authenticationEntryPoint(casAuthenticationEntryPoint())
 					.and()
 				.addFilter(casAuthenticationFilter());
-//				.addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
-//				.addFilterBefore(requestCasGlobalLogoutFilter(), LogoutFilter.class);
 
 			http
+				.addFilterBefore(requestCasGlobalLogoutFilter(), LogoutFilter.class)
 				.logout()
-					.logoutUrl("/cas/logout").logoutSuccessUrl("/")
+					//.logoutUrl("/cas/logout").logoutSuccessUrl("/")
+					.logoutSuccessUrl("/")
 					.invalidateHttpSession(true)
 					.deleteCookies("remember-me")
 					.deleteCookies("JSESSIONID");
@@ -174,6 +151,7 @@ public class MultiHttpSecurityConfig {
     @Configuration
     @Order(2)
     public static class SecurityConfig extends WebSecurityConfigurerAdapter {
+    	private static Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
 
         @Autowired
         private UserDetailsService userDetailsService;
@@ -191,15 +169,15 @@ public class MultiHttpSecurityConfig {
     		return singleSignOutFilter;
     	}
 
-    	@Bean
-    	public LogoutFilter requestCasGlobalLogoutFilter() {
-    		LogoutFilter logoutFilter = new LogoutFilter(env.getRequiredProperty(CAS_URL_LOGOUT) + "?service="
-    				+ env.getRequiredProperty(APP_SERVICE_HOME), new SecurityContextLogoutHandler());
-    		logoutFilter.setFilterProcessesUrl("/cas/logout");
-    		// logoutFilter.setFilterProcessesUrl("/j_spring_cas_security_logout");
-    		//logoutFilter.setLogoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"));
-    		return logoutFilter;
-    	}
+//    	@Bean
+//    	public LogoutFilter requestCasGlobalLogoutFilter() {
+//    		LogoutFilter logoutFilter = new LogoutFilter(env.getRequiredProperty(CAS_URL_LOGOUT) + "?service="
+//    				+ env.getRequiredProperty(APP_SERVICE_HOME), new SecurityContextLogoutHandler());
+//    		//logoutFilter.setFilterProcessesUrl("/cas/logout");
+//    		// logoutFilter.setFilterProcessesUrl("/j_spring_cas_security_logout");
+//    		logoutFilter.setLogoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"));
+//    		return logoutFilter;
+//    	}
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -228,9 +206,9 @@ public class MultiHttpSecurityConfig {
              .and()
                  .headers().frameOptions().sameOrigin();
 
-            http
-            	.addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
-            	.addFilterBefore(requestCasGlobalLogoutFilter(), LogoutFilter.class);
+           //http
+            	//.addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
+            	//.addFilterBefore(requestCasGlobalLogoutFilter(), LogoutFilter.class);
         }
 
         @Override
