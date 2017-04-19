@@ -72,8 +72,9 @@
 									</td>
 									<td th:text="${quotaAnnuale.pagamento.dataPagamento == null} ? '' : ${#temporals.format(quotaAnnuale.pagamento.dataPagamento,'dd/MM/yyyy')}">abilitato/non abilitato</td>
 									<td>
-										<!-- TODO DISABILITATO PER LA PRODUZIONE -->
+										<!-- TODO DISABILITATO PER LA PRODUZIONE
 										<a th:unless="${quotaAnnuale.pagato or quotaAnnuale.provider.myPay == false or (quotaAnnuale.provider.myPay == null and quotaAnnuale.provider.isGruppoA())}" class="btn btn-success btn-table single" th:href="@{|/provider/${providerId}/pagamento/${quotaAnnuale.id}/paga|}"><i class="fa fa-euro"> </i> <span th:text="#{label.paga}"> </span></a>
+										-->
 										<button th:if="${!quotaAnnuale.pagato and (quotaAnnuale.provider.myPay == null or quotaAnnuale.provider.myPay == false) and quotaAnnuale.provider.isGruppoA()}" class="btn btn-success btn-table single" th:onclick="|openModaleAllegaQuietanza(${quotaAnnuale.id})|"><i class="fa fa-file"> </i> <span th:text="#{label.allega_quietanza}"> </span></button>
 										<a th:if="${quotaAnnuale.pagato and (quotaAnnuale.provider.myPay == null or quotaAnnuale.provider.myPay == false) and quotaAnnuale.provider.isGruppoA() and (quotaAnnuale.pagamento.quietanza != null)}" class="btn btn-primary btn-table single" th:href="@{|/file/${quotaAnnuale.pagamento.quietanza.id}|}"><i class="fa fa-file-text"> </i> <span th:text="#{label.visualizza_quietanza}"> </span></a>
 									</td>
