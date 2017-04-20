@@ -1,6 +1,7 @@
 package it.tredi.ecm;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +31,7 @@ import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
@@ -50,10 +52,10 @@ import it.tredi.ecm.service.ValutazioneService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("abarducci")
-@WithUserDetails("segreteria")
+@ActiveProfiles("demo")
+@WithUserDetails("FSALAFIA")
 @Rollback(false)
-@Ignore
+//@Ignore
 public class PdfTest {
 
 	@Autowired
@@ -142,6 +144,35 @@ public class PdfTest {
 	@Ignore
 	public void testMessageSource() throws Exception {
 		System.out.println(messageSource.getMessage("IdFieldEnum." + IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE.name() , null, Locale.getDefault()));
+	}
+
+	@Test
+	@Transactional
+	public void testNewDiniegoStandard() throws Exception{
+		Long accreditamentoId = 160068L;
+		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
+		AccreditamentoStatoEnum stato = AccreditamentoStatoEnum.DINIEGO;
+		Boolean eseguitoDaUtente = false;
+		//Ricavo la seduta
+		Seduta sedutaRigetto = null;
+		Seduta sedutaIntegrazione = null;
+		Seduta sedutaPreavvisoRigetto = null;
+		for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
+			if(valCom.getStato() == AccreditamentoStatoEnum.DINIEGO) {
+				sedutaRigetto = valCom.getSeduta();
+			} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE) {
+				sedutaIntegrazione = valCom.getSeduta();
+			} else if (valCom.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO) {
+				sedutaPreavvisoRigetto = valCom.getSeduta();
+			}
+		}
+		PdfAccreditamentoProvvisorioRigettoInfo rigettoInfo = new PdfAccreditamentoProvvisorioRigettoInfo(accreditamento, sedutaRigetto, sedutaIntegrazione, sedutaPreavvisoRigetto);
+		File file = null;
+		if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
+			file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
+		else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
+			file = pdfService.creaPdfAccreditamentoStandardDiniego(rigettoInfo);
+		System.out.println(file.getId());
 	}
 
 	@Test

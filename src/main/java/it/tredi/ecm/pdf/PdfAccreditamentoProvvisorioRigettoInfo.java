@@ -55,6 +55,11 @@ public class PdfAccreditamentoProvvisorioRigettoInfo {
 			rigettoInfo.setNumeroProtocollo(accreditamento.getRichiestaPreavvisoRigetto().getProtocollo().getNumero().toString());
 		}
 
+		if(accreditamento.isStandard()){
+			if(accreditamento.getVerbaleValutazioneSulCampo() != null)
+				setAccreditamentoDataVisita(accreditamento.getVerbaleValutazioneSulCampo().getGiorno());
+		}
+
 	}
 
 //	public PdfAccreditamentoProvvisorioRigettoInfo(String providerDenominazione,
