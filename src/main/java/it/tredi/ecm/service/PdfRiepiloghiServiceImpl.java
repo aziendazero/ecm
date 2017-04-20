@@ -1113,8 +1113,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 
 	private void addTableValutazione(List<FieldValutazioneAccreditamento> orderedVal, PdfPTable table) throws Exception {
 		for(FieldValutazioneAccreditamento fva : orderedVal) {
-//			addCellSubTable(intFormatter.print(fva.getIdField().getIdEcm(), Locale.getDefault()), table);
-			addCellSubTable(intFormatter.print(fva.getId(), Locale.getDefault()), table);
+			addCellSubTable(intFormatter.print(fva.getIdField().getIdEcm(), Locale.getDefault()), table);
 			addCellSubTable(messageSource.getMessage("IdFieldEnum_valutazione." + fva.getIdField().name(), null, Locale.getDefault()), table);
 			addCellSubTable(getIconForValutazione(fva.getEsito()), table);
 			addCellSubTable(getNoteForValutazione(fva.getNote()), table);
