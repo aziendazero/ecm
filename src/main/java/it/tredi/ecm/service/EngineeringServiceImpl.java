@@ -101,8 +101,8 @@ public class EngineeringServiceImpl implements EngineeringService {
 	public static final String DECORRENZA_TERMINI = "3";
 	public static final String DECORRENZA_TERMINI_PARZIALE = "4";
 
-	public static final String CAUSALE_PAGAMENTO_EVENTO = "Pagamento Evento";
-	public static final String CAUSALE_PAGAMENTO_QUOTA_PROVIDER = "Pagamento Quota Accreditamento Provider - anno ";
+	public static final String CAUSALE_PAGAMENTO_EVENTO = "";
+	public static final String CAUSALE_PAGAMENTO_QUOTA_PROVIDER = "Accreditamento Provider - anno ";
 
 	private static JAXBContext jCtDovutiContext = null;
 	private static JAXBContext jCtPagatiContext = null;
@@ -212,7 +212,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setPartitaIva(soggetto.getPartitaIva());
 		p.setEmail(soggetto.getEmailStruttura());
 		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
-		p.setCausale(formatCausale(CAUSALE_PAGAMENTO_EVENTO + " - " + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo() + " - " + e.getTitolo()));
+		p.setCausale(formatCausale(CAUSALE_PAGAMENTO_EVENTO + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo() + " - " + e.getTitolo()));
 		p.setDatiSpecificiRiscossione(engineeringProperties.getDatiSpecificiRiscossione());
 
 		// TODO E' necessario concordare un pattern per gli identificativi con 3D e RVE.
