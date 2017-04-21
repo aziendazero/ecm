@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.dao.repository.ValutazioneCommissioneRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
+import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioDecretoDecadenzaInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
 import it.tredi.ecm.service.bean.CurrentUser;
@@ -2369,5 +2371,23 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		}
 		return new String[] {erroreMsgComitato, erroreMsgSedi};
+	}
+
+	@Override
+	public void generaDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, Long providerId) throws Exception {
+		LOGGER.info("Genera PDF Decreto Decadenza per provider: " + providerId);
+		Accreditamento accreditamento = null;
+		accreditamento = getAccreditamentoAttivoForProvider(providerId);
+		if(accreditamento == null){
+			LOGGER.info("Nessun accreditamento attivo per provider: " + providerId);
+			accreditamento = getLastAccreditamentoForProviderId(providerId);
+			if(accreditamento == null){
+				LOGGER.info("Nessun accreditamento trovato per provider: " + providerId);
+				throw new java.lang.Exception("Impossibile generare PDF Decreto Decadenza per provider: " + providerId);
+			}
+		}
+
+		PdfAccreditamentoProvvisorioDecretoDecadenzaInfo decadenzaInfo = new PdfAccreditamentoProvvisorioDecretoDecadenzaInfo(accreditamento);
+		pdfService.creaPdfAccreditamentoProvvisorioDecretoDecadenza(byteArrayOutputStreamAccreditata, decadenzaInfo);
 	}
 }

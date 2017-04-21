@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -36,6 +39,7 @@ import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
@@ -663,6 +667,23 @@ public class ProviderController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/provider/list";
 		}
+	}
+
+	@RequestMapping(value = "/provider/{providerId}/decreto_decadenza/pdf", method = RequestMethod.GET)
+	public void pdfEvento(@PathVariable Long providerId, HttpServletResponse response, Model model) throws IOException {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/decreto_decadenza/pdf"));
+		try {
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"Decreto Decadenza Provider " + providerId + ".pdf\""));
+			ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+			accreditamentoService.generaDecretoDecadenza(pdfOutputStream, providerId);
+			response.setContentLength(pdfOutputStream.size());
+			response.getOutputStream().write(pdfOutputStream.toByteArray());
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/decreto_decadenza/pdf"),ex);
+			model.addAttribute("message",new Message("message.errore", "message.impossibile_creare_pdf_decreto_decadenza", "error"));
+		}
+
 	}
 
 }

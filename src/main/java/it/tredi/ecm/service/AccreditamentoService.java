@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -135,4 +136,6 @@ public interface AccreditamentoService{
 	public void inviaValutazioneSegreteriaStandard(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 	public void inviaValutazioneSegreteriaVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception;
 	public void inviaValutazioneCrecmVariazioneDati(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
+
+	public void generaDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, Long providerId) throws Exception;
 }

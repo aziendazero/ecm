@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -29,6 +30,7 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
+import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioDecretoDecadenzaInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
 
@@ -52,6 +54,8 @@ public class PdfServiceImpl implements PdfService {
 	private Font fontCorpo = new Font(fontFamily, sizeCorpo, Font.NORMAL);
 	private Font fontListItem = new Font(fontFamily, sizeCorpo, Font.NORMAL);
 	private Font fontListItemBold = new Font(fontFamily, sizeCorpo, Font.BOLD);
+	private Font fontSymbol = new Font(Font.FontFamily.SYMBOL,sizeCorpo, Font.NORMAL);
+
 	private float indentationLeftList = 15F;
 	private float spacingBefore = 10F;
 	private float spacingAfter = 10F;
@@ -1998,5 +2002,150 @@ public class PdfServiceImpl implements PdfService {
         return listItem;
         //return new ListItem(parList);
 
+    }
+
+    @Override
+    public void creaPdfAccreditamentoProvvisorioDecretoDecadenza(ByteArrayOutputStream outputStream, PdfAccreditamentoProvvisorioDecretoDecadenzaInfo decadenzaInfo) throws Exception {
+    	try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, outputStream);
+
+            //Inserimento immagine
+            //TODO correggere pe l'applicazione Ecm
+            Image img = null;
+    		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoRegioneVeneto.png");
+    		//String pathImgFile = "C:\\__Progetti\\ECM\\Doc da produrre in pdf\\LogoRegioneVeneto.png";
+    		try {
+    			img = Image.getInstance(url);
+    			//img = Image.getInstance(pathImgFile);
+    			Float scala = 1.2F;
+    			Float width = 400F/scala;
+    			Float height = 85F/scala;
+    			img.scaleToFit(width, height);
+                img.setAlignment(Element.ALIGN_CENTER);
+    		} catch(Exception e) {
+    			//Non mostro l'immagine
+    		}
+
+            document.open();
+            //Info documento
+            document.addAuthor("Ecm");
+            document.addCreationDate();
+            document.addCreator("Ecm");
+            document.addTitle("Decreto Decadenza");
+
+            if(img != null)
+            	document.add(img);
+
+            //OGGETTO: Comunicazione di decadenza dell’accreditamento provvisorio del Provider regionale ECM ID PROVIDER e NOME PROVIDER.
+            MessageFormat msgFormat = new MessageFormat("Comunicazione di decadenza dell’accreditamento provvisorio del Provider regionale ECM {0} - {1}.");
+            Object[] valuesProvIdNome = {decadenzaInfo.getProviderInfo().getProviderId(),decadenzaInfo.getProviderInfo().getProviderDenominazione()};
+            addCorpoParagraph(document, false, true, msgFormat.format(valuesProvIdNome));
+
+            //DENOMINAZIONE PROVIDER
+            Paragraph parDenominazioneProvider = new Paragraph();
+            parDenominazioneProvider.setAlignment(Element.ALIGN_RIGHT);
+            parDenominazioneProvider.setFont(fontDenominazioneProvider);
+            parDenominazioneProvider.add(decadenzaInfo.getProviderInfo().getProviderDenominazione());
+            document.add(parDenominazioneProvider);
+
+            //INDIRIZZO PROVIDER
+            Paragraph parIndirizzoProvider = new Paragraph();
+            parIndirizzoProvider.setAlignment(Element.ALIGN_RIGHT);
+            parIndirizzoProvider.setFont(fontIndirizzoProvider);
+            parIndirizzoProvider.add(decadenzaInfo.getProviderInfo().getProviderIndirizzo());
+            document.add(parIndirizzoProvider);
+
+            //CAP – COMUNE – PROVINCIA PROVIDER
+            Paragraph parCapComuneProvincia = new Paragraph();
+            parCapComuneProvincia.setAlignment(Element.ALIGN_RIGHT);
+            parCapComuneProvincia.setFont(fontIndirizzoProvider);
+            msgFormat = new MessageFormat("{0} - {1} - {2}");
+            Object[] values = {decadenzaInfo.getProviderInfo().getProviderCap(), decadenzaInfo.getProviderInfo().getProviderComune(), decadenzaInfo.getProviderInfo().getProviderProvincia()};
+            parCapComuneProvincia.add(msgFormat.format(values));
+            document.add(parCapComuneProvincia);
+
+            //Linea vuota
+            Paragraph parLineaVuota = new Paragraph();
+            parLineaVuota.setAlignment(Element.ALIGN_RIGHT);
+            parLineaVuota.setFont(fontIndirizzoProvider);
+            parLineaVuota.add(" ");
+            document.add(parLineaVuota);
+
+            //Alla c.a.:     NOME e COGNOME LR PROVIDER
+            Paragraph parNomeCognome = new Paragraph();
+            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
+            parNomeCognome.setFont(fontDenominazioneProvider);
+            msgFormat = new MessageFormat("Alla c.a.: {0} {1}");
+            Object[] valuesNomCognProv = {decadenzaInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), decadenzaInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
+            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
+            parNomeCognome.setSpacingAfter(spacingAfter);
+            document.add(parNomeCognome);
+
+            //PEC: INDIRIZZO PEC PROVIDER
+            Paragraph parPec = new Paragraph();
+            parPec.setAlignment(Element.ALIGN_LEFT);
+            parPec.setFont(fontDenominazioneProvider);
+            msgFormat = new MessageFormat("PEC: {0}");
+            Object[] valuesPec = {decadenzaInfo.getProviderInfo().getProviderPec()};
+            parPec.add(msgFormat.format(valuesPec));
+            parPec.setSpacingAfter(spacingAfter);
+            document.add(parPec);
+
+            //Corpo
+            addCorpoParagraph(document, false, true, "Gentile Provider,");
+            addCorpoParagraph(document, true, true, "l’esercizio dell’attività dei Provider ECM regionali è subordinato, alla scadenza del periodo di accreditamento provvisorio, "
+            		+ "al conseguimento dello status di Provider ECM con accreditamento standard per continuare nell’attività di erogatori di attività formative ECM da rivolgere "
+            		+ "ai professionisti della Sanità.");
+
+            msgFormat = new MessageFormat("In relazione alla Vs. posizione di Provider provvisorio, {0}, accreditato presso la Regione del Veneto con Decreto del Direttore della Sezione Controlli, Governo e Personale SSR n. ............ del .................., ");
+            Object[] valuesId = {decadenzaInfo.getProviderInfo().getProviderId()};
+            addCorpoParagraph(document, true, true, msgFormat.format(valuesId));
+
+            List list = new List();
+            Image ballotImage = null;
+            URL ballotUrl = Thread.currentThread().getContextClassLoader().getResource("ballot.png");
+    		try {
+    			ballotImage = Image.getInstance(ballotUrl);
+    			ballotImage.scaleAbsolute(10, 10);
+    			ballotImage.setScaleToFitHeight(false);
+                list.setListSymbol(new Chunk(Image.getInstance(ballotImage), 0, 0));
+    		} catch(Exception e) {
+    			//Non mostro l'immagine
+    		}
+
+            list.setIndentationLeft(indentationLeftList);
+            list.add(getListItem(" preso atto che non è stata trasmessa la domanda per ottenere l’accreditamento standard;", fontListItem));
+            list.add(getListItem(" preso atto che è stata trasmessa la nota mediante il canale “Comunicazioni in data ..................” con la quale codesto Provider non intende presentare la domanda di accreditamento standard;", fontListItem));
+            document.add(list);
+            addCorpoParagraph(document, true, true, "");
+
+            msgFormat = new MessageFormat("tenuto conto che risulta scaduta la validità dell’accreditamento provvisorio in quanto sono decorsi i 24 mesi a partire dal {0}, si comunica, a soli fini ricognitori e di certezza, che il titolo è divenuto inefficace per scadenza del termine di validità dello stesso, ai sensi di quanto stabilito dall’art. 3 del “Disciplinare e requisiti per l’accreditamento dei provider ECM nella Regione del Veneto” allegato A della DGR n. 2215/2011 e dall’Accordo Stato-Regioni del 19 aprile 2012.");
+            Object[] valuesDataValidazione = {decadenzaInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+            addCorpoParagraph(document, false, true, msgFormat.format(valuesDataValidazione));
+
+            addCorpoParagraph(document, false, true, "Si ricorda altresì che permangono in carico al Provider gli eventuali adempimenti non ancora conclusi relativi all’erogazione di attività formativa svolta antecedentemente alla data di decadenza del Provider, ossia il pagamento e la rendicontazione di eventi formativi accreditati e svolti e l’inserimento della Relazione Annuale 2015 entro e non oltre il 30 aprile p.v..");
+            addCorpoParagraph(document, false, true, "Si diffida, pertanto, dallo svolgimento di attività di provider ECM regionale.");
+            addCorpoParagraph(document, true, true, "Distinti saluti.");
+
+            Paragraph par = new Paragraph();
+            par.setAlignment(Element.ALIGN_CENTER);
+            par.setFont(fontCorpo);
+            par.add("Area Sanità e Sociale\n"
+            		+ "Direzione Risorse Strumentali SSR - CRAV\n"
+            		+ "Unità Organizzativa Personale e Professioni SSR\n"
+            		+ "Palazzo Molin – S. Polo, 2514 – 30125 Venezia Tel. 0412793488- 3550 – 3434 – Fax 041/2793503\n"
+            		+ "E-mail provvisoria: controlligovernopersonaleSSR@regione.veneto.it\n"
+            		+ "PEC: area.sanitasociale@pec.regione.veneto.it");
+            par.setSpacingAfter(spacingAfter);
+            document.add(par);
+
+            document.close();
+            outputStream.close();
+
+        } catch (Exception e) {
+        	LOGGER.error("creaPdfAccreditamentoProvvisorioDecretoDecadenza impossibile creare il pdf", e);
+            throw e;
+        }
     }
 }

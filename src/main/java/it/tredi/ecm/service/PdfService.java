@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
+import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioDecretoDecadenzaInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
 
@@ -18,6 +19,8 @@ public interface PdfService {
 	public File creaPdfAccreditamentoStandardPreavvisoRigetto(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception;
 	public File creaPdfAccreditamentoStandardDiniego(PdfAccreditamentoProvvisorioRigettoInfo diniegoInfo) throws Exception;
 	public File creaPdfAccreditamentoStandardAccreditato(PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo) throws Exception;
+
+	public void creaPdfAccreditamentoProvvisorioDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, PdfAccreditamentoProvvisorioDecretoDecadenzaInfo decadenzaInfo) throws Exception;
 
 	//public File creaPdfAccreditamentoVariazioneDatiIntegrazione(PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception;
 }
