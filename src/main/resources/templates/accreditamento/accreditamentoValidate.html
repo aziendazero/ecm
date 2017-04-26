@@ -273,6 +273,23 @@
 
 										<div class="divider"></div>
 
+										<div class="item form-group">
+											<div class="col-lg-1 col-xs-12"></div>
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_VALUTAZIONE_SUL_CAMPO_ALLEGATO1}', valutazioneSulCampoAllegato1, null, null, null, false, 'edit', false)" ></th:block>
+										</div>
+
+										<div class="item form-group">
+											<div class="col-lg-1 col-xs-12"></div>
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_VALUTAZIONE_SUL_CAMPO_ALLEGATO2}', valutazioneSulCampoAllegato2, null, null, null, false, 'edit', false)" ></th:block>
+										</div>
+
+										<div class="item form-group">
+											<div class="col-lg-1 col-xs-12"></div>
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_VALUTAZIONE_SUL_CAMPO_ALLEGATO3}', valutazioneSulCampoAllegato3, null, null, null, false, 'edit', false)" ></th:block>
+										</div>
+
+										<div class="divider"></div>
+
 										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.destinazioneStatoDomandaStandard')} ? 'bad'">
 											<label class="control-label col-md-4 col-sm-4 col-xs-12">
 												<span th:text="#{label.esito_della_valutazione_sul_campo}">Esito della Valutazione sul Campo</span>

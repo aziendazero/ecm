@@ -1978,7 +1978,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaValutazioneSulCampoStandard(Long accreditamentoId, String valutazioneComplessiva, File verbalePdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception {
+	public void inviaValutazioneSulCampoStandard(Long accreditamentoId, String valutazioneComplessiva, File verbalePdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard, File allegato1, File allegato2, File allegato3) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio verbale valutazione sul campo della domanda di Accreditamento " + accreditamentoId));
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -1987,6 +1987,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		accreditamento.setDataValutazioneCrecm(LocalDate.now());
 		accreditamento.setVerbaleValutazioneSulCampoPdf(verbalePdf);
+
+		//allegati opzionali
+		if(allegato1 != null && !allegato1.isNew())
+			accreditamento.setValutazioneSulCampoAllegato1(allegato1);
+		if(allegato2 != null && !allegato2.isNew())
+			accreditamento.setValutazioneSulCampoAllegato2(allegato2);
+		if(allegato3 != null && !allegato3.isNew())
+			accreditamento.setValutazioneSulCampoAllegato3(allegato3);
 
 		saveAndAudit(accreditamento);
 

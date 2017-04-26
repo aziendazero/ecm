@@ -1080,6 +1080,17 @@
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.id}|}"></a></div>
 													<div class="" th:if="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
+
+												<!-- Allegati opzionali -->
+												<div th:if="${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato1}">
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato1.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato1.id}|}"></a></div>
+												</div>
+												<div th:if="${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato2}">
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato2.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato2.id}|}"></a></div>
+												</div>
+												<div th:if="${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato3}">
+													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato3.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato3.id}|}"></a></div>
+												</div>
 											</div>
 
 											<div class="divider-dashed" th:if="${accreditamentoWrapper.accreditamento.noteOsservazioniIntegrazione} or

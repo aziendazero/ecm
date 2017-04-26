@@ -123,6 +123,12 @@ public class Accreditamento extends BaseEntityDefaultId {
 	private File richiestaPreavvisoRigetto;
 	@OneToOne
 	private File verbaleValutazioneSulCampoPdf;
+	@OneToOne
+	private File valutazioneSulCampoAllegato1;
+	@OneToOne
+	private File valutazioneSulCampoAllegato2;
+	@OneToOne
+	private File valutazioneSulCampoAllegato3;
 
 	@Column(name = "presa_visione_integrazione")//flag presa visione dell'integrazione
 	private Boolean presaVisioneIntegrazione;

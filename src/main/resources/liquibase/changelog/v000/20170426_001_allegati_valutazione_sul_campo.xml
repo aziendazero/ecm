@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170426_001_allegati_valutazione_sul_campo.xml">
+	<changeSet author="dpranteda (generated)" id="1493207294879-1">
+		<addColumn tableName="accreditamento">
+			<column name="valutazione_sul_campo_allegato1_id" type="int8" />
+		</addColumn>
+	</changeSet>
+	<changeSet author="dpranteda (generated)" id="1493207294879-2">
+		<addColumn tableName="accreditamento">
+			<column name="valutazione_sul_campo_allegato2_id" type="int8" />
+		</addColumn>
+	</changeSet>
+	<changeSet author="dpranteda (generated)" id="1493207294879-3">
+		<addColumn tableName="accreditamento">
+			<column name="valutazione_sul_campo_allegato3_id" type="int8" />
+		</addColumn>
+	</changeSet>
+	<changeSet author="dpranteda (generated)" id="1493207294879-4">
+		<addForeignKeyConstraint baseColumnNames="valutazione_sul_campo_allegato2_id"
+			baseTableName="accreditamento" constraintName="FK_9nvcitbt4gnfmyi919xgm9u3x"
+			deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+			referencedTableName="file" />
+	</changeSet>
+	<changeSet author="dpranteda (generated)" id="1493207294879-5">
+		<addForeignKeyConstraint baseColumnNames="valutazione_sul_campo_allegato3_id"
+			baseTableName="accreditamento" constraintName="FK_dih04ocp23paw6wvi8rqsyw3w"
+			deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+			referencedTableName="file" />
+	</changeSet>
+	<changeSet author="dpranteda (generated)" id="1493207294879-6">
+		<addForeignKeyConstraint baseColumnNames="valutazione_sul_campo_allegato1_id"
+			baseTableName="accreditamento" constraintName="FK_nrix642pkeqwhao5r4wfj0dm8"
+			deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+			referencedTableName="file" />
+	</changeSet>
+</databaseChangeLog>

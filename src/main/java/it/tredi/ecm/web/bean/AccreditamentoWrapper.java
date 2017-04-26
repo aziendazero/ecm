@@ -203,6 +203,12 @@ public class AccreditamentoWrapper {
 	//file pdf del verbale valutazione sul campo firmato
 	private File verbalePdfFirmato;
 
+	//file optionali che si possono caricare insieme al verbale
+	private File valutazioneSulCampoAllegato1;
+	private File valutazioneSulCampoAllegato2;
+	private File valutazioneSulCampoAllegato3;
+
+
 	//mappa ripetibili modificati full in inserimento domanda standard
 	private Map<Long, FieldValutazioneAccreditamento> mappaFullModificati;
 

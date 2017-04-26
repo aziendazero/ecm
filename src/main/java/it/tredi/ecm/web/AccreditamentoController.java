@@ -941,7 +941,7 @@ public class AccreditamentoController {
 						model.addAttribute("confirmErrors", true);
 						return goToAccreditamentoValidate(model, accreditamento, wrapper);
 					}else {
-						accreditamentoService.inviaValutazioneSulCampoStandard(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getVerbalePdfFirmato(), wrapper.getDestinazioneStatoDomandaStandard());
+						accreditamentoService.inviaValutazioneSulCampoStandard(accreditamentoId, wrapper.getValutazioneComplessiva(), wrapper.getVerbalePdfFirmato(), wrapper.getDestinazioneStatoDomandaStandard(),wrapper.getValutazioneSulCampoAllegato1(), wrapper.getValutazioneSulCampoAllegato2(), wrapper.getValutazioneSulCampoAllegato3());
 						LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 						redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 						redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.valutazione_complessiva_salvata", "success"));

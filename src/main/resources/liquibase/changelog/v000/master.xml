@@ -93,4 +93,6 @@
 
 	<include file="20170405_002_quietanza_pagamento.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170426_001_allegati_valutazione_sul_campo.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

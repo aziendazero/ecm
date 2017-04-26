@@ -112,7 +112,7 @@ public interface AccreditamentoService{
 
 	public void saveFileNoteOsservazioni(Long fileId, Long accreditamentoId);
 	public Set<Accreditamento> getAllDomandeNonValutateByRefereeId(Long refereeId);
-	public void inviaValutazioneSulCampoStandard(Long accreditamentoId, String valutazioneComplessiva, File verbaleFirmatoPdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard) throws Exception;
+	public void inviaValutazioneSulCampoStandard(Long accreditamentoId, String valutazioneComplessiva, File verbaleFirmatoPdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard, File allegato1, File allegato2, File allegato3) throws Exception;
 	public void saveSottoscriventeVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew);
 	public void editScheduleVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew);
 
