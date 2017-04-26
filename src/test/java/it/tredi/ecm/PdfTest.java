@@ -55,7 +55,7 @@ import it.tredi.ecm.service.ValutazioneService;
 @ActiveProfiles("demo")
 @WithUserDetails("FSALAFIA")
 @Rollback(false)
-//@Ignore
+@Ignore
 public class PdfTest {
 
 	@Autowired
