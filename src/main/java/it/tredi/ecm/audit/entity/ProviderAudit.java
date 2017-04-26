@@ -56,6 +56,11 @@ public class ProviderAudit {
 	private PersonaAudit responsabileSegreteria;
 	private PersonaAudit coordinatoreComitatoScientifico;
 
+	private PersonaAudit responsabileAmministrativo;
+	private PersonaAudit responsabileSistemaInformatico;
+	private PersonaAudit responsabileQualita;
+
+
 //	private Set<PersonaAudit> componentiComitatoScientifico = new HashSet<PersonaAudit>();
 //	private List<PersonaAudit> componentiComitatoScientificoList = new ArrayList<PersonaAudit>();
 
@@ -127,6 +132,23 @@ public class ProviderAudit {
 			this.responsabileSegreteria = null;
 		else
 			this.responsabileSegreteria = new PersonaAudit(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_SEGRETERIA));
+
+		if(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_AMMINISTRATIVO) == null)
+			this.responsabileAmministrativo = null;
+		else
+			this.responsabileAmministrativo = new PersonaAudit(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_AMMINISTRATIVO));
+
+		if(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_SISTEMA_INFORMATICO) == null)
+			this.responsabileSistemaInformatico = null;
+		else
+			this.responsabileSistemaInformatico = new PersonaAudit(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_SISTEMA_INFORMATICO));
+
+		if(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_QUALITA) == null)
+			this.responsabileQualita = null;
+		else
+			this.responsabileQualita = new PersonaAudit(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_QUALITA));
+
+
 
 		for(Persona p : provider.getPersone()) {
 			if(p.isDirty())
