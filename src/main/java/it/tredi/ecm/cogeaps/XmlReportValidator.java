@@ -51,9 +51,13 @@ public class XmlReportValidator {
 		for (String evento_field:Helper.EVENTO_XML_ATTRIBUTES) {
 			String xmlValue = eventoEl.attributeValue(evento_field);
 			String dbValue = dbEventoDataMap.get(evento_field);
-			if(!evento_field.equalsIgnoreCase("num_part"))
+			if(!evento_field.equalsIgnoreCase("num_part")){
 				if (!xmlValue.equals(dbValue))
 					throw new Exception("I dati dell'evento non corrispondono a quelli memorizzati nel database: [" + evento_field + "]: '" + xmlValue + "' - '" + dbValue + "'");
+			}else{
+				if(Integer.valueOf(xmlValue) > Integer.valueOf(dbValue))
+					throw new Exception("I dati dell'evento non corrispondono a quelli memorizzati nel database: [" + evento_field + "]: '" + xmlValue + "' - '" + dbValue + "'");
+			}
 		}
 	}
 
