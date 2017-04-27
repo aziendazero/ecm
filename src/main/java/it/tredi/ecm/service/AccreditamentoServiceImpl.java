@@ -706,6 +706,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
 		Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
+		if(numeroValutazioniCrecmRichieste == 0)
+			numeroValutazioniCrecmRichieste = 1;
 		workflowService.eseguiTaskAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
 	}
 
@@ -2391,5 +2393,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		PdfAccreditamentoProvvisorioDecretoDecadenzaInfo decadenzaInfo = new PdfAccreditamentoProvvisorioDecretoDecadenzaInfo(accreditamento);
 		pdfService.creaPdfAccreditamentoProvvisorioDecretoDecadenza(byteArrayOutputStreamAccreditata, decadenzaInfo);
+	}
+
+	//L'utente (segreteria) può riassegnare l'accreditamento ad un altro referee
+	@Override
+	public boolean canRiassegnaRefereeVariazioneDati(Long accreditamentoId, CurrentUser currentUser) {
+		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isAssegnamentoCrecmVariazioneDati())
+			return true;
+		return false;
 	}
 }

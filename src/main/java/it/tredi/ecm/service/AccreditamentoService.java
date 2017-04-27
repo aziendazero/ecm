@@ -138,4 +138,6 @@ public interface AccreditamentoService{
 	public void inviaValutazioneCrecmVariazioneDati(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 
 	public void generaDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, Long providerId) throws Exception;
+
+	public boolean canRiassegnaRefereeVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
 }

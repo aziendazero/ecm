@@ -313,6 +313,10 @@ public class Accreditamento extends BaseEntityDefaultId {
 		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.VALUTAZIONE_CRECM;
 	}
 
+	public boolean isAssegnamentoCrecmVariazioneDati() {
+		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.ASSEGNAMENTO;
+	}
+
 	public boolean isProcedimentoAttivo(){
 		if(dataScadenza != null && this.isStatoValido() && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
 			return true;

@@ -559,6 +559,9 @@ public class AccreditamentoController {
 		if(accreditamentoService.canRiassegnaGruppo(accreditamento.getId(), user)) {
 			accreditamentoWrapper.setCanAssegnaNuovoGruppo(true);
 			accreditamentoWrapper.setRefereeDaRiassegnare(valutazioneService.countRefereeNotValutatoriForAccreditamentoId(accreditamento.getId()));
+		}else if(accreditamentoService.canRiassegnaRefereeVariazioneDati(accreditamento.getId(), user)) {
+			accreditamentoWrapper.setCanAssegnaNuovoGruppo(true);//Riciclo quello che ho
+			accreditamentoWrapper.setRefereeDaRiassegnare(1);
 		}
 
 		//gestione modifica verbale valutazione sul campo

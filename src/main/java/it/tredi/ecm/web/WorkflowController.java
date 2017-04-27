@@ -82,6 +82,9 @@ public class WorkflowController {
 				}
 			}
 		}else if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
+			if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
+				valutazioneService.updateValutazioniNonDate(accreditamentoId);
+			}
 			if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
 				//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
 				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
