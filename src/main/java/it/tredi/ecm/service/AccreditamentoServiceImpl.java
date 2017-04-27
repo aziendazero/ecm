@@ -982,78 +982,72 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Set<FieldIntegrazioneAccreditamento> fieldModificati = fieldIntegrazioneAccreditamentoService.getModifiedFieldIntegrazioneForAccreditamento(accreditamentoId, stato, workFlowProcessInstanceId);
 
 		//se ci sono state delle modifiche ri-abilito la valutazione cancellando la data
+		//altrimenti non faccio nulla perche' si passa per forza dal PRESA VISIONE
 		if(fieldModificati != null && !fieldModificati.isEmpty()){
 			//elimina data valutazione se flusso di accreditamento
 			if(!accreditamento.isVariazioneDati()) {
 				Valutazione valutazione = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
 				valutazione.setDataValutazione(null);
 				valutazioneService.save(valutazione);
-//				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
-//				for(Valutazione valutazione : valutazioni){
-//					if(valutazione.getTipoValutazione() == ValutazioneTipoEnum.SEGRETERIA_ECM){
-//						valutazione.setDataValutazione(null);
-//						valutazioneService.save(valutazione);
-//					}
-//				}
 			}
-		}
 
-		//salvo la lista di fieldIntegrazione fittizia, per applicare sui fieldValutazione l'info che un campo abilitato non è stato modificato dal provider
-		//il fieldIntegrazione verrà utilizzato solo per richiamare la 'sbloccaValutazioniByFieldIntegrazioneList' è realizzato valorizzando solo
-		//i campi: objectReference, idField, isModificato, isFittizio
-//		Long id = -1L;
-		List<FieldIntegrazioneAccreditamento> fieldIntegrazioneListFITTIZIA = new ArrayList<FieldIntegrazioneAccreditamento>();
-		Set<FieldEditabileAccreditamento> fieldEditabileList = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId);
-		if(fieldEditabileList != null){
-			for(FieldEditabileAccreditamento fieldEditabile : fieldEditabileList){
-				//per ogni fieldEditabile (abilitato attraverso l'enableField sulla domanda), controllo se NON esiste il fieldIntegrazione creato dal provider
-				FieldIntegrazioneAccreditamento fieldIntegrazione = null;
-				Long objRef = fieldEditabile.getObjectReference();
-				if(fieldEditabile.getObjectReference() != -1){
-					fieldIntegrazione = Utils.getField(fieldIntegrazioneList, fieldEditabile.getObjectReference(), fieldEditabile.getIdField());
-				}else{
-					fieldIntegrazione = Utils.getField(fieldIntegrazioneList, fieldEditabile.getIdField());
-				}
-
-				if(fieldIntegrazione == null){
-					//NON esiste il fieldIntegrazione creato dal provider...creo quello fittizio
+			//salvo la lista di fieldIntegrazione fittizia, per applicare sui fieldValutazione l'info che un campo abilitato non è stato modificato dal provider
+			//il fieldIntegrazione verrà utilizzato solo per richiamare la 'sbloccaValutazioniByFieldIntegrazioneList' è realizzato valorizzando solo
+			//i campi: objectReference, idField, isModificato, isFittizio
+			//Long id = -1L;
+			List<FieldIntegrazioneAccreditamento> fieldIntegrazioneListFITTIZIA = new ArrayList<FieldIntegrazioneAccreditamento>();
+			Set<FieldEditabileAccreditamento> fieldEditabileList = fieldEditabileService.getAllFieldEditabileForAccreditamento(accreditamentoId);
+			if(fieldEditabileList != null){
+				for(FieldEditabileAccreditamento fieldEditabile : fieldEditabileList){
+					//per ogni fieldEditabile (abilitato attraverso l'enableField sulla domanda), controllo se NON esiste il fieldIntegrazione creato dal provider
+					FieldIntegrazioneAccreditamento fieldIntegrazione = null;
+					Long objRef = fieldEditabile.getObjectReference();
 					if(fieldEditabile.getObjectReference() != -1){
-						fieldIntegrazione = new FieldIntegrazioneAccreditamento(fieldEditabile.getIdField(), fieldEditabile.getAccreditamento(), fieldEditabile.getObjectReference(),null,null);
+						fieldIntegrazione = Utils.getField(fieldIntegrazioneList, fieldEditabile.getObjectReference(), fieldEditabile.getIdField());
 					}else{
-						fieldIntegrazione = new FieldIntegrazioneAccreditamento(fieldEditabile.getIdField(), fieldEditabile.getAccreditamento(), null,null);
+						fieldIntegrazione = Utils.getField(fieldIntegrazioneList, fieldEditabile.getIdField());
 					}
-					fieldIntegrazione.setModificato(false);
-					//ciclo per i fieldIntegrazione "complessivi"
-					if(!fieldEditabile.getIdField().getGruppo().isEmpty()) {
-						for(IdFieldEnum id : fieldEditabile.getIdField().getGruppo()) {
-							FieldIntegrazioneAccreditamento fieldIntegrazioneChild = null;
-							if(objRef != -1){
-								fieldIntegrazioneChild = Utils.getField(fieldIntegrazioneList, objRef, id);
-							}else{
-								fieldIntegrazioneChild = Utils.getField(fieldIntegrazioneList, id);
-							}
-							if(fieldIntegrazioneChild != null && fieldIntegrazioneChild.isModificato()) {
-								fieldIntegrazione.setModificato(true);
-								break;
+
+					if(fieldIntegrazione == null){
+						//NON esiste il fieldIntegrazione creato dal provider...creo quello fittizio
+						if(fieldEditabile.getObjectReference() != -1){
+							fieldIntegrazione = new FieldIntegrazioneAccreditamento(fieldEditabile.getIdField(), fieldEditabile.getAccreditamento(), fieldEditabile.getObjectReference(),null,null);
+						}else{
+							fieldIntegrazione = new FieldIntegrazioneAccreditamento(fieldEditabile.getIdField(), fieldEditabile.getAccreditamento(), null,null);
+						}
+						fieldIntegrazione.setModificato(false);
+						//ciclo per i fieldIntegrazione "complessivi"
+						if(!fieldEditabile.getIdField().getGruppo().isEmpty()) {
+							for(IdFieldEnum id : fieldEditabile.getIdField().getGruppo()) {
+								FieldIntegrazioneAccreditamento fieldIntegrazioneChild = null;
+								if(objRef != -1){
+									fieldIntegrazioneChild = Utils.getField(fieldIntegrazioneList, objRef, id);
+								}else{
+									fieldIntegrazioneChild = Utils.getField(fieldIntegrazioneList, id);
+								}
+								if(fieldIntegrazioneChild != null && fieldIntegrazioneChild.isModificato()) {
+									fieldIntegrazione.setModificato(true);
+									break;
+								}
 							}
 						}
+	//					fieldIntegrazione.setId(id--);
+						fieldIntegrazione.setFittizio(true);
+						fieldIntegrazioneListFITTIZIA.add(fieldIntegrazione);
 					}
-//					fieldIntegrazione.setId(id--);
-					fieldIntegrazione.setFittizio(true);
-					fieldIntegrazioneListFITTIZIA.add(fieldIntegrazione);
+				}
+
+				if(fieldIntegrazioneListFITTIZIA != null && !fieldIntegrazioneListFITTIZIA.isEmpty()){
+					fieldIntegrazioneAccreditamentoService.save(fieldIntegrazioneListFITTIZIA);
+					container.getIntegrazioni().addAll(fieldIntegrazioneListFITTIZIA);
+					fieldIntegrazioneAccreditamentoService.saveContainer(container);
 				}
 			}
 
-			if(fieldIntegrazioneListFITTIZIA != null && !fieldIntegrazioneListFITTIZIA.isEmpty()){
-				fieldIntegrazioneAccreditamentoService.save(fieldIntegrazioneListFITTIZIA);
-				container.getIntegrazioni().addAll(fieldIntegrazioneListFITTIZIA);
-				fieldIntegrazioneAccreditamentoService.saveContainer(container);
-			}
+			//setto il flag per vedere se ci sono state modifiche di integrazione nei field valutazioni, elimino il vecchio esito e li riabilito
+			Valutazione valutazione = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
+			valutazioneService.sbloccaValutazioneByFieldIntegrazioneList(valutazione, container.getIntegrazioni());
 		}
-
-		//setto il flag per vedere se ci sono state modifiche di integrazione nei field valutazioni, elimino il vecchio esisto e li riabilito
-		Valutazione valutazione = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
-		valutazioneService.sbloccaValutazioneByFieldIntegrazioneList(valutazione, container.getIntegrazioni());
 
 		//TODO non spacca niente???
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
@@ -2134,10 +2128,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, valutatore, 1, destinazioneVariazioneDati);
 			//creo la valutazione per il referee
 			Valutazione valutazioneReferee = new Valutazione(refereeVariazioneDati, accreditamento, ValutazioneTipoEnum.REFEREE);
-			//medoto per la gestione delle valutazioni
+			//metodo per la gestione delle valutazioni
 			valutazioneService.initializeFieldValutazioni(valutazioneReferee, accreditamento);
 			valutazioneService.save(valutazioneReferee);
-			emailService.inviaNotificaAReferee(refereeVariazioneDati.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
+			//emailService.inviaNotificaAReferee(refereeVariazioneDati.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 		}
 	}
 
