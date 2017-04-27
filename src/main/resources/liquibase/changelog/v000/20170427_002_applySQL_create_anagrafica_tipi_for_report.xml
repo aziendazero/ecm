@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170427_002_applySQL_create_anagrafica_tipi_for_report.xml">
+    <changeSet author="dpranteda" id="1">
+    	<comment>CREAZIONE SQL DB PER ANAGARFICA TIPI PER REPORT ENGINEEERING</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="20170427_001_create_anagrafica_tipi_for_report.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>
+        <rollback>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

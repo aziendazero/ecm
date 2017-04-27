@@ -95,4 +95,6 @@
 
 	<include file="20170426_001_allegati_valutazione_sul_campo.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170427_002_applySQL_create_anagrafica_tipi_for_report.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
