@@ -403,9 +403,15 @@ public class Accreditamento extends BaseEntityDefaultId {
 	}
 
 	public File getFileForProtocollo(){
-		for(File f : datiAccreditamento.getFiles())
-			if(f.isDICHIARAZIONELEGALE())
-				return f;
+		if(isProvvisorio()){
+			for(File f : datiAccreditamento.getFiles())
+				if(f.isDICHIARAZIONELEGALE())
+					return f;
+		}else {
+			for(File f : datiAccreditamento.getFiles())
+				if(f.isRICHIESTAACCREDITAMENTOSTANDARD())
+					return f;
+		}
 		return null;
 	}
 
