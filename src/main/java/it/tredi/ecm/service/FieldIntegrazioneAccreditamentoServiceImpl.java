@@ -155,8 +155,10 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	public void applyIntegrazioneInContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId) {
 		LOGGER.debug(Utils.getLogMessage("Segno il container dei Field Integrazione come applicato"));
 		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, processInstanceId, stato);
-		container.setApplicato(true);
-		saveContainer(container);
+		if(container != null){
+			container.setApplicato(true);
+			saveContainer(container);
+		}
 	}
 
 	@Override
