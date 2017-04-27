@@ -22,8 +22,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.TokenService;
@@ -55,24 +57,37 @@ public class WorkflowController {
 		}
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-		if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO) {
-			if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
-				valutazioneService.updateValutazioniNonDate(accreditamentoId);
+		WorkflowInfo workflowInCorso = accreditamento.getWorkflowInCorso();
+		if(workflowInCorso == null)
+			throw new Exception("WorkflowController - SetStatoFromBonita: Impossibile ricavare il workflow in corso per l'accreaditamento id: " + accreditamento.getId());
+		if(workflowInCorso.getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
+			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO) {
+				if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
+					valutazioneService.updateValutazioniNonDate(accreditamentoId);
+				}
+				if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
+					//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
+					DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+					Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
+					LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+					valutazioneService.dataOraScadenzaPossibilitaValutazioneCRECM(accreditamentoId, ldt);
+				}
+			} else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD) {
+				if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
+					//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
+					DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+					Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
+					LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+					valutazioneService.dataOraScadenzaPossibilitaValutazione(accreditamentoId, ldt);
+				}
 			}
+		}else if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
 			if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
 				//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
 				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 				Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
 				LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 				valutazioneService.dataOraScadenzaPossibilitaValutazioneCRECM(accreditamentoId, ldt);
-			}
-		} else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD) {
-			if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
-				//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-				Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
-				LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-				valutazioneService.dataOraScadenzaPossibilitaValutazione(accreditamentoId, ldt);
 			}
 		}
 
