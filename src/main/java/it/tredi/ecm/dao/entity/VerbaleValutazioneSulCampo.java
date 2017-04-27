@@ -1,8 +1,11 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -21,6 +24,34 @@ import lombok.Setter;
 public class VerbaleValutazioneSulCampo extends BaseEntityDefaultId {
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate giorno;
+
+	@DateTimeFormat (pattern = "HH:mm")
+	private LocalTime ora;
+	@Column(name = "dataora_visita")
+	private LocalDateTime dataoraVisita;
+
+	public void setGiorno(LocalDate data) {
+		this.giorno = data;
+		setDataOraByDataAndOra();
+	}
+
+	public void setOra(LocalTime ora) {
+		this.ora = ora;
+		setDataOraByDataAndOra();
+	}
+
+	private void setDataOraByDataAndOra() {
+		if(this.giorno == null)
+			this.dataoraVisita = null;
+		else {
+			if(this.ora == null) {
+				this.dataoraVisita = LocalDateTime.of(this.giorno, LocalTime.MIN);
+			} else {
+				this.dataoraVisita = LocalDateTime.of(this.giorno, this.ora);
+			}
+		}
+	}
+
 	@OneToOne
 	@JoinColumn(name = "accreditamento_id")
 	private Accreditamento accreditamento;

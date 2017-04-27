@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +61,7 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 
 	//formatters
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	private DateTimeFormatter dataOraTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm");
 	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 	private NumberStyleFormatter intFormatter = new NumberStyleFormatter("0");
 	private NumberStyleFormatter longFormatter = new NumberStyleFormatter("0");
@@ -138,7 +141,8 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
         document.add(parTitolo);
 
 		PdfPTable tableFields = getTableFields();
-		addCellLabelCampoValoreData("label.data", verbale.getGiorno(), tableFields);
+		//addCellLabelCampoValoreData("label.data", verbale.getGiorno(), tableFields);
+		addCellLabelCampoValoreDataOra("label.data_ora", verbale.getDataoraVisita(), tableFields);
 		addCellLabelCampoValoreString("label.sede", verbale.getSede().getAddressNameFull(), tableFields);
 		addCellLabelCampoValoreString("label.componente_crec_team_leader", verbale.getTeamLeader().getFullNameBase(), tableFields);
 		addCellLabelCampoValoreString("label.osservatore_regionale", verbale.getOsservatoreRegionale().getFullNameBase(), tableFields);
@@ -466,6 +470,20 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 		String valoreCampo = null;
 		if(valoreDateCampo != null)
 			valoreCampo = valoreDateCampo.format(dateTimeFormatter);
+		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
+	}
+
+	private void addCellLabelCampoValoreOra(String labelCampo, LocalTime valoreOraCampo, PdfPTable table) {
+		String valoreCampo = null;
+		if(valoreOraCampo != null)
+			valoreCampo = valoreOraCampo.format(timeFormatter);
+		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
+	}
+
+	private void addCellLabelCampoValoreDataOra(String labelCampo, LocalDateTime valoreDataOraCampo, PdfPTable table) {
+		String valoreCampo = null;
+		if(valoreDataOraCampo != null)
+			valoreCampo = valoreDataOraCampo.format(dataOraTimeFormatter);
 		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
 	}
 

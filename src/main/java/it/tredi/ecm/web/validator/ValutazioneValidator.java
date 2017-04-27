@@ -167,6 +167,8 @@ public class ValutazioneValidator {
 				errors.rejectValue(prefix + "giorno", "error.empty");
 			else if(verbaleValutazioneSulCampo.getGiorno().isBefore(LocalDate.now()))
 				errors.rejectValue(prefix + "giorno", "error.data_non_valida_verbale");
+			if(verbaleValutazioneSulCampo.getOra() == null)
+				errors.rejectValue(prefix + "ora", "error.empty");
 			if(verbaleValutazioneSulCampo.getTeamLeader() == null)
 				errors.rejectValue(prefix + "teamLeader", "error.empty");
 			if(verbaleValutazioneSulCampo.getOsservatoreRegionale() == null)
@@ -196,6 +198,8 @@ public class ValutazioneValidator {
 	public void validateEditVerbale(VerbaleValutazioneSulCampo verbale, Errors errors, String prefix) {
 		if(verbale.getGiorno() == null)
 			errors.rejectValue(prefix + "giorno", "error.empty");
+		if(verbale.getOra() == null)
+			errors.rejectValue(prefix + "ora", "error.empty");
 		//hanno chiesto di toglierla! ( ._.)
 //		else if(verbale.getGiorno().isBefore(LocalDate.now()))
 //			errors.rejectValue(prefix + "giorno", "error.data_non_valida_verbale");

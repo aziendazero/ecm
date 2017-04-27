@@ -97,4 +97,6 @@
 
 	<include file="20170427_002_applySQL_create_anagrafica_tipi_for_report.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170427_003_add_ora_verbale_valutazione_sul_campo.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

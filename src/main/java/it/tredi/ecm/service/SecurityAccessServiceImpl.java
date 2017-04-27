@@ -319,7 +319,7 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	public boolean canReassignCRECM(CurrentUser currentUser, Long accreditamentoId) throws Exception {
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
-		if(accreditamento.isAssegnamento() && currentUser.isSegreteria() && task != null)
+		if((accreditamento.isAssegnamento() || accreditamento.isAssegnamentoCrecmVariazioneDati()) && currentUser.isSegreteria() && task != null)
 			return true;
 		return false;
 	}

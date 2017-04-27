@@ -1,6 +1,7 @@
 package it.tredi.ecm;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ public class EmailTest {
 		s.add("dpranteda@3di.it");
 
 //		emailService.inviaNotificaATeamLeader("dpranteda@3di.it", "provider1");
-		emailService.inviaConvocazioneValutazioneSulCampo(s, LocalDate.now(), "provider2");
+		emailService.inviaConvocazioneValutazioneSulCampo(s, LocalDateTime.now(), "provider2");
 //
 //		emailService.inviaConvocazioneACommissioneECM(s);
 //		emailService.inviaNotificaAReferee("dpranteda@3di.it", "provider1");

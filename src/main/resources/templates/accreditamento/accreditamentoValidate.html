@@ -123,6 +123,22 @@
 											<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.giorno')}" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.giorno}"></div>
 										</div>
 
+										<!-- ORA -->
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.ora')} ? 'bad'">
+											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="oraVerifica">
+												<span th:text="#{label.ora_verifica_loco}">Ora della verifica in loco</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
+												<input type="text" id="oraVerifica" class="form-control"
+													name="ora" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.ora}" />
+												<span class="input-group-addon" id="openClock">
+						 							<i class="glyphicon glyphicon-time"></i>
+												</span>
+											</div>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.ora')}" class="alert" th:errors="${accreditamentoWrapper.verbaleValutazioneSulCampo.ora}"></div>
+										</div>
+
 										<div class="divider"></div>
 
 										<!-- BLOCCO SELEZIONE VALUTATORI -->
@@ -468,6 +484,18 @@
 					        daysOfWeek: days,
 			                monthNames: months,
 				        }
+				    })
+
+				     var handler = $('#oraVerifica').clockpicker({
+				    	donetext: [[#{label.applica}]],
+				    	align: 'left',
+				        autoclose: true,
+				        'default': 'now'
+				    });
+
+				    $('#openClock').click(function(e) {
+				    	e.stopPropagation();
+	                    handler.clockpicker('show');
 				    })
 
 				    mostraNascondiLegaleDelegato($(".radioLegale:checked").val());

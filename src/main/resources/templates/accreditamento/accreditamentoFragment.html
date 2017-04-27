@@ -1255,10 +1255,10 @@
 											<div class="form-horizontal form-label-left">
 												<div class="item form-group">
 													<label class="control-label col-md-3 col-sm-3 col-xs-12">
-														<span class="label-show" th:text="#{label.data_verifica_loco}">Data della verifica in loco</span>
+														<span class="label-show" th:text="#{label.data_ora_verifica_loco}">Data della verifica in loco</span>
 													</label>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-														<div class="value" th:text="${#temporals.format(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.giorno, 'dd/MM/yyyy')}"></div>
+														<div class="value" th:text="${#temporals.format(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.dataoraVisita, 'dd/MM/yyyy - HH:mm')}"></div>
 													</div>
 												</div>
 

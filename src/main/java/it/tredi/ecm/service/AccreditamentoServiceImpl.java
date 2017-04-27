@@ -457,7 +457,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				for(Account a : verbale.getComponentiSegreteria())
 					dst.add(a.getEmail());
 			}
-			emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
+			emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getDataoraVisita(), accreditamento.getProvider().getDenominazioneLegale());
 		}
 
 		//il nome del metodo è un pò ingannevole
@@ -585,7 +585,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 						for(Account a : verbale.getComponentiSegreteria())
 							dst.add(a.getEmail());
 					}
-					emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
+					emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getDataoraVisita(), accreditamento.getProvider().getDenominazioneLegale());
 				}
 
 				//non deve creare un task di valutazione per il team leader.. deve solo mandare il flusso in valutazione sul campo con lo stesso
@@ -2006,6 +2006,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void editScheduleVerbaleValutazioneSulCampo(Accreditamento accreditamento, VerbaleValutazioneSulCampo verbaleNew) {
 		VerbaleValutazioneSulCampo verbaleToUpdate = accreditamento.getVerbaleValutazioneSulCampo();
 		verbaleToUpdate.setGiorno(verbaleNew.getGiorno());
+		verbaleToUpdate.setOra(verbaleNew.getOra());
 		verbaleToUpdate.setTeamLeader(verbaleNew.getTeamLeader());
 		verbaleToUpdate.setComponentiSegreteria(verbaleNew.getComponentiSegreteria());
 		verbaleToUpdate.setOsservatoreRegionale(verbaleNew.getOsservatoreRegionale());
@@ -2043,7 +2044,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(verbale.getReferenteInformatico() != null)
 			dst.add(verbale.getReferenteInformatico().getEmail());
 
-		emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getGiorno(), accreditamento.getProvider().getDenominazioneLegale());
+		emailService.inviaConvocazioneValutazioneSulCampo(dst, verbale.getDataoraVisita(), accreditamento.getProvider().getDenominazioneLegale());
 	}
 
 	@Override

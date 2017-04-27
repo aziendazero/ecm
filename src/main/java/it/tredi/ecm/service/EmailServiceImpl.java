@@ -1,6 +1,8 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -271,7 +273,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void inviaConvocazioneValutazioneSulCampo(Set<String> valutatori, LocalDate data, String provider) throws Exception {
+	public void inviaConvocazioneValutazioneSulCampo(Set<String> valutatori, LocalDateTime data, String provider) throws Exception {
 		LOGGER.info("Invio convocazione Valutazione Sul Campo");
 		Context context = new Context();
 		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
