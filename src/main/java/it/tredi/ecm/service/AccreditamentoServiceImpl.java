@@ -926,7 +926,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	@Transactional
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception {
-		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Provider"));
+		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " alla Firma"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
 			accreditamento.setGiorniIntegrazione(giorniTimer);
@@ -947,8 +947,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
+	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Protocollo"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		accreditamento.setRichiestaIntegrazione(fileFirmato);
+		saveAndAudit(accreditamento);
+		//TODO workflowService.eseguiTaskRichiestaIntegrazioneInAttesaDiFirmaForCurrentUser(accreditamento);
+	}
+
+	@Override
+	@Transactional
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception {
-		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " al Provider"));
+		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " alla Firma"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setGiorniPreavvisoRigetto(giorniTimer);
 		//accreditamentoRepository.save(accreditamento);
@@ -961,6 +971,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
 		}
 		workflowService.eseguiTaskRichiestaPreavvisoRigettoForCurrentUser(accreditamento, timerIntegrazioneRigetto);
+	}
+
+	@Override
+	@Transactional
+	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " al Protocollo"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		accreditamento.setRichiestaPreavvisoRigetto(fileFirmato);
+		saveAndAudit(accreditamento);
+		//TODO workflowService.eseguiTaskRichiestaPreavvisoRigettoInAttesaDiFirmaForCurrentUser(accreditamento);
 	}
 
 	/* invia l'integrazione del provider, sblocca i campi relativi e li flagga nella valutazione della segreteria
@@ -1490,6 +1510,36 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception {
 		return canUserEnableField(accreditamentoId, currentUser) || canUserInviaCampiVariazioneDati(accreditamentoId, currentUser);
+	}
+
+	@Override
+	public boolean canUserinviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser)	throws Exception {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.isRichiestaIntegrazioneInAttesaDiFirma()){
+			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+			if(task == null){
+				return false;
+			}
+			if(!task.isAssigned())
+				return true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canUserinviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser)	throws Exception {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.isRichiestaPreavvisoRigettoInAttesaDiFirma()){
+			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+			if(task == null){
+				return false;
+			}
+			if(!task.isAssigned())
+				return true;
+			return true;
+		}
+		return false;
 	}
 
 	@Override

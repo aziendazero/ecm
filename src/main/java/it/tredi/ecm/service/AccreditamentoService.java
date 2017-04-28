@@ -48,8 +48,13 @@ public interface AccreditamentoService{
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup) throws Exception;
 	public void inserisciInValutazioneCommissioneForSystemUser(Long accreditamentoId) throws Exception;
 	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception;
+
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
+	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
+
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception;
+	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
+
 	public void inviaIntegrazione(Long accreditamentoId) throws Exception;
 	public void eseguiTaskInviaIntegrazione(Long accreditamentoId) throws Exception;
 	public void presaVisione(Long accreditamentoId) throws Exception;
@@ -70,6 +75,8 @@ public interface AccreditamentoService{
 
 	public boolean canRiassegnaGruppo(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserInviaRichiestaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	public boolean canUserinviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	public boolean canUserinviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserInviaIntegrazione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserPresaVisione(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 	public boolean canUserAbilitaVariazioneDati(Long accreditamentoId, CurrentUser currentUser);

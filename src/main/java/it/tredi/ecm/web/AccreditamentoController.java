@@ -2,12 +2,8 @@ package it.tredi.ecm.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,8 +30,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.DatiValutazioneSulCampo;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
@@ -71,7 +67,6 @@ import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.ResponseState;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.bean.VerbaleValutazioneSulCampoWrapper;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
@@ -562,6 +557,15 @@ public class AccreditamentoController {
 		}else if(accreditamentoService.canRiassegnaRefereeVariazioneDati(accreditamento.getId(), user)) {
 			accreditamentoWrapper.setCanAssegnaNuovoGruppo(true);//Riciclo quello che ho
 			accreditamentoWrapper.setRefereeDaRiassegnare(1);
+		}
+
+		//controllo se devo mostrare il pulsante per firmare il documento e mandarlo al protocollo
+		if(accreditamentoService.canUserinviaRichiestaIntegrazioneInAttesaDiFirma(accreditamento.getId(), user)){
+			accreditamentoWrapper.setCanInviaRichiestaIntegrazioneInAttesaDiFirma(true);
+			accreditamentoWrapper.setFileDaFirmare(accreditamento.getRichiestaIntegrazione());
+		}else if(accreditamentoService.canUserinviaRichiestaPreavvisoRigettoInAttesaDiFirma(accreditamento.getId(), user)){
+			accreditamentoWrapper.setCanInviaRichiestaPreavvisoRigettoInAttesaDiFirma(true);
+			accreditamentoWrapper.setFileDaFirmare(accreditamento.getRichiestaPreavvisoRigetto());
 		}
 
 		//gestione modifica verbale valutazione sul campo
@@ -1637,4 +1641,44 @@ public class AccreditamentoController {
 		}
 	}
 
+	// invia file firmato al protocollo
+	//@PreAuthorize("@securityAccessServiceImpl.canReassignCRECM(principal,#accreditamentoId)")
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/inviaAttesaInFirma", method = RequestMethod.POST)
+	public String inviaAttesaInFirma(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
+			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/inviaAttesaInFirma"));
+		try {
+			//validazione del file
+			File file = wrapper.getFileDaFirmare();
+			if (!(/*file.getNomeFile().toUpperCase().endsWith(".PDF") ||*/
+					file.getNomeFile().toUpperCase().endsWith(".P7M") ||
+					file.getNomeFile().toUpperCase().endsWith(".P7C")))
+				result.reject("TODO");
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
+				model.addAttribute("inviaAttesaInFirmaErrors", true);
+				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+				return goToAccreditamentoShow(model, accreditamento, wrapper);
+			}else {
+				if(wrapper.isCanInviaRichiestaIntegrazioneInAttesaDiFirma()){
+					accreditamentoService.inviaRichiestaIntegrazioneInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
+				}else if(wrapper.isCanInviaRichiestaPreavvisoRigettoInAttesaDiFirma()){
+					accreditamentoService.inviaRichiestaPreavvisoRigettoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
+				}
+
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+				redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.TODO", "success"));
+
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/reassignEvaluation"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}
+	}
 }

@@ -269,9 +269,18 @@ public class Accreditamento extends BaseEntityDefaultId {
 		return stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE;
 	}
 
+	public boolean isRichiestaIntegrazioneInAttesaDiFirma() {
+		return stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_ATTESA_DI_FIRMA;
+	}
+
 	public boolean isRichiestaPreavvisoRigetto() {
 		return stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO;
 	}
+
+	public boolean isRichiestaPreavvisoRigettoInAttesaDiFirma() {
+		return stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_ATTESA_DI_FIRMA;
+	}
+
 
 	public boolean isValutazioneSulCampo() {
 		return stato == AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO;

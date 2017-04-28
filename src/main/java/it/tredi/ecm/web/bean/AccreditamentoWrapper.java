@@ -139,6 +139,10 @@ public class AccreditamentoWrapper {
 	private boolean canSendVariazioneDati;
 	private boolean canValutaVariazioneDati;
 	private boolean canShowValutazioneStorico;
+	private boolean canInviaRichiestaIntegrazioneInAttesaDiFirma;
+	private boolean canInviaRichiestaPreavvisoRigettoInAttesaDiFirma;
+
+	private File fileDaFirmare;
 
 
 	//flag per vedere se la segreteria può editare
