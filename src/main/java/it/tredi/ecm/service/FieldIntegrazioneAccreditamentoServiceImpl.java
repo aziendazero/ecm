@@ -35,7 +35,7 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStato(accreditamentoId, workFlowProcessInstanceId, stato);
 		if(container != null)
 			return container.getIntegrazioni();
-		else return null;
+		else return new HashSet<FieldIntegrazioneAccreditamento>();
 	}
 	@Override
 	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneForAccreditamentoAndObjectByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, Long objectReference) {
@@ -50,7 +50,7 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 			}
 			return fieldIntegrazioneList;
 		}
-		else return null;
+		else return new HashSet<FieldIntegrazioneAccreditamento>();
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 			}
 			return objectIdList;
 		}
-		else return null;
+		else return new HashSet<Long>();
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 			}
 			return fieldIntegrazioneList;
 		}
-		else return null;
+		else return new HashSet<FieldIntegrazioneAccreditamento>();
 	}
 	//2017-02-24 tiommi: non serve più viene settato flag nel container history come già applicati
 //	@Override
