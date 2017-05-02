@@ -137,6 +137,7 @@ public class FileValidator {
 		else if(!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".P7M") ||	file.getNomeFile().toUpperCase().endsWith(".P7C")))
 			errors.reject(prefix,"error.formatNonAccepted");
 		else{
+			file = fileService.getFile(file.getId());
 			VerificaFirmaDigitale verificaFirmaDigitale = new VerificaFirmaDigitale(file.getNomeFile(), file.getData());
 			String lastSignerCF = verificaFirmaDigitale.getLastSignerCF();
 			if(lastSignerCF == null || lastSignerCF.isEmpty())

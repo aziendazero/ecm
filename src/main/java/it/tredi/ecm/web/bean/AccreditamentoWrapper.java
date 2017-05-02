@@ -141,9 +141,13 @@ public class AccreditamentoWrapper {
 	private boolean canShowValutazioneStorico;
 	private boolean canInviaRichiestaIntegrazioneInAttesaDiFirma;
 	private boolean canInviaRichiestaPreavvisoRigettoInAttesaDiFirma;
+	private boolean canAccreditatoInAttesaDiFirma;
+	private boolean canDiniegoInAttesaDiFirma;
 
 	private File richiestaIntegrazione;
 	private File richiestaPreavvisoRigetto;
+	private File decretoAccreditamento;
+	private File decretoDiniego;
 
 	public File getFileDaFirmare(){
 		if(canInviaRichiestaIntegrazioneInAttesaDiFirma)
@@ -151,6 +155,12 @@ public class AccreditamentoWrapper {
 
 		if(canInviaRichiestaPreavvisoRigettoInAttesaDiFirma)
 			return richiestaPreavvisoRigetto;
+
+		if(canAccreditatoInAttesaDiFirma)
+			return decretoAccreditamento;
+
+		if(canDiniegoInAttesaDiFirma)
+			return decretoDiniego;
 
 		return null;
 	}

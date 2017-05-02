@@ -298,6 +298,14 @@ public class Accreditamento extends BaseEntityDefaultId {
 		return stato == AccreditamentoStatoEnum.DINIEGO;
 	}
 
+	public boolean isAccreditatoInAttesaDiFirma(){
+		return stato == AccreditamentoStatoEnum.ACCREDITATO_IN_FIRMA;
+	}
+
+	public boolean isDiniegoInAttesaDiFirma(){
+		return stato == AccreditamentoStatoEnum.DINIEGO_IN_FIRMA;
+	}
+
 	public boolean isCancellato(){
 		return stato == AccreditamentoStatoEnum.CANCELLATO;
 	}
