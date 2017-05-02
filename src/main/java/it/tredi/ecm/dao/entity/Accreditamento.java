@@ -270,7 +270,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 	}
 
 	public boolean isRichiestaIntegrazioneInAttesaDiFirma() {
-		return stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_ATTESA_DI_FIRMA;
+		return stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_FIRMA;
 	}
 
 	public boolean isRichiestaPreavvisoRigetto() {
@@ -278,7 +278,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 	}
 
 	public boolean isRichiestaPreavvisoRigettoInAttesaDiFirma() {
-		return stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_ATTESA_DI_FIRMA;
+		return stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_FIRMA;
 	}
 
 

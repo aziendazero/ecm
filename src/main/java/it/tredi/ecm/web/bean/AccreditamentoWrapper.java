@@ -142,8 +142,18 @@ public class AccreditamentoWrapper {
 	private boolean canInviaRichiestaIntegrazioneInAttesaDiFirma;
 	private boolean canInviaRichiestaPreavvisoRigettoInAttesaDiFirma;
 
-	private File fileDaFirmare;
+	private File richiestaIntegrazione;
+	private File richiestaPreavvisoRigetto;
 
+	public File getFileDaFirmare(){
+		if(canInviaRichiestaIntegrazioneInAttesaDiFirma)
+			return richiestaIntegrazione;
+
+		if(canInviaRichiestaPreavvisoRigettoInAttesaDiFirma)
+			return richiestaPreavvisoRigetto;
+
+		return null;
+	}
 
 	//flag per vedere se la segreteria può editare
 	private boolean canSegreteriaEdit;

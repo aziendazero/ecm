@@ -444,6 +444,40 @@
 				<!-- Modale per riepilogo valutazione -->
 				<th:block th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" th:include="fragments/modaleRiepilogoValutazioni :: modaleRiepilogoValutazioni"></th:block>
 
+				<!-- modale invia al protocollo -->
+				<div th:if="${accreditamentoWrapper.canInviaRichiestaIntegrazioneInAttesaDiFirma} or ${accreditamentoWrapper.canInviaRichiestaPreavvisoRigettoInAttesaDiFirma}" id="attesaFirma-modal" class="modal fade modal-attesa-firma"
+					data-model-index="1" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h3 class="modal-title" id="myModalLabel" th:text="#{label.allegare_file_da_protocollare}">label.inserimento_file_note</h3>
+							</div>
+							<div class="modal-body">
+								<form id="formAttesaFirma" class="form-horizontal"
+									th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/inviaAlProtocollo|}"
+									method="post" enctype="multipart/form-data"
+									novalidate="novalidate">
+
+									<th:block th:if="${accreditamentoWrapper.accreditamento.isRichiestaIntegrazioneInAttesaDiFirma()}">
+										<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ACCREDITAMENTO_PROVVISORIO_INTEGRAZIONE}', richiestaIntegrazione, null, null, null, true, null, false)" ></th:block>
+									</th:block>
+									<th:block th:if="${accreditamentoWrapper.accreditamento.isRichiestaPreavvisoRigettoInAttesaDiFirma()}">
+										<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ACCREDITAMENTO_PROVVISORIO_PREAVVISO_RIGETTO}', richiestaPreavvisoRigetto, null, null, null, true, null, false)" ></th:block>
+									</th:block>
+
+									<input id="submitButtonModal" type="submit" style="display: none;" />
+
+								</form>
+
+							</div>
+							<div class="modal-footer">
+								<label for="submitButtonModal" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
+								<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<div class="x_panel">
 					<div class="x_title x_menu">
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.id + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
@@ -462,11 +496,13 @@
 									<li><a th:if="${accreditamentoWrapper.canValutaDomanda and (accreditamentoWrapper.accreditamento.isValutazioneSegreteriaVariazioneDati() or accreditamentoWrapper.accreditamento.isValutazioneCrecmVariazioneDati())}" th:text="#{label.valuta_variazione_dati}" onclick="switchMode('validate')"></a></li>
 									<li class="divider actions" th:if="${accreditamentoWrapper.canVariazioneDati or accreditamentoWrapper.canValutaVariazioneDati}"></li>
 									<li><a th:if="${accreditamentoWrapper.canVariazioneDati}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/variazioneDati|}" th:text="#{label.variazione_dati}"></a></li>
-									<li class="divider actions" th:if="${accreditamentoWrapper.canEnableField or accreditamentoWrapper.canPrendiInCarica or accreditamentoWrapper.canPresaVisione or accreditamentoWrapper.canAssegnaNuovoGruppo}"></li>
+									<li class="divider actions" th:if="${accreditamentoWrapper.canEnableField or accreditamentoWrapper.canPrendiInCarica or accreditamentoWrapper.canPresaVisione or accreditamentoWrapper.canAssegnaNuovoGruppo or accreditamentoWrapper.canInviaRichiestaIntegrazioneInAttesaDiFirma or accreditamentoWrapper.canInviaRichiestaPreavvisoRigettoInAttesaDiFirma}"></li>
 									<li><a th:if="${accreditamentoWrapper.canEnableField}" th:text="#{label.abilita_id_editabili}" onclick="switchMode('enableField')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canPrendiInCarica}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/takeCharge|}" th:text="#{label.prendi_in_carica}"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canPresaVisione}" th:text="#{label.presa_visione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/presaVisione|}"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canAssegnaNuovoGruppo}" th:text="#{label.assegna_nuovo_gruppo}" data-toggle="modal" data-target=".modal-reassign"></a></li>
+									<li><a th:if="${accreditamentoWrapper.canInviaRichiestaIntegrazioneInAttesaDiFirma}" th:text="#{label.invia_al_protocollo}" data-toggle="modal" data-target=".modal-attesa-firma"></a></li>
+									<li><a th:if="${accreditamentoWrapper.canInviaRichiestaPreavvisoRigettoInAttesaDiFirma}" th:text="#{label.invia_al_protocollo}" data-toggle="modal" data-target=".modal-attesa-firma"></a></li>
 									<li class="divider actions" th:if="${#authentication.principal.account.isSegreteria() and accreditamentoWrapper.accreditamento.isDomandaInRichiestaAccreditamento()}"></li>
 									<li><a th:if="${#authentication.principal.account.isSegreteria() and accreditamentoWrapper.accreditamento.isDomandaInRichiestaAccreditamento()}" th:text="#{label.conclusione_del_procedimento}" data-toggle="modal" data-target=".modal-confirm-conclusione"></a></li>
 								</ul>
@@ -525,6 +561,12 @@
 			    	if([[${verbaleErrors}]]) {
 			    		$("#verbale-edit-modal").modal("show");
 			    	}
+
+			    	if([[${attesaFirmaErrors}]]) {
+			    		$("#attesaFirma-modal").modal("show");
+			    	}
+
+			    	console.log([[${attesaFirmaErrors}]]);
 
 			    	$('#componentiSegreteria').selectpicker({
 						selectAllText : 'Seleziona tutti',

@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -562,10 +563,10 @@ public class AccreditamentoController {
 		//controllo se devo mostrare il pulsante per firmare il documento e mandarlo al protocollo
 		if(accreditamentoService.canUserinviaRichiestaIntegrazioneInAttesaDiFirma(accreditamento.getId(), user)){
 			accreditamentoWrapper.setCanInviaRichiestaIntegrazioneInAttesaDiFirma(true);
-			accreditamentoWrapper.setFileDaFirmare(accreditamento.getRichiestaIntegrazione());
+			accreditamentoWrapper.setRichiestaIntegrazione(accreditamento.getRichiestaIntegrazione());
 		}else if(accreditamentoService.canUserinviaRichiestaPreavvisoRigettoInAttesaDiFirma(accreditamento.getId(), user)){
 			accreditamentoWrapper.setCanInviaRichiestaPreavvisoRigettoInAttesaDiFirma(true);
-			accreditamentoWrapper.setFileDaFirmare(accreditamento.getRichiestaPreavvisoRigetto());
+			accreditamentoWrapper.setRichiestaPreavvisoRigetto(accreditamento.getRichiestaPreavvisoRigetto());
 		}
 
 		//gestione modifica verbale valutazione sul campo
@@ -1643,20 +1644,22 @@ public class AccreditamentoController {
 
 	// invia file firmato al protocollo
 	//@PreAuthorize("@securityAccessServiceImpl.canReassignCRECM(principal,#accreditamentoId)")
-	@RequestMapping(value = "/accreditamento/{accreditamentoId}/inviaAttesaInFirma", method = RequestMethod.POST)
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/inviaAlProtocollo", method = RequestMethod.POST)
 	public String inviaAttesaInFirma(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
 			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/inviaAttesaInFirma"));
 		try {
 			//validazione del file
 			File file = wrapper.getFileDaFirmare();
-			if (!(/*file.getNomeFile().toUpperCase().endsWith(".PDF") ||*/
+			if (file == null ||
+					!(
+					/*file.getNomeFile().toUpperCase().endsWith(".PDF") ||*/
 					file.getNomeFile().toUpperCase().endsWith(".P7M") ||
 					file.getNomeFile().toUpperCase().endsWith(".P7C")))
-				result.reject("TODO");
+				((Errors)result).rejectValue("", "error.empty");
 			if(result.hasErrors()){
-				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
-				model.addAttribute("inviaAttesaInFirmaErrors", true);
+				model.addAttribute("message",new Message("message.errore", "message.allegato_obbligatorio_e_firmato", "error"));
+				model.addAttribute("attesaFirmaErrors", true);
 				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 				return goToAccreditamentoShow(model, accreditamento, wrapper);
 			}else {

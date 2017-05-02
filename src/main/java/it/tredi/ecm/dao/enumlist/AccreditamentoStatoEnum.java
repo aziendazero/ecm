@@ -42,8 +42,10 @@ public enum AccreditamentoStatoEnum {
 
 	CONCLUSO (22, "Concluso", ""),//Stato in cui va alla fine della "Variazione Dati"
 
-	RICHIESTA_INTEGRAZIONE_IN_ATTESA_DI_FIRMA (23, "Richiesta integrazione in attesa di firma", "inFirma"),
-	RICHIESTA_PREAVVISO_RIGETTO_IN_ATTESA_DI_FIRMA (24, "Richiesta Preavviso di Rigetto in attesa di firma", "inFirma");
+	RICHIESTA_INTEGRAZIONE_IN_FIRMA (23, "Richiesta integrazione in attesa di firma", "inFirma"),
+	RICHIESTA_PREAVVISO_RIGETTO_IN_FIRMA (24, "Richiesta Preavviso di Rigetto in attesa di firma", "inFirma"),
+	ACCREDITATO_IN_FIRMA (24, "Decreto di Accreditamento in attesa di firma", "inFirma"),
+	DINIEGO_PREAVVISO_RIGETTO_IN_FIRMA (24, "Decreto di Diniego in attesa di firma", "inFirma");
 
 
 
