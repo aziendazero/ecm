@@ -70,6 +70,7 @@ import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.bean.VerbaleValutazioneSulCampoWrapper;
+import it.tredi.ecm.web.validator.FileValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
@@ -100,6 +101,7 @@ public class AccreditamentoController {
 	@Autowired private EmailService emailService;
 
 	@Autowired private AccreditamentoStatoHistoryService accreditamentoStatoHistoryService;
+	@Autowired private FileValidator fileValidator;
 
 
 	@InitBinder
@@ -1676,13 +1678,7 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/inviaAttesaInFirma"));
 		try {
 			//validazione del file
-			File file = wrapper.getFileDaFirmare();
-			if (file == null ||
-					!(
-					/*file.getNomeFile().toUpperCase().endsWith(".PDF") ||*/
-					file.getNomeFile().toUpperCase().endsWith(".P7M") ||
-					file.getNomeFile().toUpperCase().endsWith(".P7C")))
-				((Errors)result).rejectValue("", "error.empty");
+			fileValidator.validateIsSigned(wrapper.getFileDaFirmare(), result, "");
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.allegato_obbligatorio_e_firmato", "error"));
 				model.addAttribute("attesaFirmaErrors", true);
