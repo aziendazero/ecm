@@ -1343,24 +1343,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
 	}
 
-
-
-	//recupera tutte le domande di accreditamento con documenti da firmare
-	@Override
-	public Set<Accreditamento> getAllAccreditamentiInFirma() {
-		LocalDate oggi = LocalDate.now();
-		LocalDate dateScadenza = LocalDate.now().plusDays(30);
-		return accreditamentoRepository.findAllByDataScadenzaProssima(oggi, dateScadenza);
-	}
-
-	//conta tutte le domande di accreditamento con documenti da firmare
-	@Override
-	public int countAllAccreditamentiInFirma() {
-		LocalDate oggi = LocalDate.now();
-		LocalDate dateScadenza = LocalDate.now().plusDays(30);
-		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
-	}
-
 	@Override
 	/*
 	 * L'utente segreteria può prendere in carica una domanda se:
