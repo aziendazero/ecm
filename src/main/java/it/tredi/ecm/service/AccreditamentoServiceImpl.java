@@ -1343,6 +1343,24 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
 	}
 
+
+
+	//recupera tutte le domande di accreditamento con documenti da firmare
+	@Override
+	public Set<Accreditamento> getAllAccreditamentiInFirma() {
+		LocalDate oggi = LocalDate.now();
+		LocalDate dateScadenza = LocalDate.now().plusDays(30);
+		return accreditamentoRepository.findAllByDataScadenzaProssima(oggi, dateScadenza);
+	}
+
+	//conta tutte le domande di accreditamento con documenti da firmare
+	@Override
+	public int countAllAccreditamentiInFirma() {
+		LocalDate oggi = LocalDate.now();
+		LocalDate dateScadenza = LocalDate.now().plusDays(30);
+		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
+	}
+
 	@Override
 	/*
 	 * L'utente segreteria può prendere in carica una domanda se:
@@ -1602,7 +1620,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			} else if(stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
 				accreditamento.standbyConteggio();
 				accreditamento.setDataPreavvisoRigettoInizio(LocalDate.now());
-			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_FIRMA) {
 				//Ricavo la seduta
 				Seduta seduta = null;
 				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
@@ -1630,10 +1648,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					file = pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardIntegrazione(integrazioneInfo);
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setRichiestaIntegrazione(file);
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
+				File file = accreditamento.getRichiestaIntegrazione();
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
 				//protocollo il file
+
 			} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
 				//mi sono spostato da INTEGRAZIONE o PREAVVISO_RIGETTO a VALUTAZIONE_SEGRETERIA quindi rimuovo i fieldEditabili
 				accreditamento.startRestartConteggio();
@@ -1646,7 +1667,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				}
 				inviaIntegrazione(accreditamentoId);
 				fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
-			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_FIRMA) {
 				//Ricavo la seduta
 				Seduta seduta = null;
 				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
@@ -1667,10 +1688,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					file = pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardPreavvisoRigetto(preavvisoRigettoInfo);
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setRichiestaPreavvisoRigetto(file);
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
+				File file = accreditamento.getRichiestaPreavvisoRigetto();
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
-			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
+			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_FIRMA) {
 				//Ricavo la seduta
 				Seduta sedutaRigetto = null;
 				Seduta sedutaIntegrazione = null;
@@ -1696,13 +1719,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardDiniego(rigettoInfo);
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDecretoDiniego(file);
-				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
 			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
+				File file = accreditamento.getDecretoDiniego();
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
+				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+			}  else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
-			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE) {
+			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_FIRMA) {
 				//Ricavo la seduta
 				Seduta sedutaAccreditamento = null;
 				Seduta sedutaIntegrazione = null;
@@ -1723,8 +1748,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardAccreditato(accreditatoInfo);
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDecretoAccreditamento(file);
+			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE) {
+				File file = accreditamento.getDecretoAccreditamento();
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
 			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO) {
 				//Setto il flusso come concluso

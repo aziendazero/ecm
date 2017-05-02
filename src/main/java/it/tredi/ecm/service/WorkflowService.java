@@ -31,6 +31,11 @@ public interface WorkflowService {
 
 	public void eseguiTaskInsOdgForSystemUser(Accreditamento accreditamento) throws Exception;
 
+	public void eseguiTaskFirmaAccreditamentoForCurrentUser(Accreditamento accreditamento) throws Exception;
+	public void eseguiTaskFirmaDiniegoForCurrentUser(Accreditamento accreditamento) throws Exception;
+	public void eseguiTaskFirmaIntegrazioneForCurrentUser(Accreditamento accreditamento) throws Exception;
+	public void eseguiTaskFirmaPreavvisoRigettoForCurrentUser(Accreditamento accreditamento) throws Exception;
+
 	public void eseguiTaskInserimentoEsitoOdgForCurrentUser(Accreditamento accreditamento, AccreditamentoStatoEnum stato) throws Exception;
 	//public void eseguiTaskTaskInserimentoEsitoOdgForUser(CurrentUser user, Accreditamento accreditamento, AccreditamentoStatoEnum stato) throws Exception;
 	public void eseguiTaskAssegnazioneCrecmForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste) throws Exception;
