@@ -35,6 +35,7 @@ public class HomeWrapper {
 	private Integer domandeAssegnamento;
 	private Integer domandeValutazioneIntegrazione;
 	private Integer domandeInScadenza;
+	private Integer domandeInFirma;
 	private Integer domandeDaValutareAll;
 	private Integer domandeInInsODG;
 	private Integer providerPagamentoNonEffettuatoAllaScadenza;
