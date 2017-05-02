@@ -127,6 +127,20 @@ public class FileValidator {
 			if(file != null && !file.getNomeFile().isEmpty())
 				validate(file, errors, prefix, providerId);
 		}
+	}
 
+	public void validateIsSigned(Object target, Errors errors, String prefix) throws Exception{
+		LOGGER.info(Utils.getLogMessage("Validazione File is Signed"));
+		File file = (File) target;
+		if (file == null)
+			errors.reject(prefix,"error.empty");
+		else if(!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".P7M") ||	file.getNomeFile().toUpperCase().endsWith(".P7C")))
+			errors.reject(prefix,"error.formatNonAccepted");
+		else{
+			VerificaFirmaDigitale verificaFirmaDigitale = new VerificaFirmaDigitale(file.getNomeFile(), file.getData());
+			String lastSignerCF = verificaFirmaDigitale.getLastSignerCF();
+			if(lastSignerCF == null || lastSignerCF.isEmpty())
+				errors.reject(prefix,"error.file_non_firmato");
+		}
 	}
 }
