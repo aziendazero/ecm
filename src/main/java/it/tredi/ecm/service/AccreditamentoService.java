@@ -52,6 +52,9 @@ public interface AccreditamentoService{
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
 
+	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
+	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
+
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
 
@@ -84,6 +87,9 @@ public interface AccreditamentoService{
 	public boolean canUserInviaCampiVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserInviaVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
 	public boolean canUserValutaDomandaShowStorico(Long accreditamentoId, CurrentUser currentUser);
+
+	public boolean canUserAccreditatoInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser) throws Exception;
+	public boolean canUserDiniegoInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser) throws Exception;
 
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception;
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception;

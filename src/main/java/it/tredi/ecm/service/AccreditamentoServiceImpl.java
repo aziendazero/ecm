@@ -952,7 +952,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setRichiestaIntegrazione(fileFirmato);
 		saveAndAudit(accreditamento);
-		//TODO workflowService.eseguiTaskRichiestaIntegrazioneInAttesaDiFirmaForCurrentUser(accreditamento);
+		workflowService.eseguiTaskFirmaIntegrazioneForCurrentUser(accreditamento);
 	}
 
 	@Override
@@ -980,7 +980,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setRichiestaPreavvisoRigetto(fileFirmato);
 		saveAndAudit(accreditamento);
-		//TODO workflowService.eseguiTaskRichiestaPreavvisoRigettoInAttesaDiFirmaForCurrentUser(accreditamento);
+		workflowService.eseguiTaskFirmaPreavvisoRigettoForCurrentUser(accreditamento);
 	}
 
 	/* invia l'integrazione del provider, sblocca i campi relativi e li flagga nella valutazione della segreteria
@@ -2479,5 +2479,53 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isAssegnamentoCrecmVariazioneDati())
 			return true;
 		return false;
+	}
+
+	@Override
+	public boolean canUserAccreditatoInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser) throws Exception {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.isAccreditatoInAttesaDiFirma()){
+			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+			if(task == null){
+				return false;
+			}
+			if(!task.isAssigned())
+				return true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Decreto Accreditamento della domanda " + accreditamentoId + " al Protocollo"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		accreditamento.setDecretoAccreditamento(fileFirmato);
+		saveAndAudit(accreditamento);
+		workflowService.eseguiTaskFirmaAccreditamentoForCurrentUser(accreditamento);
+	}
+
+	@Override
+	public boolean canUserDiniegoInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser) throws Exception {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.isDiniegoInAttesaDiFirma()){
+			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+			if(task == null){
+				return false;
+			}
+			if(!task.isAssigned())
+				return true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Decreto Diniego della domanda " + accreditamentoId + " al Protocollo"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		accreditamento.setDecretoDiniego(fileFirmato);
+		saveAndAudit(accreditamento);
+		workflowService.eseguiTaskFirmaDiniegoForCurrentUser(accreditamento);
 	}
 }

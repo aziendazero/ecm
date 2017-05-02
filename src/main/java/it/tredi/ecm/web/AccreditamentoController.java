@@ -569,6 +569,12 @@ public class AccreditamentoController {
 		}else if(accreditamentoService.canUserinviaRichiestaPreavvisoRigettoInAttesaDiFirma(accreditamento.getId(), user)){
 			accreditamentoWrapper.setCanInviaRichiestaPreavvisoRigettoInAttesaDiFirma(true);
 			accreditamentoWrapper.setRichiestaPreavvisoRigetto(accreditamento.getRichiestaPreavvisoRigetto());
+		}else if(accreditamentoService.canUserAccreditatoInAttesaDiFirma(accreditamento.getId(), user)){
+			accreditamentoWrapper.setCanAccreditatoInAttesaDiFirma(true);
+			accreditamentoWrapper.setDecretoAccreditamento(accreditamento.getDecretoAccreditamento());
+		}else if(accreditamentoService.canUserDiniegoInAttesaDiFirma(accreditamento.getId(), user)){
+			accreditamentoWrapper.setCanDiniegoInAttesaDiFirma(true);
+			accreditamentoWrapper.setDecretoDiniego(accreditamento.getDecretoDiniego());
 		}
 
 		//gestione modifica verbale valutazione sul campo
@@ -1689,11 +1695,21 @@ public class AccreditamentoController {
 					accreditamentoService.inviaRichiestaIntegrazioneInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
 				}else if(wrapper.isCanInviaRichiestaPreavvisoRigettoInAttesaDiFirma()){
 					accreditamentoService.inviaRichiestaPreavvisoRigettoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
+				}else if(wrapper.isCanAccreditatoInAttesaDiFirma()){
+					accreditamentoService.inviaAccreditamentoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
+				}else if(wrapper.isCanDiniegoInAttesaDiFirma()){
+					accreditamentoService.inviaDiniegoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
+				}else{
+					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+					redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.error", "error"));
+
+					return "redirect:/accreditamento/{accreditamentoId}/show";
 				}
 
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 				redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
-				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.TODO", "success"));
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.documento_inviato_al_protocollo", "success"));
 
 				return "redirect:/accreditamento/{accreditamentoId}/show";
 			}
