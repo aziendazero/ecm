@@ -48,7 +48,20 @@ public class WorkflowController {
 	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato,
 			@RequestParam(required = false) Integer numeroValutazioniNonDate, @RequestParam(required = false) String dataOraScadenzaPossibiltaValutazione,
 			@RequestParam(required = false) Boolean eseguitoDaUtente) throws Exception{
-		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato} token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato));
+		String msgInfo =  " token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato;
+		if(numeroValutazioniNonDate != null)
+			msgInfo += "; numeroValutazioniNonDate: " + numeroValutazioniNonDate;
+		else
+			msgInfo += "; numeroValutazioniNonDate: null";
+		if(dataOraScadenzaPossibiltaValutazione != null)
+			msgInfo += "; dataOraScadenzaPossibiltaValutazione: " + dataOraScadenzaPossibiltaValutazione;
+		else
+			msgInfo += "; dataOraScadenzaPossibiltaValutazione: null";
+		if(eseguitoDaUtente != null)
+			msgInfo += "; eseguitoDaUtente: " + eseguitoDaUtente;
+		else
+			msgInfo += "; eseguitoDaUtente: null";
+		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}" + msgInfo));
 
 		if(!tokenService.checkTokenAndDelete(token)) {
 			String msg = "Impossibile trovare il token passato token: " + token;

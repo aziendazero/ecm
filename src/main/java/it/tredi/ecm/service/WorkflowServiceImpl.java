@@ -849,4 +849,100 @@ public class WorkflowServiceImpl implements WorkflowService {
 		return systemUserDataModel;
 	}
 
+
+	@Override
+	public void eseguiTaskFirmaAccreditamentoForCurrentUser(Accreditamento accreditamento) throws Exception {
+		//Ricavo l'utente corrente
+		CurrentUser user = Utils.getAuthenticatedUser();
+		eseguiTaskFirmaAccreditamentoForUser(user, accreditamento);
+	}
+
+	private void eseguiTaskFirmaAccreditamentoForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
+		if(accreditamento.getStatoForWorkflow() != AccreditamentoStatoEnum.ACCREDITATO_IN_FIRMA) {
+			LOGGER.error("Non è possibile eseguire il task Firma Accreditamento per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+			throw new Exception("Non è possibile eseguire il task Firma Accreditamento per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task Firma Accreditamento non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task Firma Accreditamento non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
+	@Override
+	public void eseguiTaskFirmaDiniegoForCurrentUser(Accreditamento accreditamento) throws Exception {
+		//Ricavo l'utente corrente
+		CurrentUser user = Utils.getAuthenticatedUser();
+		eseguiTaskFirmaDiniegoForUser(user, accreditamento);
+	}
+
+	private void eseguiTaskFirmaDiniegoForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
+		if(accreditamento.getStatoForWorkflow() != AccreditamentoStatoEnum.DINIEGO_IN_FIRMA) {
+			LOGGER.error("Non è possibile eseguire il task Firma Diniego per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+			throw new Exception("Non è possibile eseguire il task Firma Diniego per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task Firma Diniego non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task Firma Diniego non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
+	@Override
+	public void eseguiTaskFirmaIntegrazioneForCurrentUser(Accreditamento accreditamento) throws Exception {
+		//Ricavo l'utente corrente
+		CurrentUser user = Utils.getAuthenticatedUser();
+		eseguiTaskFirmaIntegrazioneForUser(user, accreditamento);
+	}
+
+	private void eseguiTaskFirmaIntegrazioneForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
+		if(accreditamento.getStatoForWorkflow() != AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_FIRMA) {
+			LOGGER.error("Non è possibile eseguire il task Firma Richiesta Integrazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+			throw new Exception("Non è possibile eseguire il task Firma Richiesta Integrazione per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task Firma Richiesta Integrazione non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task Firma Richiesta Integrazione non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
+	@Override
+	public void eseguiTaskFirmaPreavvisoRigettoForCurrentUser(Accreditamento accreditamento) throws Exception {
+		//Ricavo l'utente corrente
+		CurrentUser user = Utils.getAuthenticatedUser();
+		eseguiTaskFirmaPreavvisoRigettoForUser(user, accreditamento);
+	}
+
+	private void eseguiTaskFirmaPreavvisoRigettoForUser(CurrentUser user, Accreditamento accreditamento) throws Exception {
+		if(accreditamento.getStatoForWorkflow() != AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_FIRMA) {
+			LOGGER.error("Non è possibile eseguire il task Firma Preavviso Rigetto per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+			throw new Exception("Non è possibile eseguire il task Firma Preavviso Rigetto per un accreditamento non nello stato corretto - Accreditamento.stato: " + accreditamento.getStatoForWorkflow());
+		}
+		TaskInstanceDataModel task = userGetTaskForState(user, accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task Firma Preavviso Rigetto non è disponibile per l'utente username: " + user.getUsername() + " - Accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task Firma Preavviso Rigetto non è disponibile per l'utente username: " + user.getUsername());
+		}
+		if(!task.isAssigned()) {
+			//lo prendo in carico
+			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
+		}
+		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
 }
