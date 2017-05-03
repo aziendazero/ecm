@@ -23,7 +23,7 @@ public class InviaAlProtocolloValidator {
 		if(wrapper.isCanAccreditatoInAttesaDiFirma() || wrapper.isCanDiniegoInAttesaDiFirma()){
 			if(wrapper.getDataDelibera() == null)
 				errors.rejectValue(prefix + "dataDelibera", "error.empty");
-			if(wrapper.getNumeroDelibera() == null || wrapper.getNumeroDelibera().intValue() == 0)
+			if(wrapper.getNumeroDelibera() == null || wrapper.getNumeroDelibera().isEmpty())
 				errors.rejectValue(prefix + "numeroDelibera", "error.empty");
 		}
 

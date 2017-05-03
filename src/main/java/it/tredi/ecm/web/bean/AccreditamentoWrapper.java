@@ -154,7 +154,7 @@ public class AccreditamentoWrapper {
 
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate dataDelibera;
-	private Integer numeroDelibera;
+	private String numeroDelibera;
 
 	public File getFileDaFirmare(){
 		if(canInviaRichiestaIntegrazioneInAttesaDiFirma)

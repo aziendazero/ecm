@@ -52,8 +52,8 @@ public interface AccreditamentoService{
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception;
 
-	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, Integer numeroDelibera) throws Exception;
-	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, Integer numeroDelibera) throws Exception;
+	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception;
+	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception;
 
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception;

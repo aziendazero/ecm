@@ -10,7 +10,7 @@
 	</changeSet>
 	<changeSet author="dpranteda (generated)" id="1493801134071-2">
 		<addColumn tableName="file">
-			<column name="numero_delibera" type="int4" />
+			<column name="numero_delibera" type="VARCHAR(255)" />
 		</addColumn>
 	</changeSet>
 </databaseChangeLog>

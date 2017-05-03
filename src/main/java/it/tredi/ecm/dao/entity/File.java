@@ -54,7 +54,7 @@ public class File extends BaseEntityDefaultId{
 
 	@JsonView(JsonViewModel.Integrazione.class)
 	@JsonIgnore
-	private Integer numeroDelibera;
+	private String numeroDelibera;
 
 	@JsonView(JsonViewModel.Integrazione.class)
 	@Enumerated(EnumType.STRING)
@@ -205,7 +205,7 @@ public class File extends BaseEntityDefaultId{
 		cloned.setDataCreazione(this.getDataCreazione());
 		cloned.setData(this.getData());
 		cloned.setProtocollo(null);
-		cloned.setNumeroDelibera(null);
+		cloned.setNumeroDelibera("");
 		cloned.setDataDelibera(null);
 
 		return cloned;

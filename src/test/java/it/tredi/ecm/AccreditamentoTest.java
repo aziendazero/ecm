@@ -88,7 +88,7 @@ public class AccreditamentoTest {
 		Long accreditamentoId = 1352L;
 		File fileFirmato = fileService.getFile(5990L);
 		LocalDate dataDelibera = LocalDate.now();
-		Integer numeroDelibera = 123;
+		String numeroDelibera = "123";
 
 
 		fileFirmato.setDataDelibera(dataDelibera);

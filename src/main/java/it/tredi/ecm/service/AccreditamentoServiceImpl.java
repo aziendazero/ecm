@@ -2483,7 +2483,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, Integer numeroDelibera) throws Exception {
+	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Decreto Accreditamento della domanda " + accreditamentoId + " al Protocollo"));
 		File fileFirmato = fileService.getFile(fileId);
 		fileFirmato.setDataDelibera(dataDelibera);
@@ -2512,7 +2512,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, Integer numeroDelibera) throws Exception {
+	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Decreto Diniego della domanda " + accreditamentoId + " al Protocollo"));
 		File fileFirmato = fileService.getFile(fileId);
 		fileFirmato.setDataDelibera(dataDelibera);

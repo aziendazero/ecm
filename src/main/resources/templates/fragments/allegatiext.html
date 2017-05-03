@@ -53,13 +53,13 @@
 				<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10" th:if="${showOnly}">
 					<div class="" th:unless="${__${wrapper}__.__${propertyName}__.new}"><div class="value"><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div></div>
 					<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(__${wrapper}__.__${propertyName}__.protocollo.numero,0)},${#temporals.format(__${wrapper}__.__${propertyName}__.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
-					<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isDeliberato()}"><div class="value"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${#numbers.formatInteger(__${wrapper}__.__${propertyName}__.numeroDelibera,0)},${#temporals.format(__${wrapper}__.__${propertyName}__.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
+					<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isDeliberato()}"><div class="value"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${__${wrapper}__.__${propertyName}__.numeroDelibera},${#temporals.format(__${wrapper}__.__${propertyName}__.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
 					<div class="" th:if="${__${wrapper}__.__${propertyName}__.new}"><div class="value danger" th:text="#{label.allegato_non_inserito}"></div></div>
 				</div>
 				<div class="col-lg-4 col-md-8 col-sm-8 col-xs-10" th:if="${enableField}">
 					<div class="" th:unless="${__${wrapper}__.__${propertyName}__.new}"><div class="value-edit"><i class="fa fa-download"> </i> <a th:text="${__${wrapper}__.__${propertyName}__.nomeFile}" th:href="@{|/file/${__${wrapper}__.__${propertyName}__.id}|}"></a></div></div>
 					<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isProtocollato()}"><div class="value-edit"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(__${wrapper}__.__${propertyName}__.protocollo.numero,0)},${#temporals.format(__${wrapper}__.__${propertyName}__.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
-					<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isDeliberato()}"><div class="value-edit"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${#numbers.formatInteger(__${wrapper}__.__${propertyName}__.numeroDelibera,0)},${#temporals.format(__${wrapper}__.__${propertyName}__.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
+					<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isDeliberato()}"><div class="value-edit"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${__${wrapper}__.__${propertyName}__.numeroDelibera},${#temporals.format(__${wrapper}__.__${propertyName}__.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
 					<div class="" th:if="${__${wrapper}__.__${propertyName}__.new}"><div class="value-edit danger" th:text="#{label.allegato_non_inserito}"></div></div>
 				</div>
 				<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
@@ -129,7 +129,7 @@
 			</div>
 			<th:block th:if="showOnly">
 				<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(__${wrapper}__.__${propertyName}__.protocollo.numero,0)},${#temporals.format(__${wrapper}__.__${propertyName}__.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
-				<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isDeliberato()}"><div class="value"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${#numbers.formatInteger(__${wrapper}__.__${propertyName}__.numeroDelibera,0)},${#temporals.format(__${wrapper}__.__${propertyName}__.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
+				<div class="" th:if="${!__${wrapper}__.__${propertyName}__.new and __${wrapper}__.__${propertyName}__.isDeliberato()}"><div class="value"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${__${wrapper}__.__${propertyName}__.numeroDelibera},${#temporals.format(__${wrapper}__.__${propertyName}__.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
 			</th:block>
 			<th:block th:if="${editabile and ( (!required and !__${wrapper}__.__${propertyName}__.new) or withFirma )}">
 				<div class="col-xs-2 btn-group">
