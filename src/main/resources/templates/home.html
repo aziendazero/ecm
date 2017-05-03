@@ -193,6 +193,18 @@
 							</div>
 						</div>
 					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="tile-stats clickable" onclick="goTo('accreditamento/inFirma/list?filterTaken=false')">
+							<div class="icon"><i class="fa fa-chain"></i></div>
+							<div class="col-xs-10">
+			                	<div class="count" th:text="${homeWrapper.domandeInFirma}"></div>
+			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInFirma == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+			                	<p class="count-text" th:text="#{label.in_firma}"></p>
+							</div>
+						</div>
+					</div>
+
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('provider/pianoFormativoNotInserito/list')">
 							<div class="icon"><i class="fa fa-calendar-o"></i></div>

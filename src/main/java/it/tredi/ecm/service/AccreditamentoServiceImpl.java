@@ -926,7 +926,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	@Transactional
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception {
-		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Provider"));
+		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " alla Firma"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
 			accreditamento.setGiorniIntegrazione(giorniTimer);
@@ -947,8 +947,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
+	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Protocollo"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		accreditamento.setRichiestaIntegrazione(fileFirmato);
+		saveAndAudit(accreditamento);
+		workflowService.eseguiTaskFirmaIntegrazioneForCurrentUser(accreditamento);
+	}
+
+	@Override
+	@Transactional
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception {
-		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " al Provider"));
+		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " alla Firma"));
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setGiorniPreavvisoRigetto(giorniTimer);
 		//accreditamentoRepository.save(accreditamento);
@@ -961,6 +971,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
 		}
 		workflowService.eseguiTaskRichiestaPreavvisoRigettoForCurrentUser(accreditamento, timerIntegrazioneRigetto);
+	}
+
+	@Override
+	@Transactional
+	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " al Protocollo"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		accreditamento.setRichiestaPreavvisoRigetto(fileFirmato);
+		saveAndAudit(accreditamento);
+		workflowService.eseguiTaskFirmaPreavvisoRigettoForCurrentUser(accreditamento);
 	}
 
 	/* invia l'integrazione del provider, sblocca i campi relativi e li flagga nella valutazione della segreteria
@@ -1493,6 +1513,36 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
+	public boolean canUserinviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser)	throws Exception {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.isRichiestaIntegrazioneInAttesaDiFirma()){
+			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+			if(task == null){
+				return false;
+			}
+			if(!task.isAssigned())
+				return true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canUserinviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser)	throws Exception {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.isRichiestaPreavvisoRigettoInAttesaDiFirma()){
+			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+			if(task == null){
+				return false;
+			}
+			if(!task.isAssigned())
+				return true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	/*
 	 * La domanda deve essere in INTEGRAZIONE
 	 * 	+	L'utente provider titolare della domanda
@@ -1552,7 +1602,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			} else if(stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
 				accreditamento.standbyConteggio();
 				accreditamento.setDataPreavvisoRigettoInizio(LocalDate.now());
-			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_FIRMA) {
 				//Ricavo la seduta
 				Seduta seduta = null;
 				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
@@ -1580,10 +1630,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					file = pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardIntegrazione(integrazioneInfo);
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setRichiestaIntegrazione(file);
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
+				File file = accreditamento.getRichiestaIntegrazione();
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
 				//protocollo il file
+
 			} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
 				//mi sono spostato da INTEGRAZIONE o PREAVVISO_RIGETTO a VALUTAZIONE_SEGRETERIA quindi rimuovo i fieldEditabili
 				accreditamento.startRestartConteggio();
@@ -1596,7 +1649,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				}
 				inviaIntegrazione(accreditamentoId);
 				fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
-			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_FIRMA) {
 				//Ricavo la seduta
 				Seduta seduta = null;
 				for (ValutazioneCommissione valCom : accreditamento.getValutazioniCommissione()) {
@@ -1617,10 +1670,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					file = pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(preavvisoRigettoInfo);
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardPreavvisoRigetto(preavvisoRigettoInfo);
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setRichiestaPreavvisoRigetto(file);
+			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
+				File file = accreditamento.getRichiestaPreavvisoRigetto();
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
-			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
+			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_FIRMA) {
 				//Ricavo la seduta
 				Seduta sedutaRigetto = null;
 				Seduta sedutaIntegrazione = null;
@@ -1646,13 +1701,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardDiniego(rigettoInfo);
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDecretoDiniego(file);
-				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
 			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
+				File file = accreditamento.getDecretoDiniego();
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
+				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+			}  else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
-			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE) {
+			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_FIRMA) {
 				//Ricavo la seduta
 				Seduta sedutaAccreditamento = null;
 				Seduta sedutaIntegrazione = null;
@@ -1673,8 +1730,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardAccreditato(accreditatoInfo);
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDecretoAccreditamento(file);
+			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE) {
+				File file = accreditamento.getDecretoAccreditamento();
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
 			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO) {
 				//Setto il flusso come concluso
@@ -2402,5 +2461,53 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(currentUser.isSegreteria() && getAccreditamento(accreditamentoId).isAssegnamentoCrecmVariazioneDati())
 			return true;
 		return false;
+	}
+
+	@Override
+	public boolean canUserAccreditatoInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser) throws Exception {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.isAccreditatoInAttesaDiFirma()){
+			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+			if(task == null){
+				return false;
+			}
+			if(!task.isAssigned())
+				return true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Decreto Accreditamento della domanda " + accreditamentoId + " al Protocollo"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		accreditamento.setDecretoAccreditamento(fileFirmato);
+		saveAndAudit(accreditamento);
+		workflowService.eseguiTaskFirmaAccreditamentoForCurrentUser(accreditamento);
+	}
+
+	@Override
+	public boolean canUserDiniegoInAttesaDiFirma(Long accreditamentoId, CurrentUser currentUser) throws Exception {
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(currentUser.isSegreteria() && accreditamento.isDiniegoInAttesaDiFirma()){
+			TaskInstanceDataModel task = workflowService.currentUserGetTaskForState(accreditamento);
+			if(task == null){
+				return false;
+			}
+			if(!task.isAssigned())
+				return true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Decreto Diniego della domanda " + accreditamentoId + " al Protocollo"));
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		accreditamento.setDecretoDiniego(fileFirmato);
+		saveAndAudit(accreditamento);
+		workflowService.eseguiTaskFirmaDiniegoForCurrentUser(accreditamento);
 	}
 }

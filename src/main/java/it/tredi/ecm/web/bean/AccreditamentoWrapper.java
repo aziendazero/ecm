@@ -139,7 +139,31 @@ public class AccreditamentoWrapper {
 	private boolean canSendVariazioneDati;
 	private boolean canValutaVariazioneDati;
 	private boolean canShowValutazioneStorico;
+	private boolean canInviaRichiestaIntegrazioneInAttesaDiFirma;
+	private boolean canInviaRichiestaPreavvisoRigettoInAttesaDiFirma;
+	private boolean canAccreditatoInAttesaDiFirma;
+	private boolean canDiniegoInAttesaDiFirma;
 
+	private File richiestaIntegrazione;
+	private File richiestaPreavvisoRigetto;
+	private File decretoAccreditamento;
+	private File decretoDiniego;
+
+	public File getFileDaFirmare(){
+		if(canInviaRichiestaIntegrazioneInAttesaDiFirma)
+			return richiestaIntegrazione;
+
+		if(canInviaRichiestaPreavvisoRigettoInAttesaDiFirma)
+			return richiestaPreavvisoRigetto;
+
+		if(canAccreditatoInAttesaDiFirma)
+			return decretoAccreditamento;
+
+		if(canDiniegoInAttesaDiFirma)
+			return decretoDiniego;
+
+		return null;
+	}
 
 	//flag per vedere se la segreteria può editare
 	private boolean canSegreteriaEdit;
