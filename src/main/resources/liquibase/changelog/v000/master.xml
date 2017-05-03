@@ -99,4 +99,6 @@
 
 	<include file="20170427_003_add_ora_verbale_valutazione_sul_campo.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170503_001_add_data_numero_delibera_ai_decreti.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

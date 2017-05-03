@@ -50,13 +50,13 @@ public interface AccreditamentoService{
 	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception;
 
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
-	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
+	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception;
 
-	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
-	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
+	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, Integer numeroDelibera) throws Exception;
+	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, Integer numeroDelibera) throws Exception;
 
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception;
-	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception;
+	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception;
 
 	public void inviaIntegrazione(Long accreditamentoId) throws Exception;
 	public void eseguiTaskInviaIntegrazione(Long accreditamentoId) throws Exception;

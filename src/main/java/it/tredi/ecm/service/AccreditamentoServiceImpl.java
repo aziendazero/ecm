@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.transaction.Transactional;
 
+import org.elasticsearch.index.analysis.GermanStemTokenFilterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -947,8 +948,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Protocollo"));
+		File fileFirmato = fileService.getFile(fileId);
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setRichiestaIntegrazione(fileFirmato);
 		saveAndAudit(accreditamento);
@@ -975,8 +977,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " al Protocollo"));
+		File fileFirmato = fileService.getFile(fileId);
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setRichiestaPreavvisoRigetto(fileFirmato);
 		saveAndAudit(accreditamento);
@@ -2479,8 +2482,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+	@Transactional
+	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, Integer numeroDelibera) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Decreto Accreditamento della domanda " + accreditamentoId + " al Protocollo"));
+		File fileFirmato = fileService.getFile(fileId);
+		fileFirmato.setDataDelibera(dataDelibera);
+		fileFirmato.setNumeroDelibera(numeroDelibera);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setDecretoAccreditamento(fileFirmato);
 		saveAndAudit(accreditamento);
@@ -2503,8 +2511,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, File fileFirmato) throws Exception {
+	@Transactional
+	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, Integer numeroDelibera) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Decreto Diniego della domanda " + accreditamentoId + " al Protocollo"));
+		File fileFirmato = fileService.getFile(fileId);
+		fileFirmato.setDataDelibera(dataDelibera);
+		fileFirmato.setNumeroDelibera(numeroDelibera);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setDecretoDiniego(fileFirmato);
 		saveAndAudit(accreditamento);

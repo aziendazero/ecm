@@ -133,15 +133,15 @@ public class FileValidator {
 		LOGGER.info(Utils.getLogMessage("Validazione File is Signed"));
 		File file = (File) target;
 		if (file == null)
-			errors.reject(prefix,"error.empty");
+			errors.rejectValue(prefix,"error.empty");
 		else if(!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".P7M") ||	file.getNomeFile().toUpperCase().endsWith(".P7C")))
-			errors.reject(prefix,"error.formatNonAccepted");
+			errors.rejectValue(prefix,"error.formatNonAccepted");
 		else{
 			file = fileService.getFile(file.getId());
 			VerificaFirmaDigitale verificaFirmaDigitale = new VerificaFirmaDigitale(file.getNomeFile(), file.getData());
 			String lastSignerCF = verificaFirmaDigitale.getLastSignerCF();
 			if(lastSignerCF == null || lastSignerCF.isEmpty())
-				errors.reject(prefix,"error.file_non_firmato");
+				errors.rejectValue(prefix,"error.file_non_firmato");
 		}
 	}
 }

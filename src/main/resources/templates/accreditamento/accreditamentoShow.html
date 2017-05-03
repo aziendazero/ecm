@@ -464,7 +464,37 @@
 									<input type="hidden" th:field="${accreditamentoWrapper.canAccreditatoInAttesaDiFirma}" />
 									<input type="hidden" th:field="${accreditamentoWrapper.canDiniegoInAttesaDiFirma}" />
 
-									<th:block th:if="${accreditamentoWrapper.accreditamento.isProvvisorio()}">
+									<div class="row" th:if="${accreditamentoWrapper.canAccreditatoInAttesaDiFirma or accreditamentoWrapper.canDiniegoInAttesaDiFirma}">
+										<!-- NUMERO DELIBERA -->
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.numeroDelibera')} ? 'bad'">
+											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="numeroDelibera">
+												<span th:text="#{label.numero_delibera}">Numero Delibera</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
+												<input type="text" id="numeroDelibera" class="form-control"	th:field="${accreditamentoWrapper.numeroDelibera}" />
+											</div>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.numeroDelibera')}" class="alert" th:errors="${accreditamentoWrapper.numeroDelibera}"></div>
+										</div>
+
+										<!-- GIORNO DELIBERA -->
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.dataDelibera')} ? 'bad'">
+											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="dataVerifica">
+												<span th:text="#{label.data_delibera}">Data Delibera</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+												<input type="text" id="dataDelibera" class="form-control"
+													name="data" th:field="${accreditamentoWrapper.dataDelibera}" />
+												<span class="input-group-addon" id="dataDeliberaInput" onclick="$('#dataDelibera').click()">
+						 							<i class="glyphicon glyphicon-calendar"></i>
+												</span>
+											</div>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.dataDelibera')}" class="alert" th:errors="${accreditamentoWrapper.dataDelibera}"></div>
+										</div>
+									</div>
+
+									<div class="row" th:if="${accreditamentoWrapper.accreditamento.isProvvisorio()}">
 										<th:block th:if="${accreditamentoWrapper.accreditamento.isRichiestaIntegrazioneInAttesaDiFirma()}">
 											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ACCREDITAMENTO_PROVVISORIO_INTEGRAZIONE}', richiestaIntegrazione, null, null, null, true, 'edit', true)" ></th:block>
 										</th:block>
@@ -477,9 +507,9 @@
 										<th:block th:if="${accreditamentoWrapper.accreditamento.isDiniegoInAttesaDiFirma()}">
 											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_DINIEGO}', decretoDiniego, null, null, null, true, 'edit', true)" ></th:block>
 										</th:block>
-									</th:block>
+									</div>
 
-									<th:block th:if="${accreditamentoWrapper.accreditamento.isStandard()}">
+									<div class="row" th:if="${accreditamentoWrapper.accreditamento.isStandard()}">
 										<th:block th:if="${accreditamentoWrapper.accreditamento.isRichiestaIntegrazioneInAttesaDiFirma()}">
 											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ACCREDITAMENTO_STANDARD_INTEGRAZIONE}', richiestaIntegrazione, null, null, null, true, 'edit', true)" ></th:block>
 										</th:block>
@@ -492,7 +522,7 @@
 										<th:block th:if="${accreditamentoWrapper.accreditamento.isDiniegoInAttesaDiFirma()}">
 											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ACCREDITAMENTO_STANDARD_DECRETO_DINIEGO}', decretoDiniego, null, null, null, true, 'edit', true)" ></th:block>
 										</th:block>
-									</th:block>
+									</div>
 
 									<input id="submitButtonModal" type="submit" style="display: none;" />
 
@@ -613,6 +643,18 @@
 				        autoApply: true,
 				        autoUpdateInput: true,
 				        parentEl: $("#verbale-edit-modal"),
+				        format: "DD/MM/YYYY",
+				        locale: {
+					        daysOfWeek: days,
+			                monthNames: months,
+				        }
+				    })
+
+				    dateDelibera = $('#dataDelibera').daterangepicker({
+				        singleDatePicker: true,
+				        autoApply: true,
+				        autoUpdateInput: true,
+				        parentEl: $("#attesaFirma-modal"),
 				        format: "DD/MM/YYYY",
 				        locale: {
 					        daysOfWeek: days,

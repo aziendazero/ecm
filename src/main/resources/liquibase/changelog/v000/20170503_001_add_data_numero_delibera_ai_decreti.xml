@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170503_001_add_data_numero_delibera_ai_decreti.xml">
+	<changeSet author="dpranteda (generated)" id="1493801134071-1">
+		<addColumn tableName="file">
+			<column name="data_delibera" type="date" />
+		</addColumn>
+	</changeSet>
+	<changeSet author="dpranteda (generated)" id="1493801134071-2">
+		<addColumn tableName="file">
+			<column name="numero_delibera" type="int4" />
+		</addColumn>
+	</changeSet>
+</databaseChangeLog>
