@@ -501,7 +501,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				LOGGER.debug(xpath.compile("//.").evaluate(xmlResponse));
 
 				// estraggo l'xml innestato.
-				String xmlResult = xpath.compile("//getStatoSpedizioneResponse/getStatoSpedizioneReturn").evaluate(xmlResponse);
+				//String xmlResult = xpath.compile("//getStatoSpedizioneResponse/getStatoSpedizioneReturn").evaluate(xmlResponse);
+				String xmlResult = xpath.compile("/").evaluate(xmlResponse);
 
 				// converto in DOM l'xml innestato per poter estrarre le informazioni tramite xpath.
 				InputSource is = new InputSource();
