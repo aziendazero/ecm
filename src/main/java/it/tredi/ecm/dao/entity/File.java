@@ -49,6 +49,14 @@ public class File extends BaseEntityDefaultId{
 	private Protocollo protocollo;
 
 	@JsonView(JsonViewModel.Integrazione.class)
+	@JsonIgnore
+	private LocalDate dataDelibera;
+
+	@JsonView(JsonViewModel.Integrazione.class)
+	@JsonIgnore
+	private String numeroDelibera;
+
+	@JsonView(JsonViewModel.Integrazione.class)
 	@Enumerated(EnumType.STRING)
 	private FileEnum tipo;
 
@@ -157,6 +165,13 @@ public class File extends BaseEntityDefaultId{
 		return false;
 	}
 
+	@JsonIgnore	public boolean isDeliberato(){
+		if(dataDelibera != null && numeroDelibera != null){
+				return true;
+		}
+		return false;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -190,6 +205,8 @@ public class File extends BaseEntityDefaultId{
 		cloned.setDataCreazione(this.getDataCreazione());
 		cloned.setData(this.getData());
 		cloned.setProtocollo(null);
+		cloned.setNumeroDelibera("");
+		cloned.setDataDelibera(null);
 
 		return cloned;
 	}

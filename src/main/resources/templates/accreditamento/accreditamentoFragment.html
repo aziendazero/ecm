@@ -1020,6 +1020,7 @@
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.decretoAccreditamento.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.decretoAccreditamento.id}|}"></a></div>
 													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoAccreditamento.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.decretoAccreditamento.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.decretoAccreditamento.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoAccreditamento.isDeliberato()}"><div class="value"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${accreditamentoWrapper.accreditamento.decretoAccreditamento.numeroDelibera},${#temporals.format(accreditamentoWrapper.accreditamento.decretoAccreditamento.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 
@@ -1035,6 +1036,7 @@
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.decretoDiniego.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.decretoDiniego.id}|}"></a></div>
 													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoDiniego.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.decretoDiniego.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.decretoDiniego.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoDiniego.isDeliberato()}"><div class="value"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${accreditamentoWrapper.accreditamento.decretoDiniego.numeroDelibera},${#temporals.format(accreditamentoWrapper.accreditamento.decretoDiniego.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 

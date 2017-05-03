@@ -71,6 +71,7 @@ import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.bean.VerbaleValutazioneSulCampoWrapper;
 import it.tredi.ecm.web.validator.FileValidator;
+import it.tredi.ecm.web.validator.InviaAlProtocolloValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
@@ -101,7 +102,7 @@ public class AccreditamentoController {
 	@Autowired private EmailService emailService;
 
 	@Autowired private AccreditamentoStatoHistoryService accreditamentoStatoHistoryService;
-	@Autowired private FileValidator fileValidator;
+	@Autowired private InviaAlProtocolloValidator inviaAlProtocolloValidator;
 
 
 	@InitBinder
@@ -1660,21 +1661,23 @@ public class AccreditamentoController {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/inviaAttesaInFirma"));
 		try {
 			//validazione del file
-			fileValidator.validateIsSigned(wrapper.getFileDaFirmare(), result, "");
+			inviaAlProtocolloValidator.validate(wrapper, result, "");
+
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.allegato_obbligatorio_e_firmato", "error"));
 				model.addAttribute("attesaFirmaErrors", true);
+				model.addAttribute(result);
 				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 				return goToAccreditamentoShow(model, accreditamento, wrapper);
 			}else {
 				if(wrapper.isCanInviaRichiestaIntegrazioneInAttesaDiFirma()){
-					accreditamentoService.inviaRichiestaIntegrazioneInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
+					accreditamentoService.inviaRichiestaIntegrazioneInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare().getId());
 				}else if(wrapper.isCanInviaRichiestaPreavvisoRigettoInAttesaDiFirma()){
-					accreditamentoService.inviaRichiestaPreavvisoRigettoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
+					accreditamentoService.inviaRichiestaPreavvisoRigettoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare().getId());
 				}else if(wrapper.isCanAccreditatoInAttesaDiFirma()){
-					accreditamentoService.inviaAccreditamentoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
+					accreditamentoService.inviaAccreditamentoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare().getId(), wrapper.getDataDelibera(), wrapper.getNumeroDelibera());
 				}else if(wrapper.isCanDiniegoInAttesaDiFirma()){
-					accreditamentoService.inviaDiniegoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare());
+					accreditamentoService.inviaDiniegoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare().getId(), wrapper.getDataDelibera(), wrapper.getNumeroDelibera());
 				}else{
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);

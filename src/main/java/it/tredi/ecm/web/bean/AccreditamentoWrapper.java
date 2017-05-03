@@ -1,11 +1,14 @@
 package it.tredi.ecm.web.bean;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
@@ -148,6 +151,10 @@ public class AccreditamentoWrapper {
 	private File richiestaPreavvisoRigetto;
 	private File decretoAccreditamento;
 	private File decretoDiniego;
+
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
+	private LocalDate dataDelibera;
+	private String numeroDelibera;
 
 	public File getFileDaFirmare(){
 		if(canInviaRichiestaIntegrazioneInAttesaDiFirma)
