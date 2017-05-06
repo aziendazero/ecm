@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -20,15 +21,21 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.List;
 import com.itextpdf.text.ListItem;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.TabSettings;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEvent;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.pdf.FooterWithInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioDecretoDecadenzaInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
@@ -48,6 +55,7 @@ public class PdfServiceImpl implements PdfService {
     //tipi font
 	private int sizeIntesta = 11;
 	private int sizeCorpo = 11;
+	private int sizeFooter = 9;
 	private Font.FontFamily fontFamily = Font.FontFamily.TIMES_ROMAN;
 	private Font fontDenominazioneProvider = new Font(fontFamily, sizeIntesta, Font.BOLD);
 	private Font fontIndirizzoProvider = new Font(fontFamily, sizeIntesta, Font.NORMAL);
@@ -55,6 +63,8 @@ public class PdfServiceImpl implements PdfService {
 	private Font fontListItem = new Font(fontFamily, sizeCorpo, Font.NORMAL);
 	private Font fontListItemBold = new Font(fontFamily, sizeCorpo, Font.BOLD);
 	private Font fontSymbol = new Font(Font.FontFamily.SYMBOL,sizeCorpo, Font.NORMAL);
+	private Font footerFont = new Font(fontFamily, sizeFooter, Font.NORMAL, BaseColor.GRAY);
+	private Font fontCorpoSmall = new Font(fontFamily, sizeFooter, Font.NORMAL);
 
 	private float indentationLeftList = 15F;
 	private float spacingBefore = 10F;
@@ -189,16 +199,36 @@ public class PdfServiceImpl implements PdfService {
 
 	private void writePdfAccreditamentoProvvisiorioPreavvisoRigetto(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception {
         try {
-            Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
+        	Document document = createDocument(outputStream, true, true);
 
-            document.open();
             //Info documento
             document.addAuthor("Ecm");
             document.addCreationDate();
             document.addCreator("Ecm");
             document.addTitle("Preavviso rigetto");
 
+            //Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni.
+            Paragraph parOggetto = new Paragraph();
+            parOggetto.setAlignment(Element.ALIGN_LEFT);
+            parOggetto.setFont(fontDenominazioneProvider);
+            parOggetto.add("Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni - Accreditamento provvisorio - " + preavvisoRigettoInfo.getProviderInfo().getProviderDenominazione() + ".");
+            parOggetto.setSpacingAfter(spacingAfter);
+            //Interlinea OK
+            //parOggetto.setMultipliedLeading(5);
+            //Interlinea da provare
+            //parOggetto.setLeading(0F, 2F);
+            document.add(parOggetto);
+
+            //Alla c.a.:     NOME e COGNOME LR PROVIDER
+            Paragraph parNomeCognome = new Paragraph();
+            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
+            parNomeCognome.setFont(fontDenominazioneProvider);
+            MessageFormat msgFormat = new MessageFormat("Alla c.a.: {0} {1}\nLegale Rappresentante");
+            Object[] valuesNomCognProv = {preavvisoRigettoInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), preavvisoRigettoInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
+            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
+            //parNomeCognome.add("Alla c.a.: " + preavvisoRigettoInfo.getProviderNomeLegaleRappresentante() + " " + preavvisoRigettoInfo.getProviderCognomeLegaleRappresentante());
+            //parNomeCognome.setSpacingAfter(spacingAfter);
+            document.add(parNomeCognome);
 
             //DENOMINAZIONE PROVIDER
             Paragraph parDenominazioneProvider = new Paragraph();
@@ -218,7 +248,7 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parCapComuneProvincia = new Paragraph();
             parCapComuneProvincia.setAlignment(Element.ALIGN_RIGHT);
             parCapComuneProvincia.setFont(fontIndirizzoProvider);
-            MessageFormat msgFormat = new MessageFormat("{0} - {1} - {2}");
+            msgFormat = new MessageFormat("{0} - {1} - {2}");
             Object[] values = {preavvisoRigettoInfo.getProviderInfo().getProviderCap(), preavvisoRigettoInfo.getProviderInfo().getProviderComune(), preavvisoRigettoInfo.getProviderInfo().getProviderProvincia()};
             parCapComuneProvincia.add(msgFormat.format(values));
             //parCapComuneProvincia.add(preavvisoRigettoInfo.getProviderCap() + " – " + preavvisoRigettoInfo.getProviderComune() + " – " + preavvisoRigettoInfo.getProviderProvincia());
@@ -231,18 +261,6 @@ public class PdfServiceImpl implements PdfService {
             parLineaVuota.add(" ");
             document.add(parLineaVuota);
 
-            //Alla c.a.:     NOME e COGNOME LR PROVIDER
-            Paragraph parNomeCognome = new Paragraph();
-            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
-            parNomeCognome.setFont(fontDenominazioneProvider);
-            msgFormat = new MessageFormat("Alla c.a.: {0} {1}");
-            Object[] valuesNomCognProv = {preavvisoRigettoInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), preavvisoRigettoInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
-            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
-
-            //parNomeCognome.add("Alla c.a.: " + preavvisoRigettoInfo.getProviderNomeLegaleRappresentante() + " " + preavvisoRigettoInfo.getProviderCognomeLegaleRappresentante());
-            parNomeCognome.setSpacingAfter(spacingAfter);
-            document.add(parNomeCognome);
-
             //.SetLeading(fixed, multiplied)
             /*
 			The first parameter is the fixed leading: if you want a leading of 15 no matter which font size is used, you can choose fixed = 15 and multiplied = 0.
@@ -253,26 +271,15 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parPec = new Paragraph();
             parPec.setAlignment(Element.ALIGN_LEFT);
             parPec.setFont(fontDenominazioneProvider);
-            msgFormat = new MessageFormat("PEC: {0}");
+            msgFormat = new MessageFormat("Trasmissione via PEC: {0}");
             Object[] valuesPec = {preavvisoRigettoInfo.getProviderInfo().getProviderPec()};
             parPec.add(msgFormat.format(valuesPec));
             //parPec.add("PEC: " + preavvisoRigettoInfo.getProviderPec());
             parPec.setSpacingAfter(spacingAfter);
             document.add(parPec);
 
-            //Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni.
-            Paragraph parOggetto = new Paragraph();
-            parOggetto.setAlignment(Element.ALIGN_LEFT);
-            parOggetto.setFont(fontDenominazioneProvider);
-            parOggetto.add("Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni.");
-            parOggetto.setSpacingAfter(spacingAfter);
-            //Interlinea OK
-            //parOggetto.setMultipliedLeading(5);
-            //Interlinea da provare
-            //parOggetto.setLeading(0F, 2F);
-            document.add(parOggetto);
-
             //Corpo
+            addCorpoParagraph(document, false, true, "Gentile Provider,");
             //In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
             msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il {0} (protocollo n° {1} del {2})"
             		+ ", sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), "
@@ -315,20 +322,52 @@ public class PdfServiceImpl implements PdfService {
 
             //Richiesta
             //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - b [inserire numero giorni indicati in “entro 30 giorni dal ricevimento della presente nota”] (pag 4)
-            addCorpoParagraph(document, true, true, MessageFormat.format("Ai sensi dell’art. 10 bis della legge 241/1990, si invita ad inserire osservazioni, eventualmente corredate da integrazioni documentali. "
-            		+ "La documentazione, debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb"
-            		+ ", deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota.", preavvisoRigettoInfo.getGiorniIntegrazionePreavvisoRigetto()));
+            addCorpoParagraph(document, true, true, MessageFormat.format("Al fine di sanare le stesse, ai sensi dell’art. 10 bis della legge 241/1990, si invita ad inserire osservazioni, eventualmente corredate da integrazioni documentali. "
+            		+ "La documentazione, suddivisa in file, debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb. Tale documentazione deve essere inserita "
+            		+ "entro {0,number,#} giorni dal ricevimento della presente nota, nella Sezione Provider all’interno dell’Area Riservata ECM del sito https://ecm.regione.veneto.it/ecm/login.", preavvisoRigettoInfo.getGiorniIntegrazionePreavvisoRigetto()));
             addCorpoParagraph(document, false, true, "Si sottolinea che le modifiche, così pervenute, saranno sottoposte alla valutazione di competenza della Commissione Regionale per la Formazione Continua "
             		+ "in Medicina ECM, previo riscontro da parte della scrivente Segreteria.");
-            addCorpoParagraph(document, false, true, "Con l’occasione, la scrivente Segreteria comunica che l’aspirante provider ha la facoltà di chiedere una consulenza alla Segreteria della CRFC "
-            		+ "per delucidazioni in merito al contenuto della presente nota. "
-            		+ "La consulenza può essere richiesta tramite la funzione “Comunicazioni” scegliendo tra le “Tipologie”: “Consulenza 10 Bis” all’interno dell’Area Riservata ECM "
-            		+ "nel sito http://providerveneto.agenas.it, allegando l’immagine digitalizzata (scannerizzata) della richiesta firmata, in forma autografa, dal legale rappresentante. "
-            		+ "La richiesta deve contenere le motivazioni e gli argomenti per i quali si chiede la consulenza.");
+            addCorpoParagraph(document, false, false, "Con l’occasione, la scrivente Segreteria comunica che l’aspirante Provider ha la facoltà di chiedere una consulenza per delucidazioni in merito al contenuto della presente nota. La consulenza può essere richiesta "
+            		+ "tramite la funzione “Comunicazioni”, corredata dalle motivazioni e argomenti per i quali si chiede la consulenza e deve avere per oggetto “Richiesta consulenza in merito alla comunicazione dei motivi ostativi all’accoglimento della domanda "
+            		+ "del (inserire la data di ricevimento della presente nota)”.");
+            addCorpoParagraph(document, false, true, "La presente comunicazione è inviata ai sensi della legge 7 agosto 1990, n. 241 e successive integrazioni e modifiche.");
+
+            document.add(parLineaVuota);
+
+            Paragraph parDS = new Paragraph();
+            parDS.setAlignment(Element.ALIGN_LEFT);
+            parDS.setFont(fontDenominazioneProvider);
+            parDS.setIndentationLeft(36f);
+            parDS.add("Distinti Saluti");
+            parPec.setSpacingAfter(spacingAfter);
+            document.add(parDS);
+
+            Paragraph parSignature = new Paragraph();
+            parSignature.setAlignment(Element.ALIGN_CENTER);
+            parSignature.setFont(fontDenominazioneProvider);
+            parSignature.setIndentationRight(36f);
+            parSignature.add("Il Direttore della Direzione\n"
+            		+ "Risorse Strumentali SSR - CRAV\n"
+            		+ "dott. Claudio Costa");
+            parSignature.setSpacingAfter(spacingAfter);
+            document.add(parSignature);
+
+            document.add(parLineaVuota);
+
+            Paragraph parSignature2 = new Paragraph();
+            parSignature2.setAlignment(Element.ALIGN_LEFT);
+            parSignature2.setFont(fontCorpoSmall);
+            parSignature2.add("Direzione Risorse Strumentali SSR - CRAV\n"
+            		+ "Direttore della Direzione: Dott. Claudio Costa\n"
+            		+ "U.O. Personale e professioni SSR\n"
+            		+ "Referente per l’istruttoria: dott.ssa Francesca Salafia\n"
+            		+ "Tel. 041/2793071-3073-3077\n"
+            		+ "E-mail: segreteria.ECMVeneto@regione.veneto.it");
+            parSignature2.setSpacingAfter(spacingAfter);
+            document.add(parSignature2);
 
             //interruzione di pagina
             document.newPage();
-
             addCorpoParagraph(document, false, true, "Normativa di riferimento:");
 
             list = new List(List.ORDERED);
@@ -345,6 +384,7 @@ public class PdfServiceImpl implements PdfService {
             //list.add(getListItem("Deliberazione della Giunta Regionale n. 1236 del 16 ottobre 2013 “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali – Agenas e la Regione Veneto finalizzato alla gestione del sistema di formazione Continua”.", fontListItem));
             list.add(getListItem("Deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti).", fontListItem));
             list.add(getListItem("Deliberazione della Giunta Regionale n. 1247 del 28/09/2015 “Programma regionale per la formazione continua. Definizione delle evidenze documentali per la verifica dei requisiti dei Provider regionali di formazione pubblici e privati, previste nell’ambito del processo di accreditamento standard ai sensi della DGR n. 1753/2014. Proroga delle attività degli organismi di governance dell’ECM. Disciplina delle attività di monitoraggio presso le sedi dei Provider ECM”.", fontListItem));
+            list.add(getListItem("Deliberazione della Giunta Regionale n. 1538 del 10/10/2016 “Programma regionale per l’Educazione Continua in Medicina. Sospensione temporanea della procedura di accreditamento provvisorio dei Provider ECM. Proroga delle attività degli organismi di governance dell’ECM. Individuazione delle aree di interesse del Piano regionale della formazione 2017-2019.”", fontListItem));
 
             document.add(list);
 
@@ -358,15 +398,39 @@ public class PdfServiceImpl implements PdfService {
 
 	private void writePdfAccreditamentoProvvisiorioIntegrazione(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception {
         try {
-            Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
+    		Document document = createDocument(outputStream, true, true);
 
-            document.open();
             //Info documento
             document.addAuthor("Ecm");
             document.addCreationDate();
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
+
+            //Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni.
+            Paragraph parOggetto = new Paragraph();
+            parOggetto.setAlignment(Element.ALIGN_LEFT);
+            parOggetto.setFont(fontDenominazioneProvider);
+//            parOggetto.add("Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento Provvisorio - {0}");
+            MessageFormat msgFormat = new MessageFormat("Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento Provvisorio - {0}");
+            Object[] valuesProv = {integrazioneInfo.getProviderInfo().getProviderDenominazione()};
+            parOggetto.add(msgFormat.format(valuesProv));
+
+            parOggetto.setSpacingAfter(spacingAfter);
+            //Interlinea OK
+            //parOggetto.setMultipliedLeading(5);
+            //Interlinea da provare
+            //parOggetto.setLeading(0F, 2F);
+            document.add(parOggetto);
+
+            //Alla c.a.:     NOME e COGNOME LR PROVIDER
+            Paragraph parNomeCognome = new Paragraph();
+            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
+            parNomeCognome.setFont(fontDenominazioneProvider);
+            msgFormat = new MessageFormat("Alla c.a.: {0} {1}\nLegale Rappresentante");
+            Object[] valuesNomCognProv = {integrazioneInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), integrazioneInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
+            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
+            //parNomeCognome.setSpacingAfter(spacingAfter);
+            document.add(parNomeCognome);
 
             //DENOMINAZIONE PROVIDER
             Paragraph parDenominazioneProvider = new Paragraph();
@@ -386,7 +450,7 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parCapComuneProvincia = new Paragraph();
             parCapComuneProvincia.setAlignment(Element.ALIGN_RIGHT);
             parCapComuneProvincia.setFont(fontIndirizzoProvider);
-            MessageFormat msgFormat = new MessageFormat("{0} - {1} - {2}");
+            msgFormat = new MessageFormat("{0} - {1} - {2}");
             Object[] values = {integrazioneInfo.getProviderInfo().getProviderCap(), integrazioneInfo.getProviderInfo().getProviderComune(), integrazioneInfo.getProviderInfo().getProviderProvincia()};
             parCapComuneProvincia.add(msgFormat.format(values));
             document.add(parCapComuneProvincia);
@@ -398,39 +462,18 @@ public class PdfServiceImpl implements PdfService {
             parLineaVuota.add(" ");
             document.add(parLineaVuota);
 
-            //Alla c.a.:     NOME e COGNOME LR PROVIDER
-            Paragraph parNomeCognome = new Paragraph();
-            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
-            parNomeCognome.setFont(fontDenominazioneProvider);
-            msgFormat = new MessageFormat("Alla c.a.: {0} {1}");
-            Object[] valuesNomCognProv = {integrazioneInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), integrazioneInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
-            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
-            parNomeCognome.setSpacingAfter(spacingAfter);
-            document.add(parNomeCognome);
-
             //PEC: INDIRIZZO PEC PROVIDER
             Paragraph parPec = new Paragraph();
             parPec.setAlignment(Element.ALIGN_LEFT);
             parPec.setFont(fontDenominazioneProvider);
-            msgFormat = new MessageFormat("PEC: {0}");
+            msgFormat = new MessageFormat("Trasmissione via PEC: {0}");
             Object[] valuesPec = {integrazioneInfo.getProviderInfo().getProviderPec()};
             parPec.add(msgFormat.format(valuesPec));
             parPec.setSpacingAfter(spacingAfter);
             document.add(parPec);
 
-            //Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni.
-            Paragraph parOggetto = new Paragraph();
-            parOggetto.setAlignment(Element.ALIGN_LEFT);
-            parOggetto.setFont(fontDenominazioneProvider);
-            parOggetto.add("Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni.");
-            parOggetto.setSpacingAfter(spacingAfter);
-            //Interlinea OK
-            //parOggetto.setMultipliedLeading(5);
-            //Interlinea da provare
-            //parOggetto.setLeading(0F, 2F);
-            document.add(parOggetto);
-
             //Corpo
+            addCorpoParagraph(document, false, true, "Gentile Provider,");
             //In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
             msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il {0} (protocollo n° {1} del {2}), "
             		+ "sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia "
@@ -466,16 +509,51 @@ public class PdfServiceImpl implements PdfService {
             //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire numero giorni indicati in “entro 30 giorni dal ricevimento della presente nota”] (pag 4)
             addCorpoParagraph(document, true, true, MessageFormat.format("Al fine di sanare le stesse, si richiede di produrre adeguata documentazione, suddivisa in file, "
             		+ "debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb, "
-            		+ "tale documentazione deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota.", integrazioneInfo.getGiorniIntegrazionePreavvisoRigetto()));
+            		+ "tale documentazione deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota, nella sezione Provider all'interno dell'Area Riservata ECM del sito https://ecm.regione.veneto.it/ecm/login.", integrazioneInfo.getGiorniIntegrazionePreavvisoRigetto()));
 
-
-            addCorpoParagraph(document, false, true, "La documentazione oggetto di integrazione sarà verificata dalla scrivente Sezione e, nel caso di esito positivo del riscontro, sarà proposta in valutazione per l’eventuale provvedimento di accreditamento.");
-            addCorpoParagraph(document, false, true, "Con l’occasione, la scrivente Sezione comunica che l’aspirante provider ha la facoltà di chiedere una consulenza alla Sezione della CRFC per delucidazioni in merito al contenuto della presente nota. La consulenza può essere richiesta tramite la funzione “Comunicazioni”, allegando l’immagine digitalizzata (scannerizzata) della richiesta firmata, in forma autografa, dal legale rappresentante. La richiesta deve contenere le motivazioni e gli argomenti per i quali si chiede la consulenza e deve avere per oggetto  “Richiesta consulenza in merito alla proposta di integrazione documentale del (inserire la data di ricevimento della presente nota).");
+            addCorpoParagraph(document, false, false, "La documentazione oggetto di integrazione sarà verificata dalla Commissione Regionale ECM nella prima riunione utile e, nel caso di esito positivo del riscontro, sarà proposta in valutazione per l’eventuale provvedimento di accreditamento.");
+            addCorpoParagraph(document, false, true, "Nel caso in cui la documentazione richiesta non dovesse essere prodotta nel termine di cui sopra o non sia idonea a sanare le criticità riscontrate, previa valutazione della Commissione Regionale ECM, sarà inviato il preavviso di rigetto della domanda ai sensi dell’art. 10-bis, L. n. 241/1990.");
+            addCorpoParagraph(document, false, false, "Con l’occasione, la scrivente Segreteria comunica che l’aspirante Provider ha la facoltà di chiedere una consulenza per delucidazioni in merito al contenuto della presente nota. La consulenza può essere richiesta tramite la funzione “Comunicazioni”, corredata dalle motivazioni e argomenti per i quali si chiede la consulenza e deve avere per oggetto “Richiesta consulenza in merito alla proposta di integrazione documentale del (inserire la data di ricevimento della presente nota)”.");
             addCorpoParagraph(document, false, true, "La presente comunicazione è inviata ai sensi della legge 7 agosto 1990, n. 241 e successive integrazioni e modifiche.");
 
-            //interruzione di pagina
-            document.newPage();
+            document.add(parLineaVuota);
 
+            Paragraph parDS = new Paragraph();
+            parDS.setAlignment(Element.ALIGN_LEFT);
+            parDS.setFont(fontDenominazioneProvider);
+            parDS.setIndentationLeft(36f);
+            parDS.add("Distinti Saluti");
+            parPec.setSpacingAfter(spacingAfter);
+            document.add(parDS);
+
+            Paragraph parSignature = new Paragraph();
+            parSignature.setAlignment(Element.ALIGN_CENTER);
+            parSignature.setFont(fontDenominazioneProvider);
+            parSignature.setIndentationRight(36f);
+            parSignature.add("Il Direttore della Direzione\n"
+            		+ "Risorse Strumentali SSR - CRAV\n"
+            		+ "dott. Claudio Costa");
+            parSignature.setSpacingAfter(spacingAfter);
+            document.add(parSignature);
+
+            document.add(parLineaVuota);
+
+            Paragraph parSignature2 = new Paragraph();
+            parSignature2.setAlignment(Element.ALIGN_LEFT);
+            parSignature2.setFont(fontCorpoSmall);
+            parSignature2.add("Direzione Risorse Strumentali SSR - CRAV\n"
+            		+ "Direttore della Direzione: Dott. Claudio Costa\n"
+            		+ "U.O. Personale e professioni SSR\n"
+            		+ "Referente per l’istruttoria: dott.ssa Francesca Salafia\n"
+            		+ "Tel. 041/2793071-3073-3077\n"
+            		+ "E-mail: segreteria.ECMVeneto@regione.veneto.it");
+            parSignature2.setSpacingAfter(spacingAfter);
+            document.add(parSignature2);
+
+
+
+        	//interruzione di pagina
+            document.newPage();
             addCorpoParagraph(document, false, true, "Normativa di riferimento:");
 
             list = new List(List.ORDERED);
@@ -492,7 +570,7 @@ public class PdfServiceImpl implements PdfService {
             //list.add(getListItem("Deliberazione della Giunta Regionale n. 1236 del 16 ottobre 2013 “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali – Agenas e la Regione Veneto finalizzato alla gestione del sistema di formazione Continua”.", fontListItem));
             list.add(getListItem("Deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti).", fontListItem));
             list.add(getListItem("Deliberazione della Giunta Regionale n. 1247 del 28/09/2015 “Programma regionale per la formazione continua. Definizione delle evidenze documentali per la verifica dei requisiti dei Provider regionali di formazione pubblici e privati, previste nell’ambito del processo di accreditamento standard ai sensi della DGR n. 1753/2014. Proroga delle attività degli organismi di governance dell’ECM. Disciplina delle attività di monitoraggio presso le sedi dei Provider ECM”.", fontListItem));
-
+            list.add(getListItem("Deliberazione della Giunta Regionale n. 1538 del 10/10/2016 “Programma regionale per l’Educazione Continua in Medicina. Sospensione temporanea della procedura di accreditamento provvisorio dei Provider ECM. Proroga delle attività degli organismi di governance dell’ECM. Individuazione delle aree di interesse del Piano regionale della formazione 2017-2019.”", fontListItem));
             document.add(list);
 
             document.close();
@@ -511,23 +589,6 @@ public class PdfServiceImpl implements PdfService {
             Document document = new Document();
             PdfWriter.getInstance(document, outputStream);
 
-            //Inserimento immagine
-            //TODO correggere pe l'applicazione Ecm
-            Image img = null;
-    		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoRegioneVeneto.png");
-    		//String pathImgFile = "C:\\__Progetti\\ECM\\Doc da produrre in pdf\\LogoRegioneVeneto.png";
-    		try {
-    			img = Image.getInstance(url);
-    			//img = Image.getInstance(pathImgFile);
-    			Float scala = 1.2F;
-    			Float width = 400F/scala;
-    			Float height = 85F/scala;
-    			img.scaleToFit(width, height);
-                img.setAlignment(Element.ALIGN_CENTER);
-    		} catch(Exception e) {
-    			//Non mostro l'immagine
-    		}
-
             document.open();
             //Info documento
             document.addAuthor("Ecm");
@@ -535,6 +596,7 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
+            Image img = FooterWithInfo.createLogo();
             if(img != null)
             	document.add(img);
 
@@ -739,23 +801,6 @@ public class PdfServiceImpl implements PdfService {
             Document document = new Document();
             PdfWriter.getInstance(document, outputStream);
 
-            //Inserimento immagine
-            //TODO correggere pe l'applicazione Ecm
-            Image img = null;
-    		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoRegioneVeneto.png");
-    		//String pathImgFile = "C:\\__Progetti\\ECM\\Doc da produrre in pdf\\LogoRegioneVeneto.png";
-    		try {
-    			img = Image.getInstance(url);
-    			//img = Image.getInstance(pathImgFile);
-    			Float scala = 1.2F;
-    			Float width = 400F/scala;
-    			Float height = 85F/scala;
-    			img.scaleToFit(width, height);
-                img.setAlignment(Element.ALIGN_CENTER);
-    		} catch(Exception e) {
-    			//Non mostro l'immagine
-    		}
-
             document.open();
             //Info documento
             document.addAuthor("Ecm");
@@ -763,6 +808,7 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
+            Image img = FooterWithInfo.createLogo();
             if(img != null)
             	document.add(img);
 
@@ -964,16 +1010,37 @@ public class PdfServiceImpl implements PdfService {
 
 	private void writePdfAccreditamentoStandardPreavvisoRigetto(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception {
         try {
-            Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
+        	Document document = createDocument(outputStream, true, true);
 
-            document.open();
             //Info documento
             document.addAuthor("Ecm");
             document.addCreationDate();
             document.addCreator("Ecm");
             document.addTitle("Preavviso rigetto");
 
+            //Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni.
+            Paragraph parOggetto = new Paragraph();
+            parOggetto.setAlignment(Element.ALIGN_LEFT);
+            parOggetto.setFont(fontDenominazioneProvider);
+            parOggetto.add("Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni - Accreditamento Standard - " + preavvisoRigettoInfo.getProviderInfo().getProviderDenominazione());
+            parOggetto.setSpacingAfter(spacingAfter);
+            //Interlinea OK
+            //parOggetto.setMultipliedLeading(5);
+            //Interlinea da provare
+            //parOggetto.setLeading(0F, 2F);
+            document.add(parOggetto);
+
+            //Alla c.a.:     NOME e COGNOME LR PROVIDER
+            Paragraph parNomeCognome = new Paragraph();
+            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
+            parNomeCognome.setFont(fontDenominazioneProvider);
+            MessageFormat msgFormat = new MessageFormat("Alla c.a.: {0} {1}\nLegale Rappresentante");
+            Object[] valuesNomCognProv = {preavvisoRigettoInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), preavvisoRigettoInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
+            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
+
+            //parNomeCognome.add("Alla c.a.: " + preavvisoRigettoInfo.getProviderNomeLegaleRappresentante() + " " + preavvisoRigettoInfo.getProviderCognomeLegaleRappresentante());
+            parNomeCognome.setSpacingAfter(spacingAfter);
+            document.add(parNomeCognome);
 
             //DENOMINAZIONE PROVIDER
             Paragraph parDenominazioneProvider = new Paragraph();
@@ -993,7 +1060,7 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parCapComuneProvincia = new Paragraph();
             parCapComuneProvincia.setAlignment(Element.ALIGN_RIGHT);
             parCapComuneProvincia.setFont(fontIndirizzoProvider);
-            MessageFormat msgFormat = new MessageFormat("{0} - {1} - {2}");
+            msgFormat = new MessageFormat("{0} - {1} - {2}");
             Object[] values = {preavvisoRigettoInfo.getProviderInfo().getProviderCap(), preavvisoRigettoInfo.getProviderInfo().getProviderComune(), preavvisoRigettoInfo.getProviderInfo().getProviderProvincia()};
             parCapComuneProvincia.add(msgFormat.format(values));
             //parCapComuneProvincia.add(preavvisoRigettoInfo.getProviderCap() + " – " + preavvisoRigettoInfo.getProviderComune() + " – " + preavvisoRigettoInfo.getProviderProvincia());
@@ -1006,18 +1073,6 @@ public class PdfServiceImpl implements PdfService {
             parLineaVuota.add(" ");
             document.add(parLineaVuota);
 
-            //Alla c.a.:     NOME e COGNOME LR PROVIDER
-            Paragraph parNomeCognome = new Paragraph();
-            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
-            parNomeCognome.setFont(fontDenominazioneProvider);
-            msgFormat = new MessageFormat("Alla c.a.: {0} {1}");
-            Object[] valuesNomCognProv = {preavvisoRigettoInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), preavvisoRigettoInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
-            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
-
-            //parNomeCognome.add("Alla c.a.: " + preavvisoRigettoInfo.getProviderNomeLegaleRappresentante() + " " + preavvisoRigettoInfo.getProviderCognomeLegaleRappresentante());
-            parNomeCognome.setSpacingAfter(spacingAfter);
-            document.add(parNomeCognome);
-
             //.SetLeading(fixed, multiplied)
             /*
 			The first parameter is the fixed leading: if you want a leading of 15 no matter which font size is used, you can choose fixed = 15 and multiplied = 0.
@@ -1028,26 +1083,15 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parPec = new Paragraph();
             parPec.setAlignment(Element.ALIGN_LEFT);
             parPec.setFont(fontDenominazioneProvider);
-            msgFormat = new MessageFormat("PEC: {0}");
+            msgFormat = new MessageFormat("Trasmissione via PEC: {0}");
             Object[] valuesPec = {preavvisoRigettoInfo.getProviderInfo().getProviderPec()};
             parPec.add(msgFormat.format(valuesPec));
             //parPec.add("PEC: " + preavvisoRigettoInfo.getProviderPec());
             parPec.setSpacingAfter(spacingAfter);
             document.add(parPec);
 
-            //Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni.
-            Paragraph parOggetto = new Paragraph();
-            parOggetto.setAlignment(Element.ALIGN_LEFT);
-            parOggetto.setFont(fontDenominazioneProvider);
-            parOggetto.add("Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni.");
-            parOggetto.setSpacingAfter(spacingAfter);
-            //Interlinea OK
-            //parOggetto.setMultipliedLeading(5);
-            //Interlinea da provare
-            //parOggetto.setLeading(0F, 2F);
-            document.add(parOggetto);
-
             //Corpo
+            addCorpoParagraph(document, false, true, "Gentile Provider,");
             //In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
             msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il {0} (protocollo n° {1} del {2}) "
             		+ ", sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), "
@@ -1090,16 +1134,51 @@ public class PdfServiceImpl implements PdfService {
 
             //Richiesta
             //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - b [inserire numero giorni indicati in “entro 30 giorni dal ricevimento della presente nota”] (pag 4)
-            addCorpoParagraph(document, true, true, MessageFormat.format("Ai sensi dell’art. 10 bis della legge 241/1990, si invita ad inserire osservazioni, eventualmente corredate da integrazioni documentali. "
-            		+ "La documentazione, debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb"
-            		+ ", deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota.", preavvisoRigettoInfo.getGiorniIntegrazionePreavvisoRigetto()));
+            addCorpoParagraph(document, true, true, MessageFormat.format("Al fine di sanare le stesse, ai sensi dell’art. 10 bis della legge 241/1990, si richiede di produrre adeguate osservazioni, "
+            		+ "eventualmente corredate da integrazioni documentali.  La documentazione, suddivisa in file, debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” "
+            		+ "del legale rappresentante in file formato PDF inferiori a 2Mb. Tale documentazione deve essere inserita entro {0,number,#} giorni dal ricevimento della presente "
+            		+ "nota, nella Sezione Provider all’interno dell’Area Riservata ECM del sito https://ecm.regione.veneto.it/ecm/login.", preavvisoRigettoInfo.getGiorniIntegrazionePreavvisoRigetto()));
             addCorpoParagraph(document, false, true, "Si sottolinea che le modifiche, così pervenute, saranno sottoposte alla valutazione di competenza della Commissione Regionale per la Formazione Continua "
             		+ "in Medicina ECM, previo riscontro da parte della scrivente Segreteria.");
-            addCorpoParagraph(document, false, true, "Con l’occasione, la scrivente Segreteria comunica che l’aspirante provider ha la facoltà di chiedere una consulenza alla Segreteria della CRFC "
-            		+ "per delucidazioni in merito al contenuto della presente nota. "
-            		+ "La consulenza può essere richiesta tramite la funzione “Comunicazioni” scegliendo tra le “Tipologie”: “Consulenza 10 Bis” all’interno dell’Area Riservata ECM "
-            		+ "nel sito http://providerveneto.agenas.it, allegando l’immagine digitalizzata (scannerizzata) della richiesta firmata, in forma autografa, dal legale rappresentante. "
-            		+ "La richiesta deve contenere le motivazioni e gli argomenti per i quali si chiede la consulenza.");
+            addCorpoParagraph(document, false, false, "Con l’occasione, la scrivente Segreteria comunica che il Provider ha la facoltà di chiedere una consulenza per delucidazioni in merito al "
+            		+ "contenuto della presente nota. La consulenza può essere richiesta tramite la funzione “Comunicazioni”, corredata dalle motivazioni e argomenti per i quali si chiede la "
+            		+ "consulenza e deve avere per oggetto “Richiesta consulenza in merito alla comunicazione dei motivi ostativi all’accoglimento della domanda del (inserire la data di "
+            		+ "ricevimento della presente nota)”.");
+            addCorpoParagraph(document, false, true, "La presente comunicazione è inviata ai sensi della legge 7 agosto 1990, n. 241 e successive integrazioni e modifiche.");
+
+            document.add(parLineaVuota);
+
+            Paragraph parDS = new Paragraph();
+            parDS.setAlignment(Element.ALIGN_LEFT);
+            parDS.setFont(fontDenominazioneProvider);
+            parDS.setIndentationLeft(36f);
+            parDS.add("Distinti Saluti");
+            parPec.setSpacingAfter(spacingAfter);
+            document.add(parDS);
+
+            Paragraph parSignature = new Paragraph();
+            parSignature.setAlignment(Element.ALIGN_CENTER);
+            parSignature.setFont(fontDenominazioneProvider);
+            parSignature.setIndentationRight(36f);
+            parSignature.add("Il Direttore della Direzione\n"
+            		+ "Risorse Strumentali SSR - CRAV\n"
+            		+ "dott. Claudio Costa");
+            parSignature.setSpacingAfter(spacingAfter);
+            document.add(parSignature);
+
+            document.add(parLineaVuota);
+
+            Paragraph parSignature2 = new Paragraph();
+            parSignature2.setAlignment(Element.ALIGN_LEFT);
+            parSignature2.setFont(fontCorpoSmall);
+            parSignature2.add("Direzione Risorse Strumentali SSR - CRAV\n"
+            		+ "Direttore della Direzione: Dott. Claudio Costa\n"
+            		+ "U.O. Personale e professioni SSR\n"
+            		+ "Referente per l’istruttoria: dott.ssa Francesca Salafia\n"
+            		+ "Tel. 041/2793071-3073-3077\n"
+            		+ "E-mail: segreteria.ECMVeneto@regione.veneto.it");
+            parSignature2.setSpacingAfter(spacingAfter);
+            document.add(parSignature2);
 
             //interruzione di pagina
             document.newPage();
@@ -1120,6 +1199,7 @@ public class PdfServiceImpl implements PdfService {
             //list.add(getListItem("Deliberazione della Giunta Regionale n. 1236 del 16 ottobre 2013 “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali – Agenas e la Regione Veneto finalizzato alla gestione del sistema di formazione Continua”.", fontListItem));
             list.add(getListItem("Deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti).", fontListItem));
             list.add(getListItem("Deliberazione della Giunta Regionale n. 1247 del 28/09/2015 “Programma regionale per la formazione continua. Definizione delle evidenze documentali per la verifica dei requisiti dei Provider regionali di formazione pubblici e privati, previste nell’ambito del processo di accreditamento standard ai sensi della DGR n. 1753/2014. Proroga delle attività degli organismi di governance dell’ECM. Disciplina delle attività di monitoraggio presso le sedi dei Provider ECM”.", fontListItem));
+            list.add(getListItem("Deliberazione della Giunta Regionale n. 1538 del 10/10/2016 “Programma regionale per l’Educazione Continua in Medicina. Sospensione temporanea della procedura di accreditamento provvisorio dei Provider ECM. Proroga delle attività degli organismi di governance dell’ECM. Individuazione delle aree di interesse del Piano regionale della formazione 2017-2019.”", fontListItem));
 
             document.add(list);
 
@@ -1133,15 +1213,36 @@ public class PdfServiceImpl implements PdfService {
 
 	private void writePdfAccreditamentoStandardIntegrazione(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception {
         try {
-            Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
 
-            document.open();
+        	Document document = createDocument(outputStream, true, true);
+
             //Info documento
             document.addAuthor("Ecm");
             document.addCreationDate();
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
+
+            //Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento standard
+            Paragraph parOggetto = new Paragraph();
+            parOggetto.setAlignment(Element.ALIGN_LEFT);
+            parOggetto.setFont(fontDenominazioneProvider);
+            parOggetto.add("Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento standard - " + integrazioneInfo.getProviderInfo().getProviderDenominazione());
+            parOggetto.setSpacingAfter(spacingAfter);
+            //Interlinea OK
+            //parOggetto.setMultipliedLeading(5);
+            //Interlinea da provare
+            //parOggetto.setLeading(0F, 2F);
+            document.add(parOggetto);
+
+            //Alla c.a.:     NOME e COGNOME LR PROVIDER
+            Paragraph parNomeCognome = new Paragraph();
+            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
+            parNomeCognome.setFont(fontDenominazioneProvider);
+            MessageFormat msgFormat = new MessageFormat("Alla c.a.: {0} {1}\nLegale Rappresentante");
+            Object[] valuesNomCognProv = {integrazioneInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), integrazioneInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
+            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
+            parNomeCognome.setSpacingAfter(spacingAfter);
+            document.add(parNomeCognome);
 
             //DENOMINAZIONE PROVIDER
             Paragraph parDenominazioneProvider = new Paragraph();
@@ -1161,7 +1262,7 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parCapComuneProvincia = new Paragraph();
             parCapComuneProvincia.setAlignment(Element.ALIGN_RIGHT);
             parCapComuneProvincia.setFont(fontIndirizzoProvider);
-            MessageFormat msgFormat = new MessageFormat("{0} - {1} - {2}");
+            msgFormat = new MessageFormat("{0} - {1} - {2}");
             Object[] values = {integrazioneInfo.getProviderInfo().getProviderCap(), integrazioneInfo.getProviderInfo().getProviderComune(), integrazioneInfo.getProviderInfo().getProviderProvincia()};
             parCapComuneProvincia.add(msgFormat.format(values));
             document.add(parCapComuneProvincia);
@@ -1173,41 +1274,19 @@ public class PdfServiceImpl implements PdfService {
             parLineaVuota.add(" ");
             document.add(parLineaVuota);
 
-            //Alla c.a.:     NOME e COGNOME LR PROVIDER
-            Paragraph parNomeCognome = new Paragraph();
-            parNomeCognome.setAlignment(Element.ALIGN_RIGHT);
-            parNomeCognome.setFont(fontDenominazioneProvider);
-            msgFormat = new MessageFormat("Alla c.a.: {0} {1}");
-            Object[] valuesNomCognProv = {integrazioneInfo.getProviderInfo().getProviderNomeLegaleRappresentante(), integrazioneInfo.getProviderInfo().getProviderCognomeLegaleRappresentante()};
-            parNomeCognome.add(msgFormat.format(valuesNomCognProv));
-            parNomeCognome.setSpacingAfter(spacingAfter);
-            document.add(parNomeCognome);
-
             //PEC: INDIRIZZO PEC PROVIDER
             Paragraph parPec = new Paragraph();
             parPec.setAlignment(Element.ALIGN_LEFT);
             parPec.setFont(fontDenominazioneProvider);
-            msgFormat = new MessageFormat("PEC: {0}");
+            msgFormat = new MessageFormat("Trasmissione via PEC: {0}");
             Object[] valuesPec = {integrazioneInfo.getProviderInfo().getProviderPec()};
             parPec.add(msgFormat.format(valuesPec));
             parPec.setSpacingAfter(spacingAfter);
             document.add(parPec);
 
-            //Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento standard
-            Paragraph parOggetto = new Paragraph();
-            parOggetto.setAlignment(Element.ALIGN_LEFT);
-            parOggetto.setFont(fontDenominazioneProvider);
-            parOggetto.add("Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento standard");
-            parOggetto.setSpacingAfter(spacingAfter);
-            //Interlinea OK
-            //parOggetto.setMultipliedLeading(5);
-            //Interlinea da provare
-            //parOggetto.setLeading(0F, 2F);
-            document.add(parOggetto);
-
             //Corpo
             //In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
-            msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il {0} (protocollo n° {1} del {2}), "
+            msgFormat = new MessageFormat("Gentile Provider,\nIn ordine alla Vs. domanda di accreditamento in qualità di Provider Standard, validata il {0} (protocollo n° {1} del {2}), "
             		+ "sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia, si rappresenta "
             		+ "che il referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 "
             		+ "nel corso della visita in loco del {3}, ha rilevato le seguenti criticità:");
@@ -1238,12 +1317,51 @@ public class PdfServiceImpl implements PdfService {
             //Richiesta
             //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire numero giorni indicati in “entro 30 giorni dal ricevimento della presente nota”] (pag 4)
             addCorpoParagraph(document, true, true, MessageFormat.format("Al fine di sanare le stesse, si richiede di produrre adeguata documentazione, suddivisa in file, "
-            		+ "debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb, "
-            		+ "tale documentazione deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota.", integrazioneInfo.getGiorniIntegrazionePreavvisoRigetto()));
+            		+ "debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb."
+            		+ " Tale documentazione deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota, nella Sezione Provider all’interno dell’Area Riservata "
+            		+ "ECM del sito https://ecm.regione.veneto.it/ecm/login.", integrazioneInfo.getGiorniIntegrazionePreavvisoRigetto()));
 
 
-            addCorpoParagraph(document, false, true, "La documentazione oggetto di integrazione sarà verificata dalla Commissione Regionale ECM nella prima riunione utile e, nel caso di esito positivo del riscontro, sarà proposta in valutazione per l’eventuale provvedimento di accreditamento.");
+            addCorpoParagraph(document, false, false, "La documentazione oggetto di integrazione sarà verificata dalla Commissione Regionale ECM nella prima riunione utile e, nel caso di esito positivo del riscontro, sarà proposta in valutazione per l’eventuale provvedimento di accreditamento.");
             addCorpoParagraph(document, false, true, "Nel caso in cui la documentazione richiesta non dovesse essere prodotta nel termine di cui sopra o non sia idonea a sanare le criticità riscontrate, previa valutazione della Commissione Regionale ECM, sarà inviato il preavviso di rigetto della domanda ai sensi dell’art. 10-bis, L. n. 241/1990.");
+            addCorpoParagraph(document, false, false, "Con l’occasione, la scrivente Segreteria comunica che il Provider ha la facoltà di chiedere una consulenza per delucidazioni in merito "
+            		+ "al contenuto della presente nota. La consulenza può essere richiesta tramite la funzione “Comunicazioni”, corredata dalle motivazioni e argomenti per i quali si chiede "
+            		+ "la consulenza e deve avere per oggetto “Richiesta consulenza in merito alla proposta di integrazione documentale del (inserire la data di ricevimento della presente nota)”.");
+            addCorpoParagraph(document, false, true, "La presente comunicazione è inviata ai sensi della legge 7 agosto 1990, n. 241 e successive integrazioni e modifiche.");
+
+            document.add(parLineaVuota);
+
+            Paragraph parDS = new Paragraph();
+            parDS.setAlignment(Element.ALIGN_LEFT);
+            parDS.setFont(fontDenominazioneProvider);
+            parDS.setIndentationLeft(36f);
+            parDS.add("Distinti Saluti");
+            parPec.setSpacingAfter(spacingAfter);
+            document.add(parDS);
+
+            Paragraph parSignature = new Paragraph();
+            parSignature.setAlignment(Element.ALIGN_CENTER);
+            parSignature.setFont(fontDenominazioneProvider);
+            parSignature.setIndentationRight(36f);
+            parSignature.add("Il Direttore della Direzione\n"
+            		+ "Risorse Strumentali SSR - CRAV\n"
+            		+ "dott. Claudio Costa");
+            parSignature.setSpacingAfter(spacingAfter);
+            document.add(parSignature);
+
+            document.add(parLineaVuota);
+
+            Paragraph parSignature2 = new Paragraph();
+            parSignature2.setAlignment(Element.ALIGN_LEFT);
+            parSignature2.setFont(fontCorpoSmall);
+            parSignature2.add("Direzione Risorse Strumentali SSR - CRAV\n"
+            		+ "Direttore della Direzione: Dott. Claudio Costa\n"
+            		+ "U.O. Personale e professioni SSR\n"
+            		+ "Referente per l’istruttoria: dott.ssa Francesca Salafia\n"
+            		+ "Tel. 041/2793071-3073-3077\n"
+            		+ "E-mail: segreteria.ECMVeneto@regione.veneto.it");
+            parSignature2.setSpacingAfter(spacingAfter);
+            document.add(parSignature2);
 
             //interruzione di pagina
             document.newPage();
@@ -1264,6 +1382,7 @@ public class PdfServiceImpl implements PdfService {
             //list.add(getListItem("Deliberazione della Giunta Regionale n. 1236 del 16 ottobre 2013 “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali – Agenas e la Regione Veneto finalizzato alla gestione del sistema di formazione Continua”.", fontListItem));
             list.add(getListItem("Deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti).", fontListItem));
             list.add(getListItem("Deliberazione della Giunta Regionale n. 1247 del 28/09/2015 “Programma regionale per la formazione continua. Definizione delle evidenze documentali per la verifica dei requisiti dei Provider regionali di formazione pubblici e privati, previste nell’ambito del processo di accreditamento standard ai sensi della DGR n. 1753/2014. Proroga delle attività degli organismi di governance dell’ECM. Disciplina delle attività di monitoraggio presso le sedi dei Provider ECM”.", fontListItem));
+            list.add(getListItem("Deliberazione della Giunta Regionale n. 1538 del 10/10/2016 “Programma regionale per l’Educazione Continua in Medicina. Sospensione temporanea della procedura di accreditamento provvisorio dei Provider ECM. Proroga delle attività degli organismi di governance dell’ECM. Individuazione delle aree di interesse del Piano regionale della formazione 2017-2019.”", fontListItem));
 
             document.add(list);
 
@@ -1283,23 +1402,6 @@ public class PdfServiceImpl implements PdfService {
             Document document = new Document();
             PdfWriter.getInstance(document, outputStream);
 
-            //Inserimento immagine
-            //TODO correggere pe l'applicazione Ecm
-            Image img = null;
-    		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoRegioneVeneto.png");
-    		//String pathImgFile = "C:\\__Progetti\\ECM\\Doc da produrre in pdf\\LogoRegioneVeneto.png";
-    		try {
-    			img = Image.getInstance(url);
-    			//img = Image.getInstance(pathImgFile);
-    			Float scala = 1.2F;
-    			Float width = 400F/scala;
-    			Float height = 85F/scala;
-    			img.scaleToFit(width, height);
-                img.setAlignment(Element.ALIGN_CENTER);
-    		} catch(Exception e) {
-    			//Non mostro l'immagine
-    		}
-
             document.open();
             //Info documento
             document.addAuthor("Ecm");
@@ -1307,6 +1409,7 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
+            Image img = FooterWithInfo.createLogo();
             if(img != null)
             	document.add(img);
 
@@ -1535,23 +1638,6 @@ public class PdfServiceImpl implements PdfService {
             Document document = new Document();
             PdfWriter.getInstance(document, outputStream);
 
-            //Inserimento immagine
-            //TODO correggere pe l'applicazione Ecm
-            Image img = null;
-    		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoRegioneVeneto.png");
-    		//String pathImgFile = "C:\\__Progetti\\ECM\\Doc da produrre in pdf\\LogoRegioneVeneto.png";
-    		try {
-    			img = Image.getInstance(url);
-    			//img = Image.getInstance(pathImgFile);
-    			Float scala = 1.2F;
-    			Float width = 400F/scala;
-    			Float height = 85F/scala;
-    			img.scaleToFit(width, height);
-                img.setAlignment(Element.ALIGN_CENTER);
-    		} catch(Exception e) {
-    			//Non mostro l'immagine
-    		}
-
             document.open();
             //Info documento
             document.addAuthor("Ecm");
@@ -1559,6 +1645,7 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
+            Image img = FooterWithInfo.createLogo();
             if(img != null)
             	document.add(img);
 
@@ -2010,23 +2097,6 @@ public class PdfServiceImpl implements PdfService {
             Document document = new Document();
             PdfWriter.getInstance(document, outputStream);
 
-            //Inserimento immagine
-            //TODO correggere pe l'applicazione Ecm
-            Image img = null;
-    		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoRegioneVeneto.png");
-    		//String pathImgFile = "C:\\__Progetti\\ECM\\Doc da produrre in pdf\\LogoRegioneVeneto.png";
-    		try {
-    			img = Image.getInstance(url);
-    			//img = Image.getInstance(pathImgFile);
-    			Float scala = 1.2F;
-    			Float width = 400F/scala;
-    			Float height = 85F/scala;
-    			img.scaleToFit(width, height);
-                img.setAlignment(Element.ALIGN_CENTER);
-    		} catch(Exception e) {
-    			//Non mostro l'immagine
-    		}
-
             document.open();
             //Info documento
             document.addAuthor("Ecm");
@@ -2034,6 +2104,7 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Decreto Decadenza");
 
+            Image img = FooterWithInfo.createLogo();
             if(img != null)
             	document.add(img);
 
@@ -2128,17 +2199,9 @@ public class PdfServiceImpl implements PdfService {
             addCorpoParagraph(document, false, true, "Si diffida, pertanto, dallo svolgimento di attività di provider ECM regionale.");
             addCorpoParagraph(document, true, true, "Distinti saluti.");
 
-            Paragraph par = new Paragraph();
-            par.setAlignment(Element.ALIGN_CENTER);
-            par.setFont(fontCorpo);
-            par.add("Area Sanità e Sociale\n"
-            		+ "Direzione Risorse Strumentali SSR - CRAV\n"
-            		+ "Unità Organizzativa Personale e Professioni SSR\n"
-            		+ "Palazzo Molin – S. Polo, 2514 – 30125 Venezia Tel. 0412793488- 3550 – 3434 – Fax 041/2793503\n"
-            		+ "E-mail provvisoria: controlligovernopersonaleSSR@regione.veneto.it\n"
-            		+ "PEC: area.sanitasociale@pec.regione.veneto.it");
-            par.setSpacingAfter(spacingAfter);
-            document.add(par);
+            //TODO
+//            Paragraph par = createFooter();
+//            document.add(par);
 
             document.close();
             outputStream.close();
@@ -2147,5 +2210,63 @@ public class PdfServiceImpl implements PdfService {
         	LOGGER.error("creaPdfAccreditamentoProvvisorioDecretoDecadenza impossibile creare il pdf", e);
             throw e;
         }
+    }
+
+    private Paragraph createInfoProtocollo(){
+    	Paragraph parInfoProtocollo = new Paragraph();
+        parInfoProtocollo.setAlignment(Element.ALIGN_JUSTIFIED);
+        parInfoProtocollo.setFont(fontCorpo);
+        //parInfoProtocollo.setTabSettings(new TabSettings(56f));
+        parInfoProtocollo.setTabSettings(new TabSettings());
+
+        parInfoProtocollo.add("Data");
+        parInfoProtocollo.add(Chunk.TABBING);
+        parInfoProtocollo.add(Chunk.TABBING);
+
+        parInfoProtocollo.add("Protocollo N°");
+        parInfoProtocollo.add(Chunk.TABBING);
+        parInfoProtocollo.add(Chunk.TABBING);
+
+        parInfoProtocollo.add("Class:");
+        parInfoProtocollo.add(Chunk.TABBING);
+        parInfoProtocollo.add(Chunk.TABBING);
+
+        parInfoProtocollo.add("Prat");
+        parInfoProtocollo.add(Chunk.TABBING);
+        parInfoProtocollo.add(Chunk.TABBING);
+
+        parInfoProtocollo.add("Fasc:");
+        parInfoProtocollo.add(Chunk.TABBING);
+        parInfoProtocollo.add(Chunk.TABBING);
+
+        parInfoProtocollo.add("Allegati N°");
+        return parInfoProtocollo;
+    }
+
+    private Document createDocument(OutputStream outputStream, boolean headerAndFooter, boolean infoProtocollo) throws DocumentException{
+		Document document = new Document();
+		if(headerAndFooter){
+			document = new Document(PageSize.A4, 36, 36, 80, 120);
+			PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+			writer.setPageEvent(new FooterWithInfo());
+		}
+
+		document.open();
+
+		if(infoProtocollo){
+			//INFO PROTOCOLLO
+            Paragraph parInfoProtocollo = createInfoProtocollo();
+            document.add(parInfoProtocollo);
+
+            //Linea vuota
+            Paragraph parLineaVuota = new Paragraph();
+            parLineaVuota.setAlignment(Element.ALIGN_RIGHT);
+            parLineaVuota.setFont(fontIndirizzoProvider);
+            parLineaVuota.add(" ");
+            document.add(parLineaVuota);
+            document.add(parLineaVuota);
+		}
+
+		return document;
     }
 }
