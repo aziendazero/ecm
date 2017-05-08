@@ -2254,16 +2254,19 @@ public class PdfServiceImpl implements PdfService {
 		document.open();
 
 		if(infoProtocollo){
-			//INFO PROTOCOLLO
-            Paragraph parInfoProtocollo = createInfoProtocollo();
-            document.add(parInfoProtocollo);
-
-            //Linea vuota
+			//Linea vuota
             Paragraph parLineaVuota = new Paragraph();
             parLineaVuota.setAlignment(Element.ALIGN_RIGHT);
             parLineaVuota.setFont(fontIndirizzoProvider);
             parLineaVuota.add(" ");
             document.add(parLineaVuota);
+            document.add(parLineaVuota);
+            document.add(parLineaVuota);
+
+			//INFO PROTOCOLLO
+            Paragraph parInfoProtocollo = createInfoProtocollo();
+            document.add(parInfoProtocollo);
+
             document.add(parLineaVuota);
 		}
 
