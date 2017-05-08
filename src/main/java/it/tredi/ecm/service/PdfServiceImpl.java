@@ -2264,6 +2264,7 @@ public class PdfServiceImpl implements PdfService {
             document.add(parLineaVuota);
             document.add(parLineaVuota);
             document.add(parLineaVuota);
+            document.add(parLineaVuota);
 
 			//INFO PROTOCOLLO
             Paragraph parInfoProtocollo = createInfoProtocollo();
