@@ -18,7 +18,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 public class FooterWithInfo extends PdfPageEventHelper {
 	private int sizeFooter = 9;
 	private Font.FontFamily fontFamily = Font.FontFamily.TIMES_ROMAN;
-	private Font footerFont = new Font(fontFamily, sizeFooter, Font.NORMAL, BaseColor.GRAY);
+	private Font footerFont = new Font(fontFamily, sizeFooter, Font.NORMAL, BaseColor.DARK_GRAY);
 
 	@Override
 	public void onStartPage(PdfWriter writer, Document document) {
