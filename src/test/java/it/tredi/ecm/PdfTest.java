@@ -47,13 +47,14 @@ import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PdfService;
 import it.tredi.ecm.service.ProviderService;
+import it.tredi.ecm.service.SedutaService;
 import it.tredi.ecm.service.ValutazioneService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("demo")
-@WithUserDetails("FSALAFIA")
+@ActiveProfiles("dev")
+@WithUserDetails("segreteria1")
 @Rollback(false)
 @Ignore
 public class PdfTest {
@@ -85,6 +86,8 @@ public class PdfTest {
 
 	@Autowired
 	private ValutazioneService valutazioneService;
+
+	@Autowired SedutaService sedutaService;
 
 	/*
 	@Before
@@ -148,6 +151,7 @@ public class PdfTest {
 
 	@Test
 	@Transactional
+	@Ignore
 	public void testNewDiniegoStandard() throws Exception{
 		Long accreditamentoId = 160068L;
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
@@ -367,6 +371,46 @@ public class PdfTest {
 		}else{
 			System.out.println("ANAGRAFICA is NULL");
 		}
+	}
+
+	@Test
+	@Transactional
+	@Ignore
+	public void createIntegrazioneStandard() throws Exception{
+		Long accreditamentoId = 1470L;
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+
+		Long sedutaId = 7378L;
+		Seduta seduta = sedutaService.getSedutaById(sedutaId);
+
+		List<String> listaCriticita = new ArrayList<String>();
+		listaCriticita.add("DENOMINAZIONE CAMPO 1 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 2 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 3 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 4 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 5 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 6 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 7 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 8 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 9 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 10 – DESCRIZIONE CRITICITA’");
+		listaCriticita.add("DENOMINAZIONE CAMPO 11 – DESCRIZIONE CRITICITA’");
+
+		PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo = new PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo(accreditamento, seduta, listaCriticita);
+		integrazioneInfo.setGiorniIntegrazionePreavvisoRigetto(accreditamento.getGiorniIntegrazione());
+		File fileIntegrazione = null;
+		File filePreavvisoRigetto = null;
+		if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO){
+			fileIntegrazione= pdfService.creaPdfAccreditamentoProvvisiorioIntegrazione(integrazioneInfo);
+			filePreavvisoRigetto = pdfService.creaPdfAccreditamentoProvvisiorioPreavvisoRigetto(integrazioneInfo);
+		}
+		else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD){
+			fileIntegrazione = pdfService.creaPdfAccreditamentoStandardIntegrazione(integrazioneInfo);
+			filePreavvisoRigetto = pdfService.creaPdfAccreditamentoStandardIntegrazione(integrazioneInfo);
+		}
+
+		System.out.println("File Integrazione salvato: " + fileIntegrazione.getId());
+		System.out.println("File PreavvisoRigetto salvato: " + filePreavvisoRigetto.getId());
 	}
 
 }
