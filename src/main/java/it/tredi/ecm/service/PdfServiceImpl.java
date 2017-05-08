@@ -476,8 +476,8 @@ public class PdfServiceImpl implements PdfService {
             addCorpoParagraph(document, false, true, "Gentile Provider,");
             //In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il DATA VALIDAZIONE ACCREDITAMENTO PROVVISORIO, sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia (consultabile sul sito internet della Regione), si rappresenta che la Commissione Regionale per la Formazione Continua ECM nella seduta del DATA SEDUTA, non ritenendo rispettati i requisiti di cui alla normativa sotto richiamata, ha manifestato l’intento di esprimere parere negativo in riferimento alle seguenti criticità di seguito indicate:
             msgFormat = new MessageFormat("In ordine alla Vs. domanda di accreditamento in qualità di Provider Provvisorio, validata il {0} (protocollo n° {1} del {2}), "
-            		+ "sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia "
-            		+ "(consultabile sul sito internet della Regione http://providerveneto.agenas.it/ProviderModuliDoc.aspx, unitamente agli esempi di “atti”), "
+            		+ "sulla base della normativa in calce, nonché dell’ulteriore regolamentazione relativa alla materia, "
+//            		+ "(consultabile sul sito internet della Regione http://providerveneto.agenas.it/ProviderModuliDoc.aspx, unitamente agli esempi di “atti”), "
             		+ "la Commissione Regionale per la Formazione Continua ECM in data {3}, ha rilevato le seguenti criticità:");
             Object[] valuesCorpo = {integrazioneInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), integrazioneInfo.getNumeroProtocolloValidazione(), integrazioneInfo.getDataProtocolloValidazione().format(dateTimeFormatter), integrazioneInfo.getAccreditamentoDataSeduta().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesCorpo));
@@ -509,7 +509,7 @@ public class PdfServiceImpl implements PdfService {
             //Riepilogo_Consegne_ECM_20.10.2016.docx - Modulo 7 - 40 - a [inserire numero giorni indicati in “entro 30 giorni dal ricevimento della presente nota”] (pag 4)
             addCorpoParagraph(document, true, true, MessageFormat.format("Al fine di sanare le stesse, si richiede di produrre adeguata documentazione, suddivisa in file, "
             		+ "debitamente sottoscritta in maniera autografa e trasmessa con firma “digitale qualificata” del legale rappresentante in file formato PDF inferiori a 2Mb, "
-            		+ "tale documentazione deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota, nella sezione Provider all'interno dell'Area Riservata ECM del sito https://ecm.regione.veneto.it/ecm/login.", integrazioneInfo.getGiorniIntegrazionePreavvisoRigetto()));
+            		+ "tale documentazione deve essere inserita entro {0,number,#} giorni dal ricevimento della presente nota, nella sezione Provider all’interno dell’Area Riservata ECM del sito https://ecm.regione.veneto.it/ecm/login.", integrazioneInfo.getGiorniIntegrazionePreavvisoRigetto()));
 
             addCorpoParagraph(document, false, false, "La documentazione oggetto di integrazione sarà verificata dalla Commissione Regionale ECM nella prima riunione utile e, nel caso di esito positivo del riscontro, sarà proposta in valutazione per l’eventuale provvedimento di accreditamento.");
             addCorpoParagraph(document, false, true, "Nel caso in cui la documentazione richiesta non dovesse essere prodotta nel termine di cui sopra o non sia idonea a sanare le criticità riscontrate, previa valutazione della Commissione Regionale ECM, sarà inviato il preavviso di rigetto della domanda ai sensi dell’art. 10-bis, L. n. 241/1990.");
@@ -690,7 +690,7 @@ public class PdfServiceImpl implements PdfService {
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2215 del 20 dicembre 2011 recante il “Programma regionale d’Educazione Continua in Medicina (ECM) anno 2011. Approvazione dei requisiti e delle procedure di accreditamento dei Provider regionali. Piano regionale della formazione. Impegno di spesa” con la quale è stato avviato il sistema di accreditamento dei Provider regionali e approvato il documento (Allegato “A”) che stabilisce le regole di funzionamento del sistema veneto denominato “Disciplinare e requisiti per l’accreditamento dei Provider ECM nella Regione del Veneto”;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1969 del 2 ottobre 2012 con la quale si è proceduto a recepire l’Accordo Stato-Regioni del 19 aprile 2012 (Rep. Atti n. 101/CSR) sul documento recante “Il nuovo sistema di formazione continua in medicina – Linee guida per i Manuali di accreditamento dei provider, albo nazionale dei provider, crediti formativi triennio 2011/2013, federazioni, ordini, collegi e associazioni professionali, sistema di verifiche, controlli e monitoraggio della qualità, liberi professionisti”;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1049 del 28 giugno 2013 recante “Aggiornamento della ricognizione dei procedimenti amministrativi regionali, con individuazione del relativo termine di conclusione”, in particolare l’allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei provider regionali;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l'Agenzia Nazionale per i Servizi Sanitari Regionali (Age.Na.S) e la Regione del Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali (Age.Na.S) e la Regione del Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
 	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 tra Regione del Veneto e Age.Na.S. sulla base di quanto approvato con la suddetta deliberazione n. 1236 del 16 luglio 2013;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
 
@@ -721,7 +721,7 @@ public class PdfServiceImpl implements PdfService {
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesAttoRigetto));
 	        }
 
-	        addCorpoParagraph(document, false, true, "VERIFICATA la non sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
+	        addCorpoParagraph(document, false, true, "VERIFICATA la non sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
 
 			msgFormat = new MessageFormat("RITENUTO di approvare la decisione assunta dalla Commissione Regionale ECM di cui al verbale n. {0} del {1} con la quale esprime parere motivato al rigetto della richiesta di accreditamento provvisorio come Provider regionale ECM del {2} in nome del legale rappresentante pro-tempore;");
             Object[] valuesRigetto2 = {diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
@@ -895,7 +895,7 @@ public class PdfServiceImpl implements PdfService {
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2215 del 20 dicembre 2011 recante “Programma regionale d’Educazione Continua in Medicina (ECM) anno 2011. Approvazione dei requisiti e delle procedure di accreditamento dei Provider regionali. Piano regionale della formazione. Impegno di spesa” con la quale è stato avviato il sistema di accreditamento dei Provider regionali e approvato il documento (Allegato “A”) che stabilisce le regole di funzionamento del sistema veneto denominato “Disciplinare e requisiti per l’accreditamento dei Provider ECM nella Regione del Veneto”;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1969 del 2 ottobre 2012 recante “Il nuovo sistema di formazione continua in medicina – Linee guida per i Manuali di accreditamento dei provider, albo nazionale dei provider, crediti formativi triennio 2011/2013, federazioni, ordini, collegi e associazioni professionali, sistema di verifiche, controlli e monitoraggio della qualità, liberi professionisti”, con la quale si è proceduto a recepire l’Accordo Stato-Regioni del 19 aprile 2012 (Rep. Atti n. 101/CSR) e in particolare l’Allegato “1” “Linee Guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” e l’Allegato “2” “Determina della CNFC in materia di violazioni” dell’08 ottobre 2010;");
 	        addCorpoParagraph(document, false, true, "VISTO il Decreto Ministeriale del 26 marzo 2013 sul “contributo alle spese dovuto ai soggetti pubblici e privati e dalle società scientifiche che chiedono il loro accreditamento per lo svolgimento di attività di formazione continua ovvero l’accreditamento di specifiche attività formative promosse o organizzate dagli stessi ai fini dell’attribuzione dei crediti formativi”;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l'Agenzia Nazionale per i Servizi Sanitari Regionali  (Age.Na.S) e la Regione Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali  (Age.Na.S) e la Regione Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
 	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 (rep. n. 29005) tra la Regione del Veneto e Age.Na.S. ai sensi della deliberazione n. 1236 del 16 luglio 2013;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2620 del 29 dicembre 2014 recante “Aggiornamento della ricognizione dei procedimenti amministrativi di competenza della Giunta regionale, con individuazione del relativo termine di conclusione”, in particolare l’allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei Provider regionali, quantificato in 180 giorni;");
@@ -941,7 +941,7 @@ public class PdfServiceImpl implements PdfService {
             }
 
 	        addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente ed il contenuto di cui alla/e citata/e comunicazione/i trasmessa/e dal Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S.;");
-	        addCorpoParagraph(document, false, true, "VERIFICATA la sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
+	        addCorpoParagraph(document, false, true, "VERIFICATA la sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
 
 			msgFormat = new MessageFormat("TENUTO CONTO della decisione assunta dalla Commissione Regionale ECM nella seduta del {0}, il cui verbale è agli atti della scrivente Sezione, con la quale esprime il proprio parere positivo all’accoglimento della richiesta di accreditamento come Provider regionale ECM del {1} in nome del legale rappresentante pro-tempore;");
 			Object[] valuesDataCommissioneAccrDenom = {accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione()};
@@ -969,7 +969,7 @@ public class PdfServiceImpl implements PdfService {
             list.add(getListItem(msgFormat.format(valuesDataCommissioneAccrDenom), fontListItem));
 
             //3
-			msgFormat = new MessageFormat("di riconoscere l’accreditamento provvisorio in qualità di Provider regionale ECM al {0} con numero identificativo {1}, per un periodo di 24 mesi con decorrenza dal {2}, sulla base della rispondenza ai requisiti minimi e standard previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
+			msgFormat = new MessageFormat("di riconoscere l’accreditamento provvisorio in qualità di Provider regionale ECM al {0} con numero identificativo {1}, per un periodo di 24 mesi con decorrenza dal {2}, sulla base della rispondenza ai requisiti minimi e standard previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
             Object[] values3 = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getProviderInfo().getProviderId(), accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter)};
             list.add(getListItem(msgFormat.format(values3), fontListItem));
 
@@ -1512,12 +1512,12 @@ public class PdfServiceImpl implements PdfService {
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2215 del 20 dicembre 2011 recante il “Programma regionale d’Educazione Continua in Medicina (ECM) anno 2011. Approvazione dei requisiti e delle procedure di accreditamento dei Provider regionali. Piano regionale della formazione. Impegno di spesa” con la quale è stato approvato l’Allegato A che stabilisce le regole di funzionamento del sistema veneto denominato “Disciplinare e requisiti per l’accreditamento dei Provider ECM nella Regione del Veneto” e sono state avviate le procedure di accreditamento come Provider delle Aziende Sanitarie/Ospedaliere e dell’Istituto Oncologico Veneto per l’anno 2012;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1969 del 2 ottobre 2012 con la quale si è proceduto a recepire l’Accordo Stato-Regioni del 19 aprile 2012 (Rep. Atti n. 101/CSR) sul documento recante “Il nuovo sistema di formazione continua in medicina – Linee guida per i Manuali di accreditamento dei provider, albo nazionale dei provider, crediti formativi triennio 2011/2013, federazioni, ordini, collegi e associazioni professionali, sistema di verifiche, controlli e monitoraggio della qualità, liberi professionisti”, in particolare l’Allegato 1 “Linee Guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” e l’Allegato 2 “Determina della CNFC in materia di violazioni” dell’08 ottobre 2010;");
 	       // addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1049 del 28 giugno 2013 recante “Aggiornamento della ricognizione dei procedimenti amministrativi regionali, con individuazione del relativo termine di conclusione”, in particolare l’allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei provider regionali;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l'Agenzia Nazionale per i Servizi Sanitari Regionali (Age.Na.S) e la Regione del Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto diversificato per le Aziende Sanitarie e per gli Ospedali Classificati ex art. 1 L. n.132/1968 per cui viene fissato un contributo annuo comprensivo della quota annuale e della quota per evento calcolato sulla base del numero di eventi base (escluse le riedizioni) - residenziale, formazione sul campo, FAD - erogati nell'anno precedente; OPPURE diversificato per le Aziende Sanitarie e per gli Ospedali Classificati ex art. 1 L. n.132/1968 dagli altri soggetti per i quali viene fissato un contributo annuo e una quota per evento;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali (Age.Na.S) e la Regione del Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto diversificato per le Aziende Sanitarie e per gli Ospedali Classificati ex art. 1 L. n.132/1968 per cui viene fissato un contributo annuo comprensivo della quota annuale e della quota per evento calcolato sulla base del numero di eventi base (escluse le riedizioni) - residenziale, formazione sul campo, FAD - erogati nell’anno precedente; OPPURE diversificato per le Aziende Sanitarie e per gli Ospedali Classificati ex art. 1 L. n.132/1968 dagli altri soggetti per i quali viene fissato un contributo annuo e una quota per evento;");
 	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 tra Regione del Veneto e Age.Na.S. sulla base di quanto approvato con la suddetta deliberazione n. 1236 del 16 luglio 2013;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
 
 	        addCorpoParagraph(document, false, true, "RICHIAMATO l’art. 3 del Disciplinare  della deliberazione n. 2215/2011 sopra-citata  che dispone che il processo di accreditamento si articola in due momenti: l’accreditamento provvisorio della durata di due anni e l’accreditamento standard della durata di quattro anni;");
-	        addCorpoParagraph(document, false, true, "PRECISATO che per il passaggio dall’accreditamento provvisorio all’accreditamento standard secondo quanto indicato dal succitato articolo, sono previste verifiche finalizzate ad accertare la regolarità del possesso dei requisiti previsti dall’Allegato 1 dell'Accordo Stato-Regioni del 19 aprile 2012;");
+	        addCorpoParagraph(document, false, true, "PRECISATO che per il passaggio dall’accreditamento provvisorio all’accreditamento standard secondo quanto indicato dal succitato articolo, sono previste verifiche finalizzate ad accertare la regolarità del possesso dei requisiti previsti dall’Allegato 1 dell’Accordo Stato-Regioni del 19 aprile 2012;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti)” che approva, tra l’altro, le procedure operative per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM del territorio regionale;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2620 del 29 dicembre 2014 recante “Aggiornamento della ricognizione dei procedimenti amministrativi di competenza della Giunta regionale, con individuazione del relativo termine di conclusione”, in particolare l’Allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei Provider regionali, quantificato in 180 giorni;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1247 del 28 settembre 2015 “Programma regionale per la formazione continua. Definizione delle evidenze documentali per la verifica dei requisiti dei Provider regionali di formazione pubblici e privati, previste nell’ambito del processo di accreditamento standard ai sensi della DGR n. 1753/2014. Proroga delle attività degli organismi di governance dell’ECM. Disciplina delle attività di monitoraggio presso le sedi dei Provider ECM”, in particolare l’Allegato A “Evidenze documentali valutazione dei requisiti per accreditamento standard dei provider pubblici e privati”;");
@@ -1554,7 +1554,7 @@ public class PdfServiceImpl implements PdfService {
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesAttoRigetto));
 	        }
 
-	        addCorpoParagraph(document, false, true, "VERIFICATA la non sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
+	        addCorpoParagraph(document, false, true, "VERIFICATA la non sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
 
 			msgFormat = new MessageFormat("RITENUTO di approvare la decisione assunta dalla Commissione Regionale ECM di cui al verbale n. {0} del {1} con la quale esprime parere motivato al rigetto della richiesta di accreditamento standard come Provider regionale ECM del {2} in nome del legale rappresentante pro-tempore;");
             Object[] valuesRigetto2 = {diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
@@ -1742,14 +1742,14 @@ public class PdfServiceImpl implements PdfService {
 	        //non nello standard
 	        //addCorpoParagraph(document, false, true, "VISTO il Decreto Ministeriale del 26 marzo 2013 sul “contributo alle spese dovuto ai soggetti pubblici e privati e dalle società scientifiche che chiedono il loro accreditamento per lo svolgimento di attività di formazione continua ovvero l’accreditamento di specifiche attività formative promosse o organizzate dagli stessi ai fini dell’attribuzione dei crediti formativi”;");
 
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l'Agenzia Nazionale per i Servizi Sanitari Regionali  (Age.Na.S) e la Regione Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali  (Age.Na.S) e la Regione Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
 	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 (rep. n. 29005) tra la Regione del Veneto e Age.Na.S. ai sensi della deliberazione n. 1236 del 16 luglio 2013;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
 
 	        //Aggiunto standard
 	        addCorpoParagraph(document, false, true, "RICHIAMATO l’art. 3 del Disciplinare  della deliberazione n. 2215/2011 sopra-citata,  che dispone che il processo di accreditamento si articola in due momenti l’accreditamento provvisorio della durata di due anni e l’accreditamento standard della durata di quattro anni;");
 	        //Aggiunto standard
-	        addCorpoParagraph(document, false, true, "PRECISATO che per il passaggio dall’accreditamento provvisorio all’accreditamento standard secondo quanto indicato dal su citato articolo, sono previste verifiche finalizzate ad accertare la regolarità del possesso dei requisiti previsti dall’Allegato 1 dell'Accordo Stato-Regioni del 19 aprile 2012;");
+	        addCorpoParagraph(document, false, true, "PRECISATO che per il passaggio dall’accreditamento provvisorio all’accreditamento standard secondo quanto indicato dal su citato articolo, sono previste verifiche finalizzate ad accertare la regolarità del possesso dei requisiti previsti dall’Allegato 1 dell’Accordo Stato-Regioni del 19 aprile 2012;");
 
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti)” che approva, tra l’altro le procedure operative per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM del territorio regionale;");
 	        addCorpoParagraph(document, false, true, "TENUTO CONTO della Determinazione della Commissione Regionale ECM del 18 novembre 2014 in merito alla nomina del Team Leader all’interno del Team di valutazione ed alle funzioni allo stesso attribuite;");
@@ -1808,7 +1808,7 @@ public class PdfServiceImpl implements PdfService {
             }
 
             addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente ed il contenuto di cui alla/e citata/e comunicazione/i trasmessa/e dal Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S.;");
-	        addCorpoParagraph(document, false, true, "VERIFICATA la sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
+	        addCorpoParagraph(document, false, true, "VERIFICATA la sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
 
 
             //FIN QUI
@@ -1862,7 +1862,7 @@ public class PdfServiceImpl implements PdfService {
 
             //3
             if(accreditatoInfo.getDataCommissioneAccreditamento() != null) {
-				msgFormat = new MessageFormat("di riconoscere l’accreditamento standard in qualità di Provider regionale ECM al {0} con numero identificativo {1}, per un periodo di 4 anni con decorrenza dal {2}, sulla base della rispondenza ai requisiti minimi e standard previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recepito dalla deliberazione della Giunta regionale n. 1969/2012 e alle evidenze documentali approvate dalla deliberazione della Giunta regionale n. 1247/2015;");
+				msgFormat = new MessageFormat("di riconoscere l’accreditamento standard in qualità di Provider regionale ECM al {0} con numero identificativo {1}, per un periodo di 4 anni con decorrenza dal {2}, sulla base della rispondenza ai requisiti minimi e standard previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recepito dalla deliberazione della Giunta regionale n. 1969/2012 e alle evidenze documentali approvate dalla deliberazione della Giunta regionale n. 1247/2015;");
 	            Object[] values3 = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getProviderInfo().getProviderId(), accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter)};
 	            list.add(getListItem(msgFormat.format(values3), fontListItem));
             }
@@ -2222,6 +2222,7 @@ public class PdfServiceImpl implements PdfService {
         parInfoProtocollo.add("Data");
         parInfoProtocollo.add(Chunk.TABBING);
         parInfoProtocollo.add(Chunk.TABBING);
+        parInfoProtocollo.add(Chunk.TABBING);
 
         parInfoProtocollo.add("Protocollo N°");
         parInfoProtocollo.add(Chunk.TABBING);
@@ -2231,11 +2232,12 @@ public class PdfServiceImpl implements PdfService {
         parInfoProtocollo.add(Chunk.TABBING);
         parInfoProtocollo.add(Chunk.TABBING);
 
-        parInfoProtocollo.add("Prat");
-        parInfoProtocollo.add(Chunk.TABBING);
-        parInfoProtocollo.add(Chunk.TABBING);
+//        parInfoProtocollo.add("Prat");
+//        parInfoProtocollo.add(Chunk.TABBING);
+//        parInfoProtocollo.add(Chunk.TABBING);
 
         parInfoProtocollo.add("Fasc:");
+        parInfoProtocollo.add(Chunk.TABBING);
         parInfoProtocollo.add(Chunk.TABBING);
         parInfoProtocollo.add(Chunk.TABBING);
 
@@ -2254,16 +2256,19 @@ public class PdfServiceImpl implements PdfService {
 		document.open();
 
 		if(infoProtocollo){
-			//INFO PROTOCOLLO
-            Paragraph parInfoProtocollo = createInfoProtocollo();
-            document.add(parInfoProtocollo);
-
-            //Linea vuota
+			//Linea vuota
             Paragraph parLineaVuota = new Paragraph();
             parLineaVuota.setAlignment(Element.ALIGN_RIGHT);
             parLineaVuota.setFont(fontIndirizzoProvider);
             parLineaVuota.add(" ");
             document.add(parLineaVuota);
+            document.add(parLineaVuota);
+            document.add(parLineaVuota);
+
+			//INFO PROTOCOLLO
+            Paragraph parInfoProtocollo = createInfoProtocollo();
+            document.add(parInfoProtocollo);
+
             document.add(parLineaVuota);
 		}
 
