@@ -526,7 +526,7 @@ public class EventoServiceImpl implements EventoService {
 				else{
 					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.SUCCESS);
 					evento.setStato(EventoStatoEnum.RAPPORTATO);
-					evento.setAnagrafeRegionaleCrediti(XmlReportValidator.extractAnagrafeRegionaleCreditiPartecipantiFromXml(ultimaRendicontazioneInviata.getFileName(), ultimaRendicontazioneInviata.getFileRendicontazione().getData()));//extract info AnagrafeRegionaleCrediti
+					evento.setAnagrafeRegionaleCrediti(anagrafeRegionaleCreditiService.extractAnagrafeRegionaleCreditiPartecipantiFromXml(ultimaRendicontazioneInviata.getFileName(), ultimaRendicontazioneInviata.getFileRendicontazione().getData()));//extract info AnagrafeRegionaleCrediti
 					save(evento);
 				}
 				ultimaRendicontazioneInviata.setStato(RendicontazioneInviataStatoEnum.COMPLETED);
