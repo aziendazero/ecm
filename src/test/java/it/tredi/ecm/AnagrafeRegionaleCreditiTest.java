@@ -1,5 +1,8 @@
 package it.tredi.ecm;
 
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -42,34 +45,37 @@ import it.tredi.ecm.utils.Utils;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
-@WithUserDetails("LBENEDETTI")
+@ActiveProfiles("abarducci")
+@WithUserDetails("segreteria1")
+//@ActiveProfiles("dev")
+//@WithUserDetails("LBENEDETTI")
 @Rollback(false)
-@Ignore
+//@Ignore
 public class AnagrafeRegionaleCreditiTest {
 
 	@Autowired private EventoService eventoService;
 	@PersistenceContext EntityManager entityManager;
 
-	@Autowired private AnagrafeRegionaleCreditiRepository anaRepo;
-	@Autowired private AnagrafeRegionaleCreditiService anaService;
+	@Autowired private AnagrafeRegionaleCreditiRepository anagrafeRegionaleCreditiRepository;
+	@Autowired private AnagrafeRegionaleCreditiService anagrafeRegionaleCreditiService;
 	@Autowired private FileService fileService;
 
 
 	@Test
 	@Transactional
+	@Ignore
 	public void create() throws Exception {
 		AnagrafeRegionaleCrediti a1 = new AnagrafeRegionaleCrediti();
 		a1.setCognome("Pranteda");
 		a1.setNome("Domenico");
 		a1.setCodiceFiscale("PRNDNC86H23Z112R");
-		anaRepo.save(a1);
+		anagrafeRegionaleCreditiRepository.save(a1);
 
 		AnagrafeRegionaleCrediti a2 = new AnagrafeRegionaleCrediti();
 		a2.setCognome("Iommi");
 		a2.setNome("Thomas");
 		a2.setCodiceFiscale("PRNDNC86H23Z112D");
-		anaRepo.save(a2);
+		anagrafeRegionaleCreditiRepository.save(a2);
 
 		Set<AnagrafeRegionaleCrediti> items = new HashSet<AnagrafeRegionaleCrediti>();
 		items.add(a1);
@@ -81,12 +87,23 @@ public class AnagrafeRegionaleCreditiTest {
 
 	@Test
 	@Transactional
+	public void createFromFileXml() throws Exception {
+		String fileName = "report-20170511-0953.xml";
+		URL fileUrl = Thread.currentThread().getContextClassLoader().getResource("report-20170511-0953.xml");
+		byte[] reportEventoXml = Files.readAllBytes(Paths.get(fileUrl.toURI()));
+		Set<AnagrafeRegionaleCrediti> entities = anagrafeRegionaleCreditiService.extractAnagrafeRegionaleCreditiPartecipantiFromXml(fileName, reportEventoXml);
+		anagrafeRegionaleCreditiRepository.save(entities);
+	}
+
+	@Test
+	@Transactional
+	@Ignore
 	public void modify() throws Exception {
 		AnagrafeRegionaleCrediti a3 = new AnagrafeRegionaleCrediti();
 		a3.setCognome("Luconi");
 		a3.setNome("Elisa");
 		a3.setCodiceFiscale("PRNDNC86H23Z112E");
-		anaRepo.save(a3);
+		anagrafeRegionaleCreditiRepository.save(a3);
 
 		Set<AnagrafeRegionaleCrediti> items = new HashSet<AnagrafeRegionaleCrediti>();
 		items.add(a3);
@@ -97,13 +114,14 @@ public class AnagrafeRegionaleCreditiTest {
 
 	@Test
 	@Transactional
+	@Ignore
 	public void extractInfo() throws Exception {
 		Evento e = eventoService.getEvento(1357L);
 		//RendicontazioneInviata r = e.getUltimaRendicontazioneInviata();
 
 		File file = fileService.getFile(1359L);
 
-		Set<AnagrafeRegionaleCrediti> items = XmlReportValidator.extractAnagrafeRegionaleCreditiPartecipantiFromXml(file.getNomeFile(), file.getData());
+		Set<AnagrafeRegionaleCrediti> items = anagrafeRegionaleCreditiService.extractAnagrafeRegionaleCreditiPartecipantiFromXml(file.getNomeFile(), file.getData());
 
 		for(AnagrafeRegionaleCrediti a : items)
 			System.out.println(a.getCodiceFiscale() + " : " + a.getCrediti() + " in data " + a.getData());
@@ -113,6 +131,7 @@ public class AnagrafeRegionaleCreditiTest {
 
 	@Test
 	@Transactional
+	@Ignore
 	public void getProfessioni() throws Exception {
 //		Set<Professione> professioni = anaService.getProfessioniAnagrafeAventeCrediti(37L, 2016);
 //		System.out.println(professioni.size() + " che hanno avuto crediti");
@@ -121,16 +140,17 @@ public class AnagrafeRegionaleCreditiTest {
 //			System.out.println(p.getNome());
 //		}
 
-		System.out.println(anaService.getProfessioniAnagrafeAventeCrediti(37L, 2016) + " Professioni hanno avuto crediti");
+		System.out.println(anagrafeRegionaleCreditiService.getProfessioniAnagrafeAventeCrediti(37L, 2016) + " Professioni hanno avuto crediti");
 
 	}
 
 	@Test
 	@Transactional
+	@Ignore
 	public void getAll() throws Exception {
-		Set<AnagrafeRegionaleCrediti> items = anaService.getAll(2016);
+		Set<AnagrafeRegionaleCrediti> items = anagrafeRegionaleCreditiService.getAll(2016);
 
-		System.out.println(anaService.getProfessioniAnagrafeAventeCrediti(37L, 2016) + " Professioni hanno avuto crediti");
+		System.out.println(anagrafeRegionaleCreditiService.getProfessioniAnagrafeAventeCrediti(37L, 2016) + " Professioni hanno avuto crediti");
 
 	}
 

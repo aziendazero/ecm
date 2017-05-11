@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<dataroot>
+  <evento cod_evento="100-35230" cod_edi="1" cod_org="100" cod_accr="050" data_ini="2017-01-27" data_fine="2017-01-27" ore="4" crediti="6.0" tipo_form="3" tipo_eve="E" cod_obi="22" num_part="15" cod_tipologia_form="1">
+    <partecipante cod_fisc="TTLLNU85B66F262Y" nome="LUNA" cognome="ATTILA" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="14">
+        <disciplina>85</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="BRSMHL63E56A161S" nome="MICHELA" cognome="BRESCHIGLIARO" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="12">
+        <disciplina>82</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="CCCLGV87C10A089S" nome="LUIGI GIOVANNI" cognome="CACCIATORE" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="14">
+        <disciplina>85</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="CRTGLI94A57I531W" nome="GIULIA" cognome="CORTIANA" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="14">
+        <disciplina>85</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="FLRMDL71E53Z514T" nome="MARIA DEL ROCIO" cognome="FLORES PENA" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="14">
+        <disciplina>85</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="FRSRNN76D56G224I" nome="ROSANNA" cognome="FRISO" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="12">
+        <disciplina>82</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="GMRLSE91D68F964B" nome="ELISA" cognome="GOMIERO" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="14">
+        <disciplina>85</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="LRGCLD75L69G224Q" nome="CLAUDIA" cognome="LORIGIOLA" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="12">
+        <disciplina>82</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="PVNLCU67E61A001O" nome="LUCIA" cognome="PAVAN" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="1">
+        <disciplina>58</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="VTNLLN81D60Z129D" nome="IULIA VALENTINA" cognome="VITANESCU" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="14">
+        <disciplina>85</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="VLDCMN74L57Z129A" nome="CARMEN" cognome="VLAD" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="14">
+        <disciplina>85</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="ZCCPLA84P03A459N" nome="PAOLO" cognome="ZACCARIA" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="12">
+        <disciplina>82</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="ZLIPLA60M23G224G" nome="PAOLO" cognome="ZILIO" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="1">
+        <disciplina>58</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="ZNULND82S69G224M" nome="LINDA" cognome="ZUIN" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="14">
+        <disciplina>85</disciplina>
+      </professione>
+    </partecipante>
+    <partecipante cod_fisc="ZPPSMN77E03F382Z" nome="SIMONE" cognome="ZUPPA" ruolo="P" lib_dip="C" cred_acq="06.0" data_acq="2017-01-27" part_reclutato="0">
+      <professione cod_prof="14">
+        <disciplina>85</disciplina>
+      </professione>
+    </partecipante>
+  </evento>
+</dataroot>

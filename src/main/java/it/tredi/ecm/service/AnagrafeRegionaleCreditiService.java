@@ -16,4 +16,5 @@ public interface AnagrafeRegionaleCreditiService {
 	public int getProfessioniAnagrafeAventeCrediti(Long providerId, Integer annoRiferimento);
 
 //	public Set<Evento> getEventiAnagrafeAventeCrediti(Long providerId, Integer annoRiferimento);
+	public Set<AnagrafeRegionaleCrediti> extractAnagrafeRegionaleCreditiPartecipantiFromXml(String fileName, byte []reportEventoXml) throws Exception;
 }
