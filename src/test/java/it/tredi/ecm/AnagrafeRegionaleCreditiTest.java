@@ -50,7 +50,7 @@ import it.tredi.ecm.utils.Utils;
 //@ActiveProfiles("dev")
 //@WithUserDetails("LBENEDETTI")
 @Rollback(false)
-//@Ignore
+@Ignore
 public class AnagrafeRegionaleCreditiTest {
 
 	@Autowired private EventoService eventoService;
