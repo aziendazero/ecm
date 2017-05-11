@@ -2533,7 +2533,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public Accreditamento getLastAccreditamentoForProviderId(Long providerId) {
 		LOGGER.info("Cerco l'ultimo accreditamento del Provider: " + providerId);
-		return accreditamentoRepository.findFirstByProviderIdOrderByDataScadenzaDesc(providerId);
+		return accreditamentoRepository.findFirstByProviderIdOrderByDataFineAccreditamentoDesc(providerId);
 	}
 
 	/* Metodo che applica l'integrazione (ma non salva le modifiche) in modo in cui sia possibile fare un controllo sullo stato del DB

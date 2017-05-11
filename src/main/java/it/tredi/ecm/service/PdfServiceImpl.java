@@ -1528,6 +1528,24 @@ public class PdfServiceImpl implements PdfService {
             Object[] valuesDataVisitaNomeProv = {diniegoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesDataVisitaNomeProv));
 
+            //Togliere nei casi:
+	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
+            //Integrazione
+            if(diniegoInfo.getIntegrazioneInfo() != null) {
+				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}., notificata al Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dal Team Leader del Team di Valutazione, referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 nel corso della visita in loco del {3};");
+				Object[] valuesIntegrazione = {diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(),
+						diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter),
+						diniegoInfo.getProviderInfo().getProviderDenominazione(),
+						diniegoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter)};
+		        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
+            }
+
+            // mostrare solo se accreditamento avvunuto con integrazione
+            if(diniegoInfo.getIntegrazioneInfo() != null) {
+				msgFormat = new MessageFormat("VISTA la documentazione prodotta da parte del Provider {0} per il tramite del legale rappresentante pro-tempore in ossequio alla richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii.;");
+		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
+            }
+
             //Integrazione
 			//Impossibile inserire info sulla commissione in integrazione in quanto non e' la commissione che invia in integrazione la domanda standard
 //            msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata all’aspirante Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");

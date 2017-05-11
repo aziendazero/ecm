@@ -127,6 +127,6 @@ public interface AccreditamentoRepository extends JpaRepository<Accreditamento, 
 		public Set<Accreditamento> findAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
 		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.dataScadenza BETWEEN :oggi AND :dateScadenza")
 		public int countAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
-		public Accreditamento findFirstByProviderIdOrderByDataScadenzaDesc(Long providerId);
+		public Accreditamento findFirstByProviderIdOrderByDataFineAccreditamentoDesc(Long providerId);
 
 }
