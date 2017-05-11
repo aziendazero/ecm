@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
+import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 
@@ -63,6 +64,30 @@ public class ImpostazioniProviderValidator {
 			errors.rejectValue(prefix +  "allegatoDecadenza", "error.empty");
 
 		Utils.logDebugErrorFields(LOGGER, errors);
+	}
+
+	public void validateGeneraDecadenzaProvider(Object target, Errors errors, String prefix) {
+		ImpostazioniProviderWrapper impostazioni = (ImpostazioniProviderWrapper) target;
+
+		if(impostazioni.getMotivazioneDecadenza() == null)
+			errors.rejectValue(prefix + "motivazioneDecadenza", "error.empty");
+		else {
+			if(impostazioni.getMotivazioneDecadenza() == MotivazioneDecadenzaEnum.RICHIESTA_PROVIDER) {
+				if(impostazioni.getNumeroDecreto() == null)
+					errors.rejectValue(prefix + "numeroDecreto", "error.empty");
+				if(impostazioni.getDataDecreto() == null)
+					errors.rejectValue(prefix + "dataDecreto", "error.empty");
+				if(impostazioni.getDataComunicazioneDecadenza() == null)
+					errors.rejectValue(prefix + "dataComunicazioneDecadenza", "error.empty");
+			}
+			if(impostazioni.getMotivazioneDecadenza() == MotivazioneDecadenzaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD) {
+				if(impostazioni.getNumeroDecreto() == null)
+					errors.rejectValue(prefix + "numeroDecreto", "error.empty");
+				if(impostazioni.getDataDecreto() == null)
+					errors.rejectValue(prefix + "dataDecreto", "error.empty");
+			}
+		}
+
 	}
 
 }

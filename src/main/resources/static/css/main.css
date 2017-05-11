@@ -1494,3 +1494,12 @@ li.listStyle-elenco > label{
 .removeOption {
 	color: red !important;
 }
+
+#generaDecreto {
+	margin-left: 10px;
+}
+
+.inputDatiDecadenza {
+	height: 44px;
+}
+

@@ -521,13 +521,27 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 			addCellLabelCampoValore("label.pianoQualita", pianoQualita.getNomeFile(), allegatiFields);
 		else
 			addCellLabelCampoValore("label.pianoQualita", getLabelAllegatoNonInserito(), allegatiFields);
-		if(dichiarazioneLegaleRappresentante != null)
-			addCellLabelCampoValore("label.dichiarazioneLegale", dichiarazioneLegaleRappresentante.getNomeFile(), allegatiFields);
+		if(dichiarazioneLegaleRappresentante != null) {
+			if(dichiarazioneLegaleRappresentante.getProtocollo() != null) {
+				Object[] valuesProtocollo = {intFormatter.print(dichiarazioneLegaleRappresentante.getProtocollo().getNumero(), Locale.getDefault()), dateTimeFormatter.format(dichiarazioneLegaleRappresentante.getProtocollo().getData())};
+				addCellLabelCampoValore("label.dichiarazioneLegale", dichiarazioneLegaleRappresentante.getNomeFile() + " - " + messageSource.getMessage("label.info_protocollo", valuesProtocollo, Locale.getDefault()), allegatiFields);
+			}
+			else {
+				addCellLabelCampoValore("label.dichiarazioneLegale", dichiarazioneLegaleRappresentante.getNomeFile(), allegatiFields);
+			}
+		}
 		else
 			addCellLabelCampoValore("label.dichiarazioneLegale", getLabelAllegatoNonInserito(), allegatiFields);
 		if(accreditamento.isStandard()) {
-			if(richiestaAccreditamentoStandard != null)
-				addCellLabelCampoValore("label.richiestaAccreditamentoStandard", richiestaAccreditamentoStandard.getNomeFile(), allegatiFields);
+			if(richiestaAccreditamentoStandard != null) {
+				if(richiestaAccreditamentoStandard.getProtocollo() != null) {
+					Object[] valuesProtocollo = {intFormatter.print(richiestaAccreditamentoStandard.getProtocollo().getNumero(), Locale.getDefault()), dateTimeFormatter.format(richiestaAccreditamentoStandard.getProtocollo().getData())};
+					addCellLabelCampoValore("label.richiestaAccreditamentoStandard", richiestaAccreditamentoStandard.getNomeFile() + " - " + messageSource.getMessage("label.info_protocollo", valuesProtocollo, Locale.getDefault()), allegatiFields);
+				}
+				else {
+					addCellLabelCampoValore("label.richiestaAccreditamentoStandard", richiestaAccreditamentoStandard.getNomeFile(), allegatiFields);
+				}
+			}
 			else
 				addCellLabelCampoValore("label.richiestaAccreditamentoStandard", getLabelAllegatoNonInserito(), allegatiFields);
 			if(relazioneAttivitaFormativa != null)
@@ -1070,6 +1084,9 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		addCellLabelCampoValore("label.email", anagrafica.getEmail(), tableFields);
 		if(ruolo == Ruolo.LEGALE_RAPPRESENTANTE)
 			addCellLabelCampoValore("label.pec", anagrafica.getPec(), tableFields);
+		if(ruolo == Ruolo.COMPONENTE_COMITATO_SCIENTIFICO) {
+			addCellLabelCampoValore("label.professione", persona.getProfessione().getNome(), tableFields);
+		}
 		if(ruolo != Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE) {
 			if(attoNomina != null)
 				addCellLabelCampoValore("label.attoNomina", attoNomina.getNomeFile(), tableFields);

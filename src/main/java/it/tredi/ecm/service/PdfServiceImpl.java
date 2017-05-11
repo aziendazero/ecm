@@ -29,6 +29,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioDecretoDecadenzaInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
@@ -1435,6 +1436,24 @@ public class PdfServiceImpl implements PdfService {
 //            Object[] valuesIntegrazione = {diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(), (diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null) ? "" : diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getIntegrazioneInfo().getVerbaleNumero(), diniegoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
 //	        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
 
+          //Togliere nei casi:
+	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
+            //Integrazione
+            if(diniegoInfo.getIntegrazioneInfo() != null) {
+				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}., notificata al Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dal Team Leader del Team di Valutazione, referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 nel corso della visita in loco del {3};");
+				Object[] valuesIntegrazione = {diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(),
+						diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter),
+						diniegoInfo.getProviderInfo().getProviderDenominazione(),
+						diniegoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter)};
+		        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
+            }
+
+            // mostrare solo se accreditamento avvunuto con integrazione
+            if(diniegoInfo.getIntegrazioneInfo() != null) {
+				msgFormat = new MessageFormat("VISTA la documentazione prodotta da parte del Provider {0} per il tramite del legale rappresentante pro-tempore in ossequio alla richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii.;");
+		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
+            }
+
             //Rigetto
 			msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata al Provider {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento standard che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii, a seguito dell’esito negativo della predetta visita di verifica;");
             Object[] valuesRigetto = {diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
@@ -2098,27 +2117,20 @@ public class PdfServiceImpl implements PdfService {
             		+ "al conseguimento dello status di Provider ECM con accreditamento standard per continuare nell’attività di erogatori di attività formative ECM da rivolgere "
             		+ "ai professionisti della Sanità.");
 
-            msgFormat = new MessageFormat("In relazione alla Vs. posizione di Provider provvisorio, {0}, accreditato presso la Regione del Veneto con Decreto del Direttore della Sezione Controlli, Governo e Personale SSR n. ............ del .................., ");
-            Object[] valuesId = {decadenzaInfo.getProviderInfo().getProviderId()};
+            msgFormat = new MessageFormat("In relazione alla Vs. posizione di Provider provvisorio, {0}, accreditato presso la Regione del Veneto con Decreto del Direttore della Sezione Controlli, Governo e Personale SSR n. {1} del {2}, ");
+            Object[] valuesId = {decadenzaInfo.getProviderInfo().getProviderId(), decadenzaInfo.getNumeroDecretoDecadenza(), decadenzaInfo.getDataDecretoDecadenza().format(dateTimeFormatter)};
             addCorpoParagraph(document, true, true, msgFormat.format(valuesId));
 
-            List list = new List();
-            Image ballotImage = null;
-            URL ballotUrl = Thread.currentThread().getContextClassLoader().getResource("ballot.png");
-    		try {
-    			ballotImage = Image.getInstance(ballotUrl);
-    			ballotImage.scaleAbsolute(10, 10);
-    			ballotImage.setScaleToFitHeight(false);
-                list.setListSymbol(new Chunk(Image.getInstance(ballotImage), 0, 0));
-    		} catch(Exception e) {
-    			//Non mostro l'immagine
-    		}
-
-            list.setIndentationLeft(indentationLeftList);
-            list.add(getListItem(" preso atto che non è stata trasmessa la domanda per ottenere l’accreditamento standard;", fontListItem));
-            list.add(getListItem(" preso atto che è stata trasmessa la nota mediante il canale “Comunicazioni in data ..................” con la quale codesto Provider non intende presentare la domanda di accreditamento standard;", fontListItem));
-            document.add(list);
-            addCorpoParagraph(document, true, true, "");
+            if(decadenzaInfo.getMotivazioneDecadenza() != null) {
+            	if(decadenzaInfo.getMotivazioneDecadenza() == MotivazioneDecadenzaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD) {
+            		addCorpoParagraph(document, false, true, "preso atto che non è stata trasmessa la domanda per ottenere l’accreditamento standard;");
+            	}
+            	else if(decadenzaInfo.getMotivazioneDecadenza() == MotivazioneDecadenzaEnum.RICHIESTA_PROVIDER) {
+            		 msgFormat = new MessageFormat("preso atto che è stata trasmessa la nota mediante il canale “Comunicazioni in data {0}” con la quale codesto Provider non intende presentare la domanda di accreditamento standard;");
+            		 Object[] valuesDataComunicazione = {decadenzaInfo.getDataComunicazioneProviderDecadenza().format(dateTimeFormatter)};
+            		 addCorpoParagraph(document, false, true, msgFormat.format(valuesDataComunicazione));
+            	}
+            }
 
             msgFormat = new MessageFormat("tenuto conto che risulta scaduta la validità dell’accreditamento provvisorio in quanto sono decorsi i 24 mesi a partire dal {0}, si comunica, a soli fini ricognitori e di certezza, che il titolo è divenuto inefficace per scadenza del termine di validità dello stesso, ai sensi di quanto stabilito dall’art. 3 del “Disciplinare e requisiti per l’accreditamento dei provider ECM nella Regione del Veneto” allegato A della DGR n. 2215/2011 e dall’Accordo Stato-Regioni del 19 aprile 2012.");
             Object[] valuesDataValidazione = {decadenzaInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};

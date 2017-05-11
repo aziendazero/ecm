@@ -41,4 +41,11 @@ public class ImpostazioniProviderWrapper {
 	private boolean submitError = false;
 	private boolean motivazioneError = false;
 
+	private Long providerId;
+	private Integer numeroDecreto;
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
+	private LocalDate dataDecreto;
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
+	private LocalDate dataComunicazioneDecadenza;
+
 }

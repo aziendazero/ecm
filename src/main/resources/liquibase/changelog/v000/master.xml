@@ -101,4 +101,8 @@
 
 	<include file="20170503_001_add_data_numero_delibera_ai_decreti.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170505_001_flag_mancata_valutazione_team_leader.xml" relativeToChangelogFile="true"/>
+
+	<include file="20170510_001_aggiunta_semaphore_executetaskbonita.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

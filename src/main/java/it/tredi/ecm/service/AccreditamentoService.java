@@ -6,23 +6,15 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.AccreditamentoDiff;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.DatiAccreditamentoDiff;
 import it.tredi.ecm.dao.entity.File;
-import it.tredi.ecm.dao.entity.Persona;
-import it.tredi.ecm.dao.entity.PersonaDiff;
-import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.entity.ProviderDiff;
-import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.entity.SedeDiff;
 import it.tredi.ecm.dao.entity.Seduta;
-import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.bean.CurrentUser;
+import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 
 public interface AccreditamentoService{
 	public boolean canProviderCreateAccreditamento(Long providerId,AccreditamentoTipoEnum tipoTomanda);
@@ -150,7 +142,7 @@ public interface AccreditamentoService{
 	public void inviaValutazioneSegreteriaVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception;
 	public void inviaValutazioneCrecmVariazioneDati(Long accreditamentoId, String valutazioneComplessiva) throws Exception;
 
-	public void generaDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, Long providerId) throws Exception;
+	public void generaDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception;
 
 	public boolean canRiassegnaRefereeVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
 }

@@ -242,31 +242,78 @@
 									<div class="radio">
 										<label>
 											<input type="radio" class="flat decadenza-radio" th:field="${impostazioniProviderWrapper.motivazioneDecadenza}" th:value="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).SCADENZA_INSERIMENTO_DOMANDA_STANDARD}" />
-											<span th:text="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).SCADENZA_INSERIMENTO_DOMANDA_STANDARD.nome}">Sì</span>
+											<span th:text="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).SCADENZA_INSERIMENTO_DOMANDA_STANDARD.nome}"></span>
 										</label>
-										<a id="linkPdfDecreto" th:text="'(' + #{label.genera_decreto} +')'" th:href="@{|/|}"></a>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="flat decadenza-radio" th:field="${impostazioniProviderWrapper.motivazioneDecadenza}" th:value="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).RICHIESTA_PROVIDER}" />
+											<span th:text="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).RICHIESTA_PROVIDER.nome}"></span>
+										</label>
 									</div>
 									<div class="radio">
 										<label>
 											<input type="radio" class="flat decadenza-radio" th:field="${impostazioniProviderWrapper.motivazioneDecadenza}" th:value="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).MANCATO_PAGAMENTO_QUOTA_ANNUALE}" />
-											<span th:text="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).MANCATO_PAGAMENTO_QUOTA_ANNUALE.nome}">No</span>
+											<span th:text="${T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).MANCATO_PAGAMENTO_QUOTA_ANNUALE.nome}"></span>
 										</label>
 									</div>
 								</div>
 								<div th:if="${#fields.hasErrors('impostazioniProviderWrapper.motivazioneDecadenza')}" class="alert" th:errors="${impostazioniProviderWrapper.motivazioneDecadenza}"></div>
 							</div>
+
+							<div class="item form-group inputDatiDecadenza" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.numeroDecreto')} ? 'bad'">
+								<label class="control-label col-lg-3 col-md-4 col-sm-5 col-xs-12">
+									<span th:text="#{label.numero_decreto}"></span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+									<input type="text" class="form-control" th:field="${impostazioniProviderWrapper.numeroDecreto}" />
+								</div>
+							</div>
+							<div class="item form-group inputDatiDecadenza" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.dataDecreto')} ? 'bad'">
+								<label class="control-label col-lg-3 col-md-4 col-sm-5 col-xs-12">
+									<span th:text="#{label.data_decreto}"></span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 input-group datapick">
+									<input type="text" id="dataDecretoDecadenza" class="form-control dataDecadenza"
+										th:field="${impostazioniProviderWrapper.dataDecreto}" />
+									<span class="input-group-addon" id="dataDecretoButton" onclick="$('#dataDecretoDecadenza').click()">
+			 							<i class="glyphicon glyphicon-calendar"></i>
+									</span>
+								</div>
+							</div>
+							<div class="item form-group inputDataComunicazione" th:style="${impostazioniProviderWrapper.motivazioneDecadenza == T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).RICHIESTA_PROVIDER ? 'display: block;' : 'display: none;'}" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.dataComunicazioneDecadenza')} ? 'bad'">
+								<label class="control-label col-lg-3 col-md-4 col-sm-5 col-xs-12">
+									<span th:text="#{label.data_comunicazione_decadenza}"></span>
+									<span class="required">*</span>
+								</label>
+								<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 input-group datapick">
+									<input type="text" id="dataComunicazioneDecadenza" class="form-control dataDecadenza"
+										th:field="${impostazioniProviderWrapper.dataComunicazioneDecadenza}" />
+									<span class="input-group-addon" id="dataComunicazioneDecadenzaButton" onclick="$('#dataComunicazioneDecadenza').click()">
+			 							<i class="glyphicon glyphicon-calendar"></i>
+									</span>
+								</div>
+							</div>
+
+							<div class="inputDatiDecadenza col-lg-offset-3 col-md-offset-4 col-sm-offset-5">
+								<button type="button" class="btn btn-primary" id="generaDecreto" onclick="changeActionAndSubmit('/decreto_decadenza/pdf');">
+									<span th:text="#{label.genera_decreto}"></span>
+								</button>
+							</div>
+
 							<div class="divider"></div>
 							<div class="item form-group with-margin-top" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.allegatoDecadenza')} ? 'bad'">
 								<th:block th:include="fragments/allegatiext :: allegatiext(impostazioniProviderWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DECADENZA}', allegatoDecadenza, null, null, null, true, 'edit', true)"></th:block>
-								<!--a id="linkPdfDecreto" class="btn btn-primary pull-right with-margin-top" th:text="#{label.genera_decreto}" th:href="@{|/|}"></a-->
 							</div>
 
-							<input id="submitButtonBlocca" type="submit" style="display: none;" />
+							<input id="bloccaProviderId" type="hidden" th:field="${impostazioniProviderWrapper.providerId}" />
 							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 						</form>
 					</div>
 					<div class="modal-footer">
-						<label for="submitButtonBlocca" class="btn btn-success pull-right" th:text="#{label.applica}">Applica</label>
+						<button type="button" onclick="changeActionAndSubmit('/blocca')" id="submitLuncher" class="btn btn-success pull-right" th:text="#{label.applica}">Applica</button>
 						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 					</div>
 				</div>
@@ -367,11 +414,54 @@
 				        }
 				    })
 
-				    if([[${impostazioniProviderWrapper != null && impostazioniProviderWrapper.submitError == true}]])
+				    $('input.dataDecadenza').daterangepicker({
+				        singleDatePicker: true,
+				        autoApply: true,
+				        autoUpdateInput: true,
+				        parentEl: $("#blocca-provider"),
+				        format: "DD/MM/YYYY",
+				        locale: {
+					        daysOfWeek: days,
+			                monthNames: months,
+				        }
+				    })
+
+
+				    if([[${impostazioniProviderWrapper != null and impostazioniProviderWrapper.submitError == true}]])
 				    	$("#scadenze-provider").modal("show");
 
-					if([[${impostazioniProviderWrapper != null && impostazioniProviderWrapper.motivazioneError == true}]])
+					if([[${impostazioniProviderWrapper != null and impostazioniProviderWrapper.motivazioneError == true}]])
 					    $("#blocca-provider").modal("show");
+
+					if([[${impostazioniProviderWrapper != null and
+							impostazioniProviderWrapper.motivazioneDecadenza != null and
+							(impostazioniProviderWrapper.motivazioneDecadenza == T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).SCADENZA_INSERIMENTO_DOMANDA_STANDARD or
+							impostazioniProviderWrapper.motivazioneDecadenza == T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).RICHIESTA_PROVIDER)}]])
+						$(".inputDatiDecadenza").show();
+					else
+						$(".inputDatiDecadenza").hide();
+
+					if([[${impostazioniProviderWrapper != null and impostazioniProviderWrapper.motivazioneDecadenza != null and impostazioniProviderWrapper.motivazioneDecadenza == T(it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum).RICHIESTA_PROVIDER}]])
+						$(".inputDataComunicazione").show();
+					else
+						$(".inputDataComunicazione").hide();
+
+					$(".decadenza-radio").on("ifChecked", function() {
+						var value = $(this).val();
+						if(value == 'SCADENZA_INSERIMENTO_DOMANDA_STANDARD') {
+							$(".inputDatiDecadenza").slideDown();
+							$(".inputDataComunicazione").slideUp();
+						}
+						else if(value == 'RICHIESTA_PROVIDER') {
+							$(".inputDatiDecadenza").slideDown();
+							$(".inputDataComunicazione").slideDown();
+						}
+						else if(value == 'MANCATO_PAGAMENTO_QUOTA_ANNUALE') {
+							$(".inputDatiDecadenza").slideUp();
+							$(".inputDataComunicazione").slideUp();
+						}
+					});
+
 				})
 
 			    function openModalImpostazioni(idProvider,
@@ -436,14 +526,23 @@
 				}
 
 				function openModalConfermaBloccoProvider(idProvider) {
-					$("#form-blocca-provider").attr("action", [[@{|/provider/|}]] + idProvider + "/blocca");
-					$('#linkPdfDecreto').attr("href", [[@{|/provider/|}]] + idProvider + "/decreto_decadenza/pdf");
+					$("#submitLuncher").unbind();
+					$("#submitLuncher").click(function() {
+						changeActionAndSubmit("/blocca", idProvider);
+					});
+					$('#generaDecreto').unbind();
+					$('#generaDecreto').click(function() {
+						changeActionAndSubmit("/decreto_decadenza/pdf", idProvider);
+					});
+					$("#bloccaProviderId").val(idProvider);
 					$("#form-blocca-provider")[0].reset();
 					$('input[type="radio"]').each(function(i,r) {
 						$r = $(r);
 						$r.iCheck("uncheck");
 						$r.iCheck("update");
 					})
+					$(".inputDatiDecadenza").hide();
+					$(".inputDataComunicazione").hide();
 					$("#blocca-provider").modal("show");
 				}
 
@@ -460,6 +559,14 @@
 						$d = $(d);
 						$d.val("");
 					})
+				}
+
+				function changeActionAndSubmit(urlEnding, idProvider) {
+					if(idProvider == null || idProvider == undefined) {
+						idProvider = $("#bloccaProviderId").val();
+					}
+					$("#form-blocca-provider").attr("action", [[@{|/provider/|}]] + idProvider + urlEnding);
+					$("#form-blocca-provider").submit();
 				}
 
 			/*]]>*/

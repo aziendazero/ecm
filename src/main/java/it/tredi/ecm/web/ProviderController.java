@@ -669,19 +669,31 @@ public class ProviderController {
 		}
 	}
 
-	@RequestMapping(value = "/provider/{providerId}/decreto_decadenza/pdf", method = RequestMethod.GET)
-	public void pdfEvento(@PathVariable Long providerId, HttpServletResponse response, Model model) throws IOException {
-		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/decreto_decadenza/pdf"));
+	@RequestMapping(value = "/provider/{providerId}/decreto_decadenza/pdf", method = RequestMethod.POST, produces = "application/pdf")
+	public String pdfEvento(@PathVariable Long providerId, HttpServletResponse response, Model model, RedirectAttributes redirectAttrs,
+			@ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper, BindingResult result) throws IOException {
+		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/decreto_decadenza/pdf"));
 		try {
-			response.setHeader("Content-Disposition", String.format("attachment; filename=\"Decreto Decadenza Provider " + providerId + ".pdf\""));
-			ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
-			accreditamentoService.generaDecretoDecadenza(pdfOutputStream, providerId);
-			response.setContentLength(pdfOutputStream.size());
-			response.getOutputStream().write(pdfOutputStream.toByteArray());
+			impostazioniProviderValidator.validateGeneraDecadenzaProvider(wrapper, result, "");
+			if(result.hasErrors()) {
+				wrapper.setMotivazioneError(true);
+				model.addAttribute("impostazioniProviderWrapper", wrapper);
+				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
+				return "provider/providerList";
+			}
+			else {
+				response.setHeader("Content-Disposition", String.format("attachment; filename=\"Decreto Decadenza Provider " + providerId + ".pdf\""));
+				ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+				accreditamentoService.generaDecretoDecadenza(pdfOutputStream, providerId, wrapper);
+				response.setContentLength(pdfOutputStream.size());
+				response.getOutputStream().write(pdfOutputStream.toByteArray());
+				return null;
+			}
 		}
 		catch (Exception ex) {
-			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/decreto_decadenza/pdf"),ex);
-			model.addAttribute("message",new Message("message.errore", "message.impossibile_creare_pdf_decreto_decadenza", "error"));
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/decreto_decadenza/pdf"),ex);
+			redirectAttrs.addFlashAttribute("message",new Message("message.errore", "message.impossibile_creare_pdf_decreto_decadenza", "error"));
+			return "redirect:/provider/list";
 		}
 
 	}

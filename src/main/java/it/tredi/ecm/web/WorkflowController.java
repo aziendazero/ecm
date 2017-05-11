@@ -48,33 +48,64 @@ public class WorkflowController {
 	public ResponseState SetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato,
 			@RequestParam(required = false) Integer numeroValutazioniNonDate, @RequestParam(required = false) String dataOraScadenzaPossibiltaValutazione,
 			@RequestParam(required = false) Boolean eseguitoDaUtente) throws Exception{
-		String msgInfo =  " token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato;
-		if(numeroValutazioniNonDate != null)
-			msgInfo += "; numeroValutazioniNonDate: " + numeroValutazioniNonDate;
-		else
-			msgInfo += "; numeroValutazioniNonDate: null";
-		if(dataOraScadenzaPossibiltaValutazione != null)
-			msgInfo += "; dataOraScadenzaPossibiltaValutazione: " + dataOraScadenzaPossibiltaValutazione;
-		else
-			msgInfo += "; dataOraScadenzaPossibiltaValutazione: null";
-		if(eseguitoDaUtente != null)
-			msgInfo += "; eseguitoDaUtente: " + eseguitoDaUtente;
-		else
-			msgInfo += "; eseguitoDaUtente: null";
-		LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}" + msgInfo));
 
-		if(!tokenService.checkTokenAndDelete(token)) {
-			String msg = "Impossibile trovare il token passato token: " + token;
-			LOGGER.error(msg);
-			return new ResponseState(true, msg);
-		}
+		int counterReload = 0;
+		boolean ready = tokenService.checkReadyForBonita(accreditamentoId);
+		//prova per 20 reload 1 reload al secondo se l'accreditamento è pronto al changestate
+		while(!ready && counterReload < 19) {
+			Thread.sleep(1000);
+			ready = tokenService.checkReadyForBonita(accreditamentoId, counterReload+1);
+			counterReload++;
+		};
+		if(ready) {
+			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 
-		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-		WorkflowInfo workflowInCorso = accreditamento.getWorkflowInCorso();
-		if(workflowInCorso == null)
-			throw new Exception("WorkflowController - SetStatoFromBonita: Impossibile ricavare il workflow in corso per l'accreaditamento id: " + accreditamento.getId());
-		if(workflowInCorso.getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
-			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO) {
+			String msgInfo =  " token: " + token + "; accreditamentoId: " + accreditamentoId + "; stato: " + stato;
+			if(numeroValutazioniNonDate != null)
+				msgInfo += "; numeroValutazioniNonDate: " + numeroValutazioniNonDate;
+			else
+				msgInfo += "; numeroValutazioniNonDate: null";
+			if(dataOraScadenzaPossibiltaValutazione != null)
+				msgInfo += "; dataOraScadenzaPossibiltaValutazione: " + dataOraScadenzaPossibiltaValutazione;
+			else
+				msgInfo += "; dataOraScadenzaPossibiltaValutazione: null";
+			if(eseguitoDaUtente != null)
+				msgInfo += "; eseguitoDaUtente: " + eseguitoDaUtente;
+			else
+				msgInfo += "; eseguitoDaUtente: null";
+			LOGGER.info(Utils.getLogMessage("GET /workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}" + msgInfo));
+
+			if(!tokenService.checkTokenAndDelete(token)) {
+				String msg = "Impossibile trovare il token passato token: " + token;
+				LOGGER.error(msg);
+				return new ResponseState(true, msg);
+			}
+
+			WorkflowInfo workflowInCorso = accreditamento.getWorkflowInCorso();
+			if(workflowInCorso == null)
+				throw new Exception("WorkflowController - SetStatoFromBonita: Impossibile ricavare il workflow in corso per l'accreaditamento id: " + accreditamento.getId());
+			if(workflowInCorso.getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
+				if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO) {
+					if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
+						valutazioneService.updateValutazioniNonDate(accreditamentoId);
+					}
+					if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
+						//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
+						DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+						Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
+						LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+						valutazioneService.dataOraScadenzaPossibilitaValutazioneCRECM(accreditamentoId, ldt);
+					}
+				} else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD) {
+					if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
+						//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
+						DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+						Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
+						LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+						valutazioneService.dataOraScadenzaPossibilitaValutazione(accreditamentoId, ldt);
+					}
+				}
+			}else if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
 				if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
 					valutazioneService.updateValutazioniNonDate(accreditamentoId);
 				}
@@ -85,46 +116,32 @@ public class WorkflowController {
 					LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 					valutazioneService.dataOraScadenzaPossibilitaValutazioneCRECM(accreditamentoId, ldt);
 				}
-			} else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD) {
-				if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
-					//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
-					DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-					Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
-					LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-					valutazioneService.dataOraScadenzaPossibilitaValutazione(accreditamentoId, ldt);
-				}
 			}
-		}else if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
-			if(numeroValutazioniNonDate != null && numeroValutazioniNonDate.intValue() > 0){
-				valutazioneService.updateValutazioniNonDate(accreditamentoId);
+
+			//modifico lo stato
+			if(eseguitoDaUtente != null){
+				accreditamentoService.changeState(accreditamentoId, stato, eseguitoDaUtente);
+			} else {
+				accreditamentoService.changeState(accreditamentoId, stato);
 			}
-			if(dataOraScadenzaPossibiltaValutazione != null && !dataOraScadenzaPossibiltaValutazione.isEmpty()) {
-				//la data viene passata come stringa in formato yyyy-MM-dd'T'HH:mm:ss
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-				Date date = df.parse(dataOraScadenzaPossibiltaValutazione);
-				LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-				valutazioneService.dataOraScadenzaPossibilitaValutazioneCRECM(accreditamentoId, ldt);
+
+			return new ResponseState(false, "Stato modificato");
+
+	/*
+			Account account = accountRepository.findOneByUsername("provider").orElse(null);
+			if(account != null) {
+				workflowService.saveOrUpdateBonitaUserByAccount(account);
 			}
+	 */
+			//TODO modifica stato della domanda da parte del flusso
+			//lo facciamo cosi in modo tale da non dover disabilitare la cache di hibernate
+			//accreditamentoService.setStato(accreditamentoId, stato);
+		}
+		//non sono ancora arrivate le modifiche su DB
+		else {
+			return new ResponseState(true, "Timeout: Applicativo non allineato");
 		}
 
-		//modifico lo stato
-		if(eseguitoDaUtente != null){
-			accreditamentoService.changeState(accreditamentoId, stato, eseguitoDaUtente);
-		} else {
-			accreditamentoService.changeState(accreditamentoId, stato);
-		}
-
-		return new ResponseState(false, "Stato modificato");
-
-/*
-		Account account = accountRepository.findOneByUsername("provider").orElse(null);
-		if(account != null) {
-			workflowService.saveOrUpdateBonitaUserByAccount(account);
-		}
- */
-		//TODO modifica stato della domanda da parte del flusso
-		//lo facciamo cosi in modo tale da non dover disabilitare la cache di hibernate
-		//accreditamentoService.setStato(accreditamentoId, stato);
 	}
 
 	/*** WORKFLOW ***/

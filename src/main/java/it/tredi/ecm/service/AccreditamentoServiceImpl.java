@@ -15,7 +15,6 @@ import java.util.Set;
 
 import javax.transaction.Transactional;
 
-import org.elasticsearch.index.analysis.GermanStemTokenFilterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +62,7 @@ import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 
 @Service
 public class AccreditamentoServiceImpl implements AccreditamentoService {
@@ -106,6 +106,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private AuditService auditService;
 
 	@Autowired private DiffService diffService;
+
+	@Autowired private TokenService tokenService;
+
+
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -329,6 +333,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void inviaDomandaAccreditamento(Long accreditamentoId) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Invio domanda di Accreditamento " + accreditamentoId + " alla segreteria"));
 
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
 		if(accreditamento.getDataInvio() == null)
 			accreditamento.setDataInvio(LocalDate.now());
@@ -360,6 +367,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//accreditamentoRepository.save(accreditamento);
 		saveAndAudit(accreditamento);
 
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
+
 	}
 
 	@Override
@@ -387,6 +397,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void inviaValutazioneSegreteriaAssegnamentoProvvisorio(Long accreditamentoId, String valutazioneComplessiva, Set<Account> referee) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Assegnamento domanda di Accreditamento Provvisoria" + accreditamentoId + " ad un gruppo CRECM"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Account user = Utils.getAuthenticatedUser().getAccount();
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, user.getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -410,7 +424,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//il numero minimo di valutazioni necessarie (se 3 Referee -> minimo 2)
 		Integer numeroValutazioniCrecmRichieste = new Integer(usernameWorkflowValutatoriCrecm.size() - 1);
+
 		workflowService.eseguiTaskValutazioneAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	/* salvataggio della prima valutazione della segreteria della domanda standard, blocca e storicizza valutazione per poi azzerarla e riabilitarla subito
@@ -419,6 +437,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void inviaValutazioneSegreteriaAssegnamentoStandard(Long accreditamentoId, String valutazioneComplessiva, VerbaleValutazioneSulCampo verbale) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio valutazione segreteria assegnamento STANDARD della domanda di Accreditamento " + accreditamentoId));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Account user = Utils.getAuthenticatedUser().getAccount();
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, user.getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -463,6 +485,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//il nome del metodo è un pò ingannevole
 		workflowService.eseguiTaskValutazioneAssegnazioneTeamLeaderForCurrentUser(accreditamento, verbale.getTeamLeader().getUsernameWorkflow());
+
+		//rilascio semaforo Bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	/* Valutazione del provider. Salva la valutazione complessiva, blocca e storicizza la valutazione, aggiorna le valutazioni (dell'utente) e avvisa Bonita che questo utente ha eseguito
@@ -470,6 +495,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	@Transactional
 	public void inviaValutazioneCrecmProvvisorio(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Salvataggio valutazione CRECM della domanda di Accreditamento Provvisorio" + accreditamentoId));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Account user = Utils.getAuthenticatedUser().getAccount();
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, user.getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -480,6 +510,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		user.setDomandeNonValutate(new HashSet<Accreditamento>());
 		accountRepository.save(user);
 		workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	private void bloccaAndStoricizzaValutazione(Valutazione valutazione, String valutazioneComplessiva, AccreditamentoStatoEnum stato) throws Exception {
@@ -600,6 +633,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void inviaValutazioneTeamLeaderStandard(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invia Valutazione TeamLeader " + accreditamentoId));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Account user = Utils.getAuthenticatedUser().getAccount();
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, user.getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -612,6 +649,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		user.setValutazioniNonDate(0);
 		user.setDomandeNonValutate(new HashSet<Accreditamento>());
 		accountRepository.save(user);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
@@ -688,6 +728,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void riassegnaGruppoCrecm(Long accreditamentoId, Set<Account> refereeGroup) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Riassegnamento domanda di Accreditamento " + accreditamentoId + " ad un ALTRO gruppo CRECM"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
 		// crea le valutazioni per i nuovi referee
@@ -710,6 +754,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(numeroValutazioniCrecmRichieste == 0)
 			numeroValutazioniCrecmRichieste = 1;
 		workflowService.eseguiTaskAssegnazioneCrecmForCurrentUser(accreditamento, usernameWorkflowValutatoriCrecm, numeroValutazioniCrecmRichieste);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	/* approva/nega le modifiche al provider, blocca e storicizza la valutazione e procede nel riassegnare la valutazione della domanda al gruppo Crecm
@@ -717,6 +764,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void inviaValutazioneSegreteriaProvvisorio(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio valutazione segreteria e riassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
@@ -745,6 +796,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//saveAndAudit(accreditamento);
 
 		workflowService.eseguiTaskValutazioneSegreteriaForCurrentUser(accreditamento, false, usernameWorkflowValutatoriCrecm);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	/* approva/nega le modifiche al provider, blocca e storicizza la valutazione e procede nel riassegnare la valutazione della domanda al Team Leader
@@ -752,6 +806,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void inviaValutazioneSegreteriaStandard(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio valutazione segreteria e riassegnamento domanda di Accreditamento " + accreditamentoId + " allo STESSO gruppo CRECM"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Valutazione valutazioneSegreteria = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		AccreditamentoStatoEnum statoIntegrazione = accreditamento.getStatoUltimaIntegrazione();
@@ -784,6 +842,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		emailService.inviaNotificaATeamLeader(accountTeamLeader.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
 		workflowService.eseguiTaskValutazioneSegreteriaTeamLeaderForCurrentUser(accreditamento, false, usernameWorkflowTeamLeader);
 
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	//TODO al secondo giro e al terzo questo sarebbe il valuta domanda della segreteria.. sarebbe da fare un corrispettivo per lo standard
@@ -897,6 +957,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void presaVisione(Long accreditamentoId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Presa visione della conferma dei dati da parte del provider e cambiamento stato della domanda " + accreditamentoId + " in INS_ODG"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
 		accreditamento.setDataInserimentoOdg(LocalDate.now());
@@ -922,12 +986,19 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		else if (accreditamento.isStandard())
 			workflowService.eseguiTaskValutazioneSegreteriaTeamLeaderForCurrentUser(accreditamento, true, null);
 
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
+
 	}
 
 	@Override
 	@Transactional
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " alla Firma"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
 			accreditamento.setGiorniIntegrazione(giorniTimer);
@@ -937,30 +1008,43 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamentoRepository.save(accreditamento);
 		//saveAndAudit(accreditamento);
 
-
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
 			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
 			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
 		}
 		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
 	@Transactional
 	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " al Protocollo"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		File fileFirmato = fileService.getFile(fileId);
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setRichiestaIntegrazione(fileFirmato);
 		saveAndAudit(accreditamento);
 		workflowService.eseguiTaskFirmaIntegrazioneForCurrentUser(accreditamento);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
 	@Transactional
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " alla Firma"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setGiorniPreavvisoRigetto(giorniTimer);
 		//accreditamentoRepository.save(accreditamento);
@@ -973,17 +1057,27 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
 		}
 		workflowService.eseguiTaskRichiestaPreavvisoRigettoForCurrentUser(accreditamento, timerIntegrazioneRigetto);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
 	@Transactional
 	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " al Protocollo"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		File fileFirmato = fileService.getFile(fileId);
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setRichiestaPreavvisoRigetto(fileFirmato);
 		saveAndAudit(accreditamento);
 		workflowService.eseguiTaskFirmaPreavvisoRigettoForCurrentUser(accreditamento);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	/* invia l'integrazione del provider, sblocca i campi relativi e li flagga nella valutazione della segreteria
@@ -992,6 +1086,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void inviaIntegrazione(Long accreditamentoId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Integrazione della domanda " + accreditamentoId + " inviata alla segreteria per essere valutata"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
@@ -1056,7 +1153,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 								}
 							}
 						}
-	//					fieldIntegrazione.setId(id--);
+						//fieldIntegrazione.setId(id--);
 						fieldIntegrazione.setFittizio(true);
 						fieldIntegrazioneListFITTIZIA.add(fieldIntegrazione);
 					}
@@ -1083,11 +1180,18 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		else if(accreditamento.isPreavvisoRigetto()){
 			emailService.inviaConfermaReInvioIntegrazioniAccreditamento(accreditamento.isStandard(), true, accreditamento.getProvider());
 		}
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
 	public void eseguiTaskInviaIntegrazione(Long accreditamentoId) throws Exception{
 		LOGGER.debug(Utils.getLogMessage("Esecuzione Task - Integrazione della domanda " + accreditamentoId));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
 		if(accreditamento.isIntegrazione()){
@@ -1099,6 +1203,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		else if(accreditamento.isModificaDati()){
 			workflowService.eseguiTaskIntegrazioneForCurrentUser(accreditamento);
 		}
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 
@@ -1370,9 +1477,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			if(task.isAssigned())
 				return false;
-
 			}
-
 			return true;
 		}
 		else
@@ -1414,7 +1519,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 					if(!task.isAssigned())
 						return false;
 				}
-
 				return true;
 			}
 		}
@@ -1484,7 +1588,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			if(task == null){
 				return false;
 			}
-
 			if(fields == null || fields.isEmpty())
 				return true;
 		}
@@ -1594,6 +1697,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		if(workflowInCorso == null)
 			throw new Exception("AccreditamentoService - changeState: Impossibile ricavare il workflow in corso per l'accreaditamento id: " + accreditamento.getId());
 		Boolean presaVisione = false;
+		Boolean missedTLValutazione = false;
 		//In alcuni stati devono essere effettuate altre operazioni
 		//Creazione pdf
 		if(workflowInCorso.getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
@@ -1746,6 +1850,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 				for(Valutazione v : valutazioni){
 					if((v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE || v.getTipoValutazione() == ValutazioneTipoEnum.TEAM_LEADER) && v.getDataValutazione() == null){
+						//se la valutazione è del team leader riportiamo la mancata valutazione nella history del flusso
+						if(v.getTipoValutazione() == ValutazioneTipoEnum.TEAM_LEADER)
+							missedTLValutazione = true;
 						valutazioneService.delete(v);
 					}
 				}
@@ -1795,7 +1902,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 				workflowInCorso.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
 			} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
-				//Cancelliamo le Valutazioni non completate dei referee e del team leader
+				//Cancelliamo le Valutazioni non completate dei referee
 				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 				for(Valutazione v : valutazioni){
 					if((v.getTipoValutazione() == ValutazioneTipoEnum.REFEREE) && v.getDataValutazione() == null){
@@ -1827,9 +1934,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//salvo history
 		if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI)
-			accreditamentoStatoHistoryService.createHistoryFine(accreditamento, workflowInCorso.getProcessInstanceId(), stato, accreditamento.getStatoVariazioneDati(), LocalDateTime.now(), presaVisione);
+			accreditamentoStatoHistoryService.createHistoryFine(accreditamento, workflowInCorso.getProcessInstanceId(), stato, accreditamento.getStatoVariazioneDati(), LocalDateTime.now(), presaVisione, missedTLValutazione);
 		else
-			accreditamentoStatoHistoryService.createHistoryFine(accreditamento, workflowInCorso.getProcessInstanceId(), stato, accreditamento.getStato(), LocalDateTime.now(), presaVisione);
+			accreditamentoStatoHistoryService.createHistoryFine(accreditamento, workflowInCorso.getProcessInstanceId(), stato, accreditamento.getStato(), LocalDateTime.now(), presaVisione, missedTLValutazione);
 
 
 		//TODO se si chiama il servizio di protocollazione verrà settato uno stato intermedio di attesa protocollazione
@@ -1872,6 +1979,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	public void prendiInCarico(Long accreditamentoId, CurrentUser currentUser) throws Exception{
+		LOGGER.debug(Utils.getLogMessage("Accreditamento: " + accreditamentoId + " preso in carico dall'utente: " + currentUser.getUsername()));
+
+		//semaforo Bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		Account segretarioEcm = currentUser.getAccount();
 		Valutazione valutazione = new Valutazione(segretarioEcm, accreditamento, ValutazioneTipoEnum.SEGRETERIA_ECM);
@@ -1901,6 +2013,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//flusso Bonita
 		workflowService.prendiTaskInCarica(currentUser, accreditamento);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	private Set<FieldValutazioneAccreditamento> handleValutazioniDefaultDiff(Set<FieldValutazioneAccreditamento> valutazioniDiff, Set<FieldValutazioneAccreditamento> valutazioniDefault) {
@@ -1941,7 +2056,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	@Transactional
 	public void inserisciInValutazioneCommissioneForSystemUser(Long accreditamentoId) throws Exception{
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		workflowService.eseguiTaskInsOdgForSystemUser(getAccreditamento(accreditamentoId));
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
@@ -1960,9 +2081,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	public void inviaValutazioneCommissione(Seduta seduta, Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception{
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		workflowService.eseguiTaskInserimentoEsitoOdgForCurrentUser(getAccreditamento(accreditamentoId), stato);
 		if(!getAccreditamento(accreditamentoId).isVariazioneDati())
 			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(seduta.getData(), accreditamentoId, stato);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
@@ -2038,6 +2165,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void inviaValutazioneSulCampoStandard(Long accreditamentoId, String valutazioneComplessiva, File verbalePdf, AccreditamentoStatoEnum destinazioneStatoDomandaStandard, File allegato1, File allegato2, File allegato3) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio verbale valutazione sul campo della domanda di Accreditamento " + accreditamentoId));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, Utils.getAuthenticatedUser().getAccount().getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 
@@ -2060,6 +2191,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		if(destinazioneStatoDomandaStandard == AccreditamentoStatoEnum.ACCREDITATO)
 			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(accreditamento.getVerbaleValutazioneSulCampo().getGiorno(), accreditamentoId, destinazioneStatoDomandaStandard);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	//inserisce il sottoscrivente del verbale sul campo
@@ -2134,6 +2268,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void avviaFlussoVariazioneDati(Accreditamento accreditamento) throws Exception {
 		LOGGER.info("Avvio del flusso di Variazione dei Dati dell'Accreditamento: " + accreditamento.getId());
+		Long accreditamentoId = accreditamento.getId();
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Account segreteria = Utils.getAuthenticatedUser().getAccount();
 		workflowService.createWorkflowAccreditamentoVariazioneDati(Utils.getAuthenticatedUser(), accreditamento);
 
@@ -2145,17 +2284,27 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		valutazioneSegreteria.setValutazioni(fieldValutazioneAccreditamentoService.createAllFieldValutazioneAndSetEsitoAndEnabled(true, false, valutazioneSegreteria.getAccreditamento()));
 
 		valutazioneService.save(valutazioneSegreteria);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
 	public void inviaCampiSbloccatiVariazioneDati(Long accreditamentoId) throws Exception {
 		LOGGER.info("Invio dei campi sbloccati in Variazione dei Dati dell'Accreditamento: " + accreditamentoId);
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		//i giorni per modificare la domanda sono 10
 		int giorniPerModifica = ecmProperties.getGiorniVariazioneDatiAccreditamento();
 		Long timerIntegrazioneRigetto = giorniPerModifica * millisecondiInGiorno;
 
 		workflowService.eseguiTaskRichiestaIntegrazioneForCurrentUser(accreditamento, timerIntegrazioneRigetto);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
@@ -2170,6 +2319,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	 * creandogli una valutazione tutta valutata positivamente e sbloccandogli i campi di cui valutare l'integrazione del provider */
 	@Override
 	public void inviaValutazioneSegreteriaVariazioneDati(Long accreditamentoId, String valutazioneComplessiva, AccreditamentoStatoEnum destinazioneVariazioneDati, Account refereeVariazioneDati) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio valutazione segreteria della variazione dati per l'accreditamento: " + accreditamentoId));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Account user = Utils.getAuthenticatedUser().getAccount();
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, user.getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -2179,29 +2333,37 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		bloccaAndStoricizzaValutazione(valutazione, valutazioneComplessiva, accreditamento.getStato());
 
 		if(destinazioneVariazioneDati == AccreditamentoStatoEnum.CONCLUSO) {
-			workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, null, null, destinazioneVariazioneDati);
 			//elimino le vecchie valutazioni
 			Set<Valutazione> valutazioniVariazioneDati = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamento.getId());
 			for(Valutazione v : valutazioniVariazioneDati) {
 				valutazioneService.delete(v);
 			}
+			workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, null, null, destinazioneVariazioneDati);
 		}
 		else {
 			//viene messo in una lista per sfruttare lo stesso metodo
 			List<String> valutatore = new ArrayList<String>();
 			valutatore.add(refereeVariazioneDati.getUsername());
-			workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, valutatore, 1, destinazioneVariazioneDati);
 			//creo la valutazione per il referee
 			Valutazione valutazioneReferee = new Valutazione(refereeVariazioneDati, accreditamento, ValutazioneTipoEnum.REFEREE);
 			//metodo per la gestione delle valutazioni
 			valutazioneService.initializeFieldValutazioni(valutazioneReferee, accreditamento);
 			valutazioneService.save(valutazioneReferee);
 			//emailService.inviaNotificaAReferee(refereeVariazioneDati.getEmail(), accreditamento.getProvider().getDenominazioneLegale());
+			workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, valutatore, 1, destinazioneVariazioneDati);
 		}
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
 	public void inviaValutazioneCrecmVariazioneDati(Long accreditamentoId, String valutazioneComplessiva) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio valutazione CRECM della variazione dati per l'accreditamento: " + accreditamentoId));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		Account user = Utils.getAuthenticatedUser().getAccount();
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, user.getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
@@ -2211,6 +2373,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		bloccaAndStoricizzaValutazione(valutazione, valutazioneComplessiva, accreditamento.getStato());
 
 		workflowService.eseguiTaskValutazioneCrecmForCurrentUser(accreditamento);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Deprecated
@@ -2352,8 +2517,17 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	//interrompe il flusso di accreditamento e avvia la procedura di conclusione
 	@Override
 	public void conclusioneProcedimento(Accreditamento accreditamento, CurrentUser currentUser) throws Exception {
+		Long accreditamentoId = accreditamento.getId();
+		LOGGER.debug(Utils.getLogMessage("Avvio della procedura di conclusione dell'accreditamento: " + accreditamentoId));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		//chiamata a Bonita che annulla il vecchio flusso e apre il nuovo
 		workflowService.createWorkflowAccreditamentoConclusioneProcedimento(currentUser, accreditamento);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
@@ -2441,7 +2615,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public void generaDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, Long providerId) throws Exception {
+	public void generaDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception {
 		LOGGER.info("Genera PDF Decreto Decadenza per provider: " + providerId);
 		Accreditamento accreditamento = null;
 		accreditamento = getAccreditamentoAttivoForProvider(providerId);
@@ -2454,7 +2628,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		}
 
-		PdfAccreditamentoProvvisorioDecretoDecadenzaInfo decadenzaInfo = new PdfAccreditamentoProvvisorioDecretoDecadenzaInfo(accreditamento);
+		PdfAccreditamentoProvvisorioDecretoDecadenzaInfo decadenzaInfo = new PdfAccreditamentoProvvisorioDecretoDecadenzaInfo(accreditamento, wrapper);
 		pdfService.creaPdfAccreditamentoProvvisorioDecretoDecadenza(byteArrayOutputStreamAccreditata, decadenzaInfo);
 	}
 
@@ -2485,6 +2659,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Decreto Accreditamento della domanda " + accreditamentoId + " al Protocollo"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		File fileFirmato = fileService.getFile(fileId);
 		fileFirmato.setDataDelibera(dataDelibera);
 		fileFirmato.setNumeroDelibera(numeroDelibera);
@@ -2493,6 +2671,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.setDecretoAccreditamento(fileFirmato);
 		saveAndAudit(accreditamento);
 		workflowService.eseguiTaskFirmaAccreditamentoForCurrentUser(accreditamento);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 
 	@Override
@@ -2514,6 +2695,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Decreto Diniego della domanda " + accreditamentoId + " al Protocollo"));
+
+		//semaforo bonita
+		tokenService.createBonitaSemaphore(accreditamentoId);
+
 		File fileFirmato = fileService.getFile(fileId);
 		fileFirmato.setDataDelibera(dataDelibera);
 		fileFirmato.setNumeroDelibera(numeroDelibera);
@@ -2522,5 +2707,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		accreditamento.setDecretoDiniego(fileFirmato);
 		saveAndAudit(accreditamento);
 		workflowService.eseguiTaskFirmaDiniegoForCurrentUser(accreditamento);
+
+		//rilascio semaforo bonita
+		tokenService.removeBonitaSemaphore(accreditamentoId);
 	}
 }

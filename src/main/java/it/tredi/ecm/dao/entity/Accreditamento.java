@@ -154,6 +154,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 		this.stato = AccreditamentoStatoEnum.BOZZA;
 	}
 
+
 	public void enableAllIdField(){
 		//PROVIDER FIELD
 		for(IdFieldEnum id :  IdFieldEnum.getAllForSubset(SubSetFieldEnum.PROVIDER)){

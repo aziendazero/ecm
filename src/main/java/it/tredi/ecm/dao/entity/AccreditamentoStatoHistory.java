@@ -35,4 +35,6 @@ public class AccreditamentoStatoHistory extends BaseEntityDefaultId{
 
 	private boolean presaVisione;
 
+	private Boolean mancataValutazioneTeamLeader;
+
 }

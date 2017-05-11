@@ -1019,8 +1019,8 @@
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.decretoAccreditamento.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.decretoAccreditamento.id}|}"></a></div>
-													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoAccreditamento.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.decretoAccreditamento.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.decretoAccreditamento.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
-													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoAccreditamento.isDeliberato()}"><div class="value"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${accreditamentoWrapper.accreditamento.decretoAccreditamento.numeroDelibera},${#temporals.format(accreditamentoWrapper.accreditamento.decretoAccreditamento.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoAccreditamento.isProtocollato()}"><div class="value"> <i class="fa fa-pencil"> </i> <span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.decretoAccreditamento.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.decretoAccreditamento.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoAccreditamento.isDeliberato()}"><div class="value"> <i class="fa fa-legal"> </i> <span th:text="#{label.info_delibera(${accreditamentoWrapper.accreditamento.decretoAccreditamento.numeroDelibera},${#temporals.format(accreditamentoWrapper.accreditamento.decretoAccreditamento.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 
@@ -1035,8 +1035,8 @@
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.decretoDiniego.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.decretoDiniego.id}|}"></a></div>
-													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoDiniego.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.decretoDiniego.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.decretoDiniego.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
-													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoDiniego.isDeliberato()}"><div class="value"><i class="fa fa-legal"> </i><span th:text="#{label.info_delibera(${accreditamentoWrapper.accreditamento.decretoDiniego.numeroDelibera},${#temporals.format(accreditamentoWrapper.accreditamento.decretoDiniego.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoDiniego.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i> <span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.decretoDiniego.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.decretoDiniego.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.decretoDiniego.isDeliberato()}"><div class="value"><i class="fa fa-legal"> </i> <span th:text="#{label.info_delibera(${accreditamentoWrapper.accreditamento.decretoDiniego.numeroDelibera},${#temporals.format(accreditamentoWrapper.accreditamento.decretoDiniego.dataDelibera,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 
@@ -1050,7 +1050,7 @@
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.richiestaIntegrazione.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.richiestaIntegrazione.id}|}"></a></div>
-													<div class="" th:if="${accreditamentoWrapper.accreditamento.richiestaIntegrazione.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.richiestaIntegrazione.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.richiestaIntegrazione.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.richiestaIntegrazione.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i> <span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.richiestaIntegrazione.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.richiestaIntegrazione.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 
@@ -1063,7 +1063,7 @@
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.id}|}"></a></div>
-													<div class="" th:if="${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i> <span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.richiestaPreavvisoRigetto.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 											</div>
 
@@ -1080,7 +1080,7 @@
 												</label>
 												<div>
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.id}|}"></a></div>
-													<div class="" th:if="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i><span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
+													<div class="" th:if="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.isProtocollato()}"><div class="value"><i class="fa fa-pencil"> </i> <span th:text="#{label.info_protocollo(${#numbers.formatInteger(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.protocollo.numero,0)},${#temporals.format(accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf.protocollo.data,'dd/MM/yyyy')})}"></span></div></div>
 												</div>
 
 												<!-- Allegati opzionali -->
@@ -1481,7 +1481,8 @@
 													<tr th:each="history, row : ${accreditamentoHistoryList}">
 														<td th:text="${history.dataInizio != null} ? ${#temporals.format(history.dataInizio,'dd/MM/yyyy - HH:mm')} : ''"></td>
 														<td th:unless="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome}"></td>
-														<td th:if="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome + ' ' + (history?.presaVisione ? #messages.msg('label.presa_visione_segreteria') : '')}"></td>
+														<td th:if="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG and history?.mancataValutazioneTeamLeader == null}" th:text="${history?.stato.nome + ' ' + (history?.presaVisione ? #messages.msg('label.presa_visione_segreteria') : '')}"></td>
+														<td th:if="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG and history?.mancataValutazioneTeamLeader != null}" th:text="${history?.stato.nome + ' ' + (history?.mancataValutazioneTeamLeader ? #messages.msg('label.valutazione_team_leader_non_effettuata') : '')}"></td>
 														<!-- td th:text="${history?.account?.username}"></td -->
 													</tr>
 												</tbody>

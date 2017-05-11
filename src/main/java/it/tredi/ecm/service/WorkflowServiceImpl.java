@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-import org.omg.CosNaming.BindingIteratorPOA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ import it.tredi.bonita.api.model.UserDataModel;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Profile;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
@@ -71,6 +69,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
 	@Autowired
 	private AccreditamentoRepository accreditamentoRepository;
+
+	@Autowired
+	private AccreditamentoService accreditamentoService;
 
 	@Autowired
 	private IBonitaAPIWrapper bonitaAPIWrapper;

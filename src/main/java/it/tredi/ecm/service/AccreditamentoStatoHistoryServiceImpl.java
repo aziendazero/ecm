@@ -32,7 +32,7 @@ public class AccreditamentoStatoHistoryServiceImpl implements AccreditamentoStat
 	}
 
 	@Override
-	public void createHistoryFine(Accreditamento accreditamento, Long processInstanceId, AccreditamentoStatoEnum stato, AccreditamentoStatoEnum statoPrecedente, LocalDateTime dataInizio, boolean presaVisione) {
+	public void createHistoryFine(Accreditamento accreditamento, Long processInstanceId, AccreditamentoStatoEnum stato, AccreditamentoStatoEnum statoPrecedente, LocalDateTime dataInizio, boolean presaVisione, boolean mancataValutazioneTL) {
 		LOGGER.info("Registrazione history accreditamento");
 		AccreditamentoStatoHistory history = new AccreditamentoStatoHistory();
 		history.setAccreditamento(accreditamento);
@@ -42,6 +42,8 @@ public class AccreditamentoStatoHistoryServiceImpl implements AccreditamentoStat
 		history.setAccount(null);
 		history.setPrevStato(statoPrecedente);
 		history.setPresaVisione(presaVisione);
+		if(accreditamento.isStandard() && stato == AccreditamentoStatoEnum.INS_ODG)
+			history.setMancataValutazioneTeamLeader(mancataValutazioneTL);
 		accreditamentoStatoHistoryRepository.save(history);
 	}
 
