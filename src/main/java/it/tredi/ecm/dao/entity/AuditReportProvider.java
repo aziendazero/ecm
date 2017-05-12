@@ -1,9 +1,11 @@
 package it.tredi.ecm.dao.entity;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,6 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
@@ -23,7 +26,14 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name="audit_report_provider")
-public class AuditReportProvider extends AuditReportProviderBase {
+public class AuditReportProvider extends BaseEntityDefaultId {
+
+	@ManyToOne
+	private Provider provider;
+	@Column(name="data_inizio")
+	private LocalDateTime dataInizio;
+	@Column(name="data_fine")
+	private LocalDateTime dataFine;
 
 	@Enumerated(EnumType.STRING)
 	private ProviderStatoEnum status;
@@ -53,11 +63,10 @@ public class AuditReportProvider extends AuditReportProviderBase {
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
 
 	public AuditReportProvider() {
-		super(null);
 	}
 
 	public AuditReportProvider(Provider provider, DatiAccreditamento datiAccreditamento) {
-		super(provider);
+		this.provider = provider;
 		this.status = provider.getStatus();
 		this.naturaOrganizzazione = provider.getNaturaOrganizzazione();
 		this.tipoOrganizzatore = provider.getTipoOrganizzatore();
