@@ -1,10 +1,6 @@
 package it.tredi.ecm.bootstrap;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -15,34 +11,18 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import it.tredi.ecm.dao.entity.Account;
-import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.Disciplina;
-import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
-import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
-import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
-import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
-import it.tredi.ecm.dao.enumlist.Ruolo;
-import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
-import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AuditReportProviderRepository;
-import it.tredi.ecm.dao.repository.PersonaRepository;
 import it.tredi.ecm.dao.repository.ProviderRepository;
-import it.tredi.ecm.dao.repository.SedeRepository;
-import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AuditReportProviderService;
-import it.tredi.ecm.service.DatiAccreditamentoService;
-import it.tredi.ecm.service.DisciplinaService;
-import it.tredi.ecm.service.WorkflowService;
 
 @Component
-//@org.springframework.context.annotation.Profile({"simone","abarducci", "tom", "joe19","dev"})
-public class AuditReportProvider implements ApplicationListener<ContextRefreshedEvent> {
-	private final static Logger LOGGER = LoggerFactory.getLogger(AuditReportProvider.class);
+/**
+ * Bootstrap utilizzato per aggiornare il pregresso delle AuditReportProvider di tutti i provider presenti
+ *
+ */
+public class AuditReportProviderLoader implements ApplicationListener<ContextRefreshedEvent> {
+	private final static Logger LOGGER = LoggerFactory.getLogger(AuditReportProviderLoader.class);
 
 	@Autowired private ProviderRepository providerRepository;
 	@Autowired private AuditReportProviderRepository auditReportProviderRepository;
