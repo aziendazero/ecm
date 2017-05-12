@@ -2,6 +2,7 @@ package it.tredi.ecm;
 
 import javax.transaction.Transactional;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import it.tredi.ecm.service.AuditReportProviderService;
 @ActiveProfiles("abarducci")
 @WithUserDetails("segreteria1")
 @Rollback(false)
-//@Ignore
+@Ignore
 public class AuditReportProviderTest {
 
 	@Autowired private ProviderRepository providerRepository;
