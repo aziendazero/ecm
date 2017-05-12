@@ -107,4 +107,6 @@
 
 	<include file="20170511_001_aggiunta_discipline_ad_anagraferegionalecrediti.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170511_002_aggiunto_AuditReportProvider.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

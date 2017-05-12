@@ -109,6 +109,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private TokenService tokenService;
 
+	@Autowired private AuditReportProviderService auditReportProviderService;
 
 
 	@Override
@@ -260,6 +261,34 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamento;
 	}
 
+
+	/**
+	 * Restituisce la domanda di accreditamento attiva se presente altrimenti l'ultimo Accreditamento inserito
+	 * */
+	@Override
+	public Accreditamento getAccreditamentoAttivoOppureUltimoForProvider(Long providerId) throws AccreditamentoNotFoundException{
+		LOGGER.debug(Utils.getLogMessage("Recupero eventuale accreditamento attivo oppure l'ultimo per il provider: " + providerId));
+
+		Accreditamento accreditamento = null;
+		try {
+			accreditamento = getAccreditamentoAttivoForProvider(providerId);
+			LOGGER.info("Selezionato come corrente l'accreditamento attivo per il provider: " + providerId);
+		} catch (Exception e) {
+			//Attivo non trovato recupero l'ultimo
+			Set<Accreditamento> listaAccreditamentiAttivi = accreditamentoRepository.findAllByProviderIdOrderByDataInvioDesc(providerId);
+			if(listaAccreditamentiAttivi != null && !listaAccreditamentiAttivi.isEmpty()){
+				LOGGER.info("Trovati " + listaAccreditamentiAttivi.size() + " accreditamenti per il provider: " + providerId);
+				//prendo il primo (quello che sarà il primo a scadere)
+				accreditamento = listaAccreditamentiAttivi.iterator().next();
+				LOGGER.info("Selezionato come corrente l'ultimo accreditamento: " + accreditamento.getId() + " data invio il " + accreditamento.getDataInvio());
+			}else{
+				throw new AccreditamentoNotFoundException("Nessun Accreditamento trovato per il provider " + providerId);
+			}
+		}
+
+		return accreditamento;
+	}
+
 	@Override
 	public AccreditamentoStatoEnum getStatoAccreditamento(Long accreditamentoId) {
 		return accreditamentoRepository.getStatoByAccreditamentoId(accreditamentoId);
@@ -275,11 +304,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	public void saveAndAudit(Accreditamento accreditamento) {
 		accreditamentoRepository.saveAndFlush(accreditamento);
-		auditService.commitForCurrrentUser(new AccreditamentoAudit(accreditamento));
+		auditService.commitForCurrentUser(new AccreditamentoAudit(accreditamento));
+		auditReportProviderService.auditAccreditamentoProvider(accreditamento.getProvider());
 	}
 
 	public void audit(Accreditamento accreditamento) {
-		auditService.commitForCurrrentUser(new AccreditamentoAudit(accreditamento));
+		auditService.commitForCurrentUser(new AccreditamentoAudit(accreditamento));
+		auditReportProviderService.auditAccreditamentoProvider(accreditamento.getProvider());
 	}
 
 	@Override

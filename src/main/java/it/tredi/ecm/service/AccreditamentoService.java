@@ -145,4 +145,6 @@ public interface AccreditamentoService{
 	public void generaDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception;
 
 	public boolean canRiassegnaRefereeVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
+
+	public Accreditamento getAccreditamentoAttivoOppureUltimoForProvider(Long providerId) throws AccreditamentoNotFoundException;
 }

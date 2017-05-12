@@ -23,6 +23,7 @@ public class SedeServiceImpl implements SedeService{
 	@Autowired private SedeRepository sedeRepository;
 	@Autowired private ProviderService providerService;
 	@Autowired private AuditService auditService;
+	@Autowired private AuditReportProviderService auditReportProviderService;
 
 	@Override
 	public Sede getSede(Long id) {
@@ -39,8 +40,10 @@ public class SedeServiceImpl implements SedeService{
 	}
 
 	private void saveAuditProvider(Sede sede) {
-		if(!sede.isDirty() && sede.getProvider() != null)
-			auditService.commitForCurrrentUser(new ProviderAudit(sede.getProvider()));
+		if(!sede.isDirty() && sede.getProvider() != null) {
+			auditService.commitForCurrentUser(new ProviderAudit(sede.getProvider()));
+			auditReportProviderService.auditAccreditamentoProvider(sede.getProvider());
+		}
 	}
 
 

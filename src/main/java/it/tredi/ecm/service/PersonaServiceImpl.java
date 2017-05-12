@@ -71,7 +71,7 @@ public class PersonaServiceImpl implements PersonaService {
 
 	private void saveAuditProvider(Persona persona) {
 		if(!persona.isDirty() && persona.getProvider() != null)
-			auditService.commitForCurrrentUser(new ProviderAudit(persona.getProvider()));
+			auditService.commitForCurrentUser(new ProviderAudit(persona.getProvider()));
 	}
 
 	@Override
