@@ -9,6 +9,9 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -29,8 +32,22 @@ public class AnagrafeRegionaleCrediti extends BaseEntityDefaultId{
 	private String ruolo;
 	private BigDecimal crediti;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	//@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE } )
+	@JoinTable(name = "anagrafe_regionale_crediti_discipline",
+		joinColumns = @JoinColumn(name = "anagrafe_regionale_crediti_id"),
+		inverseJoinColumns = @JoinColumn(name = "discipline_id")
+	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
+
+/*
+@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE } )
+@JoinTable(name = "post_tag",
+joinColumns = @JoinColumn(name = "post_id"),
+inverseJoinColumns = @JoinColumn(name = "tag_id")
+)
+private List<Tag> tags = new ArrayList<>();
+*/
 
 	@ManyToOne
 	private Evento evento;

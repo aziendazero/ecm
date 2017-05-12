@@ -21,5 +21,7 @@ public class AuditReportProviderBase extends BaseEntityDefaultId {
 	@Column(name="data_fine")
 	private LocalDateTime dataFine;
 
-
+	AuditReportProviderBase(Provider provider) {
+		this.provider = provider;
+	}
 }

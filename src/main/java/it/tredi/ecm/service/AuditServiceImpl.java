@@ -80,7 +80,7 @@ public class AuditServiceImpl implements AuditService {
 	}
 
 	@Override
-	public void commitForCurrrentUser(Object entity) {
+	public void commitForCurrentUser(Object entity) {
 		CurrentUser user = Utils.getAuthenticatedUser();
 		if(user != null)
 			javers.commit(user.getUsername(), entity);

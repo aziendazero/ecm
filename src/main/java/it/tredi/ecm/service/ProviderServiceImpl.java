@@ -63,6 +63,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private ProtocolloService protocolloService;
 	@Autowired private AuditService auditService;
+	@Autowired private AuditReportProviderService auditReportProviderService;
 
 	@Override
 	public Provider getProvider() {
@@ -135,7 +136,9 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 		*/
 		providerRepository.save(provider);
-		auditService.commitForCurrrentUser(new ProviderAudit(provider));
+		auditService.commitForCurrentUser(new ProviderAudit(provider));
+		auditReportProviderService.auditAccreditamentoProvider(provider);
+
 	}
 
 	@Override

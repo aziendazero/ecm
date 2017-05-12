@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170511_002_aggiunto_AuditReportProvider.xml">
+
+	<changeSet author="abarducci (generated)" id="1494545299916-1">
+		<createTable tableName="audit_report_provider">
+			<column name="id" type="BIGINT">
+				<constraints primaryKey="true" primaryKeyName="audit_report_providerPK"/>
+			</column>
+			<column name="data_fine" type="TIMESTAMP WITHOUT TIME ZONE"/>
+			<column name="data_inizio" type="TIMESTAMP WITHOUT TIME ZONE"/>
+			<column name="natura_organizzazione" type="VARCHAR(255)"/>
+			<column name="sede_legale_altro_telefono" type="VARCHAR(255)"/>
+			<column name="sede_legale_cap" type="VARCHAR(255)"/>
+			<column name="sede_legale_comune" type="VARCHAR(255)"/>
+			<column name="sede_legale_email" type="VARCHAR(255)"/>
+			<column name="sede_legale_fax" type="VARCHAR(255)"/>
+			<column name="sede_legale_indirizzo" type="VARCHAR(255)"/>
+			<column name="sede_legale_provincia" type="VARCHAR(255)"/>
+			<column name="sede_legale_telefono" type="VARCHAR(255)"/>
+			<column name="status" type="VARCHAR(255)"/>
+			<column name="tipo_organizzatore" type="VARCHAR(255)"/>
+			<column name="provider_id" type="BIGINT"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="1494545299916-2">
+		<createTable tableName="audit_report_provider_discipline">
+			<column name="audit_report_provider_id" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="disciplina_id" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="1494545299916-3">
+		<createTable tableName="audit_report_provider_procedure_formative">
+			<column name="audit_report_provider_id" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="procedure_formative" type="VARCHAR(255)"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="1494545299916-4">
+		<addPrimaryKey columnNames="audit_report_provider_id, disciplina_id" tableName="audit_report_provider_discipline"/>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="1494545299916-5">
+		<addForeignKeyConstraint baseColumnNames="disciplina_id" baseTableName="audit_report_provider_discipline" constraintName="FK_cpew37qcj70ch0lm0k5nbv8cj" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="disciplina"/>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="1494545299916-6">
+		<addForeignKeyConstraint baseColumnNames="provider_id" baseTableName="audit_report_provider" constraintName="FK_m83513tu9b8d1w6m6dk44uxln" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="provider"/>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="1494545299916-7">
+		<addForeignKeyConstraint baseColumnNames="audit_report_provider_id" baseTableName="audit_report_provider_discipline" constraintName="FK_qkake3b8f9tk1m1addmsenqlc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="audit_report_provider"/>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="1494545299916-8">
+		<addForeignKeyConstraint baseColumnNames="audit_report_provider_id" baseTableName="audit_report_provider_procedure_formative" constraintName="FK_sdvrhq4g0iuy02m48mwe0lrtw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="audit_report_provider"/>
+	</changeSet>
+
+</databaseChangeLog>

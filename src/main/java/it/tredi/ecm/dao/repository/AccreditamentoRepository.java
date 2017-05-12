@@ -17,6 +17,7 @@ import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 
 //public interface AccreditamentoRepository extends CrudRepository<Accreditamento, Long> {
 public interface AccreditamentoRepository extends JpaRepository<Accreditamento, Long> {
+	public Set<Accreditamento> findAllByProviderIdOrderByDataInvioDesc(Long providerId);
 	public Set<Accreditamento> findByProviderId(Long providerId);
 	public Set<Accreditamento> findAllByProviderIdAndTipoDomanda(Long providerId, AccreditamentoTipoEnum tipoDomanda);
 	public Set<Accreditamento> findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(Long providerId, AccreditamentoTipoEnum tipoDomanda, LocalDate data);
