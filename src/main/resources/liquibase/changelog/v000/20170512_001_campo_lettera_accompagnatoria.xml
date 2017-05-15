@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170512_001_campo_lettera_accompagnatoria.xml">
+	<changeSet author="tiommi (generated)" id="1494585010009-1">
+		<addColumn tableName="accreditamento">
+			<column name="lettera_accompagnatoria_accreditamento_id" type="int8" />
+		</addColumn>
+	</changeSet>
+	<changeSet author="tiommi (generated)" id="1494585010009-2">
+		<addColumn tableName="accreditamento">
+			<column name="lettera_accompagnatoria_diniego_id" type="int8" />
+		</addColumn>
+	</changeSet>
+	<changeSet author="tiommi (generated)" id="1494585010009-3">
+		<addForeignKeyConstraint baseColumnNames="lettera_accompagnatoria_diniego_id"
+			baseTableName="accreditamento" constraintName="FK_fwbis9nw1ikyxk8o5g9jumh3j"
+			deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+			referencedTableName="file" />
+	</changeSet>
+	<changeSet author="tiommi (generated)" id="1494585010009-4">
+		<addForeignKeyConstraint baseColumnNames="lettera_accompagnatoria_accreditamento_id"
+			baseTableName="accreditamento" constraintName="FK_o9xpxyxvm1ml2820h2qcgw3ce"
+			deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+			referencedTableName="file" />
+	</changeSet>
+</databaseChangeLog>

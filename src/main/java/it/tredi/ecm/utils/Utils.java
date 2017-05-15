@@ -14,7 +14,6 @@ import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import it.tredi.ecm.dao.entity.Field;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -308,6 +309,50 @@ public class Utils {
 		if(l != null)
 			return Timestamp.valueOf(l.atStartOfDay()).toLocalDateTime();
 		return null;
+	}
+
+	public static String buildOggetto(FileEnum fileEnum, Provider provider) throws Exception {
+		String oggetto = null;
+		switch(fileEnum) {
+		case FILE_ACCREDITAMENTO_PROVVISORIO_INTEGRAZIONE:
+			oggetto = "Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento Provvisorio - " + provider.getDenominazioneLegale();
+		break;
+		case FILE_ACCREDITAMENTO_PROVVISORIO_PREAVVISO_RIGETTO:
+			oggetto = "Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni - Accreditamento provvisorio - " + provider.getDenominazioneLegale();
+		break;
+		case FILE_LETTERA_ACCOMPAGNATORIA_PROVVISORIO_DINIEGO:
+		case FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_DINIEGO:
+			oggetto = "Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento provvisorio come provider regionale ECM di " + provider.getDenominazioneLegale() + " ai sensi delle DD.G.R. n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013";
+		break;
+		case FILE_LETTERA_ACCOMPAGNATORIA_PROVVISORIO_ACCREDITAMENTO:
+		case FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_ACCREDITAMENTO:
+			oggetto = "Programma regionale per l’Educazione Continua in Medicina (ECM): riconoscimento dell’accreditamento provvisorio come provider regionale ECM di " + provider.getDenominazioneLegale() + " ai sensi delle DD.G.R n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013";
+		break;
+		case FILE_ACCREDITAMENTO_STANDARD_INTEGRAZIONE:
+			oggetto = "Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento standard - " + provider.getDenominazioneLegale();
+		break;
+		case FILE_ACCREDITAMENTO_STANDARD_PREAVVISO_RIGETTO:
+			oggetto = "Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni - Accreditamento Standard - " + provider.getDenominazioneLegale();
+		break;
+		case FILE_LETTERA_ACCOMPAGNATORIA_STANDARD_DINIEGO:
+		case FILE_ACCREDITAMENTO_STANDARD_DECRETO_DINIEGO:
+			oggetto = "Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento standard come provider regionale ECM di " + provider.getDenominazioneLegale() + " ai sensi della D.G.R. n. 1247 del 28 settembre 2015";
+		break;
+		case FILE_LETTERA_ACCOMPAGNATORIA_STANDARD_ACCREDITAMENTO:
+		case FILE_ACCREDITAMENTO_STANDARD_DECRETO_ACCREDITAMENTO:
+			oggetto = "Programma regionale per l’Educazione Continua in Medicina (ECM): riconoscimento dell’accreditamento standard come provider regionale ECM di " + provider.getDenominazioneLegale() + " ai sensi delle DD.G.R n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013";
+		break;
+		case FILE_DICHIARAZIONE_LEGALE:
+			oggetto = "Richiesta accreditamento provvisorio del provider " + provider.getDenominazioneLegale();
+		break;
+		case FILE_RICHIESTA_ACCREDITAMENTO_STANDARD:
+			oggetto = "Richiesta accreditamento standard del provider " + provider.getDenominazioneLegale();
+		break;
+		}
+		if(oggetto == null)
+			throw new Exception("Impossibile generare Oggetto del file da protocollare");
+		else
+			return oggetto;
 	}
 
 }

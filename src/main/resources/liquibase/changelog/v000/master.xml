@@ -105,4 +105,8 @@
 
 	<include file="20170510_001_aggiunta_semaphore_executetaskbonita.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170511_001_campo_oggetto_in_protocollo.xml" relativeToChangelogFile="true"/>
+
+	<include file="20170512_001_campo_lettera_accompagnatoria.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

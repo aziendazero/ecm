@@ -90,6 +90,7 @@ public class LoginController {
 					wrapper.setNuoviMessaggi(comunicazioneService.countAllMessaggiNonLetti(currentUser.getAccount().getId()));
 					break;
 				case RESPONSABILE_SEGRETERIA_ECM:
+					wrapper.setIsResponsabileSegreteriaEcm(true);
 				case SEGRETERIA:
 					wrapper.setIsSegreteria(true);
 					wrapper.setDomandeNotTaken(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomanda(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, null, true));

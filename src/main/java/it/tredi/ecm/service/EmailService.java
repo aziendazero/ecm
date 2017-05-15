@@ -1,6 +1,5 @@
 package it.tredi.ecm.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -32,4 +31,5 @@ public interface EmailService {
 	public void inviaNotificaATeamLeader(String referee, String provider) throws Exception;
 	public void inviaConvocazioneValutazioneSulCampo(Set<String> valutatori,LocalDateTime data, String provider) throws Exception;
 	public void inviaNotificaNuovaComunicazioneForProvider(String fullName, String email) throws Exception;
+	public void inviaNotificaFirmaResponsabileSegreteriaEcm(Set<String> responsabili, Long accreditamentoId) throws Exception;
 }

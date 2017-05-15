@@ -24,11 +24,12 @@
 									<th th:text="#{label.id_proto_batch}">label.id_proto_batch</th>
 									<th th:text="#{label.fileId}">label.data_protocollo</th>
 									<th th:text="#{label.nomeFile}">label.data_protocollo</th>
-
 									<th th:text="#{label.numero_protocollo}">label.numero_protocollo</th>
 									<th th:text="#{label.data_protocollo}">label.data_protocollo</th>
-
 									<th th:text="#{label.stato_spedizione}">label.stato_spedizione</th>
+									<th th:text="#{label.id_provider}">label.id_provider</th>
+									<th th:text="#{label.denominazione_provider}">label.denominazione_provider</th>
+									<th th:text="#{label.oggetto}">label.oggetto</th>
 								</tr>
 							</thead>
 							<tbody th:remove="all-but-first">
@@ -36,12 +37,12 @@
 									<td th:text="${protocollo.idProtoBatch}"></td>
 									<td th:text="${protocollo.file.id}"></td>
 									<td th:text="${protocollo.file.nomeFile}"></td>
-
-
 									<td th:text="${protocollo.numero}"></td>
 									<td th:text="${protocollo.data} ? ${#temporals.format(protocollo.data, 'dd/MM/yyyy')}"></td>
-
 									<td th:text="${protocollo.statoSpedizione}"></td>
+									<td th:text="${protocollo.accreditamento.provider.id}"></td>
+									<td th:text="${protocollo.accreditamento.provider.denominazioneLegale}"></td>
+									<td th:text="${protocollo.oggetto}"></td>
 								</tr>
 							</tbody>
 						</table>

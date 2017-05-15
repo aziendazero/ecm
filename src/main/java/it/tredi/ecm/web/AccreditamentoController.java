@@ -1664,7 +1664,7 @@ public class AccreditamentoController {
 			inviaAlProtocolloValidator.validate(wrapper, result, "");
 
 			if(result.hasErrors()){
-				model.addAttribute("message",new Message("message.errore", "message.allegato_obbligatorio_e_firmato", "error"));
+				model.addAttribute("message",new Message("message.errore", "message.obbligatorio_allegare_decreto_lettera", "error"));
 				model.addAttribute("attesaFirmaErrors", true);
 				model.addAttribute(result);
 				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
@@ -1675,9 +1675,9 @@ public class AccreditamentoController {
 				}else if(wrapper.isCanInviaRichiestaPreavvisoRigettoInAttesaDiFirma()){
 					accreditamentoService.inviaRichiestaPreavvisoRigettoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare().getId());
 				}else if(wrapper.isCanAccreditatoInAttesaDiFirma()){
-					accreditamentoService.inviaAccreditamentoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare().getId(), wrapper.getDataDelibera(), wrapper.getNumeroDelibera());
+					accreditamentoService.inviaAccreditamentoInAttesaDiFirma(accreditamentoId, wrapper.getLetteraAccompagnatoria().getId(), wrapper.getFileDaFirmare().getId(), wrapper.getDataDelibera(), wrapper.getNumeroDelibera());
 				}else if(wrapper.isCanDiniegoInAttesaDiFirma()){
-					accreditamentoService.inviaDiniegoInAttesaDiFirma(accreditamentoId, wrapper.getFileDaFirmare().getId(), wrapper.getDataDelibera(), wrapper.getNumeroDelibera());
+					accreditamentoService.inviaDiniegoInAttesaDiFirma(accreditamentoId, wrapper.getLetteraAccompagnatoria().getId(), wrapper.getFileDaFirmare().getId(), wrapper.getDataDelibera(), wrapper.getNumeroDelibera());
 				}else{
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 					redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
@@ -1694,7 +1694,41 @@ public class AccreditamentoController {
 			}
 
 		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/reassignEvaluation"),ex);
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/inviaAttesaInFirma"),ex);
+			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+			return "redirect:/accreditamento/{accreditamentoId}/show";
+		}
+	}
+
+	@RequestMapping(value = "/accreditamento/{accreditamentoId}/aggiungiDatiDelibera", method = RequestMethod.POST)
+	public String aggiungiDatiDelibera(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper, BindingResult result,
+			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("POST /accreditamento/" + accreditamentoId + "/aggiungiDatiDelibera"));
+		try {
+			//validazione dei dati
+			inviaAlProtocolloValidator.validateAggiungiDatiDelibera(wrapper, result, "");
+
+			if(result.hasErrors()){
+				model.addAttribute("message",new Message("message.errore", "message.campi_obbligatori", "error"));
+				model.addAttribute("aggiuntaDatiDeliberaErrors", true);
+				model.addAttribute(result);
+				Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+				return goToAccreditamentoShow(model, accreditamento, wrapper);
+			}else {
+
+				accreditamentoService.aggiungiDatiDelibera(wrapper.getIdFileDelibera(), wrapper.getNumeroDelibera(), wrapper.getDataDelibera());
+
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
+				redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.dati_della_delibera_salvati", "success"));
+
+				return "redirect:/accreditamento/{accreditamentoId}/show";
+			}
+
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/aggiungiDatiDelibera"),ex);
 			redirectAttrs.addAttribute("accreditamentoId",accreditamentoId);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));

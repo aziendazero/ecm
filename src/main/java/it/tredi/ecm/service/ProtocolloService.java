@@ -20,4 +20,6 @@ public interface ProtocolloService {
 	public void protoBatchLog() throws Exception;
 	public void getStatoSpedizione() throws Exception;
 	public void protocollaBloccoProviderInUscita(Long providerId, Long fileId, MotivazioneDecadenzaEnum motivazione) throws Exception;
+	public void protocollaAllegatoFlussoDomandaInUscita(Long accreditamentoId, Long fileId, Set<Long> fileAllegatiIds)	throws Exception;
+	public void protocollaDomandaInArrivo(Long accreditamentoId, Long fileId, Set<Long> fileAllegatiIds) throws Exception;
 }

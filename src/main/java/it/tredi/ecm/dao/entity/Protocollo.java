@@ -22,6 +22,7 @@ public class Protocollo extends BaseEntityDefaultId {
 	private Integer numero;
 	private String idProtoBatch;
 	private String statoSpedizione;
+	private String oggetto;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name="action_after_protocollo")

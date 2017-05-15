@@ -469,7 +469,6 @@
 										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.numeroDelibera')} ? 'bad'">
 											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="numeroDelibera">
 												<span th:text="#{label.numero_delibera}">Numero Delibera</span>
-												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
 												<input type="text" id="numeroDelibera" class="form-control"	th:field="${accreditamentoWrapper.numeroDelibera}" />
@@ -481,7 +480,6 @@
 										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.dataDelibera')} ? 'bad'">
 											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="dataVerifica">
 												<span th:text="#{label.data_delibera}">Data Delibera</span>
-												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 												<input type="text" id="dataDelibera" class="form-control"
@@ -524,13 +522,91 @@
 										</th:block>
 									</div>
 
+									<div class="row" th:if="${accreditamentoWrapper.accreditamento.isProvvisorio()}">
+										<div class="row" th:if="${accreditamentoWrapper.accreditamento.isAccreditatoInAttesaDiFirma()}">
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_LETTERA_ACCOMPAGNATORIA_PROVVISORIO_ACCREDITAMENTO}', letteraAccompagnatoria, null, null, null, true, 'edit', true)" ></th:block>
+										</div>
+										<div class="row" th:if="${accreditamentoWrapper.accreditamento.isDiniegoInAttesaDiFirma()}">
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_LETTERA_ACCOMPAGNATORIA_PROVVISORIO_DINIEGO}', letteraAccompagnatoria, null, null, null, true, 'edit', true)" ></th:block>
+										</div>
+									</div>
+
+									<div class="row" th:if="${accreditamentoWrapper.accreditamento.isStandard()}">
+										<th:block th:if="${accreditamentoWrapper.accreditamento.isAccreditatoInAttesaDiFirma()}">
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_LETTERA_ACCOMPAGNATORIA_STANDARD_ACCREDITAMENTO}', letteraAccompagnatoria, null, null, null, true, 'edit', true)" ></th:block>
+										</th:block>
+										<th:block th:if="${accreditamentoWrapper.accreditamento.isDiniegoInAttesaDiFirma()}">
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_LETTERA_ACCOMPAGNATORIA_STANDARD_DINIEGO}', letteraAccompagnatoria, null, null, null, true, 'edit', true)" ></th:block>
+										</th:block>
+									</div>
+
 									<input id="submitButtonModal" type="submit" style="display: none;" />
+									<input type="hidden" th:field="${accreditamentoWrapper.accreditamento}" />
 
 								</form>
 
 							</div>
 							<div class="modal-footer">
 								<label for="submitButtonModal" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
+								<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- modale aggiungi delibera -->
+				<div th:if="${#authentication.principal.account.isSegreteria()}" id="aggiungiDelibera-modal" class="modal fade modal-aggiungi-delibera"
+					data-model-index="1" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h3 class="modal-title" id="myModalLabel" th:text="#{label.inserimento_dati_delibera}">label.inserimento_dati_delibera</h3>
+							</div>
+							<div class="modal-body">
+								<form id="formDatiDelibera" class="form-horizontal"
+									th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/aggiungiDatiDelibera|}"
+									method="post" enctype="multipart/form-data"
+									novalidate="novalidate">
+
+									<div class="row">
+										<!-- NUMERO DELIBERA -->
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.numeroDelibera')} ? 'bad'">
+											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="numeroDelibera">
+												<span th:text="#{label.numero_delibera}">Numero Delibera</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group">
+												<input type="text" id="numeroDelibera" class="form-control"	th:field="${accreditamentoWrapper.numeroDelibera}" />
+											</div>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.numeroDelibera')}" class="alert" th:errors="${accreditamentoWrapper.numeroDelibera}"></div>
+										</div>
+
+										<!-- GIORNO DELIBERA -->
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.dataDelibera')} ? 'bad'">
+											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="dataVerifica">
+												<span th:text="#{label.data_delibera}">Data Delibera</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
+												<input type="text" id="dataDelibera" class="form-control"
+													name="data" th:field="${accreditamentoWrapper.dataDelibera}" />
+												<span class="input-group-addon" id="dataDeliberaInput" onclick="$('#dataDelibera').click()">
+						 							<i class="glyphicon glyphicon-calendar"></i>
+												</span>
+											</div>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.dataDelibera')}" class="alert" th:errors="${accreditamentoWrapper.dataDelibera}"></div>
+										</div>
+									</div>
+
+									<input id="submitDeliberaModal" type="submit" style="display: none;" />
+									<input type="hidden" th:field="${accreditamentoWrapper.accreditamento}" />
+									<input id="idFileDelibera" th:field="${accreditamentoWrapper.idFileDelibera}" type="hidden" />
+
+								</form>
+
+							</div>
+							<div class="modal-footer">
+								<label for="submitDeliberaModal" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
 								<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 							</div>
 						</div>
@@ -627,7 +703,13 @@
 			    		$("#attesaFirma-modal").modal("show");
 			    	}
 
-			    	console.log([[${attesaFirmaErrors}]]);
+			    	if([[${aggiuntaDatiDeliberaErrors}]]) {
+			    		$("#aggiungiDelibera-modal").modal("show");
+			    	}
+
+			    	$("#aggiungiDelibera-modal").on("hidden.bs.modal", function() {
+						$("#idFileDelibera").val("");
+					});
 
 			    	$('#componentiSegreteria').selectpicker({
 						selectAllText : 'Seleziona tutti',
@@ -718,6 +800,11 @@
 				function showModalVerificaIntegrazioni(){
 					var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/|}]] + 'approvaIntegrazione';
 					location.href = url;
+				}
+
+				function openModalDelibera(idFileDelibera) {
+					$("#idFileDelibera").val(idFileDelibera);
+					$("#aggiungiDelibera-modal").modal("show");
 				}
 
 				$('.ajaxCallShowAll').one("click", populateShowAll);
