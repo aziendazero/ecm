@@ -434,8 +434,8 @@ public class Accreditamento extends BaseEntityDefaultId {
 						f.getTipo() != FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE && (
 							(isStandard() || f.getTipo() != FileEnum.FILE_DICHIARAZIONE_LEGALE) &&
 							(isProvvisorio() || f.getTipo() != FileEnum.FILE_RICHIESTA_ACCREDITAMENTO_STANDARD))) {
+					result.add(f.getId());
 				}
-				result.add(f.getId());
 			}
 		};
 		return result;
