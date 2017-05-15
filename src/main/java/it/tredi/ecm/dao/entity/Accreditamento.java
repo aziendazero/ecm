@@ -23,6 +23,7 @@ import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
@@ -426,8 +427,16 @@ public class Accreditamento extends BaseEntityDefaultId {
 	public Set<Long> getFileIdsAllegatiForProtocollo() {
 		Set<Long> result = new HashSet<Long>();
 		for(File f : this.getDatiAccreditamento().getFiles()){
-			if(f != null && !f.isNew())
+			if(f != null && !f.isNew()) {
+				if(f.getTipo() != FileEnum.FILE_ORGANIGRAMMA &&
+						f.getTipo() != FileEnum.FILE_FUNZIONIGRAMMA &&
+						f.getTipo() != FileEnum.FILE_ESTRATTO_BILANCIO_COMPLESSIVO &&
+						f.getTipo() != FileEnum.FILE_ESTRATTO_BILANCIO_FORMAZIONE && (
+								(isStandard() || f.getTipo() != FileEnum.FILE_DICHIARAZIONE_LEGALE) ||
+								(isProvvisorio() || f.getTipo() != FileEnum.FILE_RICHIESTA_ACCREDITAMENTO_STANDARD))) {
+				}
 				result.add(f.getId());
+			}
 		};
 		return result;
 	}
