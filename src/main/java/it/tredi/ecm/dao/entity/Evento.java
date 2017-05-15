@@ -392,21 +392,23 @@ public class Evento extends BaseEntity {
 			return false;
 		if(stato == EventoStatoEnum.BOZZA)
 			return true;
-
-		if(stato == EventoStatoEnum.VALIDATO){
-			if((dataFine != null && (dataFine.isAfter(LocalDate.now()) || dataFine.isEqual(LocalDate.now()))) || Utils.getAuthenticatedUser().isSegreteria()){
-				return true;
-			}else{
-				return false;
-			}
-		}
-
-
-		if(stato == EventoStatoEnum.CANCELLATO)
-			return false;
-
 		if(stato == EventoStatoEnum.RAPPORTATO)
 			return false;
+		if(stato == EventoStatoEnum.CANCELLATO)
+			return false;
+		if(stato == EventoStatoEnum.VALIDATO){
+			if(this.getProvider().isGruppoA()) {
+				//ho già controllato che non sei rendicontato (Provider di gruppo A hanno pagato a true di default)
+				return true;
+			}
+			else {
+				//per i Provider di gruppo B controllo che l'evento non sia già stato pagato
+				if((this.pagato != true) || Utils.getAuthenticatedUser().isSegreteria())
+					return true;
+				else
+					return false;
+			}
+		}
 
 		return false;
 	}
