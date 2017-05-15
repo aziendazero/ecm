@@ -36,6 +36,7 @@ import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioDecretoDecadenzaInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
+import it.tredi.ecm.utils.Utils;
 
 @Service
 public class PdfServiceImpl implements PdfService {
@@ -43,6 +44,9 @@ public class PdfServiceImpl implements PdfService {
 
 	@Autowired
 	private FileService fileService;
+
+	@Autowired
+	private ProviderService providerService;
 
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	private DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
@@ -207,7 +211,7 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parOggetto = new Paragraph();
             parOggetto.setAlignment(Element.ALIGN_LEFT);
             parOggetto.setFont(fontDenominazioneProvider);
-            parOggetto.add("Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni - Accreditamento provvisorio - " + preavvisoRigettoInfo.getProviderInfo().getProviderDenominazione() + ".");
+            parOggetto.add("Oggetto: " + Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_PROVVISORIO_PREAVVISO_RIGETTO, providerService.getProvider(Long.parseLong(preavvisoRigettoInfo.getProviderInfo().getProviderId()))));
             parOggetto.setSpacingAfter(spacingAfter);
             //Interlinea OK
             //parOggetto.setMultipliedLeading(5);
@@ -395,6 +399,7 @@ public class PdfServiceImpl implements PdfService {
 	private void writePdfAccreditamentoProvvisiorioIntegrazione(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception {
         try {
     		Document document = createDocument(outputStream, true, true);
+    		MessageFormat msgFormat = new MessageFormat("");
 
             //Info documento
             document.addAuthor("Ecm");
@@ -406,10 +411,7 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parOggetto = new Paragraph();
             parOggetto.setAlignment(Element.ALIGN_LEFT);
             parOggetto.setFont(fontDenominazioneProvider);
-//            parOggetto.add("Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento Provvisorio - {0}");
-            MessageFormat msgFormat = new MessageFormat("Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento Provvisorio - {0}");
-            Object[] valuesProv = {integrazioneInfo.getProviderInfo().getProviderDenominazione()};
-            parOggetto.add(msgFormat.format(valuesProv));
+            parOggetto.add("Oggetto: "+ Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_PROVVISORIO_INTEGRAZIONE, providerService.getProvider(Long.parseLong(integrazioneInfo.getProviderInfo().getProviderId()))));
 
             parOggetto.setSpacingAfter(spacingAfter);
             //Interlinea OK
@@ -600,8 +602,8 @@ public class PdfServiceImpl implements PdfService {
             addCorpoParagraph(document, false, true, "DECRETO N. ………………  DEL ……….…………");
 
             //OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento provvisorio come provider regionale ECM di NOME PROVIDER ai sensi delle DD.G.R. n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013.
-            MessageFormat msgFormat = new MessageFormat("OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento provvisorio come provider regionale ECM di {0} ai sensi delle DD.G.R. n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013.");
-            addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
+            MessageFormat msgFormat = new MessageFormat("");
+            addCorpoParagraph(document, false, true, "Oggetto: "+ Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_DINIEGO, providerService.getProvider(Long.parseLong(diniegoInfo.getProviderInfo().getProviderId()))));
 
             //Linea vuota
             /*
@@ -812,8 +814,8 @@ public class PdfServiceImpl implements PdfService {
             addCorpoParagraph(document, false, true, "DECRETO N. ………………  DEL ……….…………");
 
             //OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento provvisorio come provider regionale ECM di NOME PROVIDER ai sensi delle DD.G.R. n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013.
-            MessageFormat msgFormat = new MessageFormat("OGGETTO: Programma regionale per l’Educazione Continua in Medicina: riconoscimento dell’accreditamento provvisorio come provider regionale ECM di {0} ai sensi delle DD.G.R n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013.");
-            addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
+            MessageFormat msgFormat = new MessageFormat("");
+            addCorpoParagraph(document, false, true, "OGGGETTO: " + Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_ACCREDITAMENTO, providerService.getProvider(Long.parseLong(accreditatoInfo.getProviderInfo().getProviderId()))));
 
             //Linea vuota
             /*
@@ -1018,7 +1020,7 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parOggetto = new Paragraph();
             parOggetto.setAlignment(Element.ALIGN_LEFT);
             parOggetto.setFont(fontDenominazioneProvider);
-            parOggetto.add("Oggetto:  Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni - Accreditamento Standard - " + preavvisoRigettoInfo.getProviderInfo().getProviderDenominazione());
+            parOggetto.add("Oggetto: " + Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_STANDARD_PREAVVISO_RIGETTO, providerService.getProvider(Long.parseLong(preavvisoRigettoInfo.getProviderInfo().getProviderId()))));
             parOggetto.setSpacingAfter(spacingAfter);
             //Interlinea OK
             //parOggetto.setMultipliedLeading(5);
@@ -1222,7 +1224,7 @@ public class PdfServiceImpl implements PdfService {
             Paragraph parOggetto = new Paragraph();
             parOggetto.setAlignment(Element.ALIGN_LEFT);
             parOggetto.setFont(fontDenominazioneProvider);
-            parOggetto.add("Oggetto:  Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento standard - " + integrazioneInfo.getProviderInfo().getProviderDenominazione());
+            parOggetto.add("Oggetto: " +  Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_STANDARD_INTEGRAZIONE, providerService.getProvider(Long.parseLong(integrazioneInfo.getProviderInfo().getProviderId()))));
             parOggetto.setSpacingAfter(spacingAfter);
             //Interlinea OK
             //parOggetto.setMultipliedLeading(5);
@@ -1413,8 +1415,8 @@ public class PdfServiceImpl implements PdfService {
             addCorpoParagraph(document, false, true, "DECRETO N. ………………  DEL ……….…………");
 
             //OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento Standard come provider regionale ECM di NOME PROVIDER ai sensi della D.G.R. n. 1247 del 28 settembre 2015.
-            MessageFormat msgFormat = new MessageFormat("OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento standard come provider regionale ECM di {0} ai sensi della D.G.R. n. 1247 del 28 settembre 2015.");
-            addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
+            MessageFormat msgFormat = new MessageFormat("");
+            addCorpoParagraph(document, false, true, Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_STANDARD_DECRETO_DINIEGO, providerService.getProvider(Long.parseLong(diniegoInfo.getProviderInfo().getProviderId()))));
 
             //Linea vuota
             /*
@@ -1667,8 +1669,8 @@ public class PdfServiceImpl implements PdfService {
             addCorpoParagraph(document, false, true, "DECRETO N. ………………  DEL ……….…………");
 
             //OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento standard come provider regionale ECM di NOME PROVIDER ai sensi delle DD.G.R. n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013.
-            MessageFormat msgFormat = new MessageFormat("OGGETTO: Programma regionale per l’Educazione Continua in Medicina: riconoscimento dell’accreditamento standard come provider regionale ECM di {0} ai sensi delle DD.G.R n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013.");
-            addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
+            MessageFormat msgFormat = new MessageFormat("");
+            addCorpoParagraph(document, false, true, Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_STANDARD_DECRETO_ACCREDITAMENTO, providerService.getProvider(Long.parseLong(accreditatoInfo.getProviderInfo().getProviderId()))));
 
             //Linea vuota
             /*

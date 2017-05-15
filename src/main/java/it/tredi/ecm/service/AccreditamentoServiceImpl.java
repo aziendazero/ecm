@@ -110,7 +110,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Autowired private TokenService tokenService;
 
 	@Autowired private AuditReportProviderService auditReportProviderService;
-
+	@Autowired private AccountService accountService;
+	
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -383,7 +384,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		fieldEditabileService.removeAllFieldEditabileForAccreditamento(accreditamentoId);
 
-		protocolloService.protocollaDomandaInArrivo(accreditamentoId, accreditamento.getFileIdForProtocollo());
+		protocolloService.protocollaDomandaInArrivo(accreditamentoId, accreditamento.getFileIdForProtocollo(), accreditamento.getFileIdsAllegatiForProtocollo());
 
 		try{
 			if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.PROVVISORIO)
@@ -1769,6 +1770,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardIntegrazione(integrazioneInfo);
 				accreditamento.setRichiestaIntegrazione(file);
+				//invia l'email di notifica al responsabile segreteria ECM
+				sendEmailToResponsabili(accreditamentoId);
 			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
 				File file = accreditamento.getRichiestaIntegrazione();
 				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
@@ -1809,6 +1812,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardPreavvisoRigetto(preavvisoRigettoInfo);
 				accreditamento.setRichiestaPreavvisoRigetto(file);
+				//invia l'email di notifica al responsabile segreteria ECM
+				sendEmailToResponsabili(accreditamentoId);
 			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE) {
 				File file = accreditamento.getRichiestaPreavvisoRigetto();
 				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
@@ -1840,11 +1845,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardDiniego(rigettoInfo);
 				accreditamento.setDecretoDiniego(file);
+				//invia l'email di notifica al responsabile segreteria ECM
+				sendEmailToResponsabili(accreditamentoId);
 			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
-				File file = accreditamento.getDecretoDiniego();
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
+				File lettera = accreditamento.getLetteraAccompagnatoriaDiniego();
+				File decreto = accreditamento.getDecretoAccreditamento();
+				Set<Long> fileAllegatiIds = new HashSet<Long>();
+				fileAllegatiIds.add(decreto.getId());
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, lettera.getId(), fileAllegatiIds);
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
-			}  else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
+			} else if(stato == AccreditamentoStatoEnum.DINIEGO) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
 			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_FIRMA) {
@@ -1869,9 +1879,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				else if(accreditamento.getTipoDomanda() == AccreditamentoTipoEnum.STANDARD)
 					file = pdfService.creaPdfAccreditamentoStandardAccreditato(accreditatoInfo);
 				accreditamento.setDecretoAccreditamento(file);
+				//invia l'email di notifica al responsabile segreteria ECM
+				sendEmailToResponsabili(accreditamentoId);
 			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE) {
-				File file = accreditamento.getDecretoAccreditamento();
-				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, file.getId());
+				File lettera = accreditamento.getLetteraAccompagnatoriaAccreditamento();
+				File decreto = accreditamento.getDecretoAccreditamento();
+				Set<Long> fileAllegatiIds = new HashSet<Long>();
+				fileAllegatiIds.add(decreto.getId());
+				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, lettera.getId(), fileAllegatiIds);
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
 			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO) {
 				//Setto il flusso come concluso
@@ -1985,6 +2000,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 
 		alertEmailService.creaAlertForProvider(accreditamento, workflowInCorso);
+	}
+
+	private void sendEmailToResponsabili(Long accreditamentoId) throws Exception {
+		Set<String> emailResponsabili = new HashSet<String>();
+		for(Account a : accountService.getAllSegreteria()) {
+			if(a.isResponsabileSegreteriaEcm())
+				emailResponsabili.add(a.getEmail());
+		}
+		emailService.inviaNotificaFirmaResponsabileSegreteriaEcm(emailResponsabili, accreditamentoId);
 	}
 
 	//metodo che gestisce le procedure lasciate in sospeso da un accreditamento da concludere
@@ -2688,18 +2712,21 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception {
-		LOGGER.debug(Utils.getLogMessage("Invio Decreto Accreditamento della domanda " + accreditamentoId + " al Protocollo"));
+	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileIdLettera, Long fileIdDecreto, LocalDate dataDelibera, String numeroDelibera) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Lettera Accompagnamento e Decreto Accreditamento della domanda " + accreditamentoId + " al Protocollo"));
 
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
 
-		File fileFirmato = fileService.getFile(fileId);
-		fileFirmato.setDataDelibera(dataDelibera);
-		fileFirmato.setNumeroDelibera(numeroDelibera);
+		File fileDecreto = fileService.getFile(fileIdDecreto);
+		fileDecreto.setDataDelibera(dataDelibera);
+		fileDecreto.setNumeroDelibera(numeroDelibera);
+
+		File fileLettera = fileService.getFile(fileIdLettera);
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-		accreditamento.setDecretoAccreditamento(fileFirmato);
+		accreditamento.setDecretoAccreditamento(fileDecreto);
+		accreditamento.setLetteraAccompagnatoriaAccreditamento(fileLettera);
 		saveAndAudit(accreditamento);
 		workflowService.eseguiTaskFirmaAccreditamentoForCurrentUser(accreditamento);
 
@@ -2724,22 +2751,36 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Override
 	@Transactional
-	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception {
-		LOGGER.debug(Utils.getLogMessage("Invio Decreto Diniego della domanda " + accreditamentoId + " al Protocollo"));
+	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileIdLettera, Long fileIdDecreto, LocalDate dataDelibera, String numeroDelibera) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Invio Lettera Accompagnamento e Decreto Diniego della domanda " + accreditamentoId + " al Protocollo"));
 
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
 
-		File fileFirmato = fileService.getFile(fileId);
-		fileFirmato.setDataDelibera(dataDelibera);
-		fileFirmato.setNumeroDelibera(numeroDelibera);
+		File fileDecreto = fileService.getFile(fileIdDecreto);
+		fileDecreto.setDataDelibera(dataDelibera);
+		fileDecreto.setNumeroDelibera(numeroDelibera);
+
+		File fileLettera = fileService.getFile(fileIdLettera);
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-		accreditamento.setDecretoDiniego(fileFirmato);
+		accreditamento.setDecretoDiniego(fileDecreto);
+		accreditamento.setLetteraAccompagnatoriaDiniego(fileLettera);
 		saveAndAudit(accreditamento);
 		workflowService.eseguiTaskFirmaDiniegoForCurrentUser(accreditamento);
 
 		//rilascio semaforo bonita
 		tokenService.removeBonitaSemaphore(accreditamentoId);
+	}
+
+	@Override
+	public void aggiungiDatiDelibera(Long idFileDelibera, String numeroDelibera, LocalDate dataDelibera) {
+		LOGGER.debug(Utils.getLogMessage("Invio dati della delibera per il file protocollato: " + idFileDelibera));
+
+		File fileProtocollato = fileService.getFile(idFileDelibera);
+		fileProtocollato.setNumeroDelibera(numeroDelibera);
+		fileProtocollato.setDataDelibera(dataDelibera);
+		fileService.save(fileProtocollato);
+
 	}
 }

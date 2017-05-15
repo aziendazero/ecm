@@ -118,6 +118,10 @@ public class Accreditamento extends BaseEntityDefaultId {
 	@OneToOne
 	private File decretoDiniego;
 	@OneToOne
+	private File letteraAccompagnatoriaAccreditamento;
+	@OneToOne
+	private File letteraAccompagnatoriaDiniego;
+	@OneToOne
 	private File richiestaIntegrazione;
 	@OneToOne
 	private File richiestaPreavvisoRigetto;
@@ -282,7 +286,6 @@ public class Accreditamento extends BaseEntityDefaultId {
 		return stato == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_FIRMA;
 	}
 
-
 	public boolean isValutazioneSulCampo() {
 		return stato == AccreditamentoStatoEnum.VALUTAZIONE_SUL_CAMPO;
 	}
@@ -420,6 +423,15 @@ public class Accreditamento extends BaseEntityDefaultId {
 		return 0L;
 	}
 
+	public Set<Long> getFileIdsAllegatiForProtocollo() {
+		Set<Long> result = new HashSet<Long>();
+		for(File f : this.getDatiAccreditamento().getFiles()){
+			if(f != null && !f.isNew())
+				result.add(f.getId());
+		};
+		return result;
+	}
+
 	public File getFileForProtocollo(){
 		if(isProvvisorio()){
 			for(File f : datiAccreditamento.getFiles())
@@ -505,5 +517,4 @@ public class Accreditamento extends BaseEntityDefaultId {
 
 		return false;
 	}
-
 }

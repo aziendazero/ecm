@@ -44,8 +44,8 @@ public interface AccreditamentoService{
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaRichiestaIntegrazioneInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception;
 
-	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception;
-	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileId, LocalDate dataDelibera, String numeroDelibera) throws Exception;
+	public void inviaAccreditamentoInAttesaDiFirma(Long accreditamentoId, Long fileIdLettera, Long fileIdDecreto, LocalDate dataDelibera, String numeroDelibera) throws Exception;
+	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileIdLettera, Long fileIdDecreto, LocalDate dataDelibera, String numeroDelibera) throws Exception;
 
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception;
 	public void inviaRichiestaPreavvisoRigettoInAttesaDiFirma(Long accreditamentoId, Long fileId) throws Exception;
@@ -145,6 +145,6 @@ public interface AccreditamentoService{
 	public void generaDecretoDecadenza(ByteArrayOutputStream byteArrayOutputStreamAccreditata, Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception;
 
 	public boolean canRiassegnaRefereeVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
-
+	public void aggiungiDatiDelibera(Long idFileDelibera, String numeroDelibera, LocalDate dataDelibera);
 	public Accreditamento getAccreditamentoAttivoOppureUltimoForProvider(Long providerId) throws AccreditamentoNotFoundException;
 }

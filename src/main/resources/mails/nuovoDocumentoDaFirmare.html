@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title th:remove="all">Nuovo Documento da Firmare Digitalmente</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <p>Gentile <span th:text="${fullName}"></span></p>
+    <p>
+    	&egrave; presente un documento da firmare digitalmente per l'accreditamento <span th:text="${accreditamentoId}"></span> nell' <b><a th:href="${applicationBaseUrl}">applicativo ECM</a></b> della Regione Veneto.
+    </p>
+    <p>
+    	Per procedere con l'operazione &egrave; necessario collegarsi all'applicativo.
+    </p>
+    <p>
+      Distinti Saluti, <br />
+      <em>Segreteria ECM</em>
+    </p>
+  </body>
+</html>

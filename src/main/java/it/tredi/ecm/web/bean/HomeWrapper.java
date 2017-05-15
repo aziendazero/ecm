@@ -30,6 +30,7 @@ public class HomeWrapper {
 
 	//Segreteria
 	private Boolean isSegreteria;
+	private Boolean isResponsabileSegreteriaEcm;
 	private Integer badReferee;
 	private Integer domandeNotTaken;
 	private Integer domandeAssegnamento;

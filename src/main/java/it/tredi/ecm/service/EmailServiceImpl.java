@@ -1,8 +1,6 @@
 package it.tredi.ecm.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -296,5 +294,18 @@ public class EmailServiceImpl implements EmailService {
 
 		send(ecmProperties.getEmailSegreteriaEcm(), email, "Nuova Comunicazione per il suo Provider", message, true);
 
+	}
+
+	@Override
+	public void inviaNotificaFirmaResponsabileSegreteriaEcm(Set<String> responsabili, Long accreditamentoId) throws Exception {
+		LOGGER.info("Invio notifica al Rappresentante Segreteria ECM per nuovo documento da firmare");
+		Context context = new Context();
+		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
+		context.setVariable("accreditamentoId", accreditamentoId);
+		String message = templateEngine.process("nuovoDocumentoDaFirmare", context);
+
+		for(String email : responsabili) {
+			send(ecmProperties.getEmailSegreteriaEcm(),email, "Nuovo documento da firmare digitalmente", message, true);
+		}
 	}
 }

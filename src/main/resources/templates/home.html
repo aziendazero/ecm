@@ -122,77 +122,79 @@
 
 				<!-- SEGRETERIA -->
 				<div class="row" th:if="${homeWrapper.isSegreteria}">
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list?filterTaken=true')">
-							<div class="icon"><i class="fa fa-list"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeNotTaken}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeNotTaken == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_prendere_in_carica}"></p>
+					<th:block th:unless="${homeWrapper.isResponsabileSegreteriaEcm}">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list?filterTaken=true')">
+								<div class="icon"><i class="fa fa-list"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.domandeNotTaken}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.domandeNotTaken == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+				                	<p class="count-text" th:text="#{label.da_prendere_in_carica}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list')">
-							<div class="icon"><i class="fa fa-check-square-o"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeDaValutareAll}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeDaValutareAll == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_valutare}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazioneAssegnamento/list')">
+								<div class="icon"><i class="fa fa-check-square-o"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.domandeDaValutareAll}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.domandeDaValutareAll == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+				                	<p class="count-text" th:text="#{label.da_valutare}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/assegnamento/list')">
-							<div class="icon"><i class="fa fa-refresh"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeAssegnamento}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeAssegnamento == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_riassegnare}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('accreditamento/assegnamento/list')">
+								<div class="icon"><i class="fa fa-refresh"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.domandeAssegnamento}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.domandeAssegnamento == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+				                	<p class="count-text" th:text="#{label.da_riassegnare}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/richiestaIntegrazione/list')">
-							<div class="icon"><i class="fa fa-pencil"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeSbloccoCampiIntegrazione}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeSbloccoCampiIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.di_cui_richiedere_integrazione}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('accreditamento/richiestaIntegrazione/list')">
+								<div class="icon"><i class="fa fa-pencil"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.domandeSbloccoCampiIntegrazione}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.domandeSbloccoCampiIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+				                	<p class="count-text" th:text="#{label.di_cui_richiedere_integrazione}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
-							<div class="icon"><i class="fa fa-search"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeValutazioneIntegrazione}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeValutazioneIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_valutare_integrazione}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('accreditamento/valutazione/list')">
+								<div class="icon"><i class="fa fa-search"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.domandeValutazioneIntegrazione}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.domandeValutazioneIntegrazione == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+				                	<p class="count-text" th:text="#{label.da_valutare_integrazione}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/daInserireODG/list')">
-							<div class="icon"><i class="fa fa-clock-o"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeInInsODG}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInInsODG == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.da_inserire_nel_odg}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('accreditamento/daInserireODG/list')">
+								<div class="icon"><i class="fa fa-clock-o"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.domandeInInsODG}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInInsODG == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+				                	<p class="count-text" th:text="#{label.da_inserire_nel_odg}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('accreditamento/scadenza/list')">
-							<div class="icon"><i class="fa fa-calendar"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.domandeInScadenza}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInScadenza == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
-			                	<p class="count-text" th:text="#{label.in_scadenza}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('accreditamento/scadenza/list')">
+								<div class="icon"><i class="fa fa-calendar"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.domandeInScadenza}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.domandeInScadenza == 1} ? #{label.domanda_accreditamento} : #{label.domande_accreditamento}"></h3>
+				                	<p class="count-text" th:text="#{label.in_scadenza}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
+					</th:block>
 
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="tile-stats clickable" onclick="goTo('accreditamento/inFirma/list?filterTaken=false')">
@@ -205,87 +207,90 @@
 						</div>
 					</div>
 
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('provider/pianoFormativoNotInserito/list')">
-							<div class="icon"><i class="fa fa-calendar-o"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.providerPianoFormativoNonInserito}"></div>
-			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
-			                	<p class="count-text" th:text="${homeWrapper.providerPianoFormativoNonInserito == 1} ? #{label.non_ha_inserito_piano_formativo} :  #{label.non_hanno_inserito_piano_formativo}"></p>
+					<th:block th:unless="${homeWrapper.isResponsabileSegreteriaEcm}">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('provider/pianoFormativoNotInserito/list')">
+								<div class="icon"><i class="fa fa-calendar-o"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.providerPianoFormativoNonInserito}"></div>
+				                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+				                	<p class="count-text" th:text="${homeWrapper.providerPianoFormativoNonInserito == 1} ? #{label.non_ha_inserito_piano_formativo} :  #{label.non_hanno_inserito_piano_formativo}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('provider/domandaScaduta/list')">
-							<div class="icon"><i class="fa fa-calendar-times-o"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.providerInadempienti}"></div>
-			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
-			                	<p class="count-text" th:text="${homeWrapper.providerInadempienti == 1} ? #{label.non_ha_completato_domanda_accreditamento_in_tempo} :  #{label.non_hanno_completato_domanda_accreditamento_in_tempo}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('provider/domandaScaduta/list')">
+								<div class="icon"><i class="fa fa-calendar-times-o"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.providerInadempienti}"></div>
+				                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+				                	<p class="count-text" th:text="${homeWrapper.providerInadempienti == 1} ? #{label.non_ha_completato_domanda_accreditamento_in_tempo} :  #{label.non_hanno_completato_domanda_accreditamento_in_tempo}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('eventi/CREDITI_NON_CONFERMATI/list')">
-							<div class="icon"><i class="fa fa-exclamation-triangle"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.eventiCreditiNonConfermati}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiCreditiNonConfermati == 1} ? #{label.evento} : #{label.eventi}"></h3>
-			                	<p class="count-text" th:text="#{label.con_crediti_non_confermati}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('eventi/CREDITI_NON_CONFERMATI/list')">
+								<div class="icon"><i class="fa fa-exclamation-triangle"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.eventiCreditiNonConfermati}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.eventiCreditiNonConfermati == 1} ? #{label.evento} : #{label.eventi}"></h3>
+				                	<p class="count-text" th:text="#{label.con_crediti_non_confermati}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('eventi/ALIMENTAZIONE_PRIMA_INFANZIA/list')">
-							<div class="icon"><i class="glyphicon glyphicon-baby-formula"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.eventiAlimentazionePrimaInfanzia}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiAlimentazionePrimaInfanzia == 1} ? #{label.evento} : #{label.eventi}"></h3>
-			                	<p class="count-text" th:text="#{label.con_alimentazione_prima_infanzia}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('eventi/ALIMENTAZIONE_PRIMA_INFANZIA/list')">
+								<div class="icon"><i class="glyphicon glyphicon-baby-formula"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.eventiAlimentazionePrimaInfanzia}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.eventiAlimentazionePrimaInfanzia == 1} ? #{label.evento} : #{label.eventi}"></h3>
+				                	<p class="count-text" th:text="#{label.con_alimentazione_prima_infanzia}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('eventi/MEDICINE_NON_CONVENZIONALI/list')">
-							<div class="icon"><i class="fa fa-medkit"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.eventiMedicineNonConvenzionali}"></div>
-			                	<h3 class="tile-h3" th:text="${homeWrapper.eventiMedicineNonConvenzionali == 1} ? #{label.evento} : #{label.eventi}"></h3>
-			                	<p class="count-text" th:text="#{label.con_medicine_non_convenzionali}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('eventi/MEDICINE_NON_CONVENZIONALI/list')">
+								<div class="icon"><i class="fa fa-medkit"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.eventiMedicineNonConvenzionali}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.eventiMedicineNonConvenzionali == 1} ? #{label.evento} : #{label.eventi}"></h3>
+				                	<p class="count-text" th:text="#{label.con_medicine_non_convenzionali}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('provider/mancatoPagamentoAnnuale/list')">
-							<div class="icon"><i class="fa fa-credit-card"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza}"></div>
-			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
-			                	<p class="count-text" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza == 1} ? #{label.non_ha_pagato_quota_annuale} :  #{label.non_hanno_pagato_quota_annuale}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('provider/mancatoPagamentoAnnuale/list')">
+								<div class="icon"><i class="fa fa-credit-card"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza}"></div>
+				                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+				                	<p class="count-text" th:text="${homeWrapper.providerPagamentoNonEffettuatoAllaScadenza == 1} ? #{label.non_ha_pagato_quota_annuale} :  #{label.non_hanno_pagato_quota_annuale}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('provider/providerNotRelazioneAnnualeRegistrata/list')">
-							<div class="icon"><i class="fa fa-file-text"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.providerNotRelazioneAnnualeRegistrata}"></div>
-			                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
-			                	<p class="count-text" th:text="${homeWrapper.providerNotRelazioneAnnualeRegistrata == 1} ? #{label.non_ha_inserito_relazione_annuale} :  #{label.non_hanno_inserito_relazione_annuale}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('provider/providerNotRelazioneAnnualeRegistrata/list')">
+								<div class="icon"><i class="fa fa-file-text"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.providerNotRelazioneAnnualeRegistrata}"></div>
+				                	<h3 class="tile-h3" th:text="#{label.provider}"></h3>
+				                	<p class="count-text" th:text="${homeWrapper.providerNotRelazioneAnnualeRegistrata == 1} ? #{label.non_ha_inserito_relazione_annuale} :  #{label.non_hanno_inserito_relazione_annuale}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="tile-stats clickable" onclick="goTo('referee/list')">
-							<div class="icon"><i class="fa fa-eye-slash"></i></div>
-							<div class="col-xs-10">
-			                	<div class="count" th:text="${homeWrapper.badReferee}"></div>
-			                	<h3 class="tile-h3" th:text="#{label.referee}"></h3>
-			                	<p class="count-text" th:text="${homeWrapper.badReferee == 1} ? #{label.non_ha_valutato} :  #{label.non_hanno_valutato}"></p>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('referee/list')">
+								<div class="icon"><i class="fa fa-eye-slash"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.badReferee}"></div>
+				                	<h3 class="tile-h3" th:text="#{label.referee}"></h3>
+				                	<p class="count-text" th:text="${homeWrapper.badReferee == 1} ? #{label.non_ha_valutato} :  #{label.non_hanno_valutato}"></p>
+								</div>
 							</div>
 						</div>
-					</div>
+					</th:block>
 				</div>
+
 
 				<!-- COMMISSIONE -->
 				<div class="row" th:if="${(homeWrapper.isCommissione != null and homeWrapper.isCommissione == true) and (homeWrapper.prossimaSeduta != null)}">

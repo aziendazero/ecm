@@ -9,6 +9,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +45,7 @@ import org.xml.sax.InputSource;
 
 import it.rve.protocollo.lapiswebsoap.LapisWebSOAPService;
 import it.rve.protocollo.lapiswebsoap.LapisWebSOAPType;
+import it.rve.protocollo.xsd.protocolla_arrivo.Allegati;
 import it.rve.protocollo.xsd.protocolla_arrivo.Destinatari;
 import it.rve.protocollo.xsd.protocolla_arrivo.DocumentoPrincipale;
 import it.rve.protocollo.xsd.protocolla_arrivo.Files;
@@ -183,6 +187,12 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	@Override
 	@Transactional
 	public void protocollaDomandaInArrivo(Long accreditamentoId, Long fileId) throws Exception{
+		protocollaDomandaInArrivo(accreditamentoId, fileId, new HashSet<Long>());
+	}
+
+	@Override
+	@Transactional
+	public void protocollaDomandaInArrivo(Long accreditamentoId, Long fileId, Set<Long> fileAllegatiIds) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Richiesta Protocollazione In Arrivo della domanda: " + accreditamentoId + " sul file " + fileId));
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
@@ -208,12 +218,18 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		mittente.setCitta(sedeLegale.getComune());
 		//mittente.setProvincia(sedeLegale.getProvincia());
 
-		protocollaArrivo(protocollo, mittente);
+		protocollaArrivo(protocollo, mittente, fileAllegatiIds);
 	}
 
 	@Override
 	@Transactional
 	public void protocollaAllegatoFlussoDomandaInUscita(Long accreditamentoId, Long fileId) throws Exception {
+		protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, fileId, new HashSet<Long>());
+	}
+
+	@Override
+	@Transactional
+	public void protocollaAllegatoFlussoDomandaInUscita(Long accreditamentoId, Long fileId, Set<Long> fileAllegatiIds) throws Exception {
 		LOGGER.info(Utils.getLogMessage("Richiesta Protocollazione In Uscita per il file " + fileId + " della domanda " + accreditamentoId));
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
@@ -244,12 +260,17 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
 		destinatari.getDestinatario().add(destinatario);
-		protocollaInUscita(protocollo, destinatari);
+		protocollaInUscita(protocollo, destinatari, fileAllegatiIds);
 	}
 
 	@Transactional
 	private void protocollaArrivo(Protocollo protocollo, Mittente mittente) throws Exception {
-		Richiesta richiesta = buildRichiestaArrivo(protocollo, mittente);
+		protocollaArrivo(protocollo, mittente, new HashSet<Long>());
+	}
+
+	@Transactional
+	private void protocollaArrivo(Protocollo protocollo, Mittente mittente, Set<Long> fileAllegatiIds) throws Exception {
+		Richiesta richiesta = buildRichiestaArrivo(protocollo, mittente, fileAllegatiIds);
 
 		LapisWebSOAPType port = protocolloThreadLocal.get();
 
@@ -269,6 +290,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			protocollo.setNumero((int)secsFrom);
 			protocollo.setIdProtoBatch(null);
 			protocollo.setStatoSpedizione(null);
+			protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
 
 		} else {
 			Object response = port.protocollaArrivo(requestString);
@@ -288,18 +310,19 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			protocollo.setNumero(Integer.parseInt(numero));
 			protocollo.setIdProtoBatch(null);
 			protocollo.setStatoSpedizione(null);
+			protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
 		}
 
 		protocolloRepository.save(protocollo);
 	}
 
-	private Richiesta buildRichiestaArrivo(Protocollo p, Mittente m) {
+	private Richiesta buildRichiestaArrivo(Protocollo p, Mittente m, Set<Long> fileAllegatiIds) throws Exception {
 		Richiesta richiesta = new Richiesta();
 
 		richiesta.setCodApplicativo(engineeringProperties.getProtocolloCodApplicativo());
-		richiesta.setOperatore(engineeringProperties.getProtocolloOperatore());
+		richiesta.setOperatore(engineeringProperties.getProtocolloOperatoreEntrata());
 		richiesta.setIDC(engineeringProperties.getProtocolloIdc());
-		richiesta.setOggetto(engineeringProperties.getProtocolloOggetto());
+		richiesta.setOggetto(Utils.buildOggetto(p.getFile().getTipo(), p.getAccreditamento().getProvider()));
 		richiesta.setMittente(m);
 
 		Destinatari d = new Destinatari();
@@ -315,6 +338,33 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		DocumentoPrincipale documentoPrincipale = new DocumentoPrincipale();
 		documentoPrincipale.setFiles(files);
 
+		if(fileAllegatiIds != null && !fileAllegatiIds.isEmpty()) {
+
+			Allegati allegati = new Allegati();
+
+			List<Files> filesAllegati =	new ArrayList<Files>();
+
+			for(Long id : fileAllegatiIds) {
+				File allegato = fileService.getFile(id);
+
+				Files.Documento docAllegato = new Files.Documento();
+
+				Files filesAllegato = new Files();
+
+				docAllegato.setNome(allegato.getNomeFile());
+				docAllegato.setContent(allegato.getData());
+
+				filesAllegato.getDocumento().add(docAllegato);
+
+				filesAllegati.add(filesAllegato);
+
+			}
+
+			allegati.setFiles(filesAllegati);
+
+			richiesta.setAllegati(allegati);
+		}
+
 		richiesta.setDocumentoPrincipale(documentoPrincipale);
 
 		return richiesta;
@@ -322,7 +372,13 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 	@Transactional
 	private void protocollaInUscita(Protocollo p, it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari d) throws Exception {
+		protocollaInUscita(p, d, new HashSet<Long>());
+	}
+
+	@Transactional
+	private void protocollaInUscita(Protocollo p, it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari d, Set<Long> fileAllegatiIds) throws Exception {
 		String idProtoBatch = null;
+		it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta richiesta = null;
 		if(ecmProperties.isDebugSaltaProtocollo()) {
 			String start = "2016-01-01 00:00";
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -332,7 +388,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		} else {
 			LapisWebSOAPType port = protocolloThreadLocal.get();
 
-			it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta richiesta = buildRichiestaUscita(p,d);
+			richiesta = buildRichiestaUscita(p,d, fileAllegatiIds);
 
 			Transformer transformer = tf.get();
 
@@ -349,17 +405,18 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		p.setNumero(null);
 		p.setIdProtoBatch(idProtoBatch);
 		p.setStatoSpedizione(null);
+		p.setOggetto(Utils.buildOggetto(p.getFile().getTipo(), p.getAccreditamento().getProvider()));
 
 		protocolloRepository.save(p);
 	}
 
-	private it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta buildRichiestaUscita(Protocollo p, it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari d) {
+	private it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta buildRichiestaUscita(Protocollo p, it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari d, Set<Long> fileAllegatiIds) throws Exception {
 		it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta richiesta = new it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta();
 
 		richiesta.setCodApplicativo(engineeringProperties.getProtocolloCodApplicativo());
-		richiesta.setOperatore(engineeringProperties.getProtocolloOperatore());
+		richiesta.setOperatore(engineeringProperties.getProtocolloOperatoreUscita());
 		richiesta.setIDC(engineeringProperties.getProtocolloIdc());
-		richiesta.setOggetto(engineeringProperties.getProtocolloOggetto());
+		richiesta.setOggetto(Utils.buildOggetto(p.getFile().getTipo(), p.getAccreditamento().getProvider()));
 		richiesta.setCodMittente(engineeringProperties.getProtocolloCodStruttura());
 		richiesta.setDestinatari(d);
 
@@ -374,6 +431,37 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		it.rve.protocollo.xsd.richiesta_protocollazione.DocumentoPrincipale documentoPrincipale =
 				new it.rve.protocollo.xsd.richiesta_protocollazione.DocumentoPrincipale();
 		documentoPrincipale.setFiles(files);
+
+		if(fileAllegatiIds != null && !fileAllegatiIds.isEmpty()) {
+
+			it.rve.protocollo.xsd.richiesta_protocollazione.Allegati allegati =
+					new it.rve.protocollo.xsd.richiesta_protocollazione.Allegati();
+
+			List<it.rve.protocollo.xsd.richiesta_protocollazione.Files> filesAllegati =
+					new ArrayList<it.rve.protocollo.xsd.richiesta_protocollazione.Files>();
+
+			for(Long id : fileAllegatiIds) {
+				File allegato = fileService.getFile(id);
+
+				it.rve.protocollo.xsd.richiesta_protocollazione.Files.Documento docAllegato =
+						new it.rve.protocollo.xsd.richiesta_protocollazione.Files.Documento();
+
+				it.rve.protocollo.xsd.richiesta_protocollazione.Files filesAllegato =
+						new it.rve.protocollo.xsd.richiesta_protocollazione.Files();
+
+				docAllegato.setNome(allegato.getNomeFile());
+				docAllegato.setContent(allegato.getData());
+
+				filesAllegato.getDocumento().add(docAllegato);
+
+				filesAllegati.add(filesAllegato);
+
+			}
+
+			allegati.setFiles(filesAllegati);
+
+			richiesta.setAllegati(allegati);
+		}
 
 		richiesta.setDocumentoPrincipale(documentoPrincipale);
 
