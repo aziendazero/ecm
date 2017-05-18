@@ -369,15 +369,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		richiesta.setDocumentoPrincipale(documentoPrincipale);
 
-		//FIXME remove after debug
-		JAXBContext context = JAXBContext.newInstance(Richiesta.class);
-		Marshaller marshaller = context.createMarshaller();
-		StringWriter sw = new StringWriter();
-		marshaller.marshal(richiesta, sw);
-		String xmlString = sw.toString();
-		LOGGER.info(Utils.getLogMessage("XML  --------->  " + xmlString));
-		//FIXME fine
-
 		return richiesta;
 	}
 
