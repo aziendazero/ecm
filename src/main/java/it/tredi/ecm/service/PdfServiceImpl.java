@@ -2110,19 +2110,21 @@ public class PdfServiceImpl implements PdfService {
     @Override
     public void creaPdfAccreditamentoProvvisorioDecretoDecadenza(ByteArrayOutputStream outputStream, PdfAccreditamentoProvvisorioDecretoDecadenzaInfo decadenzaInfo) throws Exception {
     	try {
-            Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
+//            Document document = new Document();
+//            PdfWriter.getInstance(document, outputStream);
 
-            document.open();
+            Document document = createDocument(outputStream, true, true);
+
+//            document.open();
             //Info documento
             document.addAuthor("Ecm");
             document.addCreationDate();
             document.addCreator("Ecm");
             document.addTitle("Decreto Decadenza");
 
-            Image img = FooterWithInfo.createLogo();
-            if(img != null)
-            	document.add(img);
+//            Image img = FooterWithInfo.createLogo();
+//            if(img != null)
+//            	document.add(img);
 
             //OGGETTO: Comunicazione di decadenza dell’accreditamento provvisorio del Provider regionale ECM ID PROVIDER e NOME PROVIDER.
             MessageFormat msgFormat = new MessageFormat("Comunicazione di decadenza dell’accreditamento provvisorio del Provider regionale ECM {0} - {1}.");

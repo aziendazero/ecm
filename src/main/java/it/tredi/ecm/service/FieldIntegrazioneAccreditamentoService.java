@@ -6,6 +6,7 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneHistoryContainer;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 
 public interface FieldIntegrazioneAccreditamentoService {
@@ -32,4 +33,5 @@ public interface FieldIntegrazioneAccreditamentoService {
 	public FieldIntegrazioneHistoryContainer getContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long processInstanceId);
 
 	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazionePerSbloccoValutazioneForAccreditamentoByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId);
+	Set<Ruolo> getAllRuoloSostituitoInIntegrazione(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId);
 }

@@ -217,6 +217,9 @@ public class AccreditamentoWrapper {
 	private Set<Long> aggiunti = new HashSet<Long>();
 	private Set<Long> eliminati = new HashSet<Long>();
 
+	//Elenco Sostituiti durante l'integrazione
+	private Set<Ruolo> sostituiti = new HashSet<Ruolo>();
+
 	//File allegati integrazione
 	private File noteOsservazioniIntegrazione;
 	private File noteOsservazioniPreavvisoRigetto;

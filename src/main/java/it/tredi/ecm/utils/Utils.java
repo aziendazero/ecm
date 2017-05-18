@@ -348,6 +348,9 @@ public class Utils {
 		case FILE_RICHIESTA_ACCREDITAMENTO_STANDARD:
 			oggetto = "Richiesta accreditamento standard del provider " + provider.getDenominazioneLegale();
 		break;
+		case FILE_DECADENZA:
+			oggetto = "Comunicazione di decadenza dell’accreditamento del Provider regionale ECM " + provider.getCodiceIdentificativoUnivoco()  + " - " + provider.getDenominazioneLegale();
+		break;
 		}
 		if(oggetto == null)
 			throw new Exception("Impossibile generare Oggetto del file da protocollare");

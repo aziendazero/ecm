@@ -463,6 +463,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 				//non multi-istanza
 				field = Utils.getField(fieldValutazioni, fieldIntegrazione.getIdField());
 			}
+			//se lo trova lo sblocca
 			if(field != null && !field.isEnabled()){
 				field.setEsito(null);
 				field.setEnabled(true);
@@ -472,6 +473,21 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 				else
 					field.setModificatoInIntegrazione(false);
 				fieldValutazioni.add(field);
+			}
+			//se non lo trova ed è una creazione/rimozione lo crea
+			else {
+				if(IdFieldEnum.isFull(fieldIntegrazione.getIdField()) && !fieldIntegrazione.isFittizio()) {
+					field = new FieldValutazioneAccreditamento();
+					field.setEsito(null);
+					field.setEnabled(true);
+					field.setNote(null);
+					field.setModificatoInIntegrazione(true);
+					field.setAccreditamento(fieldIntegrazione.getAccreditamento());
+					field.setObjectReference(fieldIntegrazione.getObjectReference());
+					field.setIdField(fieldIntegrazione.getIdField());
+					fieldValutazioneAccreditamentoService.save(field);
+					fieldValutazioni.add(field);
+				}
 			}
 		}
 		//ciclo per gli idField enum cercado quelli raggruppati (prendo il padre)

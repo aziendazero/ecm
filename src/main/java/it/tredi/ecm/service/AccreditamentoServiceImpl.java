@@ -111,7 +111,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private AuditReportProviderService auditReportProviderService;
 	@Autowired private AccountService accountService;
-	
+
 
 	@Override
 	public Accreditamento getNewAccreditamentoForCurrentProvider(AccreditamentoTipoEnum tipoDomanda) throws Exception{
@@ -2422,8 +2422,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Account user = Utils.getAuthenticatedUser().getAccount();
 		Valutazione valutazione = valutazioneService.getValutazioneByAccreditamentoIdAndAccountIdAndNotStoricizzato(accreditamentoId, user.getId());
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-
-		approvaIntegrazione(accreditamentoId);
 
 		bloccaAndStoricizzaValutazione(valutazione, valutazioneComplessiva, accreditamento.getStato());
 

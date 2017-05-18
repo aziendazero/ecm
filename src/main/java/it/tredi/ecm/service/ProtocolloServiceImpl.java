@@ -367,6 +367,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		richiesta.setDocumentoPrincipale(documentoPrincipale);
 
+		System.out.println(richiesta);
+
 		return richiesta;
 	}
 
@@ -651,11 +653,13 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 							}
 						}
 					}
-					else if(p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.MANCATO_PAGAMENTO_QUOTA || p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD) {
+					else if(p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.MANCATO_PAGAMENTO_QUOTA ||
+							p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD ||
+							p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.BLOCCA_PER_RICHIESTA_PROVIDER) {
 						LOGGER.info("ProtocolloID: " + p.getId() + " - Blocco del provider: " + p.getAccreditamento().getProvider());
 						Provider provider = p.getAccreditamento().getProvider();
 						bloccaProvider(provider);
-						provider.setStatus(ProviderStatoEnum.CANCELLATO);
+						provider.setStatus(ProviderStatoEnum.SOSPESO);
 						providerService.save(provider);
 					}
 				}
@@ -692,6 +696,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD);
 		else if(motivazione == MotivazioneDecadenzaEnum.MANCATO_PAGAMENTO_QUOTA_ANNUALE)
 			protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.MANCATO_PAGAMENTO_QUOTA);
+		else if(motivazione == MotivazioneDecadenzaEnum.RICHIESTA_PROVIDER)
+			protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.BLOCCA_PER_RICHIESTA_PROVIDER);
 
 		Sede sedeLegale = provider.getSedeLegale();
 		Persona legaleRappresentante = provider.getLegaleRappresentante();

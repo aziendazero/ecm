@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneHistoryContainer;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.IdFieldEnum;
+import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.repository.FieldIntegrazioneAccreditamentoRepository;
 import it.tredi.ecm.dao.repository.FieldIntegrazioneHistoryContainerRepository;
@@ -91,7 +93,7 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	@Override
 	public Set<Long> getAllObjectIdByTipoIntegrazione(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId, TipoIntegrazioneEnum tipo) {
 		LOGGER.debug(Utils.getLogMessage("Recupero oggetti integrazione di tipo " + tipo + " per accreditamento " + accreditamentoId));
-		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStatoAndApplicatoFalse(accreditamentoId, workFlowProcessInstanceId, stato);
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStato(accreditamentoId, workFlowProcessInstanceId, stato);
 		if(container != null) {
 			Set<FieldIntegrazioneAccreditamento> allFieldIntegrazioneList = container.getIntegrazioni();
 			Set<Long> objectIdList = new HashSet<Long>();
@@ -102,6 +104,26 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 			return objectIdList;
 		}
 		else return new HashSet<Long>();
+	}
+
+	@Override
+	public Set<Ruolo> getAllRuoloSostituitoInIntegrazione(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) {
+		LOGGER.debug(Utils.getLogMessage("Recupero oggetti integrazione di tipo SOSTITUZIONE per accreditamento " + accreditamentoId));
+		FieldIntegrazioneHistoryContainer container = fieldIntegrazioneHistoryContainerRepository.findOneByAccreditamentoIdAndWorkFlowProcessInstanceIdAndStato(accreditamentoId, workFlowProcessInstanceId, stato);
+		if(container != null) {
+			Set<FieldIntegrazioneAccreditamento> allFieldIntegrazioneList = container.getIntegrazioni();
+			Set<Ruolo> result = new HashSet<Ruolo>();
+			for(FieldIntegrazioneAccreditamento fia : allFieldIntegrazioneList) {
+				//se è FULL e su questi ruoli di sicuro si tratta di una sostituzione
+				if(IdFieldEnum.isFull(fia.getIdField()) &&
+						fia.getIdField().getRuolo() != Ruolo.COMPONENTE_COMITATO_SCIENTIFICO &&
+						fia.getIdField().getRuolo() != Ruolo.RICHIEDENTE) {
+					result.add(fia.getIdField().getRuolo());
+				}
+			}
+			return result;
+		}
+		else return new HashSet<Ruolo>();
 	}
 
 	@Override

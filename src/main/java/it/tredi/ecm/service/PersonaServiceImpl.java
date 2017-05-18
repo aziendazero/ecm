@@ -144,7 +144,9 @@ public class PersonaServiceImpl implements PersonaService {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio Persona da Integrazione (" + persona.getRuolo() + ")"));
 		persona.setDirty(false);
 		persona.getAnagrafica().setDirty(false);
+		anagraficaService.save(persona.getAnagrafica());
 		save(persona);
+
 	}
 
 	@Override

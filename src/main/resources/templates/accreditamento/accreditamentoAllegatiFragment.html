@@ -85,7 +85,7 @@
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<div th:if="${editabile}" class="model-link" id="esempio_dichiarazioneLegale">
 							<i class="fa fa-file-text"></i>
-							<a id="dichiarazioneLegale_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29215.pdf"></a>
+							<a id="dichiarazioneLegale_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href=" https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29215.pdf"></a>
 						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneLegale,  ${!showOnly ? 'dichiarazioneLegale' : null}, null, null, true, ${mode}, true)" ></th:block> -->
 						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_LEGALE}', dichiarazioneLegale,  ${!showOnly ? 'dichiarazioneLegale' : null}, null, null, true, ${mode}, true)" ></th:block>
@@ -94,14 +94,14 @@
 							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 							<div th:if="${editabile}" class="model-link" id="esempio_richiesta_accreditamento">
 								<i class="fa fa-file-text"></i>
-								<a id="esempio_richiesta_accreditamento_link" target="_blank" th:text="#{label.esempio_modello}" href="TODO"></a>
+								<a id="esempio_richiesta_accreditamento_link" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-31404.pdf"></a>
 							</div>
 							<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_RICHIESTA_ACCREDITAMENTO_STANDARD}', richiestaAccreditamentoStandard,  ${!showOnly ? 'richiestaAccreditamentoStandard' : null}, null, null, true, ${mode}, true)" ></th:block>
 
 							<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 							<div th:if="${editabile}" class="model-link" id="esempio_relazione_attivita_formativa">
 								<i class="fa fa-file-text"></i>
-								<a id="esempio_relazione_attivita_formativa_link" target="_blank" th:text="#{label.esempio_modello}" href="TODO"></a>
+								<a id="esempio_relazione_attivita_formativa_link" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-31405.pdf"></a>
 							</div>
 							<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_RELAZIONE_ATTIVITA_FORMATIVA}', relazioneAttivitaFormativa,  ${!showOnly ? 'relazioneAttivitaFormativa' : null}, null, null, true, ${mode}, true)" ></th:block>
 						</th:block>

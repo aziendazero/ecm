@@ -618,7 +618,10 @@ public class AccreditamentoController {
 		else
 			accreditamentoWrapper.setAllAccreditamento(accreditamento);
 
-		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
+		if(accreditamento.isValutazioneSegreteria() ||
+				accreditamento.isValutazioneSegreteriaVariazioneDati() ||
+				accreditamento.isValutazioneCrecm() ||
+				accreditamento.isValutazioneCrecmVariazioneDati()){
 			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
 		}
 
@@ -789,28 +792,29 @@ public class AccreditamentoController {
 	}
 
 	private void integrazionePrepareAccreditamentoWrapper(AccreditamentoWrapper accreditamentoWrapper){
-		Set<Sede> sediIntegrazione = sedeService.getSediFromIntegrazione(accreditamentoWrapper.getProvider().getId());
-		for(Sede s : sediIntegrazione){
-			if(s.isDirty())
-				accreditamentoWrapper.getSedi().add(s);
-		}
-
-		Set<Persona> comitatoIntegrazione = personaService.getComponentiComitatoScientificoFromIntegrazione(accreditamentoWrapper.getProvider().getId());
-		for(Persona p : comitatoIntegrazione){
-			if(p.isDirty())
-				accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
-		}
 		Accreditamento accreditamento = accreditamentoWrapper.getAccreditamento();
 		Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
-		AccreditamentoStatoEnum stato;
-		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
-			stato = accreditamento.getStatoUltimaIntegrazione();
+		AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
+		if(stato != null) {
+			Set<Sede> sediIntegrazione = sedeService.getSediFromIntegrazione(accreditamentoWrapper.getProvider().getId());
+			for(Sede s : sediIntegrazione){
+				if(s.isDirty())
+					accreditamentoWrapper.getSedi().add(s);
+			}
+			Set<Persona> comitatoIntegrazione = personaService.getComponentiComitatoScientificoFromIntegrazione(accreditamentoWrapper.getProvider().getId());
+			for(Persona p : comitatoIntegrazione){
+				if(p.isDirty())
+					accreditamentoWrapper.getComponentiComitatoScientifico().add(p);
+			}
+	//		if(accreditamento.isValutazioneSegreteria() || accreditamento.isValutazioneSegreteriaVariazioneDati()){
+	//			stato = accreditamento.getStatoUltimaIntegrazione();
+	//		}
+	//		else
+	//			stato = accreditamento.getCurrentStato();
+			accreditamentoWrapper.setAggiunti(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamento.getId(), stato, workFlowProcessInstanceId, TipoIntegrazioneEnum.CREAZIONE));
+			accreditamentoWrapper.setSostituiti(fieldIntegrazioneAccreditamentoService.getAllRuoloSostituitoInIntegrazione(accreditamento.getId(), stato, workFlowProcessInstanceId));
+			accreditamentoWrapper.setEliminati(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamento.getId(), stato, workFlowProcessInstanceId, TipoIntegrazioneEnum.ELIMINAZIONE));
 		}
-		else
-			stato = accreditamento.getCurrentStato();
-
-		accreditamentoWrapper.setAggiunti(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamento.getId(), stato, workFlowProcessInstanceId, TipoIntegrazioneEnum.CREAZIONE));
-		accreditamentoWrapper.setEliminati(fieldIntegrazioneAccreditamentoService.getAllObjectIdByTipoIntegrazione(accreditamento.getId(), stato, workFlowProcessInstanceId, TipoIntegrazioneEnum.ELIMINAZIONE));
 	}
 
 	//PARTE RELATIVA ALLA VALUTAZIONE
