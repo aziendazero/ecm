@@ -27,6 +27,7 @@ import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
+import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.WorkflowTipoEnum;
@@ -129,6 +130,8 @@ public class WorkflowServiceImpl implements WorkflowService {
 		//Aggiungo il gruppo tutti
 		userGroups.put("tutti", "Tutti");
 		for(Profile profile : account.getProfiles()){
+			if(profile.getProfileEnum() == ProfileEnum.RESPONSABILE_SEGRETERIA_ECM)
+				userGroups.put(ProfileEnum.SEGRETERIA.name(), ProfileEnum.SEGRETERIA.name());
 			userGroups.put(profile.getProfileEnum().name(), profile.getName());
 		}
 		if(account.getUsernameWorkflow() == null || account.getUsernameWorkflow().isEmpty()) {
