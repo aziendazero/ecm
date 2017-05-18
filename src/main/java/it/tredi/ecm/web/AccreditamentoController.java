@@ -621,7 +621,8 @@ public class AccreditamentoController {
 		if(accreditamento.isValutazioneSegreteria() ||
 				accreditamento.isValutazioneSegreteriaVariazioneDati() ||
 				accreditamento.isValutazioneCrecm() ||
-				accreditamento.isValutazioneCrecmVariazioneDati()){
+				accreditamento.isValutazioneCrecmVariazioneDati() ||
+				accreditamento.isValutazioneTeamLeader()){
 			integrazionePrepareAccreditamentoWrapper(accreditamentoWrapper);
 		}
 
