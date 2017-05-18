@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -37,6 +38,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.cert.ocsp.Req;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
@@ -367,7 +369,14 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		richiesta.setDocumentoPrincipale(documentoPrincipale);
 
-		System.out.println(richiesta);
+		//FIXME remove after debug
+		JAXBContext context = JAXBContext.newInstance(Richiesta.class);
+		Marshaller marshaller = context.createMarshaller();
+		StringWriter sw = new StringWriter();
+		marshaller.marshal(richiesta, sw);
+		String xmlString = sw.toString();
+		LOGGER.info(Utils.getLogMessage("XML  --------->  " + xmlString));
+		//FIXME fine
 
 		return richiesta;
 	}
