@@ -28,13 +28,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.audit.AuditInfo;
 import it.tredi.ecm.audit.EcmAuditInfoChangeLog;
-import it.tredi.ecm.audit.EcmTextChangeLog;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.service.AccountService;
-import it.tredi.ecm.service.AccountServiceImpl;
+import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AuditService;
-import it.tredi.ecm.service.AuditServiceImpl;
+import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 
@@ -47,6 +47,8 @@ public class AuditController {
 
 	@Autowired private Javers javers;
 	@Autowired private AuditService auditService;
+	@Autowired private EventoService eventoService;
+	@Autowired private AccreditamentoService accreditamentoService;
 
 	private final String SHOW = "audit/auditShow";
 	private final String ERROR = "fragments/errorsAjax";
@@ -116,13 +118,21 @@ public class AuditController {
 			}
 
 			//auditInfo.setFullText(changeLog);
+
+			//tiommi 19/05/2017
 			if(entity.contains("Provider")) {
 				model.addAttribute("returnLink", "/provider/list/all");
 				model.addAttribute("visualizzazione", " del Registro Operazione del Provider " + entityId);
 			}
 			else if(entity.contains("Evento")) {
 				model.addAttribute("returnLink", "/evento/list");
-				model.addAttribute("visualizzazione", " del Registro Operazione dell'Evento " + entityId);
+				Evento evento = eventoService.getEvento(entityId);
+				model.addAttribute("visualizzazione", " del Registro Operazione dell'Evento " + evento.getCodiceIdentificativo());
+			}
+			else if(entity.contains("Accreditamento")) {
+				model.addAttribute("returnLink", "/accreditamento/"+entityId+"/show");
+				Accreditamento accreditamento = accreditamentoService.getAccreditamento(entityId);
+				model.addAttribute("visualizzazione", " della Domanda di Accreditamento " + entityId + " del Provider " + accreditamento.getProvider().getId());
 			}
 
 			model.addAttribute("auditInfo", auditInfo);
