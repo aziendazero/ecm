@@ -116,6 +116,14 @@ public class AuditController {
 			}
 
 			//auditInfo.setFullText(changeLog);
+			if(entity.contains("Provider")) {
+				model.addAttribute("returnLink", "/provider/list/all");
+				model.addAttribute("visualizzazione", " del Registro Operazione del Provider " + entityId);
+			}
+			else if(entity.contains("Evento")) {
+				model.addAttribute("returnLink", "/evento/list");
+				model.addAttribute("visualizzazione", " del Registro Operazione dell'Evento " + entityId);
+			}
 
 			model.addAttribute("auditInfo", auditInfo);
 			return SHOW;

@@ -42,13 +42,13 @@ public interface ComunicazioneRepository  extends CrudRepository<Comunicazione, 
 	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :user MEMBER OF c.destinatari OR :user = c.mittente OR :accountComunicazioni MEMBER OF c.destinatari OR c.fakeAccountComunicazioni = :accountComunicazioni")
 	int countAllComunicazioniStoricoByAccountOrByGroup(@Param("user") Account user, @Param("accountComunicazioni") Account accountComunicazioni);
 
-	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :user MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.mittente = :user)")
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE c.chiusa = FALSE AND :user MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.mittente = :user)")
 	int countAllComunicazioniNonRisposteByAccount(@Param("user") Account user);
 
-	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE :accountComunicazioni MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.fakeAccountComunicazioni = :accountComunicazioni)")
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE c.chiusa = FALSE AND :accountComunicazioni MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.fakeAccountComunicazioni = :accountComunicazioni)")
 	int countAllComunicazioniNonRisposteByGroup(@Param("accountComunicazioni") Account accountComunicazioni);
 
-	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE (:user MEMBER OF c.destinatari OR :accountComunicazioni MEMBER OF c.destinatari) AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND (cr.mittente = :user OR cr.fakeAccountComunicazioni = :accountComunicazioni))")
+	@Query ("SELECT DISTINCT COUNT (c) FROM Comunicazione c WHERE c.chiusa = FALSE AND (:user MEMBER OF c.destinatari OR :accountComunicazioni MEMBER OF c.destinatari) AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND (cr.mittente = :user OR cr.fakeAccountComunicazioni = :accountComunicazioni))")
 	int countAllComunicazioniNonRisposteByAccountOrByGroup(@Param("user") Account user, @Param("accountComunicazioni") Account accountComunicazioni);
 
 	@Query ("SELECT c FROM Comunicazione c WHERE :user MEMBER OF c.destinatari")
@@ -84,13 +84,13 @@ public interface ComunicazioneRepository  extends CrudRepository<Comunicazione, 
 	@Query ("SELECT c FROM Comunicazione c WHERE :user MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.mittente = :user)")
 	Set<Comunicazione> findAllComunicazioniNonRisposteByAccount(@Param("user") Account user);
 
-	@Query ("SELECT c FROM Comunicazione c WHERE :accountComunicazioni MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.fakeAccountComunicazioni = :accountComunicazioni)")
+	@Query ("SELECT c FROM Comunicazione c WHERE c.chiusa = FALSE AND :accountComunicazioni MEMBER OF c.destinatari AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.fakeAccountComunicazioni = :accountComunicazioni)")
 	Set<Comunicazione> findAllComunicazioniNonRisposteByGroup(@Param("accountComunicazioni") Account accountComunicazioni);
 
-	@Query ("SELECT c FROM Comunicazione c WHERE (:user MEMBER OF c.destinatari OR :accountComunicazioni MEMBER OF c.destinatari) AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND (cr.mittente = :user OR cr.fakeAccountComunicazioni = :accountComunicazioni))")
+	@Query ("SELECT c FROM Comunicazione c WHERE c.chiusa = FALSE AND (:user MEMBER OF c.destinatari OR :accountComunicazioni MEMBER OF c.destinatari) AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND (cr.mittente = :user OR cr.fakeAccountComunicazioni = :accountComunicazioni))")
 	Set<Comunicazione> findAllComunicazioniNonRisposteByAccountOrByGroup(@Param("user") Account user, @Param("accountComunicazioni") Account accountComunicazioni);
 
-	@Query ("SELECT c FROM Comunicazione c WHERE :accountComunicazioniFrom = c.fakeAccountComunicazioni AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.fakeAccountComunicazioni = :accountComunicazioniTo)")
+	@Query ("SELECT c FROM Comunicazione c WHERE c.chiusa = FALSE AND :accountComunicazioniFrom = c.fakeAccountComunicazioni AND NOT EXISTS (SELECT cr FROM ComunicazioneResponse cr WHERE cr.comunicazione = c AND cr.fakeAccountComunicazioni = :accountComunicazioniTo)")
 	Set<Comunicazione> findAllComunicazioniNonRisposteFromGroupByGroup(@Param("accountComunicazioniFrom") Account accountComunicazioniFrom, @Param("accountComunicazioniTo") Account accountComunicazioniTo);
 
 	@Query("SELECT COUNT (c) FROM Comunicazione c WHERE :userId MEMBER OF c.utentiCheDevonoLeggere")

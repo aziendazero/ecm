@@ -12,6 +12,7 @@
 					<div class="x_title">
 						<h2 th:text="#{label.lista_comunicazioni_tipo(#{__${tipologiaLista}__})}"></h2>
 						<div class="pull-right buttons-header">
+							<button class="btn btn-success pull-right" onclick="archiviaSelezionate()" th:text="#{label.archivia_selezionate}" th:if="${tipo == 'notRead'}"></button>
 							<a class="btn btn-primary pull-right"
 									th:href="@{__${returnLink}__}"
 									th:text="#{label.indietro}">Indietro</a>
@@ -30,6 +31,7 @@
 										<th th:text="#{label.tipologia_list}"></th>
 										<th th:text="#{label.data_ultima_risposta}"></th>
 										<th th:text="#{label.stato}"></th>
+										<th class="hidden" th:text="#{label.id}"></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -48,6 +50,7 @@
 										<td th:text="${comunicazione.tipologia.nome}"></td>
 										<td th:text="${#temporals.format(comunicazione.dataUltimaModifica, 'dd/MM/yyyy - HH:mm')}"></td>
 										<td th:text="${comunicazione.chiusa == true} ? #{label.chiusa} : #{label.aperta}"></td>
+										<td class="hidden" th:text="${comunicazione.id}"></td>
 									</tr>
 								</tbody>
 							</table>
@@ -63,16 +66,61 @@
 			</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
+				var table;
 
-			     $(document).ready(function() {
+			    $(document).ready(function() {
 
 			    	$.fn.dataTable.moment('DD/MM/YYYY - HH:mm');
-					$('#datatable-comunicazione').DataTable({
+					table = $('#datatable-comunicazione').DataTable({
 						"bFilter" : true,
 						"bInfo" : false,
 						"bPaginate" : true,
 					});
-			     });
+
+					if([[${tipo == 'notRead'}]])
+						initSelectableDataTable();
+
+			    });
+
+				function initSelectableDataTable() {
+					$('#datatable-comunicazione tbody').on('click', 'tr', function () {
+				        if ($(this).hasClass('selected')) {
+				            $(this).removeClass('selected');
+				        }
+				        else {
+				            $(this).addClass('selected');
+				        }
+					});
+				}
+
+				function archiviaSelezionate() {
+					var ids = [];
+					var $rows = table.rows('.selected').data();
+					for(var i = 0; i < $rows.length; i++) {
+						var id = Number.parseInt(($rows[i][7]));
+						ids.push(id);
+					}
+					var url = [[@{|/comunicazione/notRead/list/archiviaSelezionate|}]];
+					var token = [[${_csrf.token}]];
+					var header = [[${_csrf.headerName}]];
+					var dataSend = JSON.stringify(ids);
+					$.ajax({
+						type: "POST",
+						url: url,
+						timeout: 100000,
+						data: dataSend,
+						contentType: "application/json; charset=utf-8",
+						beforeSend: function(xhr) {
+							xhr.setRequestHeader(header, token);
+						},
+						success: function() {
+							location.reload();
+						},
+						error: function(request, status, error) {
+	                    	alert(error);
+	                    }
+					});
+				}
 
 			/*]]>*/
 			</script>

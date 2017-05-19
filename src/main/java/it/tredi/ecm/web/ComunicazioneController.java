@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -255,6 +256,7 @@ public class ComunicazioneController {
 			}
 			model.addAttribute("listaComunicazioni", listaComunicazioni);
 			model.addAttribute("tipologiaLista", tipologiaLista);
+			model.addAttribute("tipo", tipo);
 			model.addAttribute("returnLink", "/comunicazione/dashboard");
 			return LIST;
 		}catch (Exception ex){
@@ -426,6 +428,21 @@ public class ComunicazioneController {
 			LOGGER.error(Utils.getLogMessage("GET /comunicazione/"+comunicazioneId+"/evento/"+codiceEvento+"/redirect"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/comunicazione/dashboard";
+		}
+	}
+
+	@RequestMapping(value = "/comunicazione/notRead/list/archiviaSelezionate", method = RequestMethod.POST)
+	public String archiviaSelezionate(@RequestBody Set<Long> ids, Model model, RedirectAttributes redirectAttrs) {
+		try{
+			LOGGER.info(Utils.getLogMessage("POST /comunicazione/notRead/list/archiviaSelezionate"));
+			comunicazioneService.archiviaSelezionati(ids);
+			LOGGER.info(Utils.getLogMessage("REDIRECT success: /comunicazione/notRead/list"));
+			return "redirect:/comunicazione/notRead/list";
+		}catch (Exception ex){
+			LOGGER.info(Utils.getLogMessage("REDIRECT con errore: /comunicazione/notRead/list"));
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/comunicazione/notRead/list";
 		}
 	}
 

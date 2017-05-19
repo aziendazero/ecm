@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
-import it.tredi.ecm.dao.entity.FieldIntegrazioneHistoryContainer;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
@@ -31,7 +30,6 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.ProfileRepository;
 import it.tredi.ecm.dao.repository.ValutazioneRepository;
@@ -54,6 +52,8 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	@PersistenceContext EntityManager entityManager;
 	@Autowired private MessageSource messageSource;
 	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+	@Autowired private PersonaService personaService;
+	@Autowired private SedeService sedeService;
 
 	@Override
 	public Valutazione getValutazione(Long valutazioneId) {
@@ -474,19 +474,27 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 					field.setModificatoInIntegrazione(false);
 				fieldValutazioni.add(field);
 			}
-			//se non lo trova ed è una creazione/rimozione lo crea
+			//se non lo trova ed è una creazione/rimozione/sostituzione lo crea
 			else {
 				if(IdFieldEnum.isFull(fieldIntegrazione.getIdField()) && !fieldIntegrazione.isFittizio()) {
-					field = new FieldValutazioneAccreditamento();
-					field.setEsito(null);
-					field.setEnabled(true);
-					field.setNote(null);
-					field.setModificatoInIntegrazione(true);
-					field.setAccreditamento(fieldIntegrazione.getAccreditamento());
-					field.setObjectReference(fieldIntegrazione.getObjectReference());
-					field.setIdField(fieldIntegrazione.getIdField());
-					fieldValutazioneAccreditamentoService.save(field);
-					fieldValutazioni.add(field);
+					//IN CASO DI MULTISTANZA
+					//cerco l'oggetto da valutare su db, se non lo trovo significa che l'aggiunta dell'oggetto non
+					//è stata approvata dalla segreteria o la rimozione è stata approvata, percui non devo creare il fieldvalutazione
+					Long id = fieldIntegrazione.getObjectReference();
+					if(fieldIntegrazione.getObjectReference() == -1 ||
+							personaService.getPersona(id) != null ||
+							sedeService.getSede(id) != null) {
+						field = new FieldValutazioneAccreditamento();
+						field.setEsito(null);
+						field.setEnabled(true);
+						field.setNote(null);
+						field.setModificatoInIntegrazione(true);
+						field.setAccreditamento(fieldIntegrazione.getAccreditamento());
+						field.setObjectReference(fieldIntegrazione.getObjectReference());
+						field.setIdField(fieldIntegrazione.getIdField());
+						fieldValutazioneAccreditamentoService.save(field);
+						fieldValutazioni.add(field);
+					}
 				}
 			}
 		}

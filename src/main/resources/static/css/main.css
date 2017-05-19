@@ -1503,3 +1503,7 @@ li.listStyle-elenco > label{
 	height: 44px;
 }
 
+table.dataTable tbody tr.selected {
+	background-color: #B0BED9 !important;
+}
+

@@ -589,4 +589,32 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 		return mappa;
 	}
 
+	@Override
+	public void archiviaSelezionati(Set<Long> ids) {
+		Account user = Utils.getAuthenticatedUser().getAccount();
+		for(Long id : ids) {
+			Comunicazione comunicazione = comunicazioneRepository.findOne(id);
+			if(comunicazione != null) {
+				Set<Long> utentiCheDevonoLeggere = comunicazione.getUtentiCheDevonoLeggere();
+				//tolgo l'utente che ha archiviato
+				utentiCheDevonoLeggere.remove(user.getId());
+				//se l'utente è provider tolgo tutti gli utenti del suo provider
+				if(user.isProviderVisualizzatore()) {
+					Set<Account> providerUsers = accountService.getAllByProviderId(user.getProvider().getId());
+					for(Account pu : providerUsers)
+						utentiCheDevonoLeggere.remove(pu.getId());
+				}
+				//se l'utente è segreteria tolgo tutti gli utenti segreteria
+				else if(user.isSegreteria()) {
+					Set<Account> segreteriaUsers = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
+					for(Account s : segreteriaUsers)
+						utentiCheDevonoLeggere.remove(s.getId());
+				}
+				comunicazione.setUtentiCheDevonoLeggere(utentiCheDevonoLeggere);
+				comunicazioneRepository.save(comunicazione);
+			}
+		}
+
+	}
+
 }

@@ -44,5 +44,6 @@ public interface ComunicazioneService {
 	Set<Comunicazione> getAllComunicazioniNonRisposteFromProviderBySegreteria(Provider provider);
 	List<Comunicazione> cerca(RicercaComunicazioneWrapper wrapper);
 	HashMap<Long, Boolean> createMappaVisibilitaResponse(Account account, Comunicazione comunicazione);
+	void archiviaSelezionati(Set<Long> ids);
 
 }
