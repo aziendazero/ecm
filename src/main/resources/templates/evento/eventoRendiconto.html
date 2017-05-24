@@ -16,6 +16,8 @@
 							<span aria-hidden="true">×</span>
 						</button>
 						<h4 class="modal-title" th:text="#{label.report_rendicontazione}">Report della Rendicontanzione</h4>
+						<a class="btn btn-primary pull-right with-margin-top" th:text="#{label.esporta_pdf}" id="esportaInPdf"></a>
+						<a class="btn btn-primary pull-right with-margin-top" th:text="#{label.genera_attestati}" id="generaAttestati"></a>
 					</div>
 					<div id="contentModalXSLT" class="modal-body">
 						<!-- risultato della view XSLT chiamata con ajax -->
@@ -45,7 +47,7 @@
 										<span class="label-show" th:text="#{label.data_invio}"></span>
 									</label>
 									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-										<div class="value"><span th:text="${#temporals.format(rendicontazione.dataInvio, 'dd/MM/yyyy HH:mm')}" /></div>
+										<div class="value"><span th:text="${#temporals.format(rendicontazione.dataInvio, 'dd/MM/yyyy HH:mm')}"></span></div>
 									</div>
 								</div>
 								<div class="row with-margin-top" th:if="${rendicontazione.accountInvio}">
@@ -53,7 +55,7 @@
 										<span class="label-show" th:text="#{label.utente}"></span>
 									</label>
 									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-										<div class="value"><span th:text="${rendicontazione.accountInvio.fullName}"/></div>
+										<div class="value"><span th:text="${rendicontazione.accountInvio.fullName}"></span></div>
 									</div>
 								</div>
 								<div class="row with-margin-top" th:if="${rendicontazione.result}">
@@ -62,7 +64,7 @@
 									</label>
 									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 										<div class="value">
-											<span th:text="${rendicontazione.result.nome}"/>
+											<span th:text="${rendicontazione.result.nome}"></span>
 											<input type="hidden" th:id="${'statoElaborazioneJsonResponse-' + row.index}" th:value="${rendicontazione.response}"/>
 											<i th:if="${rendicontazione.result == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum).ERROR}" class="fa fa-list-alt" th:id="${'statoElaborazioneErroreBloccante-' + row.index}"></i>
 										</div>
@@ -242,11 +244,11 @@
 								</div>
 							</div>
 						</div>
-						<div class="item form-group with-margin-top" th:if="${#lists.size(eventoWrapperRendiconto.evento.inviiRendicontazione)>1}">
+						<div class="item form-group with-margin-top" th:if="${#lists.size(eventoWrapperRendiconto.evento.inviiRendicontazione)>0}">
 							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-7"></div>
 							<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
 								<button class="btn btn-success" th:text="#{label.mostra}" th:onclick="|mostraXSLT(${eventoWrapperRendiconto.evento.ultimaRendicontazioneInviata.fileRendicontazione.id})|"></button>
-								<button class="btn btn-primary" th:text="#{label.mostra_invii_precedenti}" data-toggle="modal" data-target=".modal-rendicontazioniPrecedenti"></button>
+								<button th:if="${#lists.size(eventoWrapperRendiconto.evento.inviiRendicontazione)>1}" class="btn btn-primary" th:text="#{label.mostra_invii_precedenti}" data-toggle="modal" data-target=".modal-rendicontazioniPrecedenti"></button>
 							</div>
 						</div>
 						<div th:unless="${eventoWrapperRendiconto.evento.ultimaRendicontazioneInviata}" class="value" th:text="#{label.nessuna_rendicontazione_inviata}"></div>
@@ -331,8 +333,12 @@
 				}
 
 				function mostraXSLT(idFile) {
-					var url = [[@{|/provider/${eventoWrapperRendiconto.providerId}/evento/${eventoWrapperRendiconto.evento.id}/viewXSLT/|}]] + idFile;
-					$("#contentModalXSLT").load(url, function(data) {
+					var urlXslt = [[@{|/provider/${eventoWrapperRendiconto.providerId}/evento/${eventoWrapperRendiconto.evento.id}/viewXSLT/|}]] + idFile;
+					var urlPdf = [[@{|/provider/${eventoWrapperRendiconto.providerId}/evento/${eventoWrapperRendiconto.evento.id}/esportaPDFfromXSLT/|}]] + idFile;
+					var urlAttestati = [[@{|/provider/${eventoWrapperRendiconto.providerId}/evento/${eventoWrapperRendiconto.evento.id}/attestatiPDFfromXSLT/|}]] + idFile;
+					$("#esportaInPdf").attr("href", urlPdf);
+					$("#generaAttestati").attr("href", urlAttestati);
+					$("#contentModalXSLT").load(urlXslt, function(data) {
 						$("#xslt-modal").modal("show");
 					});
 				}

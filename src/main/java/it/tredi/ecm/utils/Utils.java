@@ -8,6 +8,7 @@ import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,6 +17,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.xml.transform.Source;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -33,6 +36,7 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.pdf.PdfRiepilogoPartecipantiInfo;
 import it.tredi.ecm.service.bean.CurrentUser;
 
 public class Utils {

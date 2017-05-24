@@ -272,7 +272,7 @@
 									</td>
 									<td th:text="${evento.numeroPartecipanti}"></td>
 									<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario( evento.durata != null ? evento.durata : 0)}"></td>
-									<td th:text="${evento.dataScadenzaPagamento == null} ? '' : ${#temporals.format(evento.dataScadenzaPagamento, 'dd/MM/yyyy')}"></td>
+									<td th:text="${evento.dataScadenzaInvioRendicontazione == null} ? '' : ${#temporals.format(evento.dataScadenzaInvioRendicontazione, 'dd/MM/yyyy')}"></td>
 									<td>
 										<div th:if="${evento.confermatiCrediti != null}">
 											<i class="fa table-icon fa-check green" th:if="${evento.confermatiCrediti}" th:title="#{label.sì}"></i>
