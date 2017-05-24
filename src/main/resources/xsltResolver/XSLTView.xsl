@@ -12,7 +12,7 @@
       <title>Partecipanti</title>
     </head>
     <body>
-      <h2>Partecipanti</h2>
+      <h2>Partecipanti dell'Evento <xsl:value-of select="@cod_evento"/></h2>
 
 	<table id="tableXSLT" class="no-order table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 		<thead>

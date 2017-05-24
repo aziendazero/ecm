@@ -1,20 +1,40 @@
 package it.tredi.ecm.cogeaps;
 
+import java.io.File;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.pdf.PdfPartecipanteInfo;
+import it.tredi.ecm.pdf.PdfRiepilogoPartecipantiInfo;
 
 public class Helper {
 
@@ -26,6 +46,9 @@ public class Helper {
 	public final static String []PARTECIPANTE_XML_ATTRIBUTES = {"cod_fisc", "cognome", "nome", "ruolo", "cred_acq", "data_acq"};//solo quelli che servono per salvare le info anagrafe regionali crediti
 	public final static String PARTECIPANTE_DATA_FORMAT = "yyyy-MM-dd";
 
+	public final static String PARTECIPANTE_NODE_NAME = "partecipante";
+	public final static String PROFESSIONE_NODE_NAME = "professione";
+
 	//TODO - gestire eccezioni
 
 	public static Map<String, String> createEventoDataMapFromEvento(Evento evento) {
@@ -36,10 +59,22 @@ public class Helper {
 		dbEventoDataMap.put("cod_accr", CODICE_ENTE_ACCREDITANTE);
 		dbEventoDataMap.put("data_ini", evento.getDataInizio().format(DateTimeFormatter.ISO_LOCAL_DATE));
 		dbEventoDataMap.put("data_fine", evento.getDataFine().format(DateTimeFormatter.ISO_LOCAL_DATE));
-		dbEventoDataMap.put("ore", Integer.toString((int)Math.floor(evento.getDurata())));
+		//tiommi 22/05/2017
+		BigDecimal durataRounded = new BigDecimal(Float.toString(evento.getDurata())).setScale(0, RoundingMode.HALF_DOWN);
+		dbEventoDataMap.put("ore", durataRounded.toString());
+		//end
 		dbEventoDataMap.put("crediti", Float.toString(evento.getCrediti()));
 		dbEventoDataMap.put("tipo_form", Integer.toString(evento.getProceduraFormativa().getId()));
-		dbEventoDataMap.put("tipo_eve", "E");
+		//tiommi 22/05/2017
+		Set<DestinatariEventoEnum> destinatariEvento = evento.getDestinatariEvento();
+		if((destinatariEvento.contains(DestinatariEventoEnum.PERSONALE_CONVENZIONATO) ||
+				destinatariEvento.contains(DestinatariEventoEnum.PERSONALE_DIPENDENTE)) &&
+				!destinatariEvento.contains(DestinatariEventoEnum.ALTRO_PERSONALE)) {
+			dbEventoDataMap.put("tipo_eve", "P");
+		}
+		else
+			dbEventoDataMap.put("tipo_eve", "E");
+		//end
 		dbEventoDataMap.put("cod_obi", evento.getObiettivoNazionale().getCodiceCogeaps());
 		dbEventoDataMap.put("num_part", Integer.toString(evento.getNumeroPartecipanti()));
 		String cod_tipologia_form = "-1";
@@ -47,7 +82,16 @@ public class Helper {
 			cod_tipologia_form = Integer.toString(((EventoFSC)evento).getTipologiaEventoFSC().getId());
 		}
 		else if (evento instanceof EventoRES) { //RES
-			cod_tipologia_form = Integer.toString(((EventoRES)evento).getTipologiaEventoRES().getId());
+			//tiommi 22/05/2017
+			//old -> cod_tipologia_form = Integer.toString(((EventoRES)evento).getTipologiaEventoRES().getId());
+			//new
+			if(((EventoRES) evento).getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO)
+				cod_tipologia_form = "1";
+			else if(((EventoRES) evento).getTipologiaEventoRES() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO)
+				cod_tipologia_form = "2";
+			else if(((EventoRES) evento).getTipologiaEventoRES() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO)
+				cod_tipologia_form = "4";
+			//end
 		}
 		else if (evento instanceof EventoFAD) { //FAD
 			cod_tipologia_form = ((EventoFAD)evento).getSupportoSvoltoDaEsperto()? "11" : "10";
@@ -66,6 +110,58 @@ public class Helper {
 
 	public static String createReportXmlFileName() {
 		return "report-" + new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()) +  ".xml";
+	}
+
+	//crea la lista di oggetti utilizzati per estrapolare i dati relativi al partecipante
+	public static PdfRiepilogoPartecipantiInfo extractRiepilogoPartecipantiFromXML(Document xmlDoc) throws Exception {
+		PdfRiepilogoPartecipantiInfo pdfInfo = new PdfRiepilogoPartecipantiInfo();
+		Element eventoEl = xmlDoc.getRootElement().element("evento");
+		List<Element> partecipantiEl = eventoEl.elements(PARTECIPANTE_NODE_NAME);
+		for(Element partecipanteEl : partecipantiEl) {
+			PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl);
+			pdfInfo.getPartecipanti().add(pdfPartecipanteInfo);
+		}
+		return pdfInfo;
+	}
+
+	//crea l'oggetto utilizzato per stampare i dati del partecipante nel pdf
+	private static PdfPartecipanteInfo extractPartecipanteFromXML(Element partecipanteEl) throws Exception {
+		PdfPartecipanteInfo partecipante = new PdfPartecipanteInfo();
+		partecipante.setNome(partecipanteEl.attributeValue("nome"));
+		partecipante.setCognome(partecipanteEl.attributeValue("cognome"));
+		partecipante.setCodiceFiscale(partecipanteEl.attributeValue("cod_fisc").toUpperCase());
+		if(Integer.parseInt(partecipanteEl.attributeValue("part_reclutato")) == 1)
+			partecipante.setReclutato("SI");
+		else partecipante.setReclutato("NO");
+		partecipante.setSponsor(partecipanteEl.attributeValue("sponsor"));
+		switch(partecipanteEl.attributeValue("ruolo")) {
+			case "P": partecipante.setTipologiaPartecipante("PARTECIPANTE"); break;
+			case "D": partecipante.setTipologiaPartecipante("DOCENTE"); break;
+			case "T": partecipante.setTipologiaPartecipante("TUTOR"); break;
+			case "R": partecipante.setTipologiaPartecipante("RELATORE"); break;
+			default: partecipante.setTipologiaPartecipante("N/D"); break;
+		}
+		partecipante.setNumeroCrediti(partecipanteEl.attributeValue("cred_acq"));
+		partecipante.setDataCreditiAcquisiti(partecipanteEl.attributeValue("data_acq"));
+		List<Element> professioniEl = partecipanteEl.elements(PROFESSIONE_NODE_NAME);
+		//prende il nome della professione dal file professioni.xml come l'XSLT resolver e lo salvo in una mappa
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	    String xmlFileUri = classLoader.getResource("xsltResolver/professioni.xml").getPath();
+	    Path xmlFilePath = Paths.get(xmlFileUri);
+		byte[] xmlFileData = Files.readAllBytes(xmlFilePath);
+		Document docProfessioni = DocumentHelper.parseText(new String(xmlFileData, XML_REPORT_ENCODING));
+		Element allProfessioniEl = docProfessioni.getRootElement();
+		List<Element> allProfessioniListEl = allProfessioniEl.elements("p");
+		Map<String, String> mappaConversione = new HashMap<String, String>();
+		for(Element p : allProfessioniListEl) {
+			mappaConversione.put(p.attributeValue("id"), p.getText());
+		}
+		for(Element professioneEl : professioniEl) {
+			String nomeProfessione = mappaConversione.get(professioneEl.attributeValue("cod_prof"));
+			if(nomeProfessione != null)
+				partecipante.getProfessioni().add(nomeProfessione.toUpperCase());
+		}
+		return partecipante;
 	}
 
 }

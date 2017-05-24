@@ -42,15 +42,28 @@ public class XmlReportValidator {
 		//ora siamo sicuri di avere un XML
 		Document xmlDoc = DocumentHelper.parseText(new String(reportEventoXml, Helper.XML_REPORT_ENCODING));
 		Element eventoEl = xmlDoc.getRootElement().element("evento");
+		//FIXME workaround controllo caso RES - CORSO DI AGGIORNAMENTO che può accettare valori 1 o 5 in base a parametri non gestiti dall'applicazione!
+		//controllo da DB che sono nel caso RES - CORSO DI AGGIORNAMENTO
+		boolean isCorsoAggiornamentoRESFromDb = dbEventoDataMap.get("tipo_form").equals("3") && dbEventoDataMap.get("cod_tipologia_form").equals("1");
 		for (String evento_field:Helper.EVENTO_XML_ATTRIBUTES) {
 			String xmlValue = eventoEl.attributeValue(evento_field);
 			String dbValue = dbEventoDataMap.get(evento_field);
-			if(!evento_field.equalsIgnoreCase("num_part")){
+			//controllo che i valori corrispondano a meno che non sono nel caso ad hoc descritto nel commento "FIXME workaround"
+			if(!evento_field.equalsIgnoreCase("num_part") && (!evento_field.equalsIgnoreCase("cod_tipologia_form") || !isCorsoAggiornamentoRESFromDb)){
 				if (!xmlValue.equals(dbValue))
 					throw new Exception("I dati dell'evento non corrispondono a quelli memorizzati nel database: [" + evento_field + "]: '" + xmlValue + "' - '" + dbValue + "'");
 			}else{
-				if(Integer.valueOf(xmlValue) > Integer.valueOf(dbValue))
-					throw new Exception("I dati dell'evento non corrispondono a quelli memorizzati nel database: [" + evento_field + "]: '" + xmlValue + "' - '" + dbValue + "'");
+				//vedi commento sopra "FIXME workaround", valori hardcodati!
+				//cod_tipologia_form per eventi RES - CORSO DI AGGIORNAMENTO
+				if(evento_field.equalsIgnoreCase("cod_tipologia_form")) {
+					if(!(xmlValue.equals("1") || xmlValue.equals("5")))
+						throw new Exception("I dati dell'evento non corrispondono a quelli memorizzati nel database: [" + evento_field + "]: '" + xmlValue + "' - '1 o 5'");
+				}
+				//num_part
+				else {
+					if(Integer.valueOf(xmlValue) > Integer.valueOf(dbValue))
+						throw new Exception("I dati dell'evento non corrispondono a quelli memorizzati nel database: [" + evento_field + "]: '" + xmlValue + "' - '" + dbValue + "'");
+				}
 			}
 		}
 	}
