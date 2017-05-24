@@ -11,11 +11,10 @@ public interface RelazioneAnnualeService {
 	public Set<RelazioneAnnuale> getAllRelazioneAnnualeByProviderId(Long providerId);
 	public RelazioneAnnuale getRelazioneAnnualeForProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
 	public Set<Provider> getAllProviderNotRelazioneAnnualeRegistrata(Integer annoRiferimento);
-	
+
 	public Set<Provider> getAllProviderNotRelazioneAnnualeRegistrataAllaScadenza();
 	public int countProviderNotRelazioneAnnualeRegistrataAllaScadenza();
-	
+
 	public RelazioneAnnuale createRelazioneAnnuale(Long providerId, Integer annoRiferimento);
-	public void elaboraRelazioneAnnuale(RelazioneAnnuale relazioneAnnuale);
-	public void save(RelazioneAnnuale relazioneAnnuale);
+	public void elaboraRelazioneAnnualeAndSave(RelazioneAnnuale relazioneAnnuale, boolean asBozza);
 }

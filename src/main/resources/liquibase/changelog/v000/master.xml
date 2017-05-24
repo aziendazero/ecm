@@ -104,7 +104,7 @@
 	<include file="20170505_001_flag_mancata_valutazione_team_leader.xml" relativeToChangelogFile="true"/>
 
 	<include file="20170510_001_aggiunta_semaphore_executetaskbonita.xml" relativeToChangelogFile="true"/>
-	
+
 	<include file="20170511_001_aggiunta_discipline_ad_anagraferegionalecrediti.xml" relativeToChangelogFile="true"/>
 
 	<include file="20170511_002_aggiunto_AuditReportProvider.xml" relativeToChangelogFile="true"/>
@@ -112,5 +112,7 @@
 	<include file="20170511_001_campo_oggetto_in_protocollo.xml" relativeToChangelogFile="true"/>
 
 	<include file="20170512_001_campo_lettera_accompagnatoria.xml" relativeToChangelogFile="true"/>
+
+	<include file="20170524_001_flag_bozza_relazione_annuale.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

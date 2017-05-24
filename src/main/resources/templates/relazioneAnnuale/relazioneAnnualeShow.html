@@ -16,13 +16,14 @@
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
   								<a class="btn btn-primary" th:href="@{|/provider/${relazioneAnnualeWrapper.providerId}/relazioneAnnuale/list|}" th:text="#{label.indietro}"></a>
+  								<a th:if="${relazioneAnnualeWrapper.relazioneAnnuale.bozza}" class="btn btn-success pull-right" th:href="@{|/provider/${relazioneAnnualeWrapper.providerId}/relazioneAnnuale/${relazioneAnnualeWrapper.relazioneAnnuale.id}/reload|}" th:text="#{label.rielabora}"></a>
 							</div>
 						</div>
 						<div class="clearfix"></div>
 					</div>
-					
+
 					<th:block th:include="relazioneAnnuale/relazioneAnnualeFragment :: relazioneAnnuale('show')"></th:block>
-				
+
 				</div>
 			</div>
 		</div>

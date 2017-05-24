@@ -16,17 +16,37 @@
 						<h2 th:unless="${relazioneAnnualeWrapper.relazioneAnnuale.isNew()}" th:text="#{label.modifica_relazione_annuale(${#numbers.formatInteger(relazioneAnnualeWrapper.relazioneAnnuale.annoRiferimento,0)})}"></h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
-  								<label class="btn btn-success pull-right" th:text="#{label.salva}" for="submitButton"></label>
+  								<button type="button" class="btn btn-success pull-right" th:text="#{label.conferma}" onclick="confermaRelazioneAnnuale()"></button>
+  								<button th:if="${relazioneAnnualeWrapper.relazioneAnnuale.bozza}" type="button" class="btn btn-success pull-right" th:text="#{label.salva_bozza}" onclick="salvaBozzaRalazioneAnnuale()"></button>
   								<a class="btn btn-primary" th:href="@{|/provider/${relazioneAnnualeWrapper.providerId}/relazioneAnnuale/list|}" th:text="#{label.indietro}"></a>
 							</div>
 						</div>
 						<div class="clearfix"></div>
 					</div>
-					
+
 					<th:block th:include="relazioneAnnuale/relazioneAnnualeFragment :: relazioneAnnuale('edit')"></th:block>
-				
+
 				</div>
 			</div>
+
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+
+				function confermaRelazioneAnnuale() {
+					var action = [[@{|/provider/${relazioneAnnualeWrapper.providerId}/relazioneAnnuale/save|}]];
+					$("#formRelazioneAnnuale").attr("action", action);
+					$("#formRelazioneAnnuale").submit();
+				}
+
+				function salvaBozzaRalazioneAnnuale() {
+					var action = [[@{|/provider/${relazioneAnnualeWrapper.providerId}/relazioneAnnuale/draftSave|}]];
+					$("#formRelazioneAnnuale").attr("action", action);
+					$("#formRelazioneAnnuale").submit();
+				}
+
+			/*]]>*/
+			</script>
+
 		</div>
 	</div>
 

@@ -53,13 +53,6 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	}
 
 	@Override
-	@Transactional
-	public void save(RelazioneAnnuale relazioneAnnuale) {
-		LOGGER.debug(Utils.getLogMessage("Salvataggio Relazione Annuale"));
-		relazioneAnnualeRepository.save(relazioneAnnuale);
-	}
-
-	@Override
 	public Set<Provider> getAllProviderNotRelazioneAnnualeRegistrata(Integer annoRiferimento) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno ancora inserito la relazione Annuale per l'anno " + annoRiferimento));
 		return relazioneAnnualeRepository.findAllProviderNotRelazioneAnnualeRegistrata(annoRiferimento);
@@ -108,7 +101,7 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	}
 
 	@Override
-	public void elaboraRelazioneAnnuale(RelazioneAnnuale relazioneAnnuale) {
+	public void elaboraRelazioneAnnualeAndSave(RelazioneAnnuale relazioneAnnuale, boolean asBozza) {
 		relazioneAnnuale.setEventiPFA(eventoPianoFormativoService.getAllEventiFromProviderInPianoFormativo(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
 		relazioneAnnuale.setEventiAttuati(eventoService.getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
 
@@ -116,5 +109,18 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 		relazioneAnnuale.setProfessioniAventeCrediti(anagrafeRegionaleCreditiService.getProfessioniAnagrafeAventeCrediti(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
 
 		relazioneAnnuale.elabora();
+
+		save(relazioneAnnuale, asBozza);
 	}
+
+	@Transactional
+	private void save(RelazioneAnnuale relazioneAnnuale, boolean asBozza) {
+		relazioneAnnuale.setBozza(asBozza);
+		//evita transient la TransientPropertyValueException
+		if(relazioneAnnuale.getRelazioneFinale() != null && relazioneAnnuale.getRelazioneFinale().isNew())
+			relazioneAnnuale.setRelazioneFinale(null);
+
+		relazioneAnnualeRepository.save(relazioneAnnuale);
+	}
+
 }

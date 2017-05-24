@@ -14,8 +14,8 @@ public interface RelazioneAnnualeRepository extends CrudRepository<RelazioneAnnu
 	public Set<RelazioneAnnuale> findAll();
 	public Set<RelazioneAnnuale> findAllByProviderId(Long providerId);
 	public RelazioneAnnuale findOneByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
-	
-	@Query("SELECT p FROM Provider p WHERE p.status IN ('ACCREDITATO_PROVVISORIAMENTE','ACCREDITATO_STANDARD') AND p.id NOT IN (SELECT distinct r.provider.id FROM RelazioneAnnuale r WHERE r.annoRiferimento = :annoRiferimento)")
+
+	@Query("SELECT p FROM Provider p WHERE p.status IN ('ACCREDITATO_PROVVISORIAMENTE','ACCREDITATO_STANDARD') AND p.id NOT IN (SELECT distinct r.provider.id FROM RelazioneAnnuale r WHERE r.annoRiferimento = :annoRiferimento AND r.bozza = FALSE)")
 	public Set<Provider> findAllProviderNotRelazioneAnnualeRegistrata(@Param("annoRiferimento")Integer annoRiferimento);
 }
 

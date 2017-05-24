@@ -108,7 +108,7 @@ public class RelazioneAnnuale extends BaseEntityDefaultId{
 	@CollectionTable(name="relazione_annuale_riepilogo_anagrafe_avente_crediti", joinColumns=@JoinColumn(name="relazione_annuale_id"))
 	private Map<String,Integer> riepilogoAnagrafeAventeCrediti = new HashMap<String,Integer>();//lista di professionisti che hanno conseguito crediti nell anno di riferimento
 
-	private int professioniAventeCrediti = 0;//numero di professioni che hanno ricevuto crediti
+	private int professioniAventeCrediti = 0; //numero di professioni che hanno ricevuto crediti
 
 	@OneToOne
 	private File relazioneFinale;
@@ -120,6 +120,8 @@ public class RelazioneAnnuale extends BaseEntityDefaultId{
 			return true;
 		return false;
 	}
+
+	private boolean bozza = true;
 
 	public void elabora(){
 
