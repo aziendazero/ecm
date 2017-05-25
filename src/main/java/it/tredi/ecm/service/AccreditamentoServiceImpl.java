@@ -1060,6 +1060,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		tokenService.createBonitaSemaphore(accreditamentoId);
 
 		File fileFirmato = fileService.getFile(fileId);
+
+		//salvo nel file che viene protocollato l'operatore che effettua la richiesta
+		fileFirmato.setOperatoreProtocollo(Utils.getAuthenticatedUser().getAccount());
+		fileService.save(fileFirmato);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setRichiestaIntegrazione(fileFirmato);
 		saveAndAudit(accreditamento);
@@ -1082,7 +1087,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//accreditamentoRepository.save(accreditamento);
 		saveAndAudit(accreditamento);
 
-
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
 			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
@@ -1103,6 +1107,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		tokenService.createBonitaSemaphore(accreditamentoId);
 
 		File fileFirmato = fileService.getFile(fileId);
+
+		//salvo nel file che viene protocollato l'operatore che effettua la richiesta
+		fileFirmato.setOperatoreProtocollo(Utils.getAuthenticatedUser().getAccount());
+		fileService.save(fileFirmato);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setRichiestaPreavvisoRigetto(fileFirmato);
 		saveAndAudit(accreditamento);
@@ -2722,6 +2731,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		File fileLettera = fileService.getFile(fileIdLettera);
 
+		//salvo nel file che viene protocollato l'operatore che effettua la richiesta
+		fileLettera.setOperatoreProtocollo(Utils.getAuthenticatedUser().getAccount());
+		fileService.save(fileLettera);
+
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setDecretoAccreditamento(fileDecreto);
 		accreditamento.setLetteraAccompagnatoriaAccreditamento(fileLettera);
@@ -2760,6 +2773,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		fileDecreto.setNumeroDelibera(numeroDelibera);
 
 		File fileLettera = fileService.getFile(fileIdLettera);
+
+		//salvo nel file che viene protocollato l'operatore che effettua la richiesta
+		fileLettera.setOperatoreProtocollo(Utils.getAuthenticatedUser().getAccount());
+		fileService.save(fileLettera);
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setDecretoDiniego(fileDecreto);

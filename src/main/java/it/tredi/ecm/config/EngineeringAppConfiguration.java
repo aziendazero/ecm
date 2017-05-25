@@ -52,8 +52,6 @@ public class EngineeringAppConfiguration {
 	private String protocolloCodApplicativo = "";
 	@Value("${protocollo.operatore.entrata}")
 	private String protocolloOperatoreEntrata = "";
-	@Value("${protocollo.operatore.uscita}")
-	private String protocolloOperatoreUscita = "";
 	@Value("${protocollo.codStruttura}")
 	private String protocolloCodStruttura = "";
 	@Value("${protocollo.idc}")
@@ -86,7 +84,6 @@ public class EngineeringAppConfiguration {
 
 		engineeringProperties.setProtocolloCodApplicativo(protocolloCodApplicativo);
 		engineeringProperties.setProtocolloOperatoreEntrata(protocolloOperatoreEntrata);
-		engineeringProperties.setProtocolloOperatoreUscita(protocolloOperatoreUscita);
 		engineeringProperties.setProtocolloCodStruttura(protocolloCodStruttura);
 		engineeringProperties.setProtocolloIdc(protocolloIdc);
 		engineeringProperties.setProtocolloEndpoint(protocolloEndpoint);

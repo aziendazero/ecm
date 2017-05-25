@@ -43,6 +43,7 @@ import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 import it.tredi.ecm.web.bean.RicercaProviderWrapper;
+import javassist.bytecode.analysis.Util;
 
 @Service
 public class ProviderServiceImpl implements ProviderService {
@@ -689,16 +690,23 @@ public class ProviderServiceImpl implements ProviderService {
 	}
 
 
-	//salva il file
 	@Override
 	public void bloccaProvider(Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception {
 
-		protocolloService.protocollaBloccoProviderInUscita(providerId, wrapper.getAllegatoDecadenza().getId(), wrapper.getMotivazioneDecadenza());
+		File allegatoDecadenza = wrapper.getAllegatoDecadenza();
+		if(allegatoDecadenza == null || allegatoDecadenza.isNew()) {
+			throw new Exception("File da protocollare per blocco Provider non valido!");
+		}
+
+		allegatoDecadenza.setOperatoreProtocollo(Utils.getAuthenticatedUser().getAccount());
+		fileService.save(allegatoDecadenza);
 
 		//allega il file di decadenza
 		Accreditamento accreditamento = accreditamentoService.getLastAccreditamentoForProviderId(providerId);
-		accreditamento.setFileDecadenza(wrapper.getAllegatoDecadenza());
+		accreditamento.setFileDecadenza(allegatoDecadenza);
 		accreditamentoService.save(accreditamento);
+
+		protocolloService.protocollaBloccoProviderInUscita(providerId, allegatoDecadenza, wrapper.getMotivazioneDecadenza());
 	}
 
 	@Override

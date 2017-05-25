@@ -56,6 +56,9 @@ public class File extends BaseEntityDefaultId{
 	@JsonIgnore
 	private String numeroDelibera;
 
+	@JsonIgnore
+	private String operatoreProtocollo;
+
 	@JsonView(JsonViewModel.Integrazione.class)
 	@Enumerated(EnumType.STRING)
 	private FileEnum tipo;
@@ -210,4 +213,9 @@ public class File extends BaseEntityDefaultId{
 
 		return cloned;
 	}
+
+	public void setOperatoreProtocollo(Account account) {
+		this.operatoreProtocollo = account.getNome().toLowerCase()+"-"+account.getCognome().toLowerCase();
+	}
+
 }

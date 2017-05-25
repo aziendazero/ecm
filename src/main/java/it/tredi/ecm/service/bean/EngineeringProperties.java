@@ -27,7 +27,6 @@ public class EngineeringProperties {
 
 	private String protocolloCodApplicativo;
 	private String protocolloOperatoreEntrata;
-	private String protocolloOperatoreUscita;
 	private String protocolloCodStruttura;
 	private String protocolloIdc;
 	private String protocolloEndpoint;

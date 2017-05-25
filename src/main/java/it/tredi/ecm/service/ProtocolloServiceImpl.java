@@ -19,7 +19,6 @@ import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -38,7 +37,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.cert.ocsp.Req;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
@@ -56,6 +54,7 @@ import it.rve.protocollo.xsd.protocolla_arrivo.Mittente;
 import it.rve.protocollo.xsd.protocolla_arrivo.Richiesta;
 import it.rve.protocollo.xsd.protocolla_arrivo.Vettore;
 import it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari.Destinatario;
+import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
@@ -415,8 +414,10 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	private it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta buildRichiestaUscita(Protocollo p, it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari d, Set<Long> fileAllegatiIds) throws Exception {
 		it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta richiesta = new it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta();
 
+		String operatore = p.getFile().getOperatoreProtocollo();
+
 		richiesta.setCodApplicativo(engineeringProperties.getProtocolloCodApplicativo());
-		richiesta.setOperatore(engineeringProperties.getProtocolloOperatoreUscita());
+		richiesta.setOperatore(operatore);
 		richiesta.setIDC(engineeringProperties.getProtocolloIdc());
 		richiesta.setOggetto(Utils.buildOggetto(p.getFile().getTipo(), p.getAccreditamento().getProvider()));
 		richiesta.setCodMittente(engineeringProperties.getProtocolloCodStruttura());
@@ -677,20 +678,19 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 	@Override
 	@Transactional
-	public void protocollaBloccoProviderInUscita(Long providerId, Long fileId, MotivazioneDecadenzaEnum motivazione) throws Exception {
-		LOGGER.info(Utils.getLogMessage("Richiesta Protocollazione In Uscita per il file " + fileId + " del provider " + providerId));
+	public void protocollaBloccoProviderInUscita(Long providerId, File fileDaProtocollare, MotivazioneDecadenzaEnum motivazione) throws Exception {
+		LOGGER.info(Utils.getLogMessage("Richiesta Protocollazione In Uscita per il file " + fileDaProtocollare.getId() + " del provider " + providerId));
 
 		Provider provider = providerService.getProvider(providerId);
 		//prende sempre l'ultimo accreditamento del provider a prescindere dallo stato
 		Accreditamento accreditamento = accreditamentoService.getLastAccreditamentoForProviderId(providerId);
-		File file = fileService.getFile(fileId);
 
-		if(file.isProtocollato()){
+		if(fileDaProtocollare.isProtocollato()){
 			throw new Exception("File già protocollato");
 		}
 
 		Protocollo protocollo = new Protocollo();
-		protocollo.setFile(file);
+		protocollo.setFile(fileDaProtocollare);
 		protocollo.setAccreditamento(accreditamento);
 		if(motivazione == MotivazioneDecadenzaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD)
 			protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD);
