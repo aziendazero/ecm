@@ -115,4 +115,6 @@
 
 	<include file="20170524_001_flag_bozza_relazione_annuale.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170525_001_operatore_protocollo.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

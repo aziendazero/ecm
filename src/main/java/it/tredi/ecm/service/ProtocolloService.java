@@ -2,8 +2,7 @@ package it.tredi.ecm.service;
 
 import java.util.Set;
 
-import it.rve.protocollo.xsd.protocolla_arrivo.Mittente;
-import it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Protocollo;
 import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
 
@@ -19,7 +18,7 @@ public interface ProtocolloService {
 	//metodi da richiamare nei TASK SCHEDULER
 	public void protoBatchLog() throws Exception;
 	public void getStatoSpedizione() throws Exception;
-	public void protocollaBloccoProviderInUscita(Long providerId, Long fileId, MotivazioneDecadenzaEnum motivazione) throws Exception;
+	public void protocollaBloccoProviderInUscita(Long providerId, File fileDaProtocollare, MotivazioneDecadenzaEnum motivazione) throws Exception;
 	public void protocollaAllegatoFlussoDomandaInUscita(Long accreditamentoId, Long fileId, Set<Long> fileAllegatiIds)	throws Exception;
 	public void protocollaDomandaInArrivo(Long accreditamentoId, Long fileId, Set<Long> fileAllegatiIds) throws Exception;
 }

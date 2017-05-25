@@ -424,7 +424,7 @@ public class Evento extends BaseEntity {
 			return false;
 
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
-			if(dataScadenzaInvioRendicontazione != null && (sponsorUploaded == null || !sponsorUploaded.booleanValue()) && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione))
+			if(dataScadenzaInvioRendicontazione != null && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione))
 				return true;
 		}
 
