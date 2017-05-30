@@ -3,6 +3,7 @@ package it.tredi.ecm.web;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -105,7 +108,7 @@ import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
 import it.tredi.ecm.web.validator.ScadenzeEventoValidator;
 
 @Controller
-@SessionAttributes({"eventoWrapper","eventoWrapperRendiconto"})
+@SessionAttributes({"eventoWrapper","eventoWrapperRendiconto", "eventoList", "returnLink"})
 public class EventoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoController.class);
 
@@ -170,7 +173,7 @@ public class EventoController {
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventi(principal)")
 	@RequestMapping("/evento/list")
-	public String getListEventi(Model model, RedirectAttributes redirectAttrs){
+	public String getListEventi(Model model, RedirectAttributes redirectAttrs, HttpServletRequest request){
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
 
@@ -182,7 +185,29 @@ public class EventoController {
 			if(Utils.getAuthenticatedUser().isSegreteria())
 				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
 
-			return LIST;
+			return goToEventoList(request, model);
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /evento/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "";
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventi(principal)")
+	@RequestMapping("/evento/list/all")
+	public String getListAllEventi(Model model, RedirectAttributes redirectAttrs, HttpServletRequest request){
+		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
+		try {
+
+			model.addAttribute("eventoList", eventoService.getAllEventi());
+
+			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
+
+			if(Utils.getAuthenticatedUser().isSegreteria())
+				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
+
+			return goToEventoList(request, model);
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /evento/list"),ex);
@@ -192,13 +217,15 @@ public class EventoController {
 	}
 
 	@RequestMapping("/provider/evento/list")
-	public String getListEventiCurrentUserProvider(Model model, RedirectAttributes redirectAttrs){
+	public String getListEventiCurrentUserProvider(Model model, RedirectAttributes redirectAttrs, SessionStatus sessionStatus){
 		LOGGER.info(Utils.getLogMessage("GET /provider/evento/list"));
 		try {
 			Provider currentProvider = providerService.getProvider();
 			if(currentProvider.isNew()){
 				throw new Exception("Provider non registrato");
 			}else{
+				//svuota sessione eventoList per ricaricare tutto
+				redirectAttrs.addFlashAttribute("eventoList", null);
 				Long providerId = currentProvider.getId();
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
 				return "redirect:/provider/"+providerId+"/evento/list";
@@ -214,16 +241,13 @@ public class EventoController {
 
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventiProvider(principal, #providerId)")
 	@RequestMapping("/provider/{providerId}/evento/list")
-	public String getListEventiProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+	public String getListEventiProvider(@PathVariable Long providerId, Model model,
+			HttpServletRequest request, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
 		try {
-
-			if(model.asMap().get("eventoList") == null){
+			if(model.asMap().get("eventoList") == null)
 				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
-			}
-
-			return goToList(model, providerId);
-
+			return goToList(model, providerId, request);
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),ex);
@@ -233,7 +257,7 @@ public class EventoController {
 		}
 	}
 
-	private String goToList(Model model, Long providerId) {
+	private String goToList(Model model, Long providerId, HttpServletRequest request) {
 		String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
 		model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
 		model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
@@ -252,8 +276,7 @@ public class EventoController {
 		}
 		if(Utils.getAuthenticatedUser().isSegreteria())
 			model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
-		LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
-		return LIST;
+		return goToEventoList(request, model);
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
@@ -265,7 +288,12 @@ public class EventoController {
 			if(proceduraFormativa == null) {
 				redirectAttrs.addFlashAttribute("error", true);
 				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
-				return "redirect:/provider/{providerId}/evento/list";
+				if(model.asMap().containsKey("returnLink")) {
+					String returnLink = (String) model.asMap().get("returnLink");
+					return "redirect:" + returnLink;
+				}
+				else
+					return "redirect:/provider/{providerId}/evento/list";
 			}
 			else {
 				EventoWrapper wrapper = prepareEventoWrapperNew(proceduraFormativa, providerId);
@@ -335,16 +363,23 @@ public class EventoController {
 
 	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
 	@RequestMapping(value= "/provider/{providerId}/evento/save", method = RequestMethod.POST)
-	public String saveEvento(@ModelAttribute EventoWrapper eventoWrapper, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+	public String saveEvento(@ModelAttribute EventoWrapper eventoWrapper,
+			@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs,
+			HttpSession session){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"));
 		try {
 			//salvataggio temporaneo senza validatore (in stato di bozza)
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 			eventoService.save(evento);
+			updateEventoList(evento.getId(), session);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato_in_bozza_success", "success"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			if(model.asMap().containsKey("returnLink")) {
+				String returnLink = (String) model.asMap().get("returnLink");
+				return "redirect:" + returnLink;
+			}
+			else
+				return "redirect:/provider/{providerId}/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"),ex);
@@ -356,7 +391,8 @@ public class EventoController {
 
 	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
 	@RequestMapping(value= "/provider/{providerId}/evento/validate", method = RequestMethod.POST)
-	public String validaEvento(@ModelAttribute EventoWrapper eventoWrapper, BindingResult result, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+	public String validaEvento(@ModelAttribute EventoWrapper eventoWrapper,
+			HttpSession session, BindingResult result, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"));
 		try {
 			//gestione dei campi ripetibili
@@ -391,19 +427,31 @@ public class EventoController {
 					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 					return EDIT;
 				}
+				else if (eventoService.checkIfFSCAndTrainingAndTutorPartecipanteRatioAlert(evento)) {
+					//va notificato che si stanno inserendo un numero di partecipanti superiore a quello seguibile dai tutor
+					//il rapporto tutor partecipanti dovrebbe essere 1 a 5 massimo
+					model.addAttribute("FSCTutorPartecipanti", true);
+					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+					return EDIT;
+				}
 				else {
 					evento.setStato(EventoStatoEnum.VALIDATO);
 					evento.setValidatorCheck(true);
 					evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 					eventoService.save(evento);
+					updateEventoList(evento.getId(), session);
 					alertEmailService.creaAlertForEvento(evento);
 					LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 				}
 			}
 
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_validato_e_salvato_success", "success"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			if(model.asMap().containsKey("returnLink")) {
+				String returnLink = (String) model.asMap().get("returnLink");
+				return "redirect:" + returnLink;
+			}
+			else
+				return "redirect:/provider/{providerId}/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"),ex);
@@ -415,7 +463,8 @@ public class EventoController {
 
 	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
 	@RequestMapping(value= "/provider/{providerId}/evento/validate/confirm", method = RequestMethod.POST)
-	public String validaEventoConfirm(@ModelAttribute EventoWrapper eventoWrapper, BindingResult result, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+	public String validaEventoConfirm(@ModelAttribute EventoWrapper eventoWrapper, BindingResult result,
+			HttpSession session, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate/confirm"));
 		try {
 			//gestione dei campi ripetibili
@@ -425,12 +474,17 @@ public class EventoController {
 			evento.setValidatorCheck(true);
 			evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 			eventoService.save(evento);
+			updateEventoList(evento.getId(), session);
 			alertEmailService.creaAlertForEvento(evento);
 			LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_validato_e_salvato_success", "success"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			if(model.asMap().containsKey("returnLink")) {
+				String returnLink = (String) model.asMap().get("returnLink");
+				return "redirect:" + returnLink;
+			}
+			else
+				return "redirect:/provider/{providerId}/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"),ex);
@@ -546,19 +600,25 @@ public class EventoController {
 		@PreAuthorize("@securityAccessServiceImpl.canDeleteEvento(principal, #providerId)")
 		@RequestMapping("/provider/{providerId}/evento/{eventoId}/delete")
 		public String deleteEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
-				Model model, RedirectAttributes redirectAttrs) {
+				HttpSession session, Model model, RedirectAttributes redirectAttrs) {
 			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/delete"));
 			try {
 				//delete dell'evento
 				Evento evento = eventoService.getEvento(eventoId);
 				if(evento.getStato() == EventoStatoEnum.BOZZA){
 					eventoService.delete(eventoId);
+					updateEventoList(evento.getId(), session, true);
 				}else{
 					evento.setStato(EventoStatoEnum.CANCELLATO);
 					eventoService.save(evento);
+					updateEventoList(evento.getId(), session);
 				}
-				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_elimitato", "success"));
-				return "redirect:/provider/{providerId}/evento/list";
+				if(model.asMap().containsKey("returnLink")) {
+					String returnLink = (String) model.asMap().get("returnLink");
+					return "redirect:" + returnLink;
+				}
+				else
+					return "redirect:/provider/{providerId}/evento/list";
 			}
 			catch (Exception ex) {
 				LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/delete"),ex);
@@ -568,13 +628,12 @@ public class EventoController {
 			}
 		}
 
-//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
+	//TODO	@PreAuthorize("@securityAccessServiceImpl.canSendRendiconto(principal)")
 	@RequestMapping("/provider/{providerId}/evento/{eventoId}/rendiconto")
 	public String rendicontoEvento(@PathVariable Long providerId,
 			@PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
 		try{
 			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto"));
-			model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 			return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
 		}
 		catch (Exception ex) {
@@ -622,7 +681,6 @@ public class EventoController {
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/validate"));
-				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				if(wrapper.getReportPartecipanti().getId() == null)
 					redirectAttrs.addFlashAttribute("message", new Message("message.warning", "message.inserire_il_rendiconto", "alert"));
 				else {
@@ -663,7 +721,6 @@ public class EventoController {
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
-				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				eventoService.inviaRendicontoACogeaps(eventoId);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.invio_cogeaps_ok", "success"));
 				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
@@ -687,7 +744,6 @@ public class EventoController {
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
 				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/statoElaborazioneCogeaps"));
-				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				eventoService.statoElaborazioneCogeaps(eventoId);
 				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
 			}
@@ -709,7 +765,6 @@ public class EventoController {
 		public String allegaContrattiSponsor(@PathVariable Long providerId, @PathVariable Long eventoId, Model model, RedirectAttributes redirectAttrs) {
 			try{
 				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/allegaContrattiSponsor"));
-				model.addAttribute("returnLink", "/provider/" + providerId + "/evento/list");
 				return goToAllegaSponsor(model, prepareSponsorWrapper(providerId, eventoService.getEvento(eventoId)));
 			}
 			catch (Exception ex) {
@@ -1009,6 +1064,8 @@ public class EventoController {
 						File f = (File) cv.clone();
 						fileService.save(f);
 						anagraficaBase.setCv(f);
+						if(f.getId() == cv.getId())
+							throw new Exception("Errore durante la clonazione dei file!");
 					}else{
 						anagraficaBase.setCv(cv);
 					}
@@ -1610,7 +1667,7 @@ public class EventoController {
 
 	@RequestMapping("/provider/eventi/{search}/list")
 	public String getAllEventiByProviderIdForGruppo(@PathVariable("search") EventoSearchEnum search, Model model,
-			RedirectAttributes redirectAttrs) throws Exception {
+			RedirectAttributes redirectAttrs, HttpServletRequest request) throws Exception {
 		LOGGER.info(Utils.getLogMessage("GET /provider/eventi/" + search + "/list"));
 		try {
 
@@ -1636,7 +1693,7 @@ public class EventoController {
 			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
 			if(Utils.getAuthenticatedUser().isSegreteria())
 				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
-			return LIST;
+			return goToEventoList(request, model);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/eventi/" + search + "/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -1647,7 +1704,7 @@ public class EventoController {
 
 	@RequestMapping("/eventi/{search}/list")
 	public String getAllEventiByForGruppo(@PathVariable("search") EventoSearchEnum search, Model model,
-			RedirectAttributes redirectAttrs) throws Exception {
+			RedirectAttributes redirectAttrs, HttpServletRequest request) throws Exception {
 		LOGGER.info(Utils.getLogMessage("GET /eventi/" + search + "/list"));
 		try {
 
@@ -1667,10 +1724,9 @@ public class EventoController {
 			model.addAttribute("label", search.getNome());
 			model.addAttribute("eventoList", listaEventi);
 			model.addAttribute("canCreateEvento", false);
-			LOGGER.info(Utils.getLogMessage("VIEW: " + LIST));
 			if(Utils.getAuthenticatedUser().isSegreteria())
 				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
-			return LIST;
+			return goToEventoList(request, model);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /eventi/" + search + "/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -1744,7 +1800,7 @@ public class EventoController {
 	@RequestMapping(value = "/evento/{eventoId}/proroga/scadenze", method = RequestMethod.POST)
 	public String prorogaScadenzeEvento(@PathVariable("eventoId") Long eventoId,
 			@ModelAttribute("scadenzeEventoWrapper") ScadenzeEventoWrapper wrapper,
-			BindingResult result, RedirectAttributes redirectAttrs, Model model){
+			BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
 		LOGGER.info(Utils.getLogMessage("POST /evento/"+eventoId+"/proroga/scadenze"));
 		try {
 			scadenzeEventoValidator.validate(wrapper, result, "");
@@ -1752,7 +1808,7 @@ public class EventoController {
 				wrapper.setSubmitScadenzeError(true);
 				model.addAttribute("scadenzeEventoWrapper", wrapper);
 				model.addAttribute("message", new Message("message.errore", "message.inserire_campi_required", "error"));
-				return LIST;
+				return goToEventoList(request, model);
 			}
 			else {
 				eventoService.updateScadenze(eventoId, wrapper);
@@ -1778,6 +1834,34 @@ public class EventoController {
 	public Set<Evento> getListaEventiForLookup(@PathVariable Long providerId){
 		Set<Evento> eventi = eventoService.getAllEventiForProviderId(providerId);
 		return eventi;
+	}
+
+	private String goToEventoList(HttpServletRequest request, Model model) {
+		LOGGER.info(Utils.getLogMessage("VIEW: "+LIST));
+		//tasto indietro
+	    String returnLink = request.getRequestURI().toString();
+	    if(request.getQueryString() != null)
+	    	returnLink+=request.getQueryString();
+	    model.addAttribute("returnLink", returnLink);
+		return LIST;
+	}
+
+	//update dell'evento modificato nella lista in sessione
+	private void updateEventoList(Long eventoId, HttpSession session, boolean rimozione) {
+		Collection<Evento> eventoList = (Collection<Evento>) session.getAttribute("eventoList");
+
+		Evento eventoToUpdate = eventoService.getEvento(eventoId);
+		if(eventoList != null && eventoToUpdate != null) {
+			//se il provider è nella lista in sessione la aggiorna
+			eventoList.remove(eventoToUpdate);
+			if(rimozione == false)
+				eventoList.add(eventoToUpdate);
+			session.setAttribute("eventoList", eventoList);
+		}
+	}
+
+	private void updateEventoList(Long eventoId, HttpSession session) {
+		updateEventoList(eventoId, session, false);
 	}
 
 }

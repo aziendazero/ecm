@@ -2,6 +2,7 @@ package it.tredi.ecm.service;
 
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RelazioneAnnuale;
 
@@ -16,5 +17,6 @@ public interface RelazioneAnnualeService {
 	public int countProviderNotRelazioneAnnualeRegistrataAllaScadenza();
 
 	public RelazioneAnnuale createRelazioneAnnuale(Long providerId, Integer annoRiferimento);
-	public void elaboraRelazioneAnnualeAndSave(RelazioneAnnuale relazioneAnnuale, boolean asBozza);
+	public void elaboraRelazioneAnnualeAndSave(RelazioneAnnuale relazioneAnnuale, File relazioneFinale, boolean asBozza);
+	public boolean isRelazioneAnnualeInseritaAnnoCorrente(Long providerId);
 }

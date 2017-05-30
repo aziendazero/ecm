@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -27,11 +28,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
@@ -39,7 +37,6 @@ import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
-import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
@@ -61,8 +58,6 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
-import it.tredi.ecm.web.bean.ResponseState;
-import it.tredi.ecm.web.bean.ResponseUsername;
 import it.tredi.ecm.web.bean.RicercaProviderWrapper;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.validator.EnableFieldValidator;
@@ -119,11 +114,6 @@ public class ProviderController {
 			return prepareWrapperForReloadByEditId(providerService.getProvider(id), accreditamentoId, statoAccreditamento, wrapperMode);
 		}
 		return new ProviderWrapper();
-	}
-
-	@ModelAttribute("providerList")
-	public Set<Provider> getProvider() {
-		return providerService.getAllNotInserito();
 	}
 
 	//Distinguo il prepareWrapper dalla verisione chiamata in caricamento della View da quella chiamata per il reload e merge con il form
@@ -360,8 +350,8 @@ public class ProviderController {
 		LOGGER.info(Utils.getLogMessage("GET: /provider/list"));
 		try {
 
-//			if(model.asMap().get("providerList") == null)
-//				model.addAttribute("providerList", providerService.getAllNotInserito());
+			if(model.asMap().get("providerList") == null)
+				model.addAttribute("providerList", providerService.getAllNotInserito());
 			model.addAttribute("impostazioniProviderWrapper", new ImpostazioniProviderWrapper());
 
 			LOGGER.info(Utils.getLogMessage("VIEW: /provider/providerList"));
@@ -624,7 +614,9 @@ public class ProviderController {
 
 	@RequestMapping(value = "/provider/{providerId}/impostazioni/update", method = RequestMethod.POST)
 	public String updateImpostazioniProvider(@PathVariable Long providerId,
-			@ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper, BindingResult result, RedirectAttributes redirectAttrs, Model model) {
+			@ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper,
+			@ModelAttribute("providerList") Set<Provider> providerList, BindingResult result, RedirectAttributes redirectAttrs,
+			HttpSession session, Model model) {
 		try {
 			impostazioniProviderValidator.validate(wrapper, result, "");
 			if(result.hasErrors()) {
@@ -635,6 +627,7 @@ public class ProviderController {
 			}
 			else {
 				providerService.updateImpostazioni(providerId, wrapper);
+				updateProviderList(providerList, providerId, session);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.impostazioni_provider_aggiornate", "success"));
 				return "redirect:/provider/list";
 			}
@@ -648,6 +641,7 @@ public class ProviderController {
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping(value = "/provider/{providerId}/blocca", method = RequestMethod.POST)
 	public String bloccaProvider(@PathVariable Long providerId, @ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper,
+			@ModelAttribute("providerList") Set<Provider> providerList, HttpSession session,
 			BindingResult result, RedirectAttributes redirectAttrs, Model model) {
 		try {
 			impostazioniProviderValidator.validateBloccoProvider(wrapper, result, "");
@@ -660,6 +654,7 @@ public class ProviderController {
 			else {
 				providerService.bloccaProvider(providerId, wrapper);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.provider_bloccato_success", "success"));
+				updateProviderList(providerList, providerId, session);
 				return "redirect:/provider/list";
 			}
 		}catch (Exception ex) {
@@ -696,6 +691,16 @@ public class ProviderController {
 			return "redirect:/provider/list";
 		}
 
+	}
+
+	//update del provider modificato nella lista in sessione
+	private void updateProviderList(Set<Provider> providerList, Long providerId, HttpSession session) {
+		Provider providerToUpdate = providerService.getProvider(providerId);
+		//se il provider è nella lista in sessione la aggiorna
+		if(providerList.remove(providerToUpdate)) {
+			providerList.add(providerToUpdate);
+			session.setAttribute("providerList", providerList);
+		}
 	}
 
 }

@@ -65,6 +65,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Autowired private ProtocolloService protocolloService;
 	@Autowired private AuditService auditService;
 	@Autowired private AuditReportProviderService auditReportProviderService;
+	@Autowired private RelazioneAnnualeService relazioneAnnualeService;
 
 	@Override
 	public Provider getProvider() {
@@ -275,7 +276,8 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public boolean canInsertRelazioneAnnuale(Long providerId) {
 		Provider provider = providerRepository.findOne(providerId);
-		return provider.canInsertRelazioneAnnuale();
+		boolean relazioneAnnualeInseritaAnnoCorrente = relazioneAnnualeService.isRelazioneAnnualeInseritaAnnoCorrente(providerId);
+		return provider.canInsertRelazioneAnnuale() && !relazioneAnnualeInseritaAnnoCorrente;
 	}
 
 //	@Override
@@ -693,7 +695,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public void bloccaProvider(Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception {
 
-		File allegatoDecadenza = wrapper.getAllegatoDecadenza();
+		File allegatoDecadenza = fileService.getFile(wrapper.getAllegatoDecadenza().getId());
 		if(allegatoDecadenza == null || allegatoDecadenza.isNew()) {
 			throw new Exception("File da protocollare per blocco Provider non valido!");
 		}

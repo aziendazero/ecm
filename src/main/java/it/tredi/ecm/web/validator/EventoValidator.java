@@ -914,15 +914,15 @@ public class EventoValidator {
 		else if(evento.getTipologiaEventoFSC() != null
 				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiGruppiMiglioramentoFSC())
-			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC());
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC().name());
 		else if(evento.getTipologiaEventoFSC() != null
 				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiAuditClinicoFSC())
-			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC());
-		else if(evento.getTipologiaEventoFSC() != null
-				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
-				&& evento.getNumeroPartecipanti() > (evento.getNumeroTutor() * 5))
-			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC());
+			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC().name());
+//		else if(evento.getTipologiaEventoFSC() != null
+//				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+//				&& evento.getNumeroPartecipanti() > (evento.getNumeroTutor() * 5))
+//			errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC().name());
 
 		/* DURATA COMPLESSIVA (autocompilato)
 		 * controlli di sicurezza:

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RelazioneAnnuale;
 import it.tredi.ecm.dao.repository.RelazioneAnnualeRepository;
@@ -26,6 +27,7 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Autowired private EventoPianoFormativoService eventoPianoFormativoService;
 	@Autowired private EventoService eventoService;
 	@Autowired private AnagrafeRegionaleCreditiService anagrafeRegionaleCreditiService;
+	@Autowired private FileService fileService;
 	@Autowired private EcmProperties ecmProperties;
 
 	@Override
@@ -61,14 +63,11 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Override
 	public Set<Provider> getAllProviderNotRelazioneAnnualeRegistrataAllaScadenza() {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
-
 		Set<Provider> listaProvider = new HashSet<Provider>();
-
 		LocalDate dataScadenza = LocalDate.of(LocalDate.now().getYear(), 4, 30);
 		if(LocalDate.now().isAfter(dataScadenza)){
 			listaProvider = getAllProviderNotRelazioneAnnualeRegistrata(LocalDate.now().getYear() - 1);
 		}
-
 		return listaProvider;
 	}
 
@@ -84,43 +83,47 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Override
 	public RelazioneAnnuale createRelazioneAnnuale(Long providerId, Integer annoRiferimento) {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
-
 		RelazioneAnnuale r = getRelazioneAnnualeForProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
 		if(r != null){
 			return null;
 		}
-
 		RelazioneAnnuale relazioneAnnuale = new RelazioneAnnuale();
-
 		relazioneAnnuale.setAnnoRiferimento(annoRiferimento);
 		relazioneAnnuale.setProvider(providerService.getProvider(providerId));
 		//modificabile entro il 30 Aprile dell'anno di riferimento
 		relazioneAnnuale.setDataFineModifca(LocalDate.of(annoRiferimento, ecmProperties.getRelazioneAnnualeMeseFineModifica(), ecmProperties.getRelazioneAnnualeGiornoFineModifica()));
-
 		return relazioneAnnuale;
 	}
 
 	@Override
-	public void elaboraRelazioneAnnualeAndSave(RelazioneAnnuale relazioneAnnuale, boolean asBozza) {
+	public void elaboraRelazioneAnnualeAndSave(RelazioneAnnuale relazioneAnnuale, File relazioneFinale, boolean asBozza) {
 		relazioneAnnuale.setEventiPFA(eventoPianoFormativoService.getAllEventiFromProviderInPianoFormativo(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
 		relazioneAnnuale.setEventiAttuati(eventoService.getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
-
 		relazioneAnnuale.setRiepilogoAnagrafeAventeCrediti(anagrafeRegionaleCreditiService.getRuoliAventeCreditiPerAnno(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
 		relazioneAnnuale.setProfessioniAventeCrediti(anagrafeRegionaleCreditiService.getProfessioniAnagrafeAventeCrediti(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
-
 		relazioneAnnuale.elabora();
-
-		save(relazioneAnnuale, asBozza);
+		save(relazioneAnnuale, relazioneFinale, asBozza);
 	}
 
 	@Transactional
-	private void save(RelazioneAnnuale relazioneAnnuale, boolean asBozza) {
+	private void save(RelazioneAnnuale relazioneAnnuale, File relazioneFinale, boolean asBozza) {
 		relazioneAnnuale.setBozza(asBozza);
-		//evita transient la TransientPropertyValueException
-		if(relazioneAnnuale.getRelazioneFinale() != null && relazioneAnnuale.getRelazioneFinale().isNew())
+		//evita la TransientPropertyValueException
+		if(relazioneFinale == null || relazioneFinale.isNew())
 			relazioneAnnuale.setRelazioneFinale(null);
-
+		else {
+			relazioneAnnuale.setRelazioneFinale(fileService.getFile(relazioneFinale.getId()));
+		}
 		relazioneAnnualeRepository.save(relazioneAnnuale);
 	}
 
+	@Override
+	public boolean isRelazioneAnnualeInseritaAnnoCorrente(Long providerId) {
+		int annoCorrente = LocalDate.now().getYear();
+		int count = relazioneAnnualeRepository.countAllByProviderIdAndAnnoRiferimento(providerId, annoCorrente);
+		if(count > 0)
+			return true;
+		else
+			return false;
+	}
 }

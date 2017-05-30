@@ -1,11 +1,15 @@
 package it.tredi.ecm.web.validator;
 
+import java.nio.file.Files;
+
+import org.glassfish.jersey.server.internal.scanning.FilesScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.RelazioneAnnuale;
 import it.tredi.ecm.utils.Utils;
 
@@ -15,14 +19,15 @@ public class RelazioneAnnualeValidator {
 
 	@Autowired private FileValidator fileValidator;
 
-	public void validate(Object target, Errors errors, String prefix, Long providerId) throws Exception {
+	public void validate(Object target, Object allegato, Errors errors, String prefix, Long providerId) throws Exception {
 		LOGGER.info(Utils.getLogMessage("Validazione Relazione Annuale"));
 		RelazioneAnnuale relazioneAnnuale = (RelazioneAnnuale)target;
-		validateRelazioneAnnuale(relazioneAnnuale, errors, prefix, providerId);
+		File relazioneFinale = (File) allegato;
+		validateRelazioneAnnuale(relazioneAnnuale, relazioneFinale, errors, prefix, providerId);
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
-	private void validateRelazioneAnnuale(RelazioneAnnuale relazioneAnnuale, Errors errors, String prefix, Long providerId) throws Exception{
+	private void validateRelazioneAnnuale(RelazioneAnnuale relazioneAnnuale, File relazioneFinale, Errors errors, String prefix, Long providerId) throws Exception{
 		//Presenza e univocità del name
 		if(relazioneAnnuale.getNumeroPartecipantiNoCrediti() == null){
 			errors.rejectValue(prefix + "numeroPartecipantiNoCrediti", "error.empty");
@@ -44,12 +49,6 @@ public class RelazioneAnnualeValidator {
 			errors.rejectValue(prefix + "quoteDiPartecipazione", "error.empty");
 		}
 
-		if(relazioneAnnuale.getRelazioneFinale() == null || relazioneAnnuale.getRelazioneFinale().getNomeFile().isEmpty() || relazioneAnnuale.getRelazioneFinale().getData().length == 0){
-			errors.rejectValue(prefix + "relazioneFinale", "error.empty");
-		}else{
-			boolean checkCFFirma = fileValidator.validateFirmaCF(relazioneAnnuale.getRelazioneFinale(), providerId);
-			if(!checkCFFirma)
-				errors.rejectValue(prefix + "relazioneFinale", "error.codiceFiscale.firmatario");
-		}
+		fileValidator.validate(relazioneFinale, errors, prefix + "relazioneFinale", providerId);
 	}
 }

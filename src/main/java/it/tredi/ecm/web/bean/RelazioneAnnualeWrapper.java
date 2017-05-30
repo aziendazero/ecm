@@ -10,16 +10,5 @@ import lombok.Setter;
 public class RelazioneAnnualeWrapper{
 	private long providerId;
 	private RelazioneAnnuale relazioneAnnuale;
-	
 	private File relazioneFinale;
-	
-	public RelazioneAnnualeWrapper(){
-		setRelazioneFinale(new File());
-	}
-	
-	public void setRelazioneFinale(File file){
-		relazioneFinale = file;
-		if(relazioneAnnuale != null)
-			relazioneAnnuale.setRelazioneFinale(file);
-	}
 }

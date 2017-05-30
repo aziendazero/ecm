@@ -2234,6 +2234,7 @@ public class PdfServiceImpl implements PdfService {
         parInfoProtocollo.add(Chunk.TABBING);
         parInfoProtocollo.add(Chunk.TABBING);
         parInfoProtocollo.add(Chunk.TABBING);
+        parInfoProtocollo.add(Chunk.TABBING);
 
         parInfoProtocollo.add("Protocollo N°");
         parInfoProtocollo.add(Chunk.TABBING);
@@ -2272,8 +2273,6 @@ public class PdfServiceImpl implements PdfService {
             parLineaVuota.setAlignment(Element.ALIGN_RIGHT);
             parLineaVuota.setFont(fontIndirizzoProvider);
             parLineaVuota.add(" ");
-            document.add(parLineaVuota);
-            document.add(parLineaVuota);
             document.add(parLineaVuota);
             document.add(parLineaVuota);
 

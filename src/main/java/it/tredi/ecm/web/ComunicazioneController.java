@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,6 +42,7 @@ import it.tredi.ecm.web.bean.RicercaComunicazioneWrapper;
 import it.tredi.ecm.web.validator.ComunicazioneValidator;
 
 @Controller
+@SessionAttributes(value = {"returnLink","listaComunicazioni"})
 public class ComunicazioneController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ComunicazioneController.class);
 
@@ -68,9 +72,11 @@ public class ComunicazioneController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canShowComunicazioni(principal)") TODO
 	@RequestMapping("/comunicazione/dashboard")
-	public String getComunicazioneDashboard(Model model, RedirectAttributes redirectAttrs) {
+	public String getComunicazioneDashboard(Model model, RedirectAttributes redirectAttrs, SessionStatus sessionStatus) {
 		LOGGER.info(Utils.getLogMessage("GET:  /comunicazione/dashboard"));
 		try {
+			//cleanup della sessione
+//			sessionStatus.setComplete();
 			Long currentAccountId = Utils.getAuthenticatedUser().getAccount().getId();
 			model.addAttribute("currentAccountId", currentAccountId);
 			model.addAttribute("numeroComunicazioniRicevute", comunicazioneService.countAllComunicazioniRicevuteByAccountId(currentAccountId));
@@ -155,12 +161,22 @@ public class ComunicazioneController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canShowComunicazioni(principal)") TODO
 	@RequestMapping("/comunicazione/{id}/read")
-	public String readComunicazione(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
+	public String readComunicazione(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs,
+			@ModelAttribute("listaComunicazioni") Set<Comunicazione> listaComunicazioni,
+			HttpSession session) {
 		LOGGER.info(Utils.getLogMessage("GET: /comunicazione/"+ id + "/read"));
 		try {
 			comunicazioneService.contrassegnaComeLetta(id);
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
-			return "redirect:/comunicazione/dashboard";
+
+			if(model.asMap().containsKey("returnLink")) {
+				String returnLink = (String) model.asMap().get("returnLink");
+				updateComunicazioneList(listaComunicazioni, id, session);
+				return "redirect:"+returnLink;
+			}
+			else {
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
+				return "redirect:/comunicazione/dashboard";
+			}
 		}
 		catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /comunicazione/" + id + "/read"),ex);
@@ -170,7 +186,7 @@ public class ComunicazioneController {
 		}
 	}
 
-//	@PreAuthorize("@securityAccessServiceImpl.canSendComunicazioniReply(principal)") TODO
+	//	@PreAuthorize("@securityAccessServiceImpl.canSendComunicazioniReply(principal)") TODO
 	@RequestMapping(value = "/comunicazione/{id}/reply", method = RequestMethod.POST)
 	public String replyComunicazione(@ModelAttribute("comunicazioneWrapper") ComunicazioneWrapper comunicazioneWrapper, @PathVariable Long id, BindingResult result,
 			Model model, RedirectAttributes redirectAttrs) {
@@ -200,14 +216,23 @@ public class ComunicazioneController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canCloseComunicazione(principal)") TODO
 	@RequestMapping("/comunicazione/{id}/close")
-	public String closeComunicazione(@PathVariable Long id,	Model model, RedirectAttributes redirectAttrs) {
+	public String closeComunicazione(@PathVariable Long id,	Model model, RedirectAttributes redirectAttrs,
+			@ModelAttribute("listaComunicazioni") Set<Comunicazione> listaComunicazioni,
+			HttpSession session) {
 		LOGGER.info(Utils.getLogMessage("GET: /comunicazione/" + id + "/close"));
 		try {
 			//chiusura evento
 			comunicazioneService.chiudiComunicazioneById(id);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.comunicazione_chiusa", "success"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
-			return "redirect:/comunicazione/dashboard";
+			if(model.asMap().containsKey("returnLink")) {
+				String returnLink = (String) model.asMap().get("returnLink");
+				updateComunicazioneList(listaComunicazioni, id, session);
+				return "redirect:"+returnLink;
+			}
+			else {
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
+				return "redirect:/comunicazione/dashboard";
+			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /comunicazione/" + id + "/close"),ex);
 			model.addAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
@@ -218,7 +243,8 @@ public class ComunicazioneController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canShowComunicazioni(principal)") TODO
 	@RequestMapping("/comunicazione/{tipo}/list")
-	public String listaComunicazioniRicevute(@PathVariable String tipo, Model model, RedirectAttributes redirectAttrs) {
+	public String listaComunicazioniRicevute(@PathVariable String tipo, Model model, RedirectAttributes redirectAttrs,
+			HttpServletRequest request) {
 		LOGGER.info(Utils.getLogMessage("GET: /comunicazione/" + tipo + "/list"));
 		try {
 			Set<Comunicazione> listaComunicazioni;
@@ -258,7 +284,8 @@ public class ComunicazioneController {
 			model.addAttribute("tipologiaLista", tipologiaLista);
 			model.addAttribute("tipo", tipo);
 			model.addAttribute("returnLink", "/comunicazione/dashboard");
-			return LIST;
+
+			return goToComunicazioneList(request, model);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /comunicazione/received/list"),ex);
 			redirectAttrs.addFlashAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
@@ -270,7 +297,7 @@ public class ComunicazioneController {
 //	@PreAuthorize("@securityAccessServiceImpl.canShowComunicazioniProvider(principal)") TODO
 	@RequestMapping("/provider/{providerId}/comunicazione/list")
 	public String listaComunicazioniRicevuteProvider(@PathVariable Long providerId, @RequestParam(required = false) Boolean nonRisposte,
-			Model model, RedirectAttributes redirectAttrs) {
+			Model model, RedirectAttributes redirectAttrs, HttpServletRequest request) {
 		LOGGER.info(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"));
 		try {
 			Provider provider = providerService.getProvider(providerId);
@@ -293,7 +320,7 @@ public class ComunicazioneController {
 			else
 				model.addAttribute("returnLink", "/home");
 
-			return LIST;
+			return goToComunicazioneList(request, model);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"),ex);
 			redirectAttrs.addFlashAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
@@ -419,9 +446,6 @@ public class ComunicazioneController {
 					redirectAttrs.addFlashAttribute("message", new Message("message.warning", "message.warning_no_privilegi_necessari_risorsa", "warnign"));
 					return "redirect:/comunicazione/dashboard";
 				}
-
-
-
 			}
 		}
 		catch (Exception ex) {
@@ -446,5 +470,24 @@ public class ComunicazioneController {
 		}
 	}
 
+	private String goToComunicazioneList(HttpServletRequest request, Model model) {
+		LOGGER.info(Utils.getLogMessage("VIEW: "+LIST));
+		//tasto indietro
+	    String returnLink = request.getRequestURI().toString();
+	    if(request.getQueryString() != null)
+	    	returnLink+=request.getQueryString();
+	    model.addAttribute("returnLink", returnLink);
+		return LIST;
+	}
+
+	//update della comunicazione modificata nella lista in sessione
+	private void updateComunicazioneList(Set<Comunicazione> listaComunicazioni, Long comunicazioneId, HttpSession session) {
+		Comunicazione comunicazioneToUpdate = comunicazioneService.getComunicazioneById(comunicazioneId);
+		//se il provider è nella lista in sessione la aggiorna
+		if(listaComunicazioni.remove(comunicazioneToUpdate)) {
+			listaComunicazioni.add(comunicazioneToUpdate);
+			session.setAttribute("listaComunicazioni", listaComunicazioni);
+		}
+	}
 }
 

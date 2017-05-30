@@ -617,6 +617,7 @@
 					<div class="x_title x_menu">
 						<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamentoWrapper.provider.denominazioneLegale + ' (' + accreditamentoWrapper.provider.id + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
+							<a class="btn btn-primary" th:unless="${returnLink == null}" th:href="@{__${returnLink}__}" th:text="#{label.indietro}"></a>
 							<div class="dropdown pull-right">
   								<button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" th:if="${#authentication.principal.isSegreteria()}">
 									<span th:text="#{label.menu_azioni}"></span>

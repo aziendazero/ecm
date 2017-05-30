@@ -13,7 +13,7 @@
 						<h2 th:text="#{label.visualizzazione_evento(${eventoWrapperShow.proceduraFormativa}, ${eventoWrapperShow.evento.getCodiceIdentificativo()})}"></h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
-  								<a class="btn btn-primary" th:href="@{|/provider/${eventoWrapperShow.providerId}/evento/list|}" th:text="#{label.indietro}"></a>
+  								<a class="btn btn-primary" th:href="@{|__${returnLink}__|}" th:text="#{label.indietro}"></a>
   								<a class="btn btn-primary" th:href="@{|/provider/${eventoWrapperShow.providerId}/evento/${eventoWrapperShow.evento.id}/pdf|}" th:text="#{label.esporta_pdf}"></a>
 							</div>
 						</div>

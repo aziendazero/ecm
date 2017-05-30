@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -91,4 +92,16 @@ public class Comunicazione extends BaseEntityDefaultId{
 
 	@ManyToOne
 	private Account fakeAccountComunicazioni;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Comunicazione entitapiatta = (Comunicazione) o;
+		return Objects.equals(id, entitapiatta.id);
+	}
 }

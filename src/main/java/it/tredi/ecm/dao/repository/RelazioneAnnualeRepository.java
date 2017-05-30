@@ -17,6 +17,7 @@ public interface RelazioneAnnualeRepository extends CrudRepository<RelazioneAnnu
 
 	@Query("SELECT p FROM Provider p WHERE p.status IN ('ACCREDITATO_PROVVISORIAMENTE','ACCREDITATO_STANDARD') AND p.id NOT IN (SELECT distinct r.provider.id FROM RelazioneAnnuale r WHERE r.annoRiferimento = :annoRiferimento AND r.bozza = FALSE)")
 	public Set<Provider> findAllProviderNotRelazioneAnnualeRegistrata(@Param("annoRiferimento")Integer annoRiferimento);
+	public int countAllByProviderIdAndAnnoRiferimento(Long providerId, int annoCorrente);
 }
 
 // and p.codiceEsito not in ('PAA_ESEGUITO', 'PAA_PAGAMENTO_ANNULLATO', 'PAA_PAGAMENTO_SCADUTO', 'PAA_ENTE_NON_VALIDO', 'PAA_ID_SESSION_NON_VALIDO')")

@@ -14,7 +14,7 @@
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
 								<a class="btn btn-primary" th:if="${ricercaComunicazioneWrapper.providerId != null}" th:href="@{|/provider/${ricercaComunicazioneWrapper.providerId}/comunicazione/list|}" th:text="#{label.indietro}"></a>
-  								<a class="btn btn-primary" th:unless="${ricercaComunicazioneWrapper.providerId != null}" th:href="@{/comunicazione/all/list}" th:text="#{label.indietro}"></a>
+  								<a class="btn btn-primary" th:unless="${ricercaComunicazioneWrapper.providerId != null}" th:href="@{/comunicazione/dashboard}" th:text="#{label.indietro}"></a>
   								<a class="btn btn-primary" th:text="#{label.pulisci}" onclick="pulisci()"></a>
   								<a class="btn btn-success" th:text="#{label.cerca}" onclick="submitCerca()"></a>
 							</div>
@@ -23,53 +23,53 @@
 					</div>
 
 				<th:block th:fragment="ricercaComunicazione">
-			
+
 					<div class="x_content">
-			
+
 						<form id="formRicercaComunicazione" class="form-horizontal form-label-left form-evento"
 							th:action="@{|/comunicazione/ricerca|}"
 							method="post" enctype="multipart/form-data"
 							novalidate="novalidate">
-							
+
 								<input type="hidden" th:field="${ricercaComunicazioneWrapper.providerId}" />
-							
+
 								<th:block th:if="${ricercaComunicazioneWrapper.providerId == null}">
 									<!-- ID PROVIDER -->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="providerId">
 											<span th:text="${'ID '} + #{label.provider}">Provider</span>
 										</label>
-				
+
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="providerId">
 											<input type="text" pattern="numeric" class="form-control" th:field="${ricercaComunicazioneWrapper.campoIdProvider}" />
 										</div>
 									</div>
-								
+
 									<!-- DENOMINAZIONE LEGALE PROVIDER -->
 									<div class="item form-group">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="denominazioneLegale">
 											<span th:text="#{label.denominazione_legale} + ${' '}  + #{label.provider}">Provider</span>
 										</label>
-				
+
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="denominazioneLegale">
 											<input type="text" class="form-control" th:field="${ricercaComunicazioneWrapper.denominazioneLegale}" />
 										</div>
 									</div>
-									
+
 									<div class="divider-dashed"></div>
-								</th:block>	
-									
+								</th:block>
+
 								<!-- OGGETTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="oggetto">
 										<span th:text="#{label.oggetto}">Oggetto</span>
 									</label>
-			
+
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="oggetto">
 										<input type="text" class="form-control" th:field="${ricercaComunicazioneWrapper.oggetto}" />
 									</div>
 								</div>
-								
+
 								<!-- Ambito Comunicazione -->
 								<div class="item form-group select-ambito-comunicazione">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ambito">
@@ -77,7 +77,7 @@
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<select id="ambito" 
+										<select id="ambito"
 											multiple="multiple"
 											class="selectpicker"
 											th:field="${ricercaComunicazioneWrapper.ambitiSelezionati}"
@@ -93,7 +93,7 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<!-- Tipologia Comunicazione -->
 								<div class="item form-group select-tipologia-comunicazione">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="tipologia">
@@ -101,7 +101,7 @@
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<select id="tipologia" 
+										<select id="tipologia"
 											multiple="multiple"
 											class="selectpicker"
 											th:field="${ricercaComunicazioneWrapper.tipologieSelezionate}"
@@ -117,9 +117,9 @@
 										</select>
 									</div>
 								</div>
-								
+
 								<div class="divider-dashed"></div>
-								
+
 								<!-- START - DATA CREAZIONE -->
 								<div class="item form-group">
 									<label class="control-label col-sm-2 col-xs-11" for="dataCreazioneStart">
@@ -143,17 +143,17 @@
 										</span>
 									</div>
 								</div>
-								
+
 							<input id="submitButton" type="submit" style="display: none;" />
-			
+
 						</form>
-			
+
 						<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
 						<script th:inline="javascript">
 						/*<![CDATA[*/
 						     var days;
-							 var months;    
-						           
+							 var months;
+
 						    $(document).ready(function() {
 								//init selecpicker
 							    $('select').selectpicker({
@@ -161,7 +161,7 @@
 									deselectAllText : 'Deseleziona tutti',
 									countSelectedText : '{0} selezionate'
 								});
-								
+
 							    days = getDayNamesShort();
 								months = getMonthNames();
 
@@ -186,32 +186,32 @@
 						                monthNames: months,
 							        }
 							    })
-							    
 
-							});       
-						           
+
+							});
+
 							function submitCerca(){
 								$("#submitButton").click();
 							}
-							
+
 							function pulisci(){
 								$('#providerId input').val('');
 								$('#denominazioneLegale input').val('');
 								$('#oggetto input').val('');
-								
+
 								$('#ambito').selectpicker('val','');
 								$('#tipologia').selectpicker('val','');
-								
+
 								$('#dataCreazioneStart').val('');
 								$('#dataCreazioneEnd').val('');
 							}
-							
+
 						/*]]>*/
 						</script>
-			
-			
+
+
 					</div>
-			
+
 				</th:block>
 			</div>
 		</div>

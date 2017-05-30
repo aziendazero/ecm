@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,12 +28,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
-import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
@@ -70,11 +71,11 @@ import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RichiestaIntegrazioneWrapper;
 import it.tredi.ecm.web.bean.VerbaleValutazioneSulCampoWrapper;
-import it.tredi.ecm.web.validator.FileValidator;
 import it.tredi.ecm.web.validator.InviaAlProtocolloValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
 @Controller
+@SessionAttributes("returnLink")
 public class AccreditamentoController {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoController.class);
 
@@ -119,7 +120,7 @@ public class AccreditamentoController {
 			if(currentProvider.isNew()){
 				throw new Exception("Provider non registrato");
 			}else{
-				redirectAttrs.addAttribute("providerId",currentProvider.getId());
+				redirectAttrs.addFlashAttribute("providerId",currentProvider.getId());
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + currentProvider.getId() + "/accreditamento/list"));
 				return "redirect:/provider/{providerId}/accreditamento/list";
 			}
@@ -134,7 +135,8 @@ public class AccreditamentoController {
 	/***	Get Lista Accreditamenti per {providerID}	***/
 	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/accreditamento/list")
-	public String getAllAccreditamentiForProvider(@PathVariable("providerId") Long providerId, Model model, RedirectAttributes redirectAttrs){
+	public String getAllAccreditamentiForProvider(@PathVariable("providerId") Long providerId, Model model,
+			RedirectAttributes redirectAttrs, HttpServletRequest request, HttpSession session){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/accreditamento/list"));
 		try {
 			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiForProvider(providerId);
@@ -142,8 +144,7 @@ public class AccreditamentoController {
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", accreditamentoService.canProviderCreateAccreditamento(providerId,AccreditamentoTipoEnum.PROVVISORIO));
 			model.addAttribute("canProviderCreateAccreditamentoStandard", accreditamentoService.canProviderCreateAccreditamento(providerId,AccreditamentoTipoEnum.STANDARD));
 			model.addAttribute("providerId", providerId);
-			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
-			return "accreditamento/accreditamentoList";
+			return goToAccreditamentoList(request, model);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/accreditamento/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -155,7 +156,10 @@ public class AccreditamentoController {
 	/***	Get show Accreditamento {ID}	***/
 	@PreAuthorize("@securityAccessServiceImpl.canShowAccreditamento(principal,#id)")
 	@RequestMapping("/accreditamento/{id}/show")
-	public String showAccreditamento(@PathVariable Long id, Model model, @RequestParam(required = false) String tab, RedirectAttributes redirectAttrs){
+	public String showAccreditamento(@PathVariable Long id, Model model,
+			@RequestParam(required = false) String tab,
+			RedirectAttributes redirectAttrs,
+			HttpSession session){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + id + "/show"));
 		try {
 			if (tab != null) {
@@ -1367,13 +1371,16 @@ public class AccreditamentoController {
 		}
 	}
 
+	//VASCHETTE
 //	@PreAuthorize("@securityAccessServiceImpl.canShowGruppo(principal,#gruppo)")
 	@RequestMapping("/accreditamento/{gruppo}/list")
 	public String getAllAccreditamentiForGruppo(@PathVariable("gruppo") String gruppo, Model model,
 			@RequestParam(name="tipo", required = false) String tipo,
 			@RequestParam(name="filterTaken", required = false) Boolean filterTaken,
 			@RequestParam(name="filterDone", required = false) Boolean filterDone,
-			RedirectAttributes redirectAttrs) throws Exception {
+			RedirectAttributes redirectAttrs,
+			HttpServletRequest request,
+			HttpSession session) throws Exception {
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list, tipo = " + tipo + ", filterTaken = " + filterTaken + ", filterDone = " + filterDone));
 		try {
 			Set<Accreditamento> listaAccreditamenti = new HashSet<Accreditamento>();
@@ -1430,12 +1437,13 @@ public class AccreditamentoController {
 				model.addAttribute("mappaScadenze", mappaScadenze);
 				//scadenzaValutazione
 			}
+
 			model.addAttribute("label", label);
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
 			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
-			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
-			return "accreditamento/accreditamentoList";
+
+			return goToAccreditamentoList(request, model);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + gruppo + "/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -1447,7 +1455,8 @@ public class AccreditamentoController {
 	//solo segreteria
 	@PreAuthorize("@securityAccessServiceImpl.canShowInScadenza(principal)")
 	@RequestMapping("/accreditamento/scadenza/list")
-	public String getAllAccreditamentiInScadenza(Model model, RedirectAttributes redirectAttrs) throws Exception{
+	public String getAllAccreditamentiInScadenza(Model model, RedirectAttributes redirectAttrs,
+			HttpServletRequest request, HttpSession session) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/scadenza/list"));
 		try {
 			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiInScadenza();
@@ -1460,8 +1469,7 @@ public class AccreditamentoController {
 			mappaCarica = valutazioneService.getValutatoriForAccreditamentiList(listaAccreditamenti);
 			model.addAttribute("mappaCarica", mappaCarica);
 
-			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
-			return "accreditamento/accreditamentoList";
+			return goToAccreditamentoList(request, model);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/scadenza/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -1473,7 +1481,8 @@ public class AccreditamentoController {
 	//solo segreteria
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canShowDaInserireInODG(principal)")
 	@RequestMapping("/accreditamento/daInserireODG/list")
-	public String getAllAccreditamentiAncoraDaInserireInODG(Model model, RedirectAttributes redirectAttrs) throws Exception{
+	public String getAllAccreditamentiAncoraDaInserireInODG(Model model, RedirectAttributes redirectAttrs,
+			HttpServletRequest request, HttpSession session) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/daInserireODG/list"));
 		try {
 			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllAccreditamentiInseribiliInODG();
@@ -1486,8 +1495,7 @@ public class AccreditamentoController {
 			mappaCarica = valutazioneService.getValutatoriForAccreditamentiList(listaAccreditamenti);
 			model.addAttribute("mappaCarica", mappaCarica);
 
-			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
-			return "accreditamento/accreditamentoList";
+			return goToAccreditamentoList(request, model);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/daInserireODG/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -1499,7 +1507,8 @@ public class AccreditamentoController {
 //	@PreAuthorize("@securityAccessServiceImpl.canShowNonValutate(principal,#refereeId)
 	//TODO solo segreteria e referee interessato
 	@RequestMapping("/referee/{refereeId}/accreditamento/nonValutate/list")
-	public String getAllDomandeNonValutate(@PathVariable Long refereeId, Model model, RedirectAttributes redirectAttrs) {
+	public String getAllDomandeNonValutate(@PathVariable Long refereeId, Model model, RedirectAttributes redirectAttrs,
+			HttpServletRequest request, HttpSession session) {
 		LOGGER.info(Utils.getLogMessage("/referee/" + refereeId + "/accreditamento/nonValutate/list"));
 		try {
 			Set<Accreditamento> listaDomandeNonValutate = accreditamentoService.getAllDomandeNonValutateByRefereeId(refereeId);
@@ -1507,8 +1516,8 @@ public class AccreditamentoController {
 			model.addAttribute("accreditamentoList", listaDomandeNonValutate);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
 			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
-			LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
-			return "accreditamento/accreditamentoList";
+
+			return goToAccreditamentoList(request, model);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /referee/" + refereeId + "/accreditamento/nonValutate/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -1739,5 +1748,15 @@ public class AccreditamentoController {
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
+	}
+
+	private String goToAccreditamentoList(HttpServletRequest request, Model model) {
+		LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
+		//tasto indietro
+	    String returnLink = request.getRequestURI().toString();
+	    if(request.getQueryString() != null)
+	    	returnLink+=request.getQueryString();
+	    model.addAttribute("returnLink", returnLink);
+		return "accreditamento/accreditamentoList";
 	}
 }

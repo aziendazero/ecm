@@ -1292,7 +1292,7 @@ public class EventoServiceImpl implements EventoService {
 				LOGGER.debug(Utils.getLogMessage("Clonazione dei Docenti del DettaglioAttivitaFAD"));
 				for(PersonaEvento pe : daf.getDocenti()) {
 					Long newId = mapIdDocenti.get(pe.getId());
-					pe.setId(newId);
+					pe = personaEventoRepository.findOne(newId);
 					personaEventoRepository.save(pe);
 				}
 				Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
@@ -1350,7 +1350,7 @@ public class EventoServiceImpl implements EventoService {
 					LOGGER.debug(Utils.getLogMessage("Clonazione dei Docenti del DettaglioAttivitaRES"));
 					for(PersonaEvento pe : dar.getDocenti()) {
 						Long newId = mapIdDocenti.get(pe.getId());
-						pe.setId(newId);
+						pe = personaEventoRepository.findOne(newId);
 						personaEventoRepository.save(pe);
 					}
 					Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
@@ -1997,6 +1997,17 @@ public class EventoServiceImpl implements EventoService {
 					}
 				}
 			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean checkIfFSCAndTrainingAndTutorPartecipanteRatioAlert(Evento evento) {
+		if(evento instanceof EventoFSC) {
+			EventoFSC eventoFsc = (EventoFSC) evento;
+			if(eventoFsc.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+					&& eventoFsc.getNumeroPartecipanti() > (eventoFsc.getNumeroTutor() * 5))
+				return true;
 		}
 		return false;
 	}

@@ -9,6 +9,27 @@
 
 		<div class="x_content">
 
+			<div th:if="${FSCTutorPartecipanti != null and FSCTutorPartecipanti == true}" id="modale-alert-fsctutorpartecipanti" class="modal fade modal-alert" data-model-index="1" role="dialog">
+				<div class="modal-dialog modal-md">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel1" th:text="#{label.richiesta_conferma}">Richiesta di conferma</h4>
+						</div>
+						<div class="modal-body">
+							<div>
+								<label class="value" th:text="#{label.alert_fsc_tutor_partecipanti}"></label>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success pull-right" th:text="#{label.salva}" onclick="submitConfirm()"></button>
+							<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<!-- finestra modale di aggiunta attivitaRES a programma del Giorno -->
 			<div id="add-attivitaFSC-modal" class="modal fade modal-add-attivitaFSC" data-model-index="1" role="dialog">
 				<div class="modal-dialog modal-lg">
@@ -1392,6 +1413,9 @@
 					});
 
 					initAll();
+
+					if([[${FSCTutorPartecipanti != null and FSCTutorPartecipanti == true}]])
+						$("#modale-alert-fsctutorpartecipanti").modal("show");
 
 				});
 

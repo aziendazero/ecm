@@ -76,4 +76,5 @@ public interface EventoService {
 	public Integer countAllEventiMedicineNonConvenzionali();
 	public Set<Evento> getEventiMedicineNonConvenzionali();
 	public boolean checkIfRESAndWorkshopOrCorsoAggiornamentoAndInterettivoSelected(Evento evento);
+	public boolean checkIfFSCAndTrainingAndTutorPartecipanteRatioAlert(Evento evento);
 }

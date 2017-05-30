@@ -28,6 +28,7 @@ public class FileValidator {
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
 
+	//validator per file salvati su db
 	public void validate(Object target, Errors errors, String prefix, Long providerId) throws Exception{
 		validateData(target, errors, prefix);
 		validateFirma(target, errors, prefix, providerId);
@@ -36,10 +37,11 @@ public class FileValidator {
 	public void validateData(Object target, Errors errors, String prefix) {
 		LOGGER.info(Utils.getLogMessage("Validazione File"));
 		File file = (File)target;
-		if(file != null) {
-			fileService.getFile(file.getId());
+		if(file != null && !file.isNew()) {
+			file = fileService.getFile(file.getId());
+			file.getFileData().size();
 		}
-		if(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0){
+		if(file == null || file.isNew() || file.getNomeFile().isEmpty() || file.getData().length == 0){
 			errors.rejectValue(prefix, "error.empty");
 		}else{
 
@@ -51,7 +53,11 @@ public class FileValidator {
 
 	public void validateFirma(Object target, Errors errors, String prefix, Long providerId) throws Exception{
 		File file = (File)target;
-		if(!(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0)){
+		if(file != null && !file.isNew()) {
+			file = fileService.getFile(file.getId());
+			file.getFileData().size();
+		}
+		if(!(file == null || file.isNew() || file.getNomeFile().isEmpty() || file.getData().length == 0)){
 
 			//se il cf della firma non appartiene al legale rappresentane o al delegato del legale rappresentante, allora non è valido
 			if(!validateFirmaCF(file, providerId))
@@ -61,7 +67,11 @@ public class FileValidator {
 
 	public boolean validateFirmaCF(Object target, Long providerId) throws Exception{
 		File file = (File)target;
-		if(!(file == null || file.getNomeFile().isEmpty() || file.getData().length == 0)){
+		if(file != null && !file.isNew()) {
+			file = fileService.getFile(file.getId());
+			file.getFileData().size();
+		}
+		if(!(file == null || file.isNew() || file.getNomeFile().isEmpty() || file.getData().length == 0)){
 
 			//20170103 - dpranteda: se il provider è di tipo AZIENDE_SANITARIE, non bisogna fare il controllo sul CF in quanto ci sono provider unificati
 			Provider provider = providerService.getProvider(providerId);
@@ -82,6 +92,7 @@ public class FileValidator {
 		return false;
 	}
 
+	//validator per file new
 	public String validate(Object target, String contentType) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione File AJAX Upload"));
 		File file = (File)target;
@@ -124,7 +135,7 @@ public class FileValidator {
 		if(condition == true)
 			validate(target, errors, prefix, providerId);
 		else {
-			if(file != null && !file.getNomeFile().isEmpty())
+			if(file != null && !file.isNew() && !file.getNomeFile().isEmpty())
 				validate(file, errors, prefix, providerId);
 		}
 	}

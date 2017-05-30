@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.RelazioneAnnuale;
 import it.tredi.ecm.service.FileService;
@@ -50,7 +51,7 @@ public class RelazioneAnnualeController {
 	@ModelAttribute("relazioneAnnualeWrapper")
 	public RelazioneAnnualeWrapper getRelazioneAnnuale(@RequestParam(name = "editId", required = false) Long id) throws Exception{
 		if(id != null){
-			return prepareWrapperEdit(relazioneAnnualeService.getRelazioneAnnuale(id));
+			return prepareWrapperEditByEditId(relazioneAnnualeService.getRelazioneAnnuale(id));
 		}
 		return new RelazioneAnnualeWrapper();
 	}
@@ -133,7 +134,7 @@ public class RelazioneAnnualeController {
 	public String showRelazioniAnnualiForProvider(@PathVariable Long providerId, @PathVariable Long relazioneAnnualeId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/relazioneAnnuale/insert"));
 		try {
-			RelazioneAnnualeWrapper wrapper = prepareWrapperEdit(relazioneAnnualeService.getRelazioneAnnuale(relazioneAnnualeId));
+			RelazioneAnnualeWrapper wrapper = prepareWrapperShow(relazioneAnnualeService.getRelazioneAnnuale(relazioneAnnualeId));
 			return goToShow(model, wrapper);
 		}
 		catch (Exception ex) {
@@ -148,19 +149,17 @@ public class RelazioneAnnualeController {
 	public String saveRelazioniAnnualiForProvider(@PathVariable Long providerId, @ModelAttribute("relazioneAnnualeWrapper") RelazioneAnnualeWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/relazioneAnnuale/save"));
 		try {
+			File file = wrapper.getRelazioneFinale();
+			if(file != null && !file.isNew())
+				wrapper.setRelazioneFinale(fileService.getFile(file.getId()));
 
-			if (wrapper.getRelazioneFinale().getId() != null) {
-				wrapper.getRelazioneAnnuale().setRelazioneFinale(fileService.getFile(wrapper.getRelazioneFinale().getId()));
-			}
-
-			relazioneAnnualeValidator.validate(wrapper.getRelazioneAnnuale(), result, "relazioneAnnuale.", providerId);
-
+			relazioneAnnualeValidator.validate(wrapper.getRelazioneAnnuale(), wrapper.getRelazioneFinale(), result, "relazioneAnnuale.", providerId);
 			if(result.hasErrors()){
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 				return EDIT;
 			}else{
-				relazioneAnnualeService.elaboraRelazioneAnnualeAndSave(wrapper.getRelazioneAnnuale(), false);
+				relazioneAnnualeService.elaboraRelazioneAnnualeAndSave(wrapper.getRelazioneAnnuale(), wrapper.getRelazioneFinale(), false);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.relazione_annuale_salvata", "success"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/relazioneAnnuale/list"));
 				return "redirect:/provider/{providerId}/relazioneAnnuale/list";
@@ -178,12 +177,7 @@ public class RelazioneAnnualeController {
 	public String saveAsBozzaRelazioniAnnualiForProvider(@PathVariable Long providerId, @ModelAttribute("relazioneAnnualeWrapper") RelazioneAnnualeWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/relazioneAnnuale/draftSave"));
 		try {
-
-			if (wrapper.getRelazioneFinale().getId() != null) {
-				wrapper.getRelazioneAnnuale().setRelazioneFinale(fileService.getFile(wrapper.getRelazioneFinale().getId()));
-			}
-
-			relazioneAnnualeService.elaboraRelazioneAnnualeAndSave(wrapper.getRelazioneAnnuale(), true);
+			relazioneAnnualeService.elaboraRelazioneAnnualeAndSave(wrapper.getRelazioneAnnuale(), wrapper.getRelazioneFinale(), true);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.bozza_relazione_annuale_salvata", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/relazioneAnnuale/"+wrapper.getRelazioneAnnuale().getId()+"/show"));
 			return "redirect:/provider/{providerId}/relazioneAnnuale/"+wrapper.getRelazioneAnnuale().getId()+"/show";
@@ -201,7 +195,7 @@ public class RelazioneAnnualeController {
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/relazioneAnnuale/" + relazioneAnnualeId + "/realod"));
 		try {
 			RelazioneAnnuale relazioneAnnuale = relazioneAnnualeService.getRelazioneAnnuale(relazioneAnnualeId);
-			relazioneAnnualeService.elaboraRelazioneAnnualeAndSave(relazioneAnnuale, true);
+			relazioneAnnualeService.elaboraRelazioneAnnualeAndSave(relazioneAnnuale, relazioneAnnuale.getRelazioneFinale(), true);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.relazione_annuale_rielaborata", "success"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/relazioneAnnuale/"+relazioneAnnualeId+"/show"));
 			return "redirect:/provider/{providerId}/relazioneAnnuale/"+relazioneAnnualeId+"/show";
@@ -218,25 +212,30 @@ public class RelazioneAnnualeController {
 		relazioneAnnuale.setAnnoRiferimento(LocalDate.now().getYear());
 		wrapper.setProviderId(relazioneAnnuale.getProvider().getId());
 		wrapper.setRelazioneAnnuale(relazioneAnnuale);
-		wrapper.setRelazioneFinale(relazioneAnnuale.getRelazioneFinale());
 		return wrapper;
 	}
 
-	private RelazioneAnnualeWrapper prepareWrapperEdit(RelazioneAnnuale relazioneAnnuale){
-		RelazioneAnnualeWrapper wrapper = new RelazioneAnnualeWrapper();
+	private RelazioneAnnualeWrapper prepareWrapperEdit(RelazioneAnnuale relazioneAnnuale) {
+		return prepareWrapperEdit(relazioneAnnuale, false);
+	}
 
+	private RelazioneAnnualeWrapper prepareWrapperEditByEditId(RelazioneAnnuale relazioneAnnuale) {
+		return prepareWrapperEdit(relazioneAnnuale, true);
+	}
+
+	private RelazioneAnnualeWrapper prepareWrapperEdit(RelazioneAnnuale relazioneAnnuale, boolean reloadById) {
+		RelazioneAnnualeWrapper wrapper = new RelazioneAnnualeWrapper();
 		wrapper.setProviderId(relazioneAnnuale.getProvider().getId());
 		wrapper.setRelazioneAnnuale(relazioneAnnuale);
-		wrapper.setRelazioneFinale(relazioneAnnuale.getRelazioneFinale());
+		if(!reloadById)
+			wrapper.setRelazioneFinale(relazioneAnnuale.getRelazioneFinale());
 		return wrapper;
 	}
 
 	private RelazioneAnnualeWrapper prepareWrapperShow(RelazioneAnnuale relazioneAnnuale){
 		RelazioneAnnualeWrapper wrapper = new RelazioneAnnualeWrapper();
-
 		wrapper.setProviderId(relazioneAnnuale.getProvider().getId());
 		wrapper.setRelazioneAnnuale(relazioneAnnuale);
-		wrapper.setRelazioneFinale(relazioneAnnuale.getRelazioneFinale());
 
 		return wrapper;
 	}
