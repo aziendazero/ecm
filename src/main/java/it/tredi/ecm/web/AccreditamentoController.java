@@ -120,9 +120,10 @@ public class AccreditamentoController {
 			if(currentProvider.isNew()){
 				throw new Exception("Provider non registrato");
 			}else{
-				redirectAttrs.addFlashAttribute("providerId",currentProvider.getId());
+				Long providerId = currentProvider.getId();
+				redirectAttrs.addFlashAttribute("providerId", providerId);
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + currentProvider.getId() + "/accreditamento/list"));
-				return "redirect:/provider/{providerId}/accreditamento/list";
+				return "redirect:/provider/"+providerId+"/accreditamento/list";
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /provider/accreditamento/list"),ex);
@@ -1753,9 +1754,9 @@ public class AccreditamentoController {
 	private String goToAccreditamentoList(HttpServletRequest request, Model model) {
 		LOGGER.info(Utils.getLogMessage("VIEW: accreditamento/accreditamentoList"));
 		//tasto indietro
-	    String returnLink = request.getRequestURI().toString();
+		String returnLink = request.getRequestURI().substring(request.getContextPath().length());
 	    if(request.getQueryString() != null)
-	    	returnLink+=request.getQueryString();
+	    	returnLink+="?"+request.getQueryString();
 	    model.addAttribute("returnLink", returnLink);
 		return "accreditamento/accreditamentoList";
 	}

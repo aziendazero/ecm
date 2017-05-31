@@ -473,9 +473,9 @@ public class ComunicazioneController {
 	private String goToComunicazioneList(HttpServletRequest request, Model model) {
 		LOGGER.info(Utils.getLogMessage("VIEW: "+LIST));
 		//tasto indietro
-	    String returnLink = request.getRequestURI().toString();
+		String returnLink = request.getRequestURI().substring(request.getContextPath().length());
 	    if(request.getQueryString() != null)
-	    	returnLink+=request.getQueryString();
+	    	returnLink+="?"+request.getQueryString();
 	    model.addAttribute("returnLink", returnLink);
 		return LIST;
 	}

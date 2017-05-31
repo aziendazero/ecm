@@ -293,7 +293,7 @@ public class EventoController {
 					return "redirect:" + returnLink;
 				}
 				else
-					return "redirect:/provider/{providerId}/evento/list";
+					return "redirect:/provider/"+providerId+"/evento/list";
 			}
 			else {
 				EventoWrapper wrapper = prepareEventoWrapperNew(proceduraFormativa, providerId);
@@ -304,13 +304,13 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/new"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 	}
 
@@ -327,13 +327,13 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/eventoPianoFormativo/" + eventoPianoFormativoId +"/fulfill"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/eventoPianoFormativo/" + eventoPianoFormativoId +"/fulfill"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 	}
 
@@ -350,13 +350,13 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId +"/re-edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId +"/re-edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 	}
 
@@ -379,13 +379,13 @@ public class EventoController {
 				return "redirect:" + returnLink;
 			}
 			else
-				return "redirect:/provider/{providerId}/evento/list";
+				return "redirect:/provider/"+providerId+"/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 	}
 
@@ -451,13 +451,13 @@ public class EventoController {
 				return "redirect:" + returnLink;
 			}
 			else
-				return "redirect:/provider/{providerId}/evento/list";
+				return "redirect:/provider/"+providerId+"/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 	}
 
@@ -484,13 +484,13 @@ public class EventoController {
 				return "redirect:" + returnLink;
 			}
 			else
-				return "redirect:/provider/{providerId}/evento/list";
+				return "redirect:/provider/"+providerId+"/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 	}
 
@@ -513,13 +513,13 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.accreditamento_not_trovato", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/edit"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 	}
 
@@ -537,7 +537,7 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/show"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 	}
 
@@ -589,7 +589,7 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/pdf"),ex);
 			//redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			//LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-			//return "redirect:/provider/{providerId}/evento/list";
+			//return "redirect:/provider/"+providerId+"/evento/list";
 
 			model.addAttribute("message",new Message("Errore","Impossibile creare il pdf","Errore creazione pdf evento " + eventoId));
 		}
@@ -618,13 +618,13 @@ public class EventoController {
 					return "redirect:" + returnLink;
 				}
 				else
-					return "redirect:/provider/{providerId}/evento/list";
+					return "redirect:/provider/"+providerId+"/evento/list";
 			}
 			catch (Exception ex) {
 				LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/delete"),ex);
 				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
-				return "redirect:/provider/{providerId}/evento/list";
+				return "redirect:/provider/"+providerId+"/evento/list";
 			}
 		}
 
@@ -1657,11 +1657,11 @@ public class EventoController {
 				return "redirect:" + url;
 			}
 
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
-			return "redirect:/provider/{providerId}/evento/list";
+			return "redirect:/provider/"+providerId+"/evento/list";
 		}
 	}
 
@@ -1839,9 +1839,9 @@ public class EventoController {
 	private String goToEventoList(HttpServletRequest request, Model model) {
 		LOGGER.info(Utils.getLogMessage("VIEW: "+LIST));
 		//tasto indietro
-	    String returnLink = request.getRequestURI().toString();
+		String returnLink = request.getRequestURI().substring(request.getContextPath().length());
 	    if(request.getQueryString() != null)
-	    	returnLink+=request.getQueryString();
+	    	returnLink+="?"+request.getQueryString();
 	    model.addAttribute("returnLink", returnLink);
 		return LIST;
 	}
