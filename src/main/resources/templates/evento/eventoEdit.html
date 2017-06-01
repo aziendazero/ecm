@@ -1368,7 +1368,7 @@
 				<label class="col-xs-offset-4 col-xs-4" th:text="#{label.nessun_responsabile_registrato}"></label>
 			</th:block> -->
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="responsabiliScientifici" class="datatable-responsive-responsabili no-order table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
@@ -1441,7 +1441,7 @@
 	<th:block style="display:none">
 		<th:block th:fragment="docenti">
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="docenti" class="datatable-responsive-docenti table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
@@ -1517,7 +1517,7 @@
 	<th:block style="display:none">
 		<th:block th:fragment="responsabileSegreteria">
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="responsabileSegreteria" class="datatable-responsive-responsabileSegreteria table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
@@ -1581,7 +1581,7 @@
 	<th:block style="display:none">
 		<th:block th:fragment="sponsors">
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="sponsors" class="datatable-responsive-sponsors table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
@@ -1628,7 +1628,7 @@
 	<th:block style="display:none">
 		<th:block th:fragment="partners">
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="partners" class="datatable-responsive-partners table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
@@ -1676,7 +1676,7 @@
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaRES">
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaRES">
@@ -1862,7 +1862,7 @@
 	<th:block style="display:none">
 		<th:block th:fragment="attivitaFSC">
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaFSC">
@@ -1960,7 +1960,7 @@
 	<th:block style="display:none">
 		<th:block th:fragment="attivitaFAD">
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaFAD" th:if="${eventoWrapper.programmaEventoFAD != null}">

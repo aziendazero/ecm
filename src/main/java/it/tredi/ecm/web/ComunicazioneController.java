@@ -13,12 +13,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -161,22 +163,20 @@ public class ComunicazioneController {
 
 //	@PreAuthorize("@securityAccessServiceImpl.canShowComunicazioni(principal)") TODO
 	@RequestMapping("/comunicazione/{id}/read")
-	public String readComunicazione(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs,
-			@ModelAttribute("listaComunicazioni") Set<Comunicazione> listaComunicazioni,
-			HttpSession session) {
+	public String readComunicazione(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET: /comunicazione/"+ id + "/read"));
 		try {
 			comunicazioneService.contrassegnaComeLetta(id);
 
-			if(model.asMap().containsKey("returnLink")) {
-				String returnLink = (String) model.asMap().get("returnLink");
-				updateComunicazioneList(listaComunicazioni, id, session);
-				return "redirect:"+returnLink;
-			}
-			else {
+//			if(model.asMap().containsKey("returnLink")) {
+//				String returnLink = (String) model.asMap().get("returnLink");
+//				updateComunicazioneList(listaComunicazioni, id, session);
+//				return "redirect:"+returnLink;
+//			}
+//			else {
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /comunicazione/dashboard"));
 				return "redirect:/comunicazione/dashboard";
-			}
+//			}
 		}
 		catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /comunicazione/" + id + "/read"),ex);
@@ -455,18 +455,16 @@ public class ComunicazioneController {
 		}
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/comunicazione/notRead/list/archiviaSelezionate", method = RequestMethod.POST)
-	public String archiviaSelezionate(@RequestBody Set<Long> ids, Model model, RedirectAttributes redirectAttrs) {
+	public void archiviaSelezionate(@RequestBody Set<Long> ids) {
 		try{
 			LOGGER.info(Utils.getLogMessage("POST /comunicazione/notRead/list/archiviaSelezionate"));
 			comunicazioneService.archiviaSelezionati(ids);
 			LOGGER.info(Utils.getLogMessage("REDIRECT success: /comunicazione/notRead/list"));
-			return "redirect:/comunicazione/notRead/list";
 		}catch (Exception ex){
-			LOGGER.info(Utils.getLogMessage("REDIRECT con errore: /comunicazione/notRead/list"));
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("Errore: /comunicazione/notRead/list/archiviaSelezionate"));
 			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
-			return "redirect:/comunicazione/notRead/list";
 		}
 	}
 

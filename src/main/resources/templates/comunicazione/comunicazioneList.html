@@ -29,6 +29,7 @@
 										<th th:text="#{label.destinatari}"></th>
 										<th th:text="#{label.ambito_list}"></th>
 										<th th:text="#{label.tipologia_list}"></th>
+										<th th:text="#{label.evento_link}"></th>
 										<th th:text="#{label.data_ultima_risposta}"></th>
 										<th th:text="#{label.stato}"></th>
 										<th class="hidden" th:text="#{label.id}"></th>
@@ -48,6 +49,9 @@
 										</td>
 										<td th:text="${comunicazione.ambito.nome}"></td>
 										<td th:text="${comunicazione.tipologia.nome}"></td>
+										<td>
+											<a class="link" target="_blank" th:href="@{|/comunicazione/${comunicazione.id}/evento/${comunicazione.codiceEventoLink}/redirect|}" th:text="${comunicazione.codiceEventoLink}"></a>
+										</td>
 										<td th:text="${#temporals.format(comunicazione.dataUltimaModifica, 'dd/MM/yyyy - HH:mm')}"></td>
 										<td th:text="${comunicazione.chiusa == true} ? #{label.chiusa} : #{label.aperta}"></td>
 										<td class="hidden" th:text="${comunicazione.id}"></td>
@@ -97,29 +101,41 @@
 					var ids = [];
 					var $rows = table.rows('.selected').data();
 					for(var i = 0; i < $rows.length; i++) {
-						var id = Number.parseInt(($rows[i][7]));
+						var id = Number.parseInt(($rows[i][8]));
 						ids.push(id);
 					}
-					var url = [[@{|/comunicazione/notRead/list/archiviaSelezionate|}]];
-					var token = [[${_csrf.token}]];
-					var header = [[${_csrf.headerName}]];
-					var dataSend = JSON.stringify(ids);
-					$.ajax({
-						type: "POST",
-						url: url,
-						timeout: 100000,
-						data: dataSend,
-						contentType: "application/json; charset=utf-8",
-						beforeSend: function(xhr) {
-							xhr.setRequestHeader(header, token);
-						},
-						success: function() {
-							location.reload();
-						},
-						error: function(request, status, error) {
-	                    	alert(error);
-	                    }
-					});
+					if(ids.length > 0) {
+						var url = [[@{|/comunicazione/notRead/list/archiviaSelezionate|}]];
+						var token = [[${_csrf.token}]];
+						var header = [[${_csrf.headerName}]];
+						var dataSend = JSON.stringify(ids);
+						$.ajax({
+							type: "POST",
+							url: url,
+							timeout: 100000,
+							mimeType: "text/html",
+							data: dataSend,
+							contentType: "application/json; charset=utf-8",
+							beforeSend: function(xhr) {
+								xhr.setRequestHeader(header, token);
+							},
+							success: function(data) {
+								location.reload();
+							},
+							error: function(request, status, error) {
+		                    	alert(error);
+		                    }
+						});
+					}
+					else {
+						$alert = $(".alert");
+						if($alert.length > 0) {
+							animate($alert);
+						}
+						else {
+							sendNotifyStatic([[#{label.attenzione}]], [[#{label.nessuna_comunicazione_selezionata}]], "warning");
+						}
+					}
 				}
 
 			/*]]>*/

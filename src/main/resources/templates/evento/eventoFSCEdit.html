@@ -46,7 +46,7 @@
 									novalidate="novalidate">
 
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
-											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
@@ -278,7 +278,7 @@
 <!-- 								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
-											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
@@ -531,7 +531,7 @@
 										<span th:text="#{label.obiettivo_strategico_nazionale}">Obiettivo Strategico Nazionale</span>
 										<span class="required">*</span>
 									</label>
-									<th:block th:unless="${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+									<th:block th:unless="${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')}">
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 											<select id="obiettivoNazionale"
 												class="selectpicker required"
@@ -558,7 +558,7 @@
 											<div th:attr="data-original-title=#{label.info_tooltip_obiettivo_nazionale}" class="btn btn-default no-margin cursor-default" data-toggle="tooltip" data-placement="top"><i class="fa fa-info-circle"></i></div>
 										</div>
 									</th:block>
-									<th:block th:if="${eventoWrapper.evento.isEventoDaPianoFormativo()}">
+									<th:block th:if="${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')}">
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
 											<div th:text="${eventoWrapper.evento.obiettivoNazionale.nome}" class="value-edit"></div>
 										</div>
@@ -761,7 +761,7 @@
 							<div class="col-xs-12 section-index" id="section-2" th:fragment="section-2">
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
@@ -843,7 +843,7 @@
 							<div class="col-xs-12 section-index" id="section-3" th:fragment="section-3">
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
-										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo()},
+										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
 

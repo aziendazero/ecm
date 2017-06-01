@@ -312,7 +312,7 @@ public class AccountController{
 			}
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("POST /user/resetPassword"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.email_non_trovata", "error"));
 		}
 		return "redirect:/login";
 	}

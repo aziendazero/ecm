@@ -51,7 +51,7 @@
 												role="tabpanel" th:attr="aria-labelledby=${'heading'+pianoFormativo.annoPianoFormativo}">
 												<div class="panel-body">
 
-													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)} ? 'edit' : 'show', true, null)"></th:block>
+													<th:block th:include="pianoFormativo/pianoFormativoFragment :: pianoFormativo(pianoFormativoInner, null, ${(pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)) || #authentication.principal.isSegreteria()} ? 'edit' : 'show', true, null)"></th:block>
 
 													<th:block th:if="${pianoFormativo.pianoModificabile and !#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}">
 														<a th:text="#{label.aggiungi_evento}" class="btn btn-primary with-margin-top" th:href="@{|/provider/${pianoFormativo.provider.id}/pianoFormativo/${pianoFormativo.id}/evento/new|}"></a>
@@ -149,7 +149,7 @@
 						/* "ordering" : false, */
 						"autoWidth": false,
 						"columnDefs": [
-							{ "targets": 1, "width": "210px", "sClass": "center" },
+							{ "targets": 3, "width": "210px", "sClass": "center" },
 						],
 					});
 
