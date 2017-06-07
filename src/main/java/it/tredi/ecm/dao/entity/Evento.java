@@ -418,13 +418,14 @@ public class Evento extends BaseEntity {
 	*	2) sponsor non ancora caricati
 	*	3) siamo ancora entro i 90 gg dalla fine dell'evento
 	*	4) passati i 90 gg -> non è più possibile caricare gli sponsor
+	*   5) la segreteria può sempre
 	*/
 	public boolean canDoUploadSponsor(){
 		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
 			return false;
 
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
-			if(dataScadenzaInvioRendicontazione != null && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione))
+			if( (dataScadenzaInvioRendicontazione != null && (sponsorUploaded == null || !sponsorUploaded.booleanValue()) && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione)) || Utils.getAuthenticatedUser().isSegreteria())
 				return true;
 		}
 
