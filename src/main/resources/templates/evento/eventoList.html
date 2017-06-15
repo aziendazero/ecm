@@ -284,7 +284,7 @@
 										</div>
 									</td>
 									<td class="text-full-length" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">
-										<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
+										<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit() or #authentication.principal.isSegreteria()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
 										<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalScadenze(${evento.id}, '${evento.dataScadenzaPagamento}', '${evento.dataScadenzaInvioRendicontazione}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
 										<!-- TODO DISABILITATO PER LA PRODUZIONE -->
 										<a class="btn btn-success btn-min-icon-width" th:if="${evento.canDoPagamento()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>

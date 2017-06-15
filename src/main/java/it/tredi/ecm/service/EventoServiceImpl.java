@@ -462,8 +462,8 @@ public class EventoServiceImpl implements EventoService {
 			if (ultimaRendicontazioneInviata != null && ultimaRendicontazioneInviata.getStato().equals(RendicontazioneInviataStatoEnum.PENDING)) //se ultima elaborazione pendente -> invio non concesso
 				throw new Exception("error.elaborazione_pendente");
 
-			String reportFileName = evento.getReportPartecipantiXML().getNomeFile();
-			if (!reportFileName.trim().toUpperCase().endsWith(".P7M")) { //file non firmato -> invio non concesso
+			String reportFileName = evento.getReportPartecipantiXML().getNomeFile().trim(); //il cogeaps non accetta spazi
+			if (!reportFileName.toUpperCase().endsWith(".P7M")) { //file non firmato -> invio non concesso
 				throw new Exception("error.file_non_firmato");
 			}
 
@@ -1730,6 +1730,12 @@ public class EventoServiceImpl implements EventoService {
 				params.put("pagato", wrapper.getPagato().booleanValue());
 			}
 
+			//SPONSOR
+			if(wrapper.getSponsorizzato() != null){
+				query = Utils.QUERY_AND(query, "e.eventoSponsorizzato = :sponsorizzato");
+				params.put("sponsorizzato", wrapper.getSponsorizzato().booleanValue());
+			}
+
 			//DOCENTI
 			if(wrapper.getDocenti() != null && !wrapper.getDocenti().isEmpty()) {
 				Set<Long> idEventi = new HashSet<Long>();
@@ -1984,22 +1990,22 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.countAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE, nonConvenzionale);
 	}
 
-	@Override
-	public boolean checkIfRESAndWorkshopOrCorsoAggiornamentoAndInterettivoSelected(Evento evento) {
-		if(evento instanceof EventoRES) {
-			EventoRES eventoRes = (EventoRES) evento;
-			if(eventoRes.getTipologiaEventoRES() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
-					|| eventoRes.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO) {
-				for(ProgrammaGiornalieroRES prog : eventoRes.getProgramma()) {
-					for(DettaglioAttivitaRES dettaglio : prog.getProgramma()) {
-						if(!dettaglio.isExtraType() && dettaglio.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA)
-							return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
+//	@Override
+//	public boolean checkIfRESAndWorkshopOrCorsoAggiornamentoAndInterettivoSelected(Evento evento) {
+//		if(evento instanceof EventoRES) {
+//			EventoRES eventoRes = (EventoRES) evento;
+//			if(eventoRes.getTipologiaEventoRES() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO
+//					|| eventoRes.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO) {
+//				for(ProgrammaGiornalieroRES prog : eventoRes.getProgramma()) {
+//					for(DettaglioAttivitaRES dettaglio : prog.getProgramma()) {
+//						if(!dettaglio.isExtraType() && dettaglio.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA)
+//							return true;
+//					}
+//				}
+//			}
+//		}
+//		return false;
+//	}
 
 	@Override
 	public boolean checkIfFSCAndTrainingAndTutorPartecipanteRatioAlert(Evento evento) {

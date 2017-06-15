@@ -436,7 +436,7 @@
 								</div>
 								<!-- START - DATA INIZIO -->
 								<div class="item form-group">
-									<label class="control-label col-sm-2 col-xs-11" for="dataInizio">
+									<label class="control-label col-sm-2 col-xs-12" for="dataInizio">
 										<span th:text="#{label.da}">Data inizio</span>
 									</label>
 									<div class="col-sm-4 col-xs-12 input-group datapick">
@@ -446,7 +446,7 @@
 				 							<i class="glyphicon glyphicon-calendar"></i>
 										</span>
 									</div>
-									<label class="control-label col-sm-2 col-xs-11" for="dataInizio">
+									<label class="control-label col-sm-1 col-xs-12" for="dataInizio">
 										<span th:text="#{label.a}">Data inizio</span>
 									</label>
 									<div class="col-sm-4 col-xs-12 input-group datapick">
@@ -468,7 +468,7 @@
 
 								<!-- START - DATA FINE -->
 								<div class="item form-group">
-									<label class="control-label col-sm-2 col-xs-11" for="dataFine">
+									<label class="control-label col-sm-2 col-xs-12" for="dataFine">
 										<span th:text="#{label.da}">Da</span>
 									</label>
 									<div class="col-sm-4 col-xs-12 input-group datapick">
@@ -478,7 +478,7 @@
 				 							<i class="glyphicon glyphicon-calendar"></i>
 										</span>
 									</div>
-									<label class="control-label col-sm-2 col-xs-11" for="dataFine">
+									<label class="control-label col-sm-1 col-xs-12" for="dataFine">
 										<span th:text="#{label.a}">A</span>
 									</label>
 									<div class="col-sm-4 col-xs-12 input-group datapick">
@@ -499,7 +499,7 @@
 									</label>
 								</div>
 								<div class="item form-group">
-									<label class="control-label col-sm-2 col-xs-11" for="dataInizio">
+									<label class="control-label col-sm-2 col-xs-12" for="dataInizio">
 										<span th:text="#{label.da}">Data inizio</span>
 									</label>
 									<div class="col-sm-4 col-xs-12 input-group datapick">
@@ -509,7 +509,7 @@
 				 							<i class="glyphicon glyphicon-calendar"></i>
 										</span>
 									</div>
-									<label class="control-label col-sm-2 col-xs-11" for="dataInizio">
+									<label class="control-label col-sm-1 col-xs-12" for="dataInizio">
 										<span th:text="#{label.a}">Data inizio</span>
 									</label>
 									<div class="col-sm-4 col-xs-12 input-group datapick">
@@ -539,6 +539,29 @@
 											<label>
 												<input type="radio" class="flat pagamento" th:field="${ricercaEventoWrapper.pagato}" th:value="${false}"/>
 												<span th:text="#{label.non_pagato}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<!-- SPONSOR -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<h2 th:text="#{label.sponsor}"></h2>
+									</label>
+								</div>
+
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="sponsor"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="sponsor">
+										<div class="checkbox">
+											<label>
+												<input type="radio" class="flat sponsor" th:field="${ricercaEventoWrapper.sponsorizzato}" th:value="${true}"/>
+												<span th:text="#{label.sponsorizzato}"></span>
+											</label>
+											<label>
+												<input type="radio" class="flat sponsor" th:field="${ricercaEventoWrapper.sponsorizzato}" th:value="${false}"/>
+												<span th:text="#{label.non_sponsorizzato}"></span>
 											</label>
 										</div>
 									</div>

@@ -53,6 +53,7 @@ import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PagDovutiLogRepository;
 import it.tredi.ecm.dao.repository.PagPagatiLogRepository;
+import it.tredi.ecm.exception.PagInCorsoException;
 import it.tredi.ecm.service.bean.EngineeringProperties;
 import it.tredi.ecm.utils.HttpAuthenticateProxy;
 import it.veneto.regione.pagamenti.ente.FaultBean;
@@ -195,6 +196,11 @@ public class EngineeringServiceImpl implements EngineeringService {
 	public String pagaEvento(Long idEvento, String backURL) throws Exception {
 
 		Evento e = eventoRepository.findOne(idEvento);
+
+		//tiommi 2017-06-13
+		if(e.getPagInCorso() != null && e.getPagInCorso().booleanValue()) {
+			throw new PagInCorsoException("Il pagamento risulta già in corso!");
+		}
 
 		Pagamento p = pagamentoService.getPagamentoByEvento(e);
 		if (p == null) {

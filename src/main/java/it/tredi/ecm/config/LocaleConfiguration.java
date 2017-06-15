@@ -4,6 +4,8 @@ import java.util.Locale;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -18,14 +20,14 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter{
 	    slr.setDefaultLocale(Locale.ITALIAN);
 	    return slr;
 	}
-	
+
 	@Bean
 	public LocaleChangeInterceptor localeChangeInterceptor() {
 	    LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
 	    lci.setParamName("lang");
 	    return lci;
 	}
-	
+
 	@Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());

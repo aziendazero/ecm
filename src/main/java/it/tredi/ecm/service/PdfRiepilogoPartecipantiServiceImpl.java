@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -380,7 +382,11 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	}
 
 	private void addTablePartecipanti(PdfRiepilogoPartecipantiInfo pdfRiepilogoPartecipantiInfo, PdfPTable table) {
-		for(PdfPartecipanteInfo partecipante : pdfRiepilogoPartecipantiInfo.getPartecipanti()) {
+		//ordinamento per cognome
+		List<PdfPartecipanteInfo> listPartecipanti = new ArrayList<PdfPartecipanteInfo>();
+		listPartecipanti.addAll(pdfRiepilogoPartecipantiInfo.getPartecipanti());
+		listPartecipanti.sort((p1, p2) -> p1.getCognome().compareTo(p2.getCognome()));
+		for(PdfPartecipanteInfo partecipante : listPartecipanti) {
 			addCellSubTable(partecipante.getNome(), table);
 			addCellSubTable(partecipante.getCognome(), table);
 			addCellSubTable(partecipante.getCodiceFiscale(), table);

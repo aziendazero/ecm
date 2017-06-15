@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +58,7 @@ import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.dao.entity.Partner;
@@ -80,6 +82,7 @@ import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.exception.PagInCorsoException;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AlertEmailService;
 import it.tredi.ecm.service.AnagraficaEventoService;
@@ -108,7 +111,7 @@ import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
 import it.tredi.ecm.web.validator.ScadenzeEventoValidator;
 
 @Controller
-@SessionAttributes({"eventoWrapper","eventoWrapperRendiconto", "eventoList", "returnLink"})
+@SessionAttributes({"eventoWrapper","eventoWrapperRendiconto", "eventoList", "providerId", "returnLink"})
 public class EventoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoController.class);
 
@@ -245,7 +248,7 @@ public class EventoController {
 			HttpServletRequest request, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
 		try {
-			if(model.asMap().get("eventoList") == null)
+			if(model.asMap().get("eventoList") == null || !Objects.equals(providerId, model.asMap().get("providerId")))
 				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
 			return goToList(model, providerId, request);
 		}
@@ -420,13 +423,13 @@ public class EventoController {
 					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 					return EDIT;
 				}
-				else if (eventoService.checkIfRESAndWorkshopOrCorsoAggiornamentoAndInterettivoSelected(evento)) {
-					//va notificato che si stanno inserendo metodologie didattiche interattive (workshop)
-					//e che il rapporto tutor docenti dovrebbe essere 1 a 25 massimo
-					model.addAttribute("RESWorkshopInterattivo", true);
-					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
-					return EDIT;
-				}
+//				else if (eventoService.checkIfRESAndWorkshopOrCorsoAggiornamentoAndInterettivoSelected(evento)) {
+//					//va notificato che si stanno inserendo metodologie didattiche interattive (workshop)
+//					//e che il rapporto tutor docenti dovrebbe essere 1 a 25 massimo
+//					model.addAttribute("RESWorkshopInterattivo", true);
+//					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+//					return EDIT;
+//				}
 				else if (eventoService.checkIfFSCAndTrainingAndTutorPartecipanteRatioAlert(evento)) {
 					//va notificato che si stanno inserendo un numero di partecipanti superiore a quello seguibile dai tutor
 					//il rapporto tutor partecipanti dovrebbe essere 1 a 5 massimo
@@ -437,7 +440,8 @@ public class EventoController {
 				else {
 					evento.setStato(EventoStatoEnum.VALIDATO);
 					evento.setValidatorCheck(true);
-					evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
+					if(evento.getDataScadenzaInvioRendicontazione() == null)
+						evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 					eventoService.save(evento);
 					updateEventoList(evento.getId(), session);
 					alertEmailService.creaAlertForEvento(evento);
@@ -472,7 +476,8 @@ public class EventoController {
 
 			evento.setStato(EventoStatoEnum.VALIDATO);
 			evento.setValidatorCheck(true);
-			evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
+			if(evento.getDataScadenzaInvioRendicontazione() == null)
+				evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 			eventoService.save(evento);
 			updateEventoList(evento.getId(), session);
 			alertEmailService.creaAlertForEvento(evento);
@@ -503,7 +508,11 @@ public class EventoController {
 			//edit dell'evento
 			Evento evento = eventoService.getEvento(eventoId);
 			if(evento instanceof EventoFSC)
-				((EventoFSC) evento).getFasiAzioniRuoli().size(); //workarounda pure Barduz
+				for(FaseAzioniRuoliEventoFSCTypeA fase : ((EventoFSC) evento).getFasiAzioniRuoli())
+					for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()) {
+						azione.getMetodiDiLavoro().size(); //tiommi 2017-06-15 fix al workaround (prevent lazy initialization ex)
+						azione.getRuoli().size();
+					}
 			if(evento instanceof EventoFAD)
 				((EventoFAD) evento).getProgrammaFAD().size(); //workarounda pure Barduz
 			EventoWrapper wrapper = prepareEventoWrapperEdit(evento, true);
@@ -1651,12 +1660,17 @@ public class EventoController {
 			 					HttpServletRequest request, Model model, RedirectAttributes redirectAttrs){
 		try{
 			String rootUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
-			String url = engineeringService.pagaEvento(eventoId, rootUrl + request.getContextPath() + "/provider/" + providerId + "/evento/list");
-
-			if (StringUtils.hasText(url)) {
-				return "redirect:" + url;
+			try {
+				String url = engineeringService.pagaEvento(eventoId, rootUrl + request.getContextPath() + "/provider/" + providerId + "/evento/list");
+				if (StringUtils.hasText(url)) {
+					return "redirect:" + url;
+				}
 			}
-
+			catch (PagInCorsoException pagInCorsoEx) {
+				redirectAttrs.addFlashAttribute("message", new Message("message.attenzione", "message.pagamento_gia_in_corso", "warning"));
+				LOGGER.error(Utils.getLogMessage(pagInCorsoEx.getMessage()),pagInCorsoEx);
+				return "redirect:/provider/"+providerId+"/evento/list";
+			}
 			return "redirect:/provider/"+providerId+"/evento/list";
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -1769,6 +1783,8 @@ public class EventoController {
 
 			if(wrapper.getProviderId() != null){
 				wrapper.setCampoIdProvider(wrapper.getProviderId());
+				//assicura di non fare il refresh della lista per gli utenti Provider
+				redirectAttrs.addFlashAttribute("providerId", wrapper.getProviderId());
 				returnRedirect = "redirect:/provider/" + wrapper.getProviderId() + "/evento/list";
 			}else{
 				returnRedirect = "redirect:/evento/list";
@@ -1800,7 +1816,8 @@ public class EventoController {
 	@RequestMapping(value = "/evento/{eventoId}/proroga/scadenze", method = RequestMethod.POST)
 	public String prorogaScadenzeEvento(@PathVariable("eventoId") Long eventoId,
 			@ModelAttribute("scadenzeEventoWrapper") ScadenzeEventoWrapper wrapper,
-			BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
+			BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request,
+			HttpSession session){
 		LOGGER.info(Utils.getLogMessage("POST /evento/"+eventoId+"/proroga/scadenze"));
 		try {
 			scadenzeEventoValidator.validate(wrapper, result, "");
@@ -1813,6 +1830,7 @@ public class EventoController {
 			else {
 				eventoService.updateScadenze(eventoId, wrapper);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.scadenze_evento_aggiornate", "success"));
+				updateEventoList(eventoId, session);
 				return "redirect:"+wrapper.getReturnLink();
 			}
 		}catch (Exception ex) {

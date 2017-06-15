@@ -68,6 +68,9 @@ public class RicercaEventoWrapper {
 	/* Info relative al pagamento del provider */
 	private Boolean pagato;
 
+	/* Info relative allo sponsor */
+	private Boolean sponsorizzato;
+
 	//campo non di ricerca ma il solito id che mettiamo in hidden per gestire il form
 	private Long providerId;
 

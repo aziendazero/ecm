@@ -37,9 +37,11 @@ import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
@@ -61,6 +63,7 @@ public class EventoValidator {
 	@Autowired private EventoService eventoService;
 
 	private Set<String> risultatiAttesiUtilizzati;
+	private boolean alertResDocentiPartecipanti = false;
 
 	public void validate(Object target, EventoWrapper wrapper, Errors errors, String prefix) throws Exception{
 		Evento evento = (Evento) target;
@@ -526,7 +529,6 @@ public class EventoValidator {
 			}
 		}
 
-
 		/* TIPOLOGIA EVENTO (campo obbligatorio)
 		 * selectpicker (influenza altri campi, ma il controllo su questo campo è banale)
 		 * */
@@ -605,6 +607,7 @@ public class EventoValidator {
 		 * stesso numero delle date (gestito lato interfaccia)
 		 * devono avere tutti i campi inseriti
 		 * N.B. creo un set di risultati attesi per verificare dopo il ciclo del programma se sono stati utilizzati tutti
+		 * setto la variabile boolean globale per il controllo delle metodologie interattive per WORKSHOP/SEMINARIO e CORSO DI AGGIORNAMENTO (ratio 1/25)
 		 * */
 		risultatiAttesiUtilizzati = new HashSet<String>();
 		if(evento.getProgramma() == null || evento.getProgramma().isEmpty())
@@ -619,7 +622,7 @@ public class EventoValidator {
 						break;
 					}
 				}
-				validateProgrammaRES(pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEventoRES());
+				validateProgrammaRES(pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEventoRES(), evento.getNumeroPartecipanti());
 			}
 		}
 
@@ -1232,7 +1235,7 @@ public class EventoValidator {
 	}
 
 	//validate ProgrammaRES
-	private void validateProgrammaRES(ProgrammaGiornalieroRES programma, Errors errors, String prefix, TipologiaEventoRESEnum tipologiaEvento){
+	private void validateProgrammaRES(ProgrammaGiornalieroRES programma, Errors errors, String prefix, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti){
 
 		//data (gratis, non è un dato che può inseririre l'utente, ma viene generata
 		//all'inserimento delle date di inzio, fine e intermedie
@@ -1264,7 +1267,7 @@ public class EventoValidator {
 			boolean atLeastOneAttivita = false; //controllo che non siano state inserite solo pause
 			boolean atLeastOneErrorDettaglioAttivita = false;
 			for(DettaglioAttivitaRES dar : programma.getProgramma()) {
-				boolean hasError = validateDettaglioAttivitaRES(dar, tipologiaEvento);
+				boolean hasError = validateDettaglioAttivitaRES(dar, tipologiaEvento, numeroPartecipanti);
 				if(hasError) {
 					errors.rejectValue(prefix + "programma["+counter+"]", "");
 					atLeastOneErrorDettaglioAttivita = true;
@@ -1273,7 +1276,11 @@ public class EventoValidator {
 					atLeastOneAttivita = true;
 				counter++;
 			}
-			if(atLeastOneErrorDettaglioAttivita)
+			if(alertResDocentiPartecipanti) {
+				errors.rejectValue(prefix + "programma", "error.ratio_metodologie_interattive_res");
+				alertResDocentiPartecipanti = false;
+			}
+			else if(atLeastOneErrorDettaglioAttivita)
 				errors.rejectValue(prefix + "programma", "error.campi_mancanti_dettaglio_attivita");
 			else if(!atLeastOneAttivita)
 				errors.rejectValue(prefix + "programma", "error.solo_pause_programma_res");
@@ -1281,7 +1288,7 @@ public class EventoValidator {
 	}
 
 	//validate DettaglioAttivita del ProgrammaRES
-	private boolean validateDettaglioAttivitaRES(DettaglioAttivitaRES dettaglio, TipologiaEventoRESEnum tipologiaEvento){
+	private boolean validateDettaglioAttivitaRES(DettaglioAttivitaRES dettaglio, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti){
 
 		//per prima cose se ho un risultato atteso lo aggiungo al set
 		risultatiAttesiUtilizzati.add(dettaglio.getRisultatoAtteso());
@@ -1303,12 +1310,26 @@ public class EventoValidator {
 				return true;
 			if(dettaglio.getDocenti() == null || dettaglio.getDocenti().isEmpty())
 				return true;
+			Set<PersonaEvento> docentiTitolariDettaglio = new HashSet<PersonaEvento>();
+			for(PersonaEvento docente : dettaglio.getDocenti()) {
+				if(docente.getTitolare().equalsIgnoreCase("titolare"))
+					docentiTitolariDettaglio.add(docente);
+			}
 			if(dettaglio.getObiettivoFormativo() == null)
 				return true;
 			if(dettaglio.getMetodologiaDidattica() == null)
 				return true;
-
-			System.out.println(dettaglio.getRisultatoAtteso());
+			//tiommi 2017-06-12 : modifica controllo res
+			//controllare che sia rispettato il vincolo 1 / 25 dei docenti TITOLARI / partecipanti
+			// N.B solo per gli eventi di tipo WORKSHOP/SEMINARIO o CORSO DI AGGIORNAMENTO
+			if(dettaglio.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA &&
+					(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO ||
+					tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO) &&
+					numeroPartecipanti != null &&
+					(numeroPartecipanti.intValue() > (docentiTitolariDettaglio.size() * 25))) {
+				alertResDocentiPartecipanti = true;
+				return true;
+			}
 
 			//controllo per eventi non di tipolgia CONVEGNO_CONGRESSO [ 1) ]
 			if(tipologiaEvento != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {

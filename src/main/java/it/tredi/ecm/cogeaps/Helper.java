@@ -32,6 +32,7 @@ import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.pdf.PdfPartecipanteInfo;
 import it.tredi.ecm.pdf.PdfRiepilogoPartecipantiInfo;
@@ -79,7 +80,14 @@ public class Helper {
 		dbEventoDataMap.put("num_part", Integer.toString(evento.getNumeroPartecipanti()));
 		String cod_tipologia_form = "-1";
 		if (evento instanceof EventoFSC) { //FSC
-			cod_tipologia_form = Integer.toString(((EventoFSC)evento).getTipologiaEventoFSC().getId());
+			//tiommi 15/06/2017
+			//old -> cod_tipologia_form = Integer.toString(((EventoFSC)evento).getTipologiaEventoFSC().getId());
+			//new
+			if(((EventoFSC) evento).getTipologiaEventoFSC() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO)
+				cod_tipologia_form = "7";
+			else
+				cod_tipologia_form = Integer.toString(((EventoFSC)evento).getTipologiaEventoFSC().getId());
+			//end
 		}
 		else if (evento instanceof EventoRES) { //RES
 			//tiommi 22/05/2017

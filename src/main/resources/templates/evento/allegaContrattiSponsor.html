@@ -81,8 +81,8 @@
 											<div th:unless="${sponsor.sponsorFile != null}" th:text="#{label.contratto_da_inserire}" class="danger"></div>
 										</td>
 										<td>
-											<a th:unless="${sponsor.sponsorFile != null}" class="btn btn-table btn-success" th:onclick="'openModalContrattoSponsor(' + ${sponsor.id} + ', \'' + ${sponsor.name} + '\', \'new\')'" th:text="#{label.inserisci_contratto}"></a>
-											<a th:if="${sponsor.sponsorFile != null}" class="btn btn-table btn-primary" th:onclick="'openModalContrattoSponsor(' + ${sponsor.id} + ', \'' + ${sponsor.name} + '\', \'edit\')'" th:text="#{label.modifica_contratto}"></a>
+											<a th:unless="${sponsor.sponsorFile != null}" class="btn btn-table btn-success" th:onclick="|openModalContrattoSponsor(${sponsor.id}, '${#strings.replace(sponsor.name, &quot;'&quot;, &quot;\'&quot;)}', 'new')|" th:text="#{label.inserisci_contratto}"></a>
+											<a th:if="${sponsor.sponsorFile != null}" class="btn btn-table btn-primary" th:onclick="|openModalContrattoSponsor(${sponsor.id}, '${#strings.replace(sponsor.name, &quot;'&quot;, &quot;\'&quot;)}', 'edit')|" th:text="#{label.modifica_contratto}"></a>
 										</td>
 									</th:block>
 								</tr>

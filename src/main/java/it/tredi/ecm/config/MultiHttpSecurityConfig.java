@@ -144,7 +144,7 @@ public class MultiHttpSecurityConfig {
 
         @Override
         public void configure(WebSecurity web) throws Exception {
-             web.ignoring().antMatchers("/", "/gentella/**", "/bootstrap/**", "/shared/**", "/main", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**");
+             web.ignoring().antMatchers("/", "favicon.ico", "/images/**", "/gentella/**", "/bootstrap/**", "/shared/**", "/main", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**");
         }
     }
 
@@ -182,7 +182,7 @@ public class MultiHttpSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests()
-             .antMatchers("/j_spring_cas_security_check", "/", "/bootstrap/**", "/crlcu-multiselect/**", "/gentella/**", "/engineering/**", "/clockpicker/**", "/shared/**", "/main", "/providerRegistration", "/confirmRegistration", "/user/resetPassword", "/file/upload", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**", "/workflow/**","/cas/**")
+             .antMatchers("/j_spring_cas_security_check", "/", "favicon.ico", "/images/**", "/bootstrap/**", "/crlcu-multiselect/**", "/gentella/**", "/engineering/**", "/clockpicker/**", "/shared/**", "/main", "/providerRegistration", "/confirmRegistration", "/user/resetPassword", "/file/upload", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**", "/workflow/**","/cas/**")
              	.permitAll()
              .anyRequest().authenticated()
              .and()
@@ -220,7 +220,7 @@ public class MultiHttpSecurityConfig {
 
         @Override
         public void configure(WebSecurity web) throws Exception {
-             web.ignoring().antMatchers("/", "/gentella/**", "/bootstrap/**", "/shared/**", "/main", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**");
+             web.ignoring().antMatchers("/", "/gentella/**", "favicon.ico", "/images/**", "/bootstrap/**", "/shared/**", "/main", "/spinJS/**", "/backToTop/**", "/bootstrapSelect/**");
         }
     }
 }

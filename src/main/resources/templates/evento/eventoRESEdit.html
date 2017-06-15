@@ -9,26 +9,26 @@
 
 		<div class="x_content">
 
-			<div th:if="${RESWorkshopInterattivo != null and RESWorkshopInterattivo == true}" id="modale-alert-interattivi" class="modal fade modal-alert" data-model-index="1" role="dialog">
-				<div class="modal-dialog modal-md">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
-							</button>
-							<h4 class="modal-title" id="myModalLabel1" th:text="#{label.richiesta_conferma}">Richiesta di conferma</h4>
-						</div>
-						<div class="modal-body">
-							<div>
-								<label class="value" th:text="#{label.alert_metodologie_interattive_res}"></label>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-success pull-right" th:text="#{label.salva}" onclick="submitConfirm()"></button>
-							<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
-						</div>
-					</div>
-				</div>
-			</div>
+<!-- 			<div th:if="${RESWorkshopInterattivo != null and RESWorkshopInterattivo == true}" id="modale-alert-interattivi" class="modal fade modal-alert" data-model-index="1" role="dialog"> -->
+<!-- 				<div class="modal-dialog modal-md"> -->
+<!-- 					<div class="modal-content"> -->
+<!-- 						<div class="modal-header"> -->
+<!-- 							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span> -->
+<!-- 							</button> -->
+<!-- 							<h4 class="modal-title" id="myModalLabel1" th:text="#{label.richiesta_conferma}">Richiesta di conferma</h4> -->
+<!-- 						</div> -->
+<!-- 						<div class="modal-body"> -->
+<!-- 							<div> -->
+<!-- 								<label class="value" th:text="#{label.alert_metodologie_interattive_res}"></label> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<div class="modal-footer"> -->
+<!-- 							<button type="button" class="btn btn-success pull-right" th:text="#{label.salva}" onclick="submitConfirm()"></button> -->
+<!-- 							<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
 
 			<!-- finestra modale di aggiunta attivitaRES a programma del Giorno -->
 			<div id="add-attivitaRES-modal" class="modal fade modal-add-attivitaRES" data-model-index="4" role="dialog">
@@ -1565,8 +1565,8 @@
 
 					initAll();
 
-					if([[${RESWorkshopInterattivo != null and RESWorkshopInterattivo == true}]])
-						$("#modale-alert-interattivi").modal("show");
+// 					if([[${RESWorkshopInterattivo != null and RESWorkshopInterattivo == true}]])
+// 						$("#modale-alert-interattivi").modal("show");
 
 				});
 
