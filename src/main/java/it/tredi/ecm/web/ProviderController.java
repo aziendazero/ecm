@@ -588,7 +588,7 @@ public class ProviderController {
 
 	@RequestMapping(value = "/provider/ricerca", method = RequestMethod.POST)
 	public String executeRicercaProvider(@ModelAttribute("ricercaProviderWrapper") RicercaProviderWrapper wrapper,
-									BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
+			BindingResult result, RedirectAttributes redirectAttrs, Model model, HttpServletRequest request){
 		LOGGER.info(Utils.getLogMessage("POST /provider/ricerca"));
 		try {
 
@@ -614,8 +614,8 @@ public class ProviderController {
 
 	@RequestMapping(value = "/provider/{providerId}/impostazioni/update", method = RequestMethod.POST)
 	public String updateImpostazioniProvider(@PathVariable Long providerId,
-			@ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper,
-			@ModelAttribute("providerList") Set<Provider> providerList, BindingResult result, RedirectAttributes redirectAttrs,
+			@ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper, BindingResult result,
+			@ModelAttribute("providerList") Set<Provider> providerList, RedirectAttributes redirectAttrs,
 			HttpSession session, Model model) {
 		try {
 			impostazioniProviderValidator.validate(wrapper, result, "");
@@ -641,8 +641,8 @@ public class ProviderController {
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping(value = "/provider/{providerId}/blocca", method = RequestMethod.POST)
 	public String bloccaProvider(@PathVariable Long providerId, @ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper,
-			@ModelAttribute("providerList") Set<Provider> providerList, HttpSession session,
-			BindingResult result, RedirectAttributes redirectAttrs, Model model) {
+			BindingResult result, HttpSession session, RedirectAttributes redirectAttrs, Model model,
+			@ModelAttribute("providerList") Set<Provider> providerList) {
 		try {
 			impostazioniProviderValidator.validateBloccoProvider(wrapper, result, "");
 			if(result.hasErrors()) {

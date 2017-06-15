@@ -117,4 +117,6 @@
 
 	<include file="20170525_001_operatore_protocollo.xml" relativeToChangelogFile="true"/>
 
+	<include file="20170615_001_report_ritardi.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>
