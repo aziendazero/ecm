@@ -120,10 +120,13 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Override
 	public boolean isRelazioneAnnualeInseritaAnnoCorrente(Long providerId) {
 		int annoCorrente = LocalDate.now().getYear();
-		int count = relazioneAnnualeRepository.countAllByProviderIdAndAnnoRiferimento(providerId, annoCorrente);
-		if(count > 0)
-			return true;
-		else
-			return false;
+		//tiommi 2017-06-15
+		Set<RelazioneAnnuale> setRelazioni = relazioneAnnualeRepository.findAllByProviderIdAndAnnoRiferimento(providerId, annoCorrente);
+		for (RelazioneAnnuale ra : setRelazioni) {
+			if(!ra.isBozza())
+				return true;
+		}
+		//nessuna relazione annuale non in bozza trovata
+		return false;
 	}
 }

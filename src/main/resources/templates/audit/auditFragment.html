@@ -38,7 +38,7 @@
 								<div th:if="${prop.previousAuditObjectInfo != null}"><i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${prop.previousAuditObjectInfo.id}|}">Scarica File</a></div>
 							  </th:block>
 							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).ENTITY}">
-								<div th:if="${prop.previousAuditObjectInfo != null}"><a th:text="${prop.previousAuditObjectInfo.entity + ' (' + prop.previousAuditObjectInfov.id + ')'}" th:href="@{|/audit/entity/${prop.previousAuditObjectInfo.entity}/entityId/${prop.previousAuditObjectInfo.id}|}">Mostra</a></div>
+								<div th:if="${prop.previousAuditObjectInfo != null}"><a th:text="${prop.previousAuditObjectInfo.entity + ' (' + prop.previousAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${prop.previousAuditObjectInfo.entity}/entityId/${prop.previousAuditObjectInfo.id}|}">Mostra</a></div>
 							  </th:block>
 							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).VALUEOBJECT}">
 							  <!-- Non dovrebbe verificarsi -->
@@ -92,23 +92,60 @@
 
 			<script th:inline="javascript">
 			/*<![CDATA[*/
+				var table;
 			    $(document).ready(function() {
-					$('#datatable-audit').DataTable( {
+				    table = $('#datatable-audit').DataTable( {
 						"iDisplayLength": 50,
 						//"paging":   false,
 						"order": [[ 2, "desc" ], [ 3, "asc" ]],
 				        columnDefs: [ {
-				          targets: 2,
-				          render: $.fn.dataTable.render.moment('YYYYMMDDHHmmss',  'DD/MM/YYYY HH:mm:ss' )
-				          //,
-				          //orderData: [ 2, 3 ]
-				        } ]
-				      } );
+				        	targets: 2,
+				        	render: $.fn.dataTable.render.moment('YYYYMMDDHHmmss',  'DD/MM/YYYY HH:mm:ss' )
+				        	//,
+				        	//orderData: [ 2, 3 ]
+				       	}],
+				    });
 			    });
-
+			    
+			    function createFilter(searchWord, columns, same) {
+			    	//clean
+			    	ripristinaTable();
+			    	
+			    	console.log("Called: " + searchWord + " columns: " + columns + " flag: " + same);
+			    	
+					//sovrascrive la funzione di cerca, perchè quello schifo funziona solo in AND e a me (ti pareva) serve in OR
+					$.fn.dataTable.ext.search.push(function(
+					    settings,
+					    searchData,
+					    index,
+					    rowData,
+					    counter
+					) {
+					    var val = searchWord.toLowerCase();
+					    for (var i = 0, ien = columns.length; i < ien; i++) {
+					    	if(same) {
+					    		if (searchData[columns[i]].toLowerCase() === val) {
+						      		return true;
+						    	}
+					    	}
+					    	else if (searchData[columns[i]].toLowerCase().indexOf(val) !== -1) {
+					    		console.log("lol");
+					      		return true;
+					    	}
+					    }
+					    return false;
+					});
+					table.draw();
+				}
+			    
+			    //ripristina la datatable della ricerca
+			    function ripristinaTable() {
+			    	$.fn.dataTable.ext.search.pop();
+			    	table.draw();
+			    }
+			    
 			/*]]>*/
 			</script>
-
 		</div>
 	</th:block>
 

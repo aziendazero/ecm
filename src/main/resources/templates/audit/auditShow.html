@@ -16,6 +16,24 @@
 							<a class="btn btn-primary pull-right"
 									th:href="@{__${returnLink}__}"
 									th:text="#{label.indietro}">Indietro</a>
+							<th:block th:switch="${auditArg}">
+								<th:block th:case="provider">
+									<button type="button" onclick="createFilter('Inserimento Relazione Annuale', [3], false);" class="btn btn-primary pull-right" th:text="#{label.filtra_piano_formativo}"></button>
+									<button type="button" onclick="createFilter('Scadenza Inserimento Piano Formativo', [3], false);" class="btn btn-primary pull-right" th:text="#{label.filtra_relazione_annuale}"></button>
+									<button type="button" onclick="ripristinaTable()" class="btn btn-success pull-right" th:text="#{label.ripristina_tabella}"></button>
+								</th:block>
+								<th:block th:case="evento">
+									<button type="button" onclick="createFilter('File', [4,5], false);" class="btn btn-primary pull-right" th:text="#{label.filtra_audit_allegati}"></button>
+									<button type="button" onclick="createFilter('Stato', [3], true);" class="btn btn-primary pull-right" th:text="#{label.filtra_audit_stato_evento}"></button>
+									<button type="button" onclick="createFilter('Pagamento', [3], false);" class="btn btn-primary pull-right" th:text="#{label.filtra_audit_pagamento}"></button>
+									<button type="button" onclick="createFilter('Data scadenza rendicontazione', [3], true);" class="btn btn-primary pull-right" th:text="#{label.filtra_audit_rendicontazione}"></button>
+									<button type="button" onclick="ripristinaTable()" class="btn btn-success pull-right" th:text="#{label.ripristina_tabella}"></button>
+								</th:block>
+								<th:block th:case="accreditamento">
+								
+								</th:block>
+							</th:block>
+									
 						</div>
 						<div class="clearfix"></div>
 					</div>

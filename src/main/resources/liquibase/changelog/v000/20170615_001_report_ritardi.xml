@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170615_001_report_ritardi.xml">
+	<changeSet author="tiommi (generated)" id="1497536954699-1">
+		<createTable tableName="report_ritardi">
+			<column name="id" type="BIGINT">
+				<constraints primaryKey="true" primaryKeyName="report_ritardiPK" />
+			</column>
+			<column name="data_originale" type="date" />
+			<column name="data_proroga" type="date" />
+			<column name="data_rinnovata" type="date" />
+			<column name="motivazione_proroga" type="VARCHAR(255)" />
+			<column name="object_ref_id" type="BIGINT" />
+			<column name="provider_id" type="BIGINT">
+				<constraints nullable="false" />
+			</column>
+			<column name="ritardo" type="BOOLEAN">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+</databaseChangeLog>

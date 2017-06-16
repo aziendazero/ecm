@@ -65,7 +65,7 @@ import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
-import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
+import it.tredi.ecm.dao.enumlist.MotivazioneProrogaEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
@@ -119,6 +119,8 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private PersonaEventoService personaEventoService;
 
 	@Autowired private ObiettivoService obiettivoService;
+	
+	@Autowired private ReportRitardiService reportRitardiService;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -1914,7 +1916,29 @@ public class EventoServiceImpl implements EventoService {
 			throw new Exception("Evento non trovato");
 		}
 		//date scadenza permessi
+		if(evento.getDataScadenzaPagamento() != null &&
+				!evento.getDataScadenzaPagamento().isEqual(wrapper.getDataScadenzaPagamento())) {
+			reportRitardiService.createReport(
+					MotivazioneProrogaEnum.PAGAMENTO_EVENTO,
+					evento.getId(),
+					evento.getDataScadenzaPagamento(),
+					wrapper.getDataScadenzaPagamento(),
+					LocalDate.now(),
+					(evento.getPagato() == null || !evento.getPagato().booleanValue()),
+					evento.getProvider().getId());
+		}
 		evento.setDataScadenzaPagamento(wrapper.getDataScadenzaPagamento());
+		if(evento.getDataScadenzaInvioRendicontazione() != null &&
+				!evento.getDataScadenzaInvioRendicontazione().isEqual(wrapper.getDataScadenzaRendicontazione())) {
+			reportRitardiService.createReport(
+					MotivazioneProrogaEnum.RENDICONTAZIONE_EVENTO,
+					evento.getId(),
+					evento.getDataScadenzaInvioRendicontazione(),
+					wrapper.getDataScadenzaRendicontazione(),
+					LocalDate.now(),
+					(evento.getUltimaRendicontazioneInviata() == null || evento.getUltimaRendicontazioneInviata().getResult() == RendicontazioneInviataResultEnum.ERROR),
+					evento.getProvider().getId());
+		}
 		evento.setDataScadenzaInvioRendicontazione(wrapper.getDataScadenzaRendicontazione());
 
 		save(evento);

@@ -33,6 +33,7 @@ import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.MotivazioneProrogaEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -66,6 +67,8 @@ public class ProviderServiceImpl implements ProviderService {
 	@Autowired private AuditService auditService;
 	@Autowired private AuditReportProviderService auditReportProviderService;
 	@Autowired private RelazioneAnnualeService relazioneAnnualeService;
+	@Autowired private ReportRitardiService reportRitardiService;
+	@Autowired private PianoFormativoService pianoFormativoService;
 
 	@Override
 	public Provider getProvider() {
@@ -607,14 +610,51 @@ public class ProviderServiceImpl implements ProviderService {
 		provider.setCanInsertRelazioneAnnuale(wrapper.getCanInsertRelazioneAnnuale());
 		provider.setMyPay(wrapper.getCanMyPay());
 		//date scadenza permessi
-		if(provider.isCanInsertPianoFormativo())
+		if(provider.isCanInsertPianoFormativo()) {
+			if(provider.getDataScadenzaInsertPianoFormativo() != null &&
+					!provider.getDataScadenzaInsertPianoFormativo().isEqual(wrapper.getDataScadenzaInsertPianoFormativo())) {
+				reportRitardiService.createReport(
+						MotivazioneProrogaEnum.INSERIMENTO_PIANO_FORMATIVO,
+						null,
+						provider.getDataScadenzaInsertPianoFormativo(),
+						wrapper.getDataScadenzaInsertPianoFormativo(),
+						LocalDate.now(),
+						!pianoFormativoService.exist(providerId, LocalDate.now().getYear()),
+						provider.getId());
+			}
 			provider.setDataScadenzaInsertPianoFormativo(wrapper.getDataScadenzaInsertPianoFormativo());
-		if(provider.isCanInsertAccreditamentoStandard())
+		}
+		if(provider.isCanInsertAccreditamentoStandard()) {
+			if(provider.getDataScadenzaInsertAccreditamentoStandard() != null &&
+					!provider.getDataScadenzaInsertAccreditamentoStandard().isEqual(wrapper.getDataScadenzaInsertDomandaStandard())) {
+				reportRitardiService.createReport(
+						MotivazioneProrogaEnum.INSERIMENTO_DOMANDA_STANDARD,
+						null,
+						provider.getDataScadenzaInsertAccreditamentoStandard(),
+						wrapper.getDataScadenzaInsertDomandaStandard(),
+						LocalDate.now(),
+						(provider.getInviatoAccreditamentoStandard() == null || !provider.getInviatoAccreditamentoStandard().booleanValue()),
+						provider.getId());
+			}
 			provider.setDataScadenzaInsertAccreditamentoStandard(wrapper.getDataScadenzaInsertDomandaStandard());
+		}
+		//qua il report non serve
 		if(provider.isCanInsertAccreditamentoProvvisorio())
 			provider.setDataRinnovoInsertAccreditamentoProvvisorio(wrapper.getDataRinnovoInsertDomandaProvvisoria());
-		if(provider.isCanInsertRelazioneAnnuale())
+		if(provider.isCanInsertRelazioneAnnuale()) {
+			if(provider.getDataScadenzaInsertRelazioneAnnuale() != null &&
+					!provider.getDataScadenzaInsertRelazioneAnnuale().isEqual(wrapper.getDataScadenzaInsertRelazioneAnnuale())) {
+				reportRitardiService.createReport(
+						MotivazioneProrogaEnum.INSERIMENTO_RELAZIONE_ANNUALE,
+						null,
+						provider.getDataScadenzaInsertRelazioneAnnuale(),
+						wrapper.getDataScadenzaInsertRelazioneAnnuale(),
+						LocalDate.now(),
+						!relazioneAnnualeService.isRelazioneAnnualeInseritaAnnoCorrente(providerId),
+						provider.getId());
+			}
 			provider.setDataScadenzaInsertRelazioneAnnuale(wrapper.getDataScadenzaInsertRelazioneAnnuale());
+		}
 		//status provider
 		provider.setStatus(wrapper.getStato());
 
