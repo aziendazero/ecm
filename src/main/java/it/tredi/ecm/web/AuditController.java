@@ -122,15 +122,18 @@ public class AuditController {
 			//tiommi 19/05/2017
 			if(entity.contains("Provider")) {
 				model.addAttribute("returnLink", "/provider/list/all");
+				model.addAttribute("auditArg", "provider");
 				model.addAttribute("visualizzazione", " del Registro Operazione del Provider " + entityId);
 			}
 			else if(entity.contains("Evento")) {
 				model.addAttribute("returnLink", "/evento/list");
+				model.addAttribute("auditArg", "evento");
 				Evento evento = eventoService.getEvento(entityId);
 				model.addAttribute("visualizzazione", " del Registro Operazione dell'Evento " + evento.getCodiceIdentificativo());
 			}
 			else if(entity.contains("Accreditamento")) {
 				model.addAttribute("returnLink", "/accreditamento/"+entityId+"/show");
+				model.addAttribute("auditArg", "accreditamento");
 				Accreditamento accreditamento = accreditamentoService.getAccreditamento(entityId);
 				model.addAttribute("visualizzazione", " della Domanda di Accreditamento " + entityId + " del Provider " + accreditamento.getProvider().getId());
 			}

@@ -38,7 +38,7 @@
 								<div th:if="${prop.previousAuditObjectInfo != null}"><i class="fa fa-download"> </i> <a th:text="File" th:href="@{|/file/${prop.previousAuditObjectInfo.id}|}">Scarica File</a></div>
 							  </th:block>
 							  <th:block th:case="${T(it.tredi.ecm.audit.AuditPropertyChangeInfoTypeEnum).ENTITY}">
-								<div th:if="${prop.previousAuditObjectInfo != null}"><a th:text="${prop.previousAuditObjectInfo.entity + ' (' + prop.previousAuditObjectInfov.id + ')'}" th:href="@{|/audit/entity/${prop.previousAuditObjectInfo.entity}/entityId/${prop.previousAuditObjectInfo.id}|}">Mostra</a></div>
+								<div th:if="${prop.previousAuditObjectInfo != null}"><a th:text="${prop.previousAuditObjectInfo.entity + ' (' + prop.previousAuditObjectInfo.id + ')'}" th:href="@{|/audit/entity/${prop.previousAuditObjectInfo.entity}/entityId/${prop.previousAuditObjectInfo.id}|}">Mostra</a></div>
 							  </th:block>
 
 
