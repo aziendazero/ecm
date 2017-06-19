@@ -2,6 +2,7 @@ package it.tredi.ecm.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -102,6 +104,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ErrorsAjaxWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.ModificaOrarioAttivitaWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 import it.tredi.ecm.web.bean.SponsorWrapper;
@@ -252,6 +255,12 @@ public class EventoController {
 				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
 			return goToList(model, providerId, request);
 		}
+		catch (AccreditamentoNotFoundException accreditamentoNotFoundEx) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),accreditamentoNotFoundEx);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.non_risulta_attivo_nessun_accreditamento", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
+			return "redirect:/home";
+		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -260,7 +269,7 @@ public class EventoController {
 		}
 	}
 
-	private String goToList(Model model, Long providerId, HttpServletRequest request) {
+	private String goToList(Model model, Long providerId, HttpServletRequest request) throws AccreditamentoNotFoundException {
 		String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
 		model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
 		model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
@@ -1604,7 +1613,7 @@ public class EventoController {
 	public String modificaAttivita(@PathVariable("target") String target,
 									@PathVariable("addAttivitaTo") String addAttivitaTo,
 									@PathVariable("modificaElemento") Integer modificaElemento,
-											@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+									@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
 			int elementoIndex = Integer.valueOf(modificaElemento).intValue();
@@ -1880,6 +1889,20 @@ public class EventoController {
 
 	private void updateEventoList(Long eventoId, HttpSession session) {
 		updateEventoList(eventoId, session, false);
+	}
+
+	@RequestMapping(value="/provider/{providerId}/evento/{eventoId}/updateOrari", method=RequestMethod.POST)
+	   public String updateOrari(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper,
+			   Model model, RedirectAttributes redirectAttrs,
+			   @RequestBody ModificaOrarioAttivitaWrapper jsonObj) {
+		try{
+			eventoService.updateOrariAttivita(jsonObj, eventoWrapper);
+			return EDIT + " :: attivitaRES";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: attivitaRES";
+		}
 	}
 
 }

@@ -149,8 +149,9 @@ public class EventoValidator {
 			}
 			//se l'evento è un riedizione il numero delle date deve coincidere
 			if(evento.isRiedizione()) {
-				if((!Utils.getAuthenticatedUser().isSegreteria())
-						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
+				if(!Utils.getAuthenticatedUser().isSegreteria()
+						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear())
+						&& evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio()))
 					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida");
 				if(evento instanceof EventoRES) {
 					//numero date da rispettare

@@ -1,7 +1,9 @@
 package it.tredi.ecm.service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +37,7 @@ import it.tredi.ecm.cogeaps.Helper;
 import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagrafeRegionaleCrediti;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
@@ -82,11 +85,13 @@ import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
+import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
+import it.tredi.ecm.web.bean.ModificaOrarioAttivitaWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 import it.tredi.ecm.web.validator.FileValidator;
@@ -119,8 +124,10 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private PersonaEventoService personaEventoService;
 
 	@Autowired private ObiettivoService obiettivoService;
-	
+
 	@Autowired private ReportRitardiService reportRitardiService;
+
+	@Autowired private AccreditamentoService accreditamentoService;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -1127,10 +1134,16 @@ public class EventoServiceImpl implements EventoService {
 
 	//seleziona gli eventi rieditabili
 	@Override
-	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) {
+	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) throws AccreditamentoNotFoundException {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti gli eventi del piano formativo rieditabili per il provider: " + providerId));
-		//mostra tutti gli eventi del provider non in bozza e già iniziati e che finiscono dopo l'inizio dell'anno corrente
-		return eventoRepository.findAllByProviderIdAndStatoNotAndDataInizioBeforeAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, LocalDate.now(), LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1));
+		//mostra tutti gli eventi del provider non in bozza, non cancellati,
+		//non FAD, selezionabili secondo le procedureFormative del provider,
+		//che finiscono dopo l'inizio dell'anno corrente
+		Accreditamento accreditamento = accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
+		Set<ProceduraFormativa> procedureFormative = accreditamento.getDatiAccreditamento().getProcedureFormative();
+		procedureFormative.remove(ProceduraFormativa.FAD);
+
+		return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1));
 	}
 
 	//trovo ultima edizione di un evento con il determinato prefix
@@ -2040,5 +2053,27 @@ public class EventoServiceImpl implements EventoService {
 				return true;
 		}
 		return false;
+	}
+
+	//metodo che aggiorna gli orari delle attività nel wrapper (non nell'evento poichè questi orari devono ancora passare per il validatore)
+	@Override
+	public void updateOrariAttivita(ModificaOrarioAttivitaWrapper orariDescriptor, EventoWrapper eventoWrapper) {
+		//formatto la data
+		LocalTime ora = LocalTime.parse(orariDescriptor.getOra());
+		List<DettaglioAttivitaRES> listaAttivita = eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(orariDescriptor.getProgrammaId()).getProgramma().getProgramma();
+		LocalTime primaAttivitaStart = LocalTime.parse("23:59");
+		//trovo la prima (in distanza temporale) attività
+		for(Long pos : orariDescriptor.getListaRowId()) {
+			DettaglioAttivitaRES da = listaAttivita.get((int) (long) pos);
+			if(primaAttivitaStart.isAfter(da.getOrarioInizio()))
+				primaAttivitaStart = da.getOrarioInizio();
+		}
+		//calcolo i minuti da aggiungere/sottrarre
+		long minutes = Duration.between(primaAttivitaStart, ora).toMinutes();
+		for(Long pos : orariDescriptor.getListaRowId()) {
+			DettaglioAttivitaRES da = listaAttivita.get((int) (long) pos);
+			da.setOrarioInizio(da.getOrarioInizio().plusMinutes(minutes));
+			da.setOrarioFine(da.getOrarioFine().plusMinutes(minutes));
+		}
 	}
 }
