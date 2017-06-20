@@ -449,8 +449,6 @@ public class EventoController {
 				else {
 					evento.setStato(EventoStatoEnum.VALIDATO);
 					evento.setValidatorCheck(true);
-					if(evento.getDataScadenzaInvioRendicontazione() == null)
-						evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 					eventoService.save(evento);
 					updateEventoList(evento.getId(), session);
 					alertEmailService.creaAlertForEvento(evento);
@@ -485,8 +483,6 @@ public class EventoController {
 
 			evento.setStato(EventoStatoEnum.VALIDATO);
 			evento.setValidatorCheck(true);
-			if(evento.getDataScadenzaInvioRendicontazione() == null)
-				evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 			eventoService.save(evento);
 			updateEventoList(evento.getId(), session);
 			alertEmailService.creaAlertForEvento(evento);

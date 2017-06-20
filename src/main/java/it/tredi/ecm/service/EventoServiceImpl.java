@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -139,12 +140,20 @@ public class EventoServiceImpl implements EventoService {
 	@Transactional
 	public void save(Evento evento) {
 		LOGGER.debug("Salvataggio evento");
+		Evento eventoDB = null;
 		if(evento.isNew()) {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
+			evento.handleDateScadenza();
 			eventoRepository.saveAndFlush(evento);
 			evento.buildPrefix();
 		}else{
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + " - Salvataggio"));
+			eventoDB = eventoRepository.getOne(evento.getId());
+			if(!evento.getDataFine().equals(eventoDB.getDataFine()))
+				evento.handleDateScadenza();
+//			W.I.P.
+//			if(existRiedizioniOfEventoId(evento.getId()))
+//				handleSincronizzazioneRiedizioni(evento, eventoDB);
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		evento = eventoRepository.saveAndFlush(evento);
@@ -187,13 +196,59 @@ public class EventoServiceImpl implements EventoService {
 
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
+	}
 
+	//gestione della sincronizzazione ad-hoc delle riedizioni degli eventi DA FINIRE
+	private void handleSincronizzazioneRiedizioni(Evento eventoToSave, Evento eventoDB) {
+		//analizza le differenze da sincronizzare tra le riedizioni/evento padre
+		Map<String, Object> diffMap = populateDiffMap(eventoToSave, eventoDB);
+		//lista degli eventi da sincronizzare
+		Set<Evento> eventiDaAggiornare = getRiedizioniOfEventoId(eventoToSave.getId());
+		//aggiornamento degli eventi a seconda del diff (utilizza la reflection)
+		for(Evento ev : eventiDaAggiornare) {
+			//TODO
+		}
+	}
+
+	//metodo per l'individuazioni dei campi/valori modificati nell'ultimo salvataggio, messi in una mappa
+	//e utilizzati poi la reflection per l'aggiornamento delle altre riedizioni.
+	//ATTENZIONE: i campi presi in considerazione sono solo un piccolo subset dei campi (solo quelli da tenere sincronizzati)
+	private Map<String, Object> populateDiffMap(Evento eventoToSave, Evento eventoDB) {
+		Map<String, Object> diffMap = new HashMap<String, Object>();
+		if(!Objects.equals(eventoToSave.getTitolo(), eventoDB.getTitolo())) {
+			diffMap.put("setTitolo", eventoToSave.getTitolo());
+		}
+		if(!Objects.equals(eventoToSave.getObiettivoNazionale(), eventoDB.getObiettivoNazionale())) {
+			diffMap.put("setObiettivoNazionale", eventoToSave.getObiettivoNazionale());
+		}
+		if(!Objects.equals(eventoToSave.getObiettivoRegionale(), eventoDB.getObiettivoRegionale())) {
+			diffMap.put("setObiettivoRegionale", eventoToSave.getObiettivoRegionale());
+		}
+		if(eventoToSave.getDiscipline().size() != eventoDB.getDiscipline().size() || eventoToSave.getDiscipline().containsAll(eventoDB.getDiscipline())) {
+			diffMap.put("setDiscipline", eventoToSave.getDiscipline());
+		}
+		//le professioni sono aggiornate automaticamente con la modifica delle discipline
+		if(!Objects.equals(eventoToSave.getContenutiEvento(), eventoDB.getContenutiEvento())) {
+			diffMap.put("setContenutiEvento", eventoToSave.getContenutiEvento());
+		}
+		if(!Objects.equals(eventoToSave.getConfermatiCrediti(), eventoDB.getConfermatiCrediti())) {
+			diffMap.put("setConfermatiCrediti", eventoToSave.getConfermatiCrediti());
+		}
+
+
+		if(eventoToSave instanceof EventoRES) {
+
+		}
+		else if (eventoToSave instanceof EventoFSC) {
+
+		}
+		return diffMap;
 	}
 
 	@Override
 	@Transactional
 	public void delete(Long id) {
-		LOGGER.debug("Eliminazione evento:" + id);
+		LOGGER.debug("Eliminazione evento: " + id);
 
 		//controllo se attuazione di un evento del piano formativo
 		Evento evento = getEvento(id);
@@ -2075,5 +2130,16 @@ public class EventoServiceImpl implements EventoService {
 			da.setOrarioInizio(da.getOrarioInizio().plusMinutes(minutes));
 			da.setOrarioFine(da.getOrarioFine().plusMinutes(minutes));
 		}
+	}
+
+	@Override
+	public boolean existRiedizioniOfEventoId(Long eventoId) {
+		int riedizioniCounter = eventoRepository.countRiedizioniOfEventoId(eventoId);
+		return riedizioniCounter > 0;
+	}
+
+	@Override
+	public Set<Evento> getRiedizioniOfEventoId(Long eventoId) {
+		return eventoRepository.getRiedizioniOfEventoId(eventoId);
 	}
 }

@@ -382,9 +382,6 @@ public class Evento extends BaseEntity {
 		}else{
 			throw new Exception("provider non classificato correttamente");
 		}
-
-		if(dataFine != null)
-			setDataScadenzaPagamento(dataFine.plusDays(90));
 	}
 
 	public boolean canEdit(){
@@ -523,5 +520,12 @@ public class Evento extends BaseEntity {
 			return "EventoRES";
 		}
 		throw new Exception("Nuovo tipo di evento: "+ this.proceduraFormativa +" NON gestito");
+	}
+
+	public void handleDateScadenza() {
+		if(dataFine != null) {
+			setDataScadenzaPagamento(dataFine.plusDays(90));
+			setDataScadenzaInvioRendicontazione(dataFine.plusDays(90));
+		}
 	}
 }

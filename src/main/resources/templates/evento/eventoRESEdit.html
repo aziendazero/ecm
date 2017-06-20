@@ -1718,11 +1718,10 @@
 					var ora = $("#orarioSlittamentoBlocco").val();
 					var $table = $(tempTable);
 					var $selezionati = $table.find('tr.selected');
-					console.log($selezionati);
-					console.log(ora);
 					if(!moment(ora, "HH:mm").isValid()) {
 						//errore validazione
 						$("#item-spostamento").addClass('bad');
+						$("#item-spostamento").find(".alert").remove();
 						$("#item-spostamento").append($("<div class='alert col-xs-3'></div>").text([[#{label.orario_non_valido}]]));
 					}
 					else {
@@ -1732,10 +1731,10 @@
 							$v = $(v);
 							listaRowId.push($v.attr("data-row-id"));
 						})
-						console.log(listaRowId.length);
 						if(listaRowId.length == 0) {
 							//errore validazione
 							$("#item-spostamento").addClass('bad');
+							$("#item-spostamento").find(".alert").remove();
 							$("#item-spostamento").append($("<div class='alert col-xs-3'></div>").text([[#{label.nessun_attivita_selezionata}]]));
 						}
 						else {
@@ -1744,18 +1743,17 @@
 							var header = [[${_csrf.headerName}]];
 							var dataSend = JSON.stringify({programmaId: programmaId, listaRowId: listaRowId, ora: ora});
 							$.ajax({
-		                        type: "POST",
-		                        url: url,
-// 		                        dataType : 'json',
-		                		timeout : 100000,
-		                		data: dataSend,
-		                		contentType: "application/json; charset=utf-8",
+								type: "POST",
+								url: url,
+								timeout: 100000,
+								mimeType: "text/html",
+								data: dataSend,
+								contentType: "application/json; charset=utf-8",
 		                        beforeSend: function(xhr) {
 		                            xhr.setRequestHeader(header, token);
 		                        },
 		                        success: function(data) {
 		                        	$('#attivitaRES').empty().html(data);
-		                        	console.log(data);
 								  	reInitComponents();
 								  	closeModaleAddAttivitaTo();
 								  	reInitDataTableByClass("datatable-responsive-programmaRES");

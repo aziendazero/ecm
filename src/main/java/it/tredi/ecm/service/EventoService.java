@@ -82,4 +82,6 @@ public interface EventoService {
 
 	//MEV riedizioni
 	public void updateOrariAttivita(ModificaOrarioAttivitaWrapper jsonObj, EventoWrapper eventoWrapper);
+	public boolean existRiedizioniOfEventoId(Long eventoId);
+	public Set<Evento> getRiedizioniOfEventoId(Long eventoId);
 }

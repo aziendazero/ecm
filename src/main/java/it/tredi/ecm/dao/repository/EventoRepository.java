@@ -53,4 +53,9 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
 	//MEV RIEDIZIONI 04/2017
 	public Set<Evento> findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(Long providerId, EventoStatoEnum bozza, EventoStatoEnum cancellato, Set<ProceduraFormativa> procedureFormative, LocalDate fineAnnoScorso);
+
+	@Query("SELECT COUNT (e) FROM Evento e WHERE e.eventoPadre.id = :id")
+	public int countRiedizioniOfEventoId(@Param("id") Long id);
+	@Query("SELECT e FROM Evento e WHERE e.eventoPadre.id = :id")
+	public Set<Evento> getRiedizioniOfEventoId(@Param("id") Long id);
 }

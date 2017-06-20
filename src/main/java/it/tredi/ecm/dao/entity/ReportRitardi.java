@@ -36,7 +36,7 @@ public class ReportRitardi extends BaseEntityDefaultId {
 		this.providerId = providerId;
 		//double check per il ritardo dopo aver controllato che la situazione permetta un ritardo
 		//(es. evento già pagato -> possibileRitardo = false)
-		//e ritardo solo se slittamento ad azione scaduta
-		this.ritardo = dataOriginale != null && dataProroga.isAfter(dataOriginale) && possibileRitardo;
+		//e ritardo solo se slittamento delle scadenze ad azione scaduta
+		this.ritardo = possibileRitardo && dataOriginale != null && dataProroga.isAfter(dataOriginale);
 	}
 }
