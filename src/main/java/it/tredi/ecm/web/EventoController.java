@@ -440,8 +440,6 @@ public class EventoController {
 				else {
 					evento.setStato(EventoStatoEnum.VALIDATO);
 					evento.setValidatorCheck(true);
-					if(evento.getDataScadenzaInvioRendicontazione() == null)
-						evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 					eventoService.save(evento);
 					updateEventoList(evento.getId(), session);
 					alertEmailService.creaAlertForEvento(evento);
@@ -476,8 +474,6 @@ public class EventoController {
 
 			evento.setStato(EventoStatoEnum.VALIDATO);
 			evento.setValidatorCheck(true);
-			if(evento.getDataScadenzaInvioRendicontazione() == null)
-				evento.setDataScadenzaInvioRendicontazione(evento.getDataFine().plusDays(90));
 			eventoService.save(evento);
 			updateEventoList(evento.getId(), session);
 			alertEmailService.creaAlertForEvento(evento);
@@ -1604,7 +1600,7 @@ public class EventoController {
 	public String modificaAttivita(@PathVariable("target") String target,
 									@PathVariable("addAttivitaTo") String addAttivitaTo,
 									@PathVariable("modificaElemento") Integer modificaElemento,
-											@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
+									@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			int programmaIndex = Integer.valueOf(addAttivitaTo).intValue();
 			int elementoIndex = Integer.valueOf(modificaElemento).intValue();

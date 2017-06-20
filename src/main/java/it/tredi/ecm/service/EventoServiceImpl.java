@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -119,7 +120,7 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private PersonaEventoService personaEventoService;
 
 	@Autowired private ObiettivoService obiettivoService;
-	
+
 	@Autowired private ReportRitardiService reportRitardiService;
 
 	@Override
@@ -134,10 +135,17 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug("Salvataggio evento");
 		if(evento.isNew()) {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
+			evento.handleDateScadenza();
 			eventoRepository.saveAndFlush(evento);
 			evento.buildPrefix();
 		}else{
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + " - Salvataggio"));
+			Evento eventoDB = eventoRepository.getOne(evento.getId());
+			if(!evento.getDataFine().equals(eventoDB.getDataFine()))
+				evento.handleDateScadenza();
+//			W.I.P.
+//			if(existRiedizioniOfEventoId(evento.getId()))
+//				handleSincronizzazioneRiedizioni(evento, eventoDB);
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		evento = eventoRepository.saveAndFlush(evento);
@@ -180,13 +188,12 @@ public class EventoServiceImpl implements EventoService {
 
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
-
 	}
 
 	@Override
 	@Transactional
 	public void delete(Long id) {
-		LOGGER.debug("Eliminazione evento:" + id);
+		LOGGER.debug("Eliminazione evento: " + id);
 
 		//controllo se attuazione di un evento del piano formativo
 		Evento evento = getEvento(id);
