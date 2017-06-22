@@ -384,7 +384,7 @@ public class EventoController {
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 			eventoService.save(evento);
-			updateEventoList(evento.getId(), session);
+			updateEventoList(evento.getId(), session, false, true);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato_in_bozza_success", "success"));
 			if(model.asMap().containsKey("returnLink")) {
 				String returnLink = (String) model.asMap().get("returnLink");
@@ -450,7 +450,7 @@ public class EventoController {
 					evento.setStato(EventoStatoEnum.VALIDATO);
 					evento.setValidatorCheck(true);
 					eventoService.save(evento);
-					updateEventoList(evento.getId(), session);
+					updateEventoList(evento.getId(), session, false, true);
 					alertEmailService.creaAlertForEvento(evento);
 					LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 				}
@@ -484,7 +484,7 @@ public class EventoController {
 			evento.setStato(EventoStatoEnum.VALIDATO);
 			evento.setValidatorCheck(true);
 			eventoService.save(evento);
-			updateEventoList(evento.getId(), session);
+			updateEventoList(evento.getId(), session, false, true);
 			alertEmailService.creaAlertForEvento(evento);
 			LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 
@@ -621,7 +621,7 @@ public class EventoController {
 				Evento evento = eventoService.getEvento(eventoId);
 				if(evento.getStato() == EventoStatoEnum.BOZZA){
 					eventoService.delete(eventoId);
-					updateEventoList(evento.getId(), session, true);
+					updateEventoList(evento.getId(), session, true, false);
 				}else{
 					evento.setStato(EventoStatoEnum.CANCELLATO);
 					eventoService.save(evento);
@@ -1870,7 +1870,7 @@ public class EventoController {
 	}
 
 	//update dell'evento modificato nella lista in sessione
-	private void updateEventoList(Long eventoId, HttpSession session, boolean rimozione) {
+	private void updateEventoList(Long eventoId, HttpSession session, boolean rimozione, boolean updateRiedizioni) {
 		Collection<Evento> eventoList = (Collection<Evento>) session.getAttribute("eventoList");
 
 		Evento eventoToUpdate = eventoService.getEvento(eventoId);
@@ -1879,12 +1879,17 @@ public class EventoController {
 			eventoList.remove(eventoToUpdate);
 			if(rimozione == false)
 				eventoList.add(eventoToUpdate);
+			if(updateRiedizioni) {
+				Set<Evento> riedizioni = eventoService.getRiedizioniOfEventoId(eventoId);
+				for(Evento ev : riedizioni)
+					updateEventoList(ev.getId(), session, false, true);
+			}
 			session.setAttribute("eventoList", eventoList);
 		}
 	}
 
 	private void updateEventoList(Long eventoId, HttpSession session) {
-		updateEventoList(eventoId, session, false);
+		updateEventoList(eventoId, session, false, false);
 	}
 
 	@RequestMapping(value="/provider/{providerId}/evento/{eventoId}/updateOrari", method=RequestMethod.POST)

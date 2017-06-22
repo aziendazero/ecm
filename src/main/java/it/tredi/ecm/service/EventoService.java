@@ -16,7 +16,7 @@ import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 
 public interface EventoService {
 	public Evento getEvento(Long id);
-	public void save(Evento evento);
+	public void save(Evento evento) throws Exception;
 	public void delete(Long id);
 
 	public void validaRendiconto(Long id, File rendiconto) throws Exception;
@@ -62,7 +62,7 @@ public interface EventoService {
 	public boolean isEventoIniziato(Evento evento);
 //	public boolean hasDataInizioRestrictions(Evento evento);
 	public Sponsor getSponsorById(Long sponsorId);
-	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode);
+	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode) throws Exception;
 	public Set<Evento> getEventiByProviderIdAndStato(Long id, EventoStatoEnum stato);
 	public Integer countAllEventiByProviderIdAndStato(Long id, EventoStatoEnum stato);
 

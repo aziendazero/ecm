@@ -425,6 +425,16 @@ public class EventoValidator {
 		 * */
 		if(evento.getAutorizzazionePrivacy() == null || evento.getAutorizzazionePrivacy() == false)
 			errors.rejectValue(prefix + "autorizzazionePrivacy", "error.empty");
+
+		/* CREDITI (campo obbligatorio/autocompilato)
+		 * il campo viene autocompilato
+		 * a questo punto l'utente può scegliere di accettare il valore
+		 * o inserirne uno lui -> se NON accetta il valore il campo crediti che deve inserire è obbligatorio
+		 * campo numerico (Float)
+		 * */
+		if(evento.getCrediti() == null)
+			errors.rejectValue(prefix + "crediti", "error.empty");
+
 	}
 
 	//validate RES
@@ -686,15 +696,6 @@ public class EventoValidator {
 		if(evento.getDurata() < ecmProperties.getDurataMinimaEventoRES())
 			errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
 
-		/* CREDITI (campo obbligatorio/autocompilato)
-		 * il campo viene autocompilato
-		 * a questo punto l'utente può scegliere di accettare il valore
-		 * o inserirne uno lui -> se NON accetta il valore il campo crediti che deve inserire è obbligatorio
-		 * campo numerico (Float)
-		 * */
-		if(evento.getCrediti() == null)
-			errors.rejectValue(prefix + "crediti", "error.empty");
-
 		/* QUOTA DI PARTECIPAZIONE (campo obbligatorio)
 		 * campo numerico (BigDecimal)
 		 * */
@@ -745,7 +746,6 @@ public class EventoValidator {
 			if(!fileValidator.validateFirmaCF(evento.getDocumentoVerificaRicaduteFormative(), evento.getProvider().getId()))
 				errors.rejectValue("documentoVerificaRicaduteFormative", "error.codiceFiscale.firmatario");
 		}
-
 	}
 
 	//validate FSC
@@ -1122,15 +1122,6 @@ public class EventoValidator {
 		 * */
 		if(evento.getSupportoSvoltoDaEsperto() == null)
 			errors.rejectValue(prefix + "supportoSvoltoDaEsperto", "error.empty");
-
-		/* CREDITI (campo obbligatorio/autocompilato)
-		 * il campo viene autocompilato
-		 * a questo punto l'utente può scegliere di accettare il valore
-		 * o inserirne uno lui -> se NON accetta il valore il campo crediti che deve inserire è obbligatorio
-		 * campo numerico (Float)
-		 * */
-		if(evento.getCrediti() == null)
-			errors.rejectValue(prefix + "crediti", "error.empty");
 
 		/* QUOTA DI PARTECIPAZIONE (campo obbligatorio)
 		 * campo numerico (BigDecimal)
