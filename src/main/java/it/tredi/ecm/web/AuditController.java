@@ -57,7 +57,7 @@ public class AuditController {
 	public String auditEntity(@PathVariable String entity, @PathVariable Long entityId, @RequestParam(required = false) Boolean lastCommit
 			, @RequestParam(required = false) Long commitMajorId, @RequestParam(required = false) Integer commitMinorId
 			, Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET /audit/entity/" + entity + "/id/" + entityId));
+		LOGGER.info(Utils.getLogMessage("GET /audit/entity/" + entity + "/entityId/" + entityId));
 
 		boolean showLastCommit = false;
 		if(lastCommit != null){
@@ -125,7 +125,7 @@ public class AuditController {
 				model.addAttribute("auditArg", "provider");
 				model.addAttribute("visualizzazione", " del Registro Operazione del Provider " + entityId);
 			}
-			else if(entity.contains("Evento")) {
+			else if("EventoRES".equals(entity) || "EventoFAD".equals(entity) || "EventoFSC".equals(entity)) {
 				model.addAttribute("returnLink", "/evento/list");
 				model.addAttribute("auditArg", "evento");
 				Evento evento = eventoService.getEvento(entityId);
@@ -153,7 +153,7 @@ public class AuditController {
 	public String auditEntity(@PathVariable String entity, @PathVariable Long entityId, @RequestParam(required = true) String pathValueObject, @RequestParam(required = false) Boolean lastCommit
 			, @RequestParam(required = false) Long commitMajorId, @RequestParam(required = false) Integer commitMinorId
 			, Model model, RedirectAttributes redirectAttrs){
-		LOGGER.info(Utils.getLogMessage("GET /audit/entity/" + entity + "/id/" + entityId + "/pathValueObject/" + pathValueObject));
+		LOGGER.info(Utils.getLogMessage("GET /audit/entity/" + entity + "/entityId/" + entityId + "/pathValueObject/" + pathValueObject));
 
 		boolean showLastCommit = false;
 		if(lastCommit != null){
