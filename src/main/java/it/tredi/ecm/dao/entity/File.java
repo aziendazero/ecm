@@ -198,6 +198,20 @@ public class File extends BaseEntityDefaultId{
 		return true;
 	}
 
+	public boolean reallyEquals(File file) {
+		if (this == file)
+			return true;
+		if (file == null)
+			return false;
+		if (this.id == file.getId())
+			return true;
+		return false;
+	}
+
+	public static boolean equals(File a, File b) {
+        return (a == b) || (a != null && a.reallyEquals(b));
+    }
+
 	@Override
 	@JsonIgnore
 	public Object clone() throws CloneNotSupportedException {

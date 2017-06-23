@@ -1380,10 +1380,11 @@
 				<label class="col-xs-offset-4 col-xs-4" th:text="${#lists.size(eventoWrapper.responsabiliScientifici)}"></label>
 				<label class="col-xs-offset-4 col-xs-4" th:text="#{label.nessun_responsabile_registrato}"></label>
 			</th:block> -->
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="responsabiliScientifici" class="datatable-responsive-responsabili no-order table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabili')} ? 'bad-table'">
 				<thead>
@@ -1453,10 +1454,11 @@
 
 	<th:block style="display:none">
 		<th:block th:fragment="docenti">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="docenti" class="datatable-responsive-docenti table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.docenti')} ? 'bad-table'">
 				<thead>
@@ -1529,10 +1531,11 @@
 
 	<th:block style="display:none">
 		<th:block th:fragment="responsabileSegreteria">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="responsabileSegreteria" class="datatable-responsive-responsabileSegreteria table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabileSegreteria')} ? 'bad-table'">
 				<thead>
@@ -1593,10 +1596,11 @@
 
 	<th:block style="display:none">
 		<th:block th:fragment="sponsors">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="sponsors" class="datatable-responsive-sponsors table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.sponsors')} ? 'bad-table'">
 				<thead>
@@ -1640,10 +1644,11 @@
 
 	<th:block style="display:none">
 		<th:block th:fragment="partners">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<table id="partners" class="datatable-responsive-partners table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.partners')} ? 'bad-table'">
 				<thead>
@@ -1688,10 +1693,14 @@
 	<!-- VISUALIZZAZIONE programmaEventoRES -->
 	<th:block style="display:none">
 		<div class="col-xs-12" th:fragment="attivitaRES">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
+
+			<input class="erroreSpostamentoOrario" th:value="${erroreSpostamentoOrario}" type="hidden" />
+
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaRES">
 				<div th:id="${'attivitaRES-' + __${status.index}__}" class="col-xs-12"
 						th:each="data , status : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap}"
@@ -1735,7 +1744,7 @@
 								th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"
 								data-width="100%" data-style="btn-primary"
 								data-actions-box="true" data-size="10"
-									data-hide-disabled="false" th:disabled="${isEditSemiBloccato}"
+								data-hide-disabled="false" th:disabled="${isEditSemiBloccato}"
 								title="Seleziona una provincia...">
 								<option th:value="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"
 									th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.provincia}"/>
@@ -1755,7 +1764,7 @@
 								th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"
 								data-width="100%" data-style="btn-primary"
 								data-actions-box="true" data-size="10"
-									data-hide-disabled="false" th:disabled="${isEditSemiBloccato}"
+								data-hide-disabled="false" th:disabled="${isEditSemiBloccato}"
 								onchange="sendAjaxRequestCAP()"
 								title="Seleziona un comune...">
 								<option th:value="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.sede.comune}"
@@ -1803,33 +1812,33 @@
 										<th th:text="#{label.ore_attivita}" class="no-sort">ORE ATTIVITA'</th>
 										<th class="no-sort">
 											<div class="evento-button-container">
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-plus"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success evento-table-button" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaPausa" class="btn btn-success evento-table-button" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-pause-circle-o"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success evento-table-button" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaValutazioneApprendimento" class="btn btn-success evento-table-button" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-pencil"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success evento-table-button" th:title="#{label.inserisci_registrazione_partecipanti}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'REGISTRAZIONE PARTECIPANTI\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success evento-table-button" th:title="#{label.inserisci_registrazione_partecipanti}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'REGISTRAZIONE PARTECIPANTI\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-group"></i></span>
 												</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_attivita}">
+												<a th:if="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivita" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_attivita}">
 													<span><i class="fa fa-plus"></i></span>
 												</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaPausa" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_pausa}">
+												<a th:if="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaPausa" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_pausa}">
 													<span><i class="fa fa-pause-circle-o"></i></span>
 												</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaValutazioneApprendimento" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_valutazione_apprendimento}">
+												<a th:if="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaValutazioneApprendimento" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_valutazione_apprendimento}">
 													<span><i class="fa fa-pencil"></i></span>
 												</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_registrazione_partecipanti}">
+												<a th:if="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_registrazione_partecipanti}">
 													<span><i class="fa fa-group"></i></span>
 												</a>
-												<button type="button" th:unless="${isEditSemiBloccato}" onclick="selezionaTutteAttivita($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.seleziona_tutti}">
-													<span><i class="fa fa-list-ol"></i></span>
-												</button>
+<!-- 												<button type="button" th:unless="${isEditSemiBloccato}" onclick="selezionaTutteAttivita($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.seleziona_tutti}"> -->
+<!-- 													<span><i class="fa fa-list-ol"></i></span> -->
+<!-- 												</button> -->
 												<button type="button" th:unless="${isEditSemiBloccato}" onclick="openModaleSpostaOrario($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.sposta_orario_selezionati}">
 													<span><i class="fa fa-clock-o"></i></span>
 												</button>
@@ -1853,16 +1862,16 @@
 										<!-- <td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita}"></td> -->
 										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario(eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].oreAttivita)}"></td>
 										<td>
-											<a th:unless="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento() or attivita.isRegistrazionePartecipanti()))}" onclick="event.cancelBubble=true;modificaAttivitaFrom('attivitaRES',this);" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
+											<a th:unless="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione or hasRiedizioni) and (attivita.isPausa() or attivita.isValutazioneApprendimento() or attivita.isRegistrazionePartecipanti()))}" onclick="event.cancelBubble=true;modificaAttivitaFrom('attivitaRES',this);" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
-											<a th:if="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione) and (attivita.isPausa() or attivita.isValutazioneApprendimento() or attivita.isRegistrazionePartecipanti()))}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+											<a th:if="${isEventoIniziato or ((isEditSemiBloccato or isRiedizione or hasRiedizioni) and (attivita.isPausa() or attivita.isValutazioneApprendimento() or attivita.isRegistrazionePartecipanti()))}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
 												<span><i class="fa fa-pencil"></i></span>
 											</a>
-											<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="event.cancelBubble=true;removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+											<a th:unless="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" onclick="event.cancelBubble=true;removeAttivitaFrom('attivitaRES',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 												<span><i class="fa fa-trash"></i></span>
 											</a>
-											<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+											<a th:if="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
 												<span><i class="fa fa-trash"></i></span>
 											</a>
 										</td>
@@ -1880,10 +1889,11 @@
 
 	<th:block style="display:none">
 		<th:block th:fragment="attivitaFSC">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaFSC">
 				<div th:id="${'attivitaFSC-' + __${status.index}__}" class="col-xs-12" th:each="fase , status : ${eventoWrapper.programmaEventoFSC}"  th:with="fase=${eventoWrapper.programmaEventoFSC[__${status.index}__].faseDiLavoro}">
 
@@ -1917,10 +1927,10 @@
 											<th th:text="#{label.metodi_di_lavoro}" class="no-sort">METODO DI LAVORO</th>
 											<th th:text="#{label.ruoli_coinvolti}" class="no-sort">RUOLI COINVOLTI</th>
 											<th>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__,undefined,true)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaFSC\',__${status.index}__,undefined,true)'" data-toggle="modal" data-target=".modal-add-attivitaFSC">
 													<span><i class="fa fa-plus"></i></span>
 												</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-attivita" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_attivita}">
+												<a th:if="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" id="add-attivita" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_attivita}">
 													<span><i class="fa fa-plus"></i></span>
 												</a>
 											</th>
@@ -1951,13 +1961,13 @@
 												<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="modificaAttivitaFrom('attivitaFSC',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 													<span><i class="fa fa-pencil"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removeAttivitaFrom('attivitaFSC',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" onclick="removeAttivitaFrom('attivitaFSC',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 													<span><i class="fa fa-trash"></i></span>
 												</a>
 												<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
 													<span><i class="fa fa-pencil"></i></span>
 												</a>
-												<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+												<a th:if="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
 													<span><i class="fa fa-trash"></i></span>
 												</a>
 											</td>
@@ -1978,10 +1988,11 @@
 
 	<th:block style="display:none">
 		<th:block th:fragment="attivitaFAD">
-			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.hasProfile('SEGRETERIA')},
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaFAD" th:if="${eventoWrapper.programmaEventoFAD != null}">
 				<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad'">
 					<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>

@@ -898,6 +898,7 @@ public class EventoController {
 		//editabilità
 		eventoWrapper.setEditSemiBloccato(eventoService.isEditSemiBloccato(evento));
 		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
+		eventoWrapper.setHasRiedizioni(eventoService.existRiedizioniOfEventoId(evento.getId()));
 //		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
 		//flag per capire se la segreteria fa modifiche che toccano il numero dei crediti
 		if(evento.getCrediti() != null)
@@ -1897,7 +1898,10 @@ public class EventoController {
 			   Model model, RedirectAttributes redirectAttrs,
 			   @RequestBody ModificaOrarioAttivitaWrapper jsonObj) {
 		try{
-			eventoService.updateOrariAttivita(jsonObj, eventoWrapper);
+			boolean ok = eventoService.updateOrariAttivita(jsonObj, eventoWrapper);
+			//non posso spostare le date perchè scavalcano la fine della giornata
+			if(!ok)
+				model.addAttribute("erroreSpostamentoOrario", true);
 			return EDIT + " :: attivitaRES";
 		}catch (Exception ex){
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));

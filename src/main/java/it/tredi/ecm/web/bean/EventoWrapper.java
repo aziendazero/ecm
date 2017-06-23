@@ -122,6 +122,7 @@ public class EventoWrapper {
 	private boolean editSemiBloccato = false;
 	private boolean eventoIniziato = false;
 	private boolean hasDataInizioRestrictions = false;
+	private boolean hasRiedizioni = false;
 
 	public List<FaseAzioniRuoliEventoFSCTypeA> getProgrammaEventoFSC(){
 		if(evento != null && evento instanceof EventoFSC){

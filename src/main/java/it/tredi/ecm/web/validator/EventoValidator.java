@@ -487,9 +487,19 @@ public class EventoValidator {
 		 * -------------
 		 * per quanto riguarda la riedizione, il padre e il rieditato devono evere lo stesso numero di date intermedie
 		 * */
+		LocalDate prevLd = null;
+		boolean sorted = true;
 		if(evento.getDataInizio() != null && evento.getDataFine() != null) {
+			//controllo se la lista delle date è ordinata...
+			//altimenti do errore, dovuto al fatto che le riedizioni invertirebbero i programmi
+			//se la lista non è perfettamente ordinata
 			for (LocalDate ld : evento.getDateIntermedie()) {
-				if(ld.isAfter(evento.getDataFine()) || ld.isEqual(evento.getDataFine()) || ld.isBefore(evento.getDataInizio()) || ld.isEqual(evento.getDataInizio())) {
+				if(prevLd != null) {
+					sorted = ld.isAfter(prevLd);
+				}
+				if(sorted)
+					prevLd = ld;
+				if(ld.isAfter(evento.getDataFine()) || ld.isEqual(evento.getDataFine()) || ld.isBefore(evento.getDataInizio()) || ld.isEqual(evento.getDataInizio()) || !sorted) {
 					//ciclo alla ricerca di questa data per farmi dare le chiavi nella mappa
 					Set<Long> keys = new HashSet<Long>();
 					for(Entry<Long, EventoRESProgrammaGiornalieroWrapper> entry : wrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().entrySet()) {
@@ -499,8 +509,12 @@ public class EventoValidator {
 						}
 					}
 					//genero gli errori
-					for(Long l : keys)
-						errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + l + "]", "error.data_intermedia_res_non_valida");
+					for(Long l : keys) {
+						if(!sorted)
+							errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + l + "]", "error.ordinare_le_date_intermedie");
+						else
+							errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + l + "]", "error.data_intermedia_res_non_valida");
+					}
 				}
 			}
 		}

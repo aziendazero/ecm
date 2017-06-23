@@ -81,7 +81,7 @@ public interface EventoService {
 	public boolean checkIfFSCAndTrainingAndTutorPartecipanteRatioAlert(Evento evento);
 
 	//MEV riedizioni
-	public void updateOrariAttivita(ModificaOrarioAttivitaWrapper jsonObj, EventoWrapper eventoWrapper);
+	public boolean updateOrariAttivita(ModificaOrarioAttivitaWrapper jsonObj, EventoWrapper eventoWrapper);
 	public boolean existRiedizioniOfEventoId(Long eventoId);
 	public Set<Evento> getRiedizioniOfEventoId(Long eventoId);
 }

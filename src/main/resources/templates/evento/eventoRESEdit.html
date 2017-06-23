@@ -56,7 +56,7 @@
 
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-success pull-right" th:text="#{label.sposta}" onclick="spostaSelezionati()"></button>
+							<button type="button" class="btn btn-success pull-right" th:text="#{label.sposta}" onclick="spostaTutti()"></button>
 							<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
 						</div>
 					</div>
@@ -84,7 +84,8 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- ORARIO INIZO-->
 										<div class="item form-group">
@@ -94,7 +95,7 @@
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group ora" id="razionale">
 												<input type="text" required="required" class="form-control"
-													th:field="${eventoWrapper.tempAttivitaRES.orarioInizio}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+													th:field="${eventoWrapper.tempAttivitaRES.orarioInizio}" th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" />
 													<span class="input-group-addon openClock">
 		     											<i class="glyphicon glyphicon-time"></i>
 		  											</span>
@@ -109,7 +110,7 @@
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group ora" id="razionale">
 												<input type="text" required="required" class="form-control"
-													th:field="${eventoWrapper.tempAttivitaRES.orarioFine}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+													th:field="${eventoWrapper.tempAttivitaRES.orarioFine}" th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" />
 													<span class="input-group-addon openClock">
 		     											<i class="glyphicon glyphicon-time"></i>
 		  											</span>
@@ -286,7 +287,8 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- TODO rimuovere -->
 	<!-- 									<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
@@ -548,7 +550,8 @@
 												<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 														isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 														isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+														hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 													<div class='col-md-4 col-sm-4 col-xs-12'></div>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 														<input type="hidden" th:value="${data.key}" />
@@ -704,7 +707,7 @@
 													data-actions-box="true" data-size="10"
 													data-hide-disabled="false"
 													onchange="mostraNascondiCampiTipologiaEvento(this.value)"
-													title="Seleziona una tipologia..." th:disabled="${isRiedizione or isEditSemiBloccato}">
+													title="Seleziona una tipologia..." th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}">
 													<option
 														th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).values()}"
 														th:value="${tipologia}"
@@ -845,7 +848,8 @@
 												<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 														isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 														isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+														hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 													<div class='col-md-4 col-sm-4 col-xs-12'></div>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
 														<input type="hidden" th:value="${risultato.key}" />
@@ -874,7 +878,8 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- PROGRAMMA EVENTO -->
 										<div class='programmaEvento item form-group' id="programma">
@@ -910,8 +915,8 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
-
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 										<!-- VERIFICA APPRENDIMENTO PARTECIPANTI -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')} ? 'bad'">
 											<label class="control-label col-xs-1">
@@ -1714,10 +1719,10 @@
 				}
 
 				//funzione che sposta tutti gli orari di inizio e di fine
-				function spostaSelezionati() {
+				function spostaTutti() {
 					var ora = $("#orarioSlittamentoBlocco").val();
 					var $table = $(tempTable);
-					var $selezionati = $table.find('tr.selected');
+					var $rows = $table.find("tbody tr");
 					if(!moment(ora, "HH:mm").isValid()) {
 						//errore validazione
 						$("#item-spostamento").addClass('bad');
@@ -1727,7 +1732,7 @@
 					else {
 						var programmaId = $table.parents(".div-programma-id").attr("data-programma-id");
 						var listaRowId = new Array();
-						$.each($selezionati, function(i,v) {
+						$.each($rows, function(i,v) {
 							$v = $(v);
 							listaRowId.push($v.attr("data-row-id"));
 						})
@@ -1754,6 +1759,11 @@
 		                        },
 		                        success: function(data) {
 		                        	$('#attivitaRES').empty().html(data);
+		                        	$.each($(".erroreSpostamentoOrario"), function() {
+								  		if($(this).val() == 'true') {
+									  		sendNotifyStatic([[#{message.errore}]], [[#{message.attenzione_spostamento_date_non_valido}]], 'error')
+								  		}
+								  	});
 								  	reInitComponents();
 								  	closeModaleAddAttivitaTo();
 								  	reInitDataTableByClass("datatable-responsive-programmaRES");

@@ -231,144 +231,144 @@ public class EventoServiceImpl implements EventoService {
 
 		//PARTE IN COMUNE A TUTTI GLI EVENTI
 		if(!Objects.equals(eventoToSave.getTitolo(), eventoDB.getTitolo())) {
-			diffMap.put("setTitolo", eventoToSave.getTitolo());
+			diffMap.put("titolo", eventoToSave.getTitolo());
 		}
 		if(!Objects.equals(eventoToSave.getObiettivoNazionale(), eventoDB.getObiettivoNazionale())) {
-			diffMap.put("setObiettivoNazionale", eventoToSave.getObiettivoNazionale());
+			diffMap.put("obiettivoNazionale", eventoToSave.getObiettivoNazionale());
 		}
 		if(!Objects.equals(eventoToSave.getObiettivoRegionale(), eventoDB.getObiettivoRegionale())) {
-			diffMap.put("setObiettivoRegionale", eventoToSave.getObiettivoRegionale());
+			diffMap.put("obiettivoRegionale", eventoToSave.getObiettivoRegionale());
 		}
 		if(!Objects.equals(eventoToSave.getDiscipline(), eventoDB.getDiscipline())) {
-			diffMap.put("setDiscipline", eventoToSave.getDiscipline());
+			diffMap.put("discipline", eventoToSave.getDiscipline());
 		}
 		//le professioni sono aggiornate automaticamente con la modifica delle discipline
 		if(!Objects.equals(eventoToSave.getDestinatariEvento(), eventoDB.getDestinatariEvento())) {
-			diffMap.put("setDestinatariEvento", eventoToSave.getDestinatariEvento());
+			diffMap.put("destinatariEvento", eventoToSave.getDestinatariEvento());
 		}
 		if(!Objects.equals(eventoToSave.getContenutiEvento(), eventoDB.getContenutiEvento())) {
-			diffMap.put("setContenutiEvento", eventoToSave.getContenutiEvento());
+			diffMap.put("contenutiEvento", eventoToSave.getContenutiEvento());
 		}
 		if(!Objects.equals(eventoToSave.getNumeroPartecipanti(), eventoDB.getNumeroPartecipanti())) {
-			diffMap.put("setNumeroPartecipanti", eventoToSave.getNumeroPartecipanti());
+			diffMap.put("numeroPartecipanti", eventoToSave.getNumeroPartecipanti());
 		}
 		if(!Objects.equals(eventoToSave.getConfermatiCrediti(), eventoDB.getConfermatiCrediti())) {
-			diffMap.put("setConfermatiCrediti", eventoToSave.getConfermatiCrediti());
+			diffMap.put("confermatiCrediti", eventoToSave.getConfermatiCrediti());
 		}
 		if(!Objects.equals(eventoToSave.getCrediti(), eventoDB.getCrediti())) {
-			diffMap.put("setCrediti", eventoToSave.getCrediti());
+			diffMap.put("crediti", eventoToSave.getCrediti());
 		}
 		if(!Objects.equals(eventoToSave.getQuotaPartecipazione(), eventoDB.getQuotaPartecipazione())) {
-			diffMap.put("setQuotaPartecipazione", eventoToSave.getQuotaPartecipazione());
+			diffMap.put("quotaPartecipazione", eventoToSave.getQuotaPartecipazione());
 		}
 		if(!Objects.equals(eventoToSave.getEventoSponsorizzato(), eventoDB.getEventoSponsorizzato())) {
-			diffMap.put("setEventoSponsorizzato", eventoToSave.getEventoSponsorizzato());
+			diffMap.put("eventoSponsorizzato", eventoToSave.getEventoSponsorizzato());
 		}
 		if(!Objects.equals(eventoToSave.getSponsors(), eventoDB.getSponsors())) {
-			diffMap.put("setSponsors", eventoToSave.getSponsors());
+			diffMap.put("sponsors", eventoToSave.getSponsors());
 		}
 		if(!Objects.equals(eventoToSave.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(), eventoDB.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia())) {
-			diffMap.put("setEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", eventoToSave.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia());
+			diffMap.put("eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", eventoToSave.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia());
 		}
-		if(!Objects.equals(eventoToSave.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), eventoDB.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia())) {
-			diffMap.put("setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", eventoToSave.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia());
+		if(!File.equals(eventoToSave.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), eventoDB.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia())) {
+			diffMap.put("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", eventoToSave.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia());
 		}
-		if(!Objects.equals(eventoToSave.getAutocertificazioneAutorizzazioneMinisteroSalute(), eventoDB.getAutocertificazioneAutorizzazioneMinisteroSalute())) {
-			diffMap.put("setAutocertificazioneAutorizzazioneMinisteroSalute", eventoToSave.getAutocertificazioneAutorizzazioneMinisteroSalute());
+		if(!File.equals(eventoToSave.getAutocertificazioneAutorizzazioneMinisteroSalute(), eventoDB.getAutocertificazioneAutorizzazioneMinisteroSalute())) {
+			diffMap.put("autocertificazioneAutorizzazioneMinisteroSalute", eventoToSave.getAutocertificazioneAutorizzazioneMinisteroSalute());
 		}
 		if(!Objects.equals(eventoToSave.getAltreFormeFinanziamento(), eventoDB.getAltreFormeFinanziamento())) {
-			diffMap.put("setAltreFormeFinanziamento", eventoToSave.getAltreFormeFinanziamento());
+			diffMap.put("altreFormeFinanziamento", eventoToSave.getAltreFormeFinanziamento());
 		}
-		if(!Objects.equals(eventoToSave.getAutocertificazioneAssenzaFinanziamenti(), eventoDB.getAutocertificazioneAssenzaFinanziamenti())) {
-			diffMap.put("setAutocertificazioneAssenzaFinanziamenti", eventoToSave.getAutocertificazioneAssenzaFinanziamenti());
+		if(!File.equals(eventoToSave.getAutocertificazioneAssenzaFinanziamenti(), eventoDB.getAutocertificazioneAssenzaFinanziamenti())) {
+			diffMap.put("autocertificazioneAssenzaFinanziamenti", eventoToSave.getAutocertificazioneAssenzaFinanziamenti());
 		}
-		if(!Objects.equals(eventoToSave.getContrattiAccordiConvenzioni(), eventoDB.getContrattiAccordiConvenzioni())) {
-			diffMap.put("setContrattiAccordiConvenzioni", eventoToSave.getContrattiAccordiConvenzioni());
+		if(!File.equals(eventoToSave.getContrattiAccordiConvenzioni(), eventoDB.getContrattiAccordiConvenzioni())) {
+			diffMap.put("contrattiAccordiConvenzioni", eventoToSave.getContrattiAccordiConvenzioni());
 		}
 		if(!Objects.equals(eventoToSave.getEventoAvvalePartner(), eventoDB.getEventoAvvalePartner())) {
-			diffMap.put("setEventoAvvalePartner", eventoToSave.getEventoAvvalePartner());
+			diffMap.put("eventoAvvalePartner", eventoToSave.getEventoAvvalePartner());
 		}
 		if(!Objects.equals(eventoToSave.getPartners(), eventoDB.getPartners())) {
-			diffMap.put("setPartners", eventoToSave.getPartners());
+			diffMap.put("partners", eventoToSave.getPartners());
 		}
-		if(!Objects.equals(eventoToSave.getDichiarazioneAssenzaConflittoInteresse(), eventoDB.getDichiarazioneAssenzaConflittoInteresse())) {
-			diffMap.put("setDichiarazioneAssenzaConflittoInteresse", eventoToSave.getDichiarazioneAssenzaConflittoInteresse());
+		if(!File.equals(eventoToSave.getDichiarazioneAssenzaConflittoInteresse(), eventoDB.getDichiarazioneAssenzaConflittoInteresse())) {
+			diffMap.put("dichiarazioneAssenzaConflittoInteresse", eventoToSave.getDichiarazioneAssenzaConflittoInteresse());
 		}
 		if(!Objects.equals(eventoToSave.getProceduraVerificaQualitaPercepita(), eventoDB.getProceduraVerificaQualitaPercepita())) {
-			diffMap.put("setProceduraVerificaQualitaPercepita", eventoToSave.getProceduraVerificaQualitaPercepita());
+			diffMap.put("proceduraVerificaQualitaPercepita", eventoToSave.getProceduraVerificaQualitaPercepita());
 		}
 		if(!Objects.equals(eventoToSave.getAutorizzazionePrivacy(), eventoDB.getAutorizzazionePrivacy())) {
-			diffMap.put("setAutorizzazionePrivacy", eventoToSave.getAutorizzazionePrivacy());
+			diffMap.put("autorizzazionePrivacy", eventoToSave.getAutorizzazionePrivacy());
 		}
 		//PARTE SPECIFICA RES
 		if(eventoToSave instanceof EventoRES) {
 			if(!Objects.equals(((EventoRES) eventoToSave).getWorkshopSeminariEcm(), ((EventoRES) eventoDB).getWorkshopSeminariEcm())) {
-				diffMap.put("setWorkshopSeminariEcm", ((EventoRES) eventoToSave).getWorkshopSeminariEcm());
+				diffMap.put("workshopSeminariEcm", ((EventoRES) eventoToSave).getWorkshopSeminariEcm());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getTitoloConvegno(), ((EventoRES) eventoDB).getTitoloConvegno())) {
-				diffMap.put("setTitoloConvegno", ((EventoRES) eventoToSave).getTitoloConvegno());
+				diffMap.put("titoloConvegno", ((EventoRES) eventoToSave).getTitoloConvegno());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getRazionale(), ((EventoRES) eventoDB).getRazionale())) {
-				diffMap.put("setRazionale", ((EventoRES) eventoToSave).getRazionale());
+				diffMap.put("razionale", ((EventoRES) eventoToSave).getRazionale());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getRisultatiAttesi(), ((EventoRES) eventoDB).getRisultatiAttesi())) {
-				diffMap.put("setRisultatiAttesi", ((EventoRES) eventoToSave).getRisultatiAttesi());
+				diffMap.put("risultatiAttesi", ((EventoRES) eventoToSave).getRisultatiAttesi());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getVerificaApprendimento(), ((EventoRES) eventoDB).getVerificaApprendimento())) {
-				diffMap.put("setVerificaApprendimento", ((EventoRES) eventoToSave).getVerificaApprendimento());
+				diffMap.put("verificaApprendimento", ((EventoRES) eventoToSave).getVerificaApprendimento());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getVerificaPresenzaPartecipanti(), ((EventoRES) eventoDB).getVerificaPresenzaPartecipanti())) {
-				diffMap.put("setVerificaPresenzaPartecipanti", ((EventoRES) eventoToSave).getVerificaPresenzaPartecipanti());
+				diffMap.put("verificaPresenzaPartecipanti", ((EventoRES) eventoToSave).getVerificaPresenzaPartecipanti());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getMaterialeDurevoleRilasciatoAiPratecipanti(), ((EventoRES) eventoDB).getMaterialeDurevoleRilasciatoAiPratecipanti())) {
-				diffMap.put("setMaterialeDurevoleRilasciatoAiPratecipanti", ((EventoRES) eventoToSave).getMaterialeDurevoleRilasciatoAiPratecipanti());
+				diffMap.put("materialeDurevoleRilasciatoAiPratecipanti", ((EventoRES) eventoToSave).getMaterialeDurevoleRilasciatoAiPratecipanti());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getSoloLinguaItaliana(), ((EventoRES) eventoDB).getSoloLinguaItaliana())) {
-				diffMap.put("setSoloLinguaItaliana", ((EventoRES) eventoToSave).getSoloLinguaItaliana());
+				diffMap.put("soloLinguaItaliana", ((EventoRES) eventoToSave).getSoloLinguaItaliana());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getLinguaStranieraUtilizzata(), ((EventoRES) eventoDB).getLinguaStranieraUtilizzata())) {
-				diffMap.put("setLinguaStranieraUtilizzata", ((EventoRES) eventoToSave).getLinguaStranieraUtilizzata());
+				diffMap.put("linguaStranieraUtilizzata", ((EventoRES) eventoToSave).getLinguaStranieraUtilizzata());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getEsisteTraduzioneSimultanea(), ((EventoRES) eventoDB).getEsisteTraduzioneSimultanea())) {
-				diffMap.put("setEsisteTraduzioneSimultanea", ((EventoRES) eventoToSave).getEsisteTraduzioneSimultanea());
+				diffMap.put("esisteTraduzioneSimultanea", ((EventoRES) eventoToSave).getEsisteTraduzioneSimultanea());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getVerificaRicaduteFormative(), ((EventoRES) eventoDB).getVerificaRicaduteFormative())) {
-				diffMap.put("setVerificaRicaduteFormative", ((EventoRES) eventoToSave).getVerificaRicaduteFormative());
+				diffMap.put("verificaRicaduteFormative", ((EventoRES) eventoToSave).getVerificaRicaduteFormative());
 			}
 			if(!Objects.equals(((EventoRES) eventoToSave).getDescrizioneVerificaRicaduteFormative(), ((EventoRES) eventoDB).getDescrizioneVerificaRicaduteFormative())) {
-				diffMap.put("setDescrizioneVerificaRicaduteFormative", ((EventoRES) eventoToSave).getDescrizioneVerificaRicaduteFormative());
+				diffMap.put("descrizioneVerificaRicaduteFormative", ((EventoRES) eventoToSave).getDescrizioneVerificaRicaduteFormative());
 			}
-			if(!Objects.equals(((EventoRES) eventoToSave).getDocumentoVerificaRicaduteFormative(), ((EventoRES) eventoDB).getDocumentoVerificaRicaduteFormative())) {
-				diffMap.put("setDocumentoVerificaRicaduteFormative", ((EventoRES) eventoToSave).getDocumentoVerificaRicaduteFormative());
+			if(!File.equals(((EventoRES) eventoToSave).getDocumentoVerificaRicaduteFormative(), ((EventoRES) eventoDB).getDocumentoVerificaRicaduteFormative())) {
+				diffMap.put("documentoVerificaRicaduteFormative", ((EventoRES) eventoToSave).getDocumentoVerificaRicaduteFormative());
 			}
 			//gestione del programma
-			diffMap.put("setProgramma", populateDiffMapProgrammaRES(((EventoRES) eventoToSave).getProgramma(), ((EventoRES) eventoDB).getProgramma()));
+			diffMap.put("programmaRES", populateDiffMapProgrammaRES(((EventoRES) eventoToSave).getProgramma(), ((EventoRES) eventoDB).getProgramma()));
 		}
 		//PARTE SPECIFICA FSC
 		else if (eventoToSave instanceof EventoFSC) {
 			if(!Objects.equals(((EventoFSC) eventoToSave).getTipologiaGruppo(), ((EventoFSC) eventoDB).getTipologiaGruppo())) {
-				diffMap.put("setTipologiaGruppo", ((EventoFSC) eventoToSave).getTipologiaGruppo());
+				diffMap.put("tipologiaGruppo", ((EventoFSC) eventoToSave).getTipologiaGruppo());
 			}
 			if(!Objects.equals(((EventoFSC) eventoToSave).getSperimentazioneClinica(), ((EventoFSC) eventoDB).getSperimentazioneClinica())) {
-				diffMap.put("setSperimentazioneClinica", ((EventoFSC) eventoToSave).getSperimentazioneClinica());
+				diffMap.put("sperimentazioneClinica", ((EventoFSC) eventoToSave).getSperimentazioneClinica());
 			}
 			if(!Objects.equals(((EventoFSC) eventoToSave).getOttenutoComitatoEtico(), ((EventoFSC) eventoDB).getOttenutoComitatoEtico())) {
-				diffMap.put("setOttenutoComitatoEtico", ((EventoFSC) eventoToSave).getOttenutoComitatoEtico());
+				diffMap.put("ottenutoComitatoEtico", ((EventoFSC) eventoToSave).getOttenutoComitatoEtico());
 			}
 			if(!Objects.equals(((EventoFSC) eventoToSave).getDescrizioneProgetto(), ((EventoFSC) eventoDB).getDescrizioneProgetto())) {
-				diffMap.put("setDescrizioneProgetto", ((EventoFSC) eventoToSave).getDescrizioneProgetto());
+				diffMap.put("descrizioneProgetto", ((EventoFSC) eventoToSave).getDescrizioneProgetto());
 			}
 			if(!Objects.equals(((EventoFSC) eventoToSave).getVerificaApprendimento(), ((EventoFSC) eventoDB).getVerificaApprendimento())) {
-				diffMap.put("setVerificaApprendimento", ((EventoFSC) eventoToSave).getVerificaApprendimento());
+				diffMap.put("verificaApprendimento", ((EventoFSC) eventoToSave).getVerificaApprendimento());
 			}
 			if(!Objects.equals(((EventoFSC) eventoToSave).getVerificaPresenzaPartecipanti(), ((EventoFSC) eventoDB).getVerificaPresenzaPartecipanti())) {
-				diffMap.put("setVerificaPresenzaPartecipanti", ((EventoFSC) eventoToSave).getVerificaPresenzaPartecipanti());
+				diffMap.put("verificaPresenzaPartecipanti", ((EventoFSC) eventoToSave).getVerificaPresenzaPartecipanti());
 			}
 			if(!Objects.equals(((EventoFSC) eventoToSave).getIndicatoreEfficaciaFormativa(), ((EventoFSC) eventoDB).getIndicatoreEfficaciaFormativa())) {
-				diffMap.put("setIndicatoreEfficaciaFormativa", ((EventoFSC) eventoToSave).getIndicatoreEfficaciaFormativa());
+				diffMap.put("indicatoreEfficaciaFormativa", ((EventoFSC) eventoToSave).getIndicatoreEfficaciaFormativa());
 			}
 			//gestione del programma
-			diffMap.put("setFasiAzioniRuoli", populateDiffMapProgrammaFSC(((EventoFSC) eventoToSave).getFasiAzioniRuoli(), ((EventoFSC) eventoDB).getFasiAzioniRuoli()));
+			diffMap.put("fasiAzioniRuoliFSC", populateDiffMapProgrammaFSC(((EventoFSC) eventoToSave).getFasiAzioniRuoli(), ((EventoFSC) eventoDB).getFasiAzioniRuoli()));
 		}
 		//I FAD NON SONO RIEDITABILI
 		return diffMap;
@@ -400,19 +400,19 @@ public class EventoServiceImpl implements EventoService {
 				//mappa <setter, value>
 				Map<String, Object> diffDettaglioMap = new HashMap<String, Object>();
 				if(!Objects.equals(dettaglioToSave.getArgomento(), dettaglioDB.getArgomento())) {
-					diffDettaglioMap.put("setArgomento", dettaglioToSave.getArgomento());
+					diffDettaglioMap.put("argomento", dettaglioToSave.getArgomento());
 					someChangesDettaglio = true;
 				}
 				if(!Objects.equals(dettaglioToSave.getRisultatoAtteso(), dettaglioDB.getRisultatoAtteso())) {
-					diffDettaglioMap.put("setRisultatoAtteso", dettaglioToSave.getRisultatoAtteso());
+					diffDettaglioMap.put("risultatoAtteso", dettaglioToSave.getRisultatoAtteso());
 					someChangesDettaglio = true;
 				}
 				if(!Objects.equals(dettaglioToSave.getObiettivoFormativo(), dettaglioDB.getObiettivoFormativo())) {
-					diffDettaglioMap.put("setObiettivoFormativo", dettaglioToSave.getObiettivoFormativo());
+					diffDettaglioMap.put("obiettivoFormativo", dettaglioToSave.getObiettivoFormativo());
 					someChangesDettaglio = true;
 				}
 				if(!Objects.equals(dettaglioToSave.getMetodologiaDidattica(), dettaglioDB.getMetodologiaDidattica())) {
-					diffDettaglioMap.put("setMetodologiaDidattica", dettaglioToSave.getMetodologiaDidattica());
+					diffDettaglioMap.put("metodologiaDidattica", dettaglioToSave.getMetodologiaDidattica());
 					someChangesDettaglio = true;
 				}
 				//se ci sono stati cambiamenti aggiungo alla mappa con l'indice del dettaglio
@@ -451,19 +451,19 @@ public class EventoServiceImpl implements EventoService {
 				//mappa <setter, value>
 				Map<String, Object> diffAzioneMap = new HashMap<String, Object>();
 				if(!Objects.equals(azioneToSave.getAzione(), azioneDB.getAzione())) {
-					diffAzioneMap.put("setAzione", azioneToSave.getAzione());
+					diffAzioneMap.put("azione", azioneToSave.getAzione());
 					someChangesAzione = true;
 				}
 				if(!Objects.equals(azioneToSave.getObiettivoFormativo(), azioneDB.getObiettivoFormativo())) {
-					diffAzioneMap.put("setObiettivoFormativo", azioneToSave.getObiettivoFormativo());
+					diffAzioneMap.put("obiettivoFormativo", azioneToSave.getObiettivoFormativo());
 					someChangesAzione = true;
 				}
 				if(!Objects.equals(azioneToSave.getRisultatiAttesi(), azioneDB.getRisultatiAttesi())) {
-					diffAzioneMap.put("setRisultatiAttesi", azioneToSave.getRisultatiAttesi());
+					diffAzioneMap.put("risultatiAttesi", azioneToSave.getRisultatiAttesi());
 					someChangesAzione = true;
 				}
 				if(!Objects.equals(azioneToSave.getMetodiDiLavoro(), azioneDB.getMetodiDiLavoro())) {
-					diffAzioneMap.put("setMetodiDiLavoro", azioneToSave.getMetodiDiLavoro());
+					diffAzioneMap.put("metodiDiLavoro", azioneToSave.getMetodiDiLavoro());
 					someChangesAzione = true;
 				}
 				//se ci sono stati cambiamenti aggiungo alla mappa con l'indice dell'azione
@@ -484,65 +484,104 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.info(Utils.getLogMessage("Sincronizzazione dell'evento " + evento.getCodiceIdentificativo()));
 		for(String key : diffMap.keySet()) {
 			//gestione ad-hoc per i programmi (non vado a sostituire tutto il programma, ma entro dentro)
-			if(key == "setProgramma") {
-				//TODO
+			if(key == "programmaRES" || key == "fasiAzioniRuoliFSC") {
+				handleProgrammaDiffMap(evento, diffMap);
 			}
-			else if(key == "setFasiAzioniRuoli") {
-				//TODO
-			}
+			//gestione di tutti gli altri campi
 			else {
 				Object value = diffMap.get(key);
-				//se è una collection devo ciclare
-				if(value instanceof Collection) {
-					Collection<Object> collection = null;
-					if(value instanceof HashSet) {
-						collection = new HashSet<Object>();
-					}
-					else if (value instanceof ArrayList) {
-						collection = new ArrayList<Object>();
-					}
-					for(Object iter : (Collection<?>) value) {
-						collection.add(handleIdOggetto(iter));
-					}
-					invokeSetterEvento(evento, key, collection);
-				}
-				else {
-					invokeSetterEvento(evento, key, handleIdOggetto(value));
-				}
+				handleCollectionsThenSetValue(evento, key, value);
 			}
 		}
 		eventoRepository.save(evento);
 	}
 
-	//gestisce la clonazione se necessario
-	private Object handleIdOggetto(Object value) {
-		//se l'oggetto in questione estende la classe delle entity devo clonarlo
-		if(value.getClass().isAssignableFrom(BaseEntityDefaultId.class)) {
-			//TODO
-			return null;
+	//salvataggio delle modifiche ai programmi segnate nella diffMap nell'evento passato come argomento
+	private void handleProgrammaDiffMap(Evento evento, Map<String, Object> diffMap) throws Exception {
+		if(evento instanceof EventoRES) {
+			@SuppressWarnings("unchecked")
+			Map<Integer, Map<Integer, Map<String, Object>>> mappaProgramma = (Map<Integer, Map<Integer, Map<String, Object>>>) diffMap.get("programmaRES");
+			for(int i : mappaProgramma.keySet()) {
+				Map<Integer, Map<String, Object>> mappaDettaglio = mappaProgramma.get(i);
+				for(int k : mappaDettaglio.keySet()) {
+					Map<String, Object> mappaModifiche = mappaDettaglio.get(k);
+					DettaglioAttivitaRES dettaglioRES = ((EventoRES) evento).getProgramma().get(i).getProgramma().get(k);
+					for(String key : mappaModifiche.keySet()) {
+						Object value = mappaModifiche.get(key);
+						handleCollectionsThenSetValue(dettaglioRES, key, value);
+					}
+				}
+			}
 		}
-		//altrimenti posso settarlo direttamente
-		else return value;
+		else if(evento instanceof EventoFSC) {
+			@SuppressWarnings("unchecked")
+			Map<Integer, Map<Integer, Map<String, Object>>> mappaFasi = (Map<Integer, Map<Integer, Map<String, Object>>>) diffMap.get("fasiAzioniRuoliFSC");
+			for(int i : mappaFasi.keySet()) {
+				Map<Integer, Map<String, Object>> mappaAzioni = mappaFasi.get(i);
+				for(int k : mappaAzioni.keySet()) {
+					Map<String, Object> mappaModifiche = mappaAzioni.get(k);
+					AzioneRuoliEventoFSC azioniRuoliFSC = ((EventoFSC) evento).getFasiAzioniRuoli().get(i).getAzioniRuoli().get(k);
+					for(String key : mappaModifiche.keySet()) {
+						Object value = mappaModifiche.get(key);
+						handleCollectionsThenSetValue(azioniRuoliFSC, key, value);
+					}
+				}
+			}
+		}
 	}
 
-	private void invokeSetterEvento(Evento evento, String setter, Object value) throws Exception {
+	//gestisce le collection dai campi che si possono settare direttamente
+	private void handleCollectionsThenSetValue(Object object, String key, Object value) throws Exception {
+		//se è una collection devo ciclare
+		if(value instanceof Collection) {
+			Collection<Object> collection = null;
+			if(value instanceof HashSet) {
+				collection = new HashSet<Object>();
+			}
+			else if (value instanceof ArrayList) {
+				collection = new ArrayList<Object>();
+			}
+			for(Object iter : (Collection<?>) value) {
+				collection.add(handleIdOggetto(iter));
+			}
+			invokeSetter(object, key, collection);
+		}
+		else {
+			invokeSetter(object, key, handleIdOggetto(value));
+		}
+	}
+
+	//gestisce la clonazione se necessario
+	private Object handleIdOggetto(Object value) throws Exception {
+		if(value != null) {
+			//gestione adhoc per i file (che contengono la parte Data)
+			if(value instanceof File) {
+				return fileService.copyFile((File) value);
+			}
+			//se l'oggetto in questione estende la classe delle entity devo clonarlo
+			else if(value.getClass().isAssignableFrom(BaseEntityDefaultId.class)) {
+				Utils.touchFirstLevelOfEverything(value);
+				LOGGER.debug(Utils.getLogMessage("DETACH dell'oggetto id: " + ((BaseEntityDefaultId)value).getId() + " di classe: " + value.getClass()));
+				//N.B. non abbiamo entity all'interno degli oggetti che andiamo a detachare ora..
+				//se ci fossero state altre BaseEntityDefaultId all'interno si sarebbe dovuto detachate anche loro o si sarebbe
+				//ottenuto un reference e non una nuova instanza
+				//FIXME probabilmente mai chiamato e mai sarà chiamato (per i File vedere sopra)
+				entityManager.detach(value);
+				((BaseEntityDefaultId)value).setId(null);
+				entityManager.persist(value);
+				return value;
+			}
+			//altrimenti posso settarlo direttamente
+			else return value;
+		}
+		return null;
+	}
+
+	//invoka il setter dell'object per settare il value usando reflection
+	private void invokeSetter(Object object, String property, Object value) throws Exception {
 		//reflection by spring framework
-//		PropertyAccessor myAccessor = PropertyAccessorFactory.forDirectFieldAccess(evento);
-//		myAccessor.setPropertyValue("verificaApprendimento", value)
-
-		//reflection standard
-		Class<?> parameterClass = null;
-		if(value instanceof HashSet) {
-			parameterClass = Set.class;
-		}
-		else if (value instanceof ArrayList) {
-			parameterClass = List.class;
-		}
-		else
-			parameterClass = value.getClass();
-
-		Method method = evento.getClass().getMethod(setter, parameterClass);
-		method.invoke(evento, value);
+		PropertyAccessor myAccessor = PropertyAccessorFactory.forDirectFieldAccess(object);
+		myAccessor.setPropertyValue(property, value);
 	}
 
 	@Override
@@ -2411,7 +2450,7 @@ public class EventoServiceImpl implements EventoService {
 
 	//metodo che aggiorna gli orari delle attività nel wrapper (non nell'evento poichè questi orari devono ancora passare per il validatore)
 	@Override
-	public void updateOrariAttivita(ModificaOrarioAttivitaWrapper orariDescriptor, EventoWrapper eventoWrapper) {
+	public boolean updateOrariAttivita(ModificaOrarioAttivitaWrapper orariDescriptor, EventoWrapper eventoWrapper) {
 		//formatto la data
 		LocalTime ora = LocalTime.parse(orariDescriptor.getOra());
 		List<DettaglioAttivitaRES> listaAttivita = eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(orariDescriptor.getProgrammaId()).getProgramma().getProgramma();
@@ -2424,11 +2463,19 @@ public class EventoServiceImpl implements EventoService {
 		}
 		//calcolo i minuti da aggiungere/sottrarre
 		long minutes = Duration.between(primaAttivitaStart, ora).toMinutes();
+		//controllo se posso spostare tutte le date o se fanno il giro (scavalcano al giorno dopo)
+		for(Long pos : orariDescriptor.getListaRowId()) {
+			DettaglioAttivitaRES da = listaAttivita.get((int) (long) pos);
+			if(da.getOrarioFine().plusMinutes(minutes).isBefore(da.getOrarioFine()) && minutes > 0)
+				return false;
+		}
+		//setto le date
 		for(Long pos : orariDescriptor.getListaRowId()) {
 			DettaglioAttivitaRES da = listaAttivita.get((int) (long) pos);
 			da.setOrarioInizio(da.getOrarioInizio().plusMinutes(minutes));
 			da.setOrarioFine(da.getOrarioFine().plusMinutes(minutes));
 		}
+		return true;
 	}
 
 	@Override

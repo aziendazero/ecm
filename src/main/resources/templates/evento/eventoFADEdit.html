@@ -27,7 +27,8 @@
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- ARGOMENTO -->
 								<div id="container-argomento" class="item form-group">
@@ -201,7 +202,8 @@
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- TODO rimuovere -->
 <!-- 								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
@@ -597,7 +599,8 @@
 											<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 													isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 													isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-													isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+													isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+													hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 										<div class='col-md-4 col-sm-4 col-xs-12'></div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
 											<input type="hidden" th:value="${risultato.key}" />
@@ -626,7 +629,8 @@
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- PROGRAMMA EVENTO -->
 <!-- 								METTERE QUA IL PROGRAMMA -->
@@ -662,7 +666,8 @@
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- VERIFICA APPRENDIMENTO PARTECIPANTI -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')} ? 'bad'">
