@@ -199,7 +199,7 @@ public class ComunicazioneController {
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required", "error"));
 				model.addAttribute("replyError", true);
 				LOGGER.info(Utils.getLogMessage("VIEW: " + SHOW));
-				return SHOW;
+				return goToShowComunicazione(model, prepareComunicazioneWrapperShow(comunicazioneService.getComunicazioneById(id)));
 			}else{
 				comunicazioneService.reply(comunicazioneWrapper.getRisposta(), id, comunicazioneWrapper.getAllegatoRisposta());
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.risposta_inviata", "success"));

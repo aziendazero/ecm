@@ -30,6 +30,39 @@
 <!-- 				</div> -->
 <!-- 			</div> -->
 
+			<!-- modale per spostare (slittare) orario attività in blocco -->
+			<div id="modale-sposta-orario" class="modal fade" data-model-index="1" role="dialog">
+				<div class="modal-dialog modal-md">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+							</button>
+							<h4 class="modal-title" id="myModalLabel1" th:text="#{label.slittamento_orario_attivita}"></h4>
+						</div>
+						<div class="modal-body">
+							<div class="alert alert-warning" th:text="#{label.disclaimer_modalita_spostamento_orario}"></div>
+
+							<div class="item form-group with-margin-top alert-js" id="item-spostamento">
+								<label class="control-label col-md-1 col-sm-2 col-xs-3" for="orarioSpostamento">
+									<span th:text="#{label.orario}">Orario</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group ora">
+									<input type="text" required="required" class="form-control" id="orarioSlittamentoBlocco"/>
+									<span class="input-group-addon openClock">
+    									<i class="glyphicon glyphicon-time"></i>
+ 									</span>
+								</div>
+							</div>
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success pull-right" th:text="#{label.sposta}" onclick="spostaTutti()"></button>
+							<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<!-- finestra modale di aggiunta attivitaRES a programma del Giorno -->
 			<div id="add-attivitaRES-modal" class="modal fade modal-add-attivitaRES" data-model-index="4" role="dialog">
 				<div class="modal-dialog modal-lg">
@@ -51,7 +84,8 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- ORARIO INIZO-->
 										<div class="item form-group">
@@ -59,10 +93,10 @@
 												<span th:text="#{label.orario_inizio}">Orario Fine</span>
 												<span class="required">*</span>
 											</label>
-											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
-												<input type="text" required="required" class="form-control ora"
-													th:field="${eventoWrapper.tempAttivitaRES.orarioInizio}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
-													<span class="input-group-addon openClock" onclick="openClock(this)">
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group ora" id="razionale">
+												<input type="text" required="required" class="form-control"
+													th:field="${eventoWrapper.tempAttivitaRES.orarioInizio}" th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" />
+													<span class="input-group-addon openClock">
 		     											<i class="glyphicon glyphicon-time"></i>
 		  											</span>
 											</div>
@@ -74,10 +108,10 @@
 												<span th:text="#{label.orario_fine}">Orario Fine</span>
 												<span class="required">*</span>
 											</label>
-											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="razionale">
-												<input type="text" required="required" class="form-control ora"
-													th:field="${eventoWrapper.tempAttivitaRES.orarioFine}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
-													<span class="input-group-addon openClock" onclick="openClock(this)">
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group ora" id="razionale">
+												<input type="text" required="required" class="form-control"
+													th:field="${eventoWrapper.tempAttivitaRES.orarioFine}" th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" />
+													<span class="input-group-addon openClock">
 		     											<i class="glyphicon glyphicon-time"></i>
 		  											</span>
 											</div>
@@ -220,7 +254,7 @@
 				<!--  TODO RIMUOVERE NUMERAZIONE HARDCODATA E METTERLA IN UN ENUM?  -->
 
 				<form id="formEventoRES" class="form-horizontal form-label-left form-evento"
-					method="post" enctype="multipart/form-data" th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/validate|}"
+					method="post" enctype="multipart/form-data" th:action="@{|/provider/${eventoWrapper.providerId}/evento/validate|}"
 					novalidate="novalidate">
 
 					<!-- input hidden -->
@@ -253,7 +287,8 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- TODO rimuovere -->
 	<!-- 									<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
@@ -515,7 +550,8 @@
 												<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 														isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 														isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+														hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 													<div class='col-md-4 col-sm-4 col-xs-12'></div>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group datapick">
 														<input type="hidden" th:value="${data.key}" />
@@ -671,7 +707,7 @@
 													data-actions-box="true" data-size="10"
 													data-hide-disabled="false"
 													onchange="mostraNascondiCampiTipologiaEvento(this.value)"
-													title="Seleziona una tipologia..." th:disabled="${isRiedizione or isEditSemiBloccato}">
+													title="Seleziona una tipologia..." th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}">
 													<option
 														th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).values()}"
 														th:value="${tipologia}"
@@ -812,7 +848,8 @@
 												<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 														isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 														isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+														isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+														hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 													<div class='col-md-4 col-sm-4 col-xs-12'></div>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group risultatoAttesoPick">
 														<input type="hidden" th:value="${risultato.key}" />
@@ -841,7 +878,8 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 										<!-- PROGRAMMA EVENTO -->
 										<div class='programmaEvento item form-group' id="programma">
@@ -859,8 +897,8 @@
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, brochure, null, null, null, false, null, false)" ></th:block> -->
-												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_BROCHURE_EVENTO}', brochure, null, null, null, false, 'edit', false)" ></th:block>
-												<th:block th:if="${isRiedizione or isEditSemiBloccato}">
+												<th:block th:unless="${isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_BROCHURE_EVENTO}', brochure, null, null, null, false, 'edit', false)" ></th:block>
+												<th:block th:if="${isEditSemiBloccato}">
 													<div class="value-edit" th:if="${eventoWrapper.evento.brochureEvento != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.brochureEvento.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.brochureEvento.id}|}"></a></div>
 													<div class="value-edit danger" th:unless="${eventoWrapper.evento.brochureEvento != null}" th:text="#{label.allegato_non_inserito}"></div>
 												</th:block>
@@ -877,8 +915,8 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
-
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 										<!-- VERIFICA APPRENDIMENTO PARTECIPANTI -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.verificaApprendimento')} ? 'bad'">
 											<label class="control-label col-xs-1">
@@ -1604,7 +1642,6 @@
 						});
 					});
 
-
 					//da approfondire
 				    /*
 					$('#dataIntermedia').on('apply.daterangepicker', function(ev, picker) {
@@ -1628,10 +1665,6 @@
 				        'default': 'now'
 				    });
 
-					function openClock(caller){
-						$(caller).parent().click();
-					}
-
 					//init per provincia e comune della sede
 					initProvinciaComune('provincia', 'comune');
 
@@ -1641,6 +1674,11 @@
 						initProvinciaComune('provprog' + $sel.data("programma-provincia"), 'comprog' + $sel.data("programma-provincia"));
 					})
 
+					//resetta la variabile di appoggio
+					$("#modale-sposta-orario").on("hidden.bs.modal", function() {
+						tempTable = null;
+					})
+
 				}
 
 				//eventLister cambio tab
@@ -1648,6 +1686,96 @@
 			    	tabSelected = e.target.id;
 					reloadSection(tabSelected);
 				});
+
+				function openClock(caller){
+					console.log($(caller).prev().attr("class"))
+					$(caller).prev().trigger("click");
+				}
+
+				//seleziona tutte le attività
+				function selezionaTutteAttivita(table) {
+					var $table = $(table);
+					if ($table.hasClass('all-selected')) {
+			            $table.removeClass('all-selected');
+			            $table.find('tbody tr').removeClass("selected");
+			        }
+			        else {
+			            $table.addClass('all-selected');
+			            $table.find('tbody tr').addClass("selected");
+			        }
+				}
+
+				//variabile di appoggio per la tabella selezionata
+				var tempTable;
+
+				function openModaleSpostaOrario(table) {
+					tempTable = table;
+					$("#modale-sposta-orario").modal("show");
+				}
+
+				function closeModaleSpostaOrario() {
+					$("#modale-sposta-orario").modal("hide");
+					$("#orarioSlittamentoBlocco").val("")
+				}
+
+				//funzione che sposta tutti gli orari di inizio e di fine
+				function spostaTutti() {
+					var ora = $("#orarioSlittamentoBlocco").val();
+					var $table = $(tempTable);
+					var $rows = $table.find("tbody tr");
+					if(!moment(ora, "HH:mm").isValid()) {
+						//errore validazione
+						$("#item-spostamento").addClass('bad');
+						$("#item-spostamento").find(".alert").remove();
+						$("#item-spostamento").append($("<div class='alert col-xs-3'></div>").text([[#{label.orario_non_valido}]]));
+					}
+					else {
+						var programmaId = $table.parents(".div-programma-id").attr("data-programma-id");
+						var listaRowId = new Array();
+						$.each($rows, function(i,v) {
+							$v = $(v);
+							listaRowId.push($v.attr("data-row-id"));
+						})
+						if(listaRowId.length == 0) {
+							//errore validazione
+							$("#item-spostamento").addClass('bad');
+							$("#item-spostamento").find(".alert").remove();
+							$("#item-spostamento").append($("<div class='alert col-xs-3'></div>").text([[#{label.nessun_attivita_selezionata}]]));
+						}
+						else {
+							var url = [[@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/updateOrari|}]];
+							var token = [[${_csrf.token}]];
+							var header = [[${_csrf.headerName}]];
+							var dataSend = JSON.stringify({programmaId: programmaId, listaRowId: listaRowId, ora: ora});
+							$.ajax({
+								type: "POST",
+								url: url,
+								timeout: 100000,
+								mimeType: "text/html",
+								data: dataSend,
+								contentType: "application/json; charset=utf-8",
+		                        beforeSend: function(xhr) {
+		                            xhr.setRequestHeader(header, token);
+		                        },
+		                        success: function(data) {
+		                        	$('#attivitaRES').empty().html(data);
+		                        	$.each($(".erroreSpostamentoOrario"), function() {
+								  		if($(this).val() == 'true') {
+									  		sendNotifyStatic([[#{message.errore}]], [[#{message.attenzione_spostamento_date_non_valido}]], 'error')
+								  		}
+								  	});
+								  	reInitComponents();
+								  	closeModaleAddAttivitaTo();
+								  	reInitDataTableByClass("datatable-responsive-programmaRES");
+								  	closeModaleSpostaOrario();
+		                        },
+		                        error: function(request, status, error) {
+		                            alert(error);
+		                        }
+		                    });
+						}
+					}
+				}
 
 				//funzione che aggiunge una data intermedia, aumenta il name in base alle date già presenti
 				function aggiungiDataIntermedia(caller, target) {
@@ -2129,6 +2257,7 @@
 						reInitModaleAddAttivita();
 // 						$('#add-attivita').click();
 						openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento,false);
+						$(".modal-add-attivitaRES").modal("show");
 					  })
 				  	.fail(function() {
 				    	alert( "error" );

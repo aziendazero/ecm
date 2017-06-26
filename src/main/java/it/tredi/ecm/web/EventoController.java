@@ -2,6 +2,7 @@ package it.tredi.ecm.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -102,6 +104,7 @@ import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ErrorsAjaxWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
+import it.tredi.ecm.web.bean.ModificaOrarioAttivitaWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 import it.tredi.ecm.web.bean.SponsorWrapper;
@@ -252,6 +255,12 @@ public class EventoController {
 				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
 			return goToList(model, providerId, request);
 		}
+		catch (AccreditamentoNotFoundException accreditamentoNotFoundEx) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),accreditamentoNotFoundEx);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.non_risulta_attivo_nessun_accreditamento", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
+			return "redirect:/home";
+		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
@@ -260,7 +269,7 @@ public class EventoController {
 		}
 	}
 
-	private String goToList(Model model, Long providerId, HttpServletRequest request) {
+	private String goToList(Model model, Long providerId, HttpServletRequest request) throws AccreditamentoNotFoundException {
 		String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
 		model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
 		model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
@@ -375,7 +384,7 @@ public class EventoController {
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 			eventoService.save(evento);
-			updateEventoList(evento.getId(), session);
+			updateEventoList(evento.getId(), session, false, true);
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_salvato_in_bozza_success", "success"));
 			if(model.asMap().containsKey("returnLink")) {
 				String returnLink = (String) model.asMap().get("returnLink");
@@ -441,7 +450,7 @@ public class EventoController {
 					evento.setStato(EventoStatoEnum.VALIDATO);
 					evento.setValidatorCheck(true);
 					eventoService.save(evento);
-					updateEventoList(evento.getId(), session);
+					updateEventoList(evento.getId(), session, false, true);
 					alertEmailService.creaAlertForEvento(evento);
 					LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 				}
@@ -475,7 +484,7 @@ public class EventoController {
 			evento.setStato(EventoStatoEnum.VALIDATO);
 			evento.setValidatorCheck(true);
 			eventoService.save(evento);
-			updateEventoList(evento.getId(), session);
+			updateEventoList(evento.getId(), session, false, true);
 			alertEmailService.creaAlertForEvento(evento);
 			LOGGER.info(Utils.getLogMessage("Evento validato e salvato!"));
 
@@ -612,7 +621,7 @@ public class EventoController {
 				Evento evento = eventoService.getEvento(eventoId);
 				if(evento.getStato() == EventoStatoEnum.BOZZA){
 					eventoService.delete(eventoId);
-					updateEventoList(evento.getId(), session, true);
+					updateEventoList(evento.getId(), session, true, false);
 				}else{
 					evento.setStato(EventoStatoEnum.CANCELLATO);
 					eventoService.save(evento);
@@ -889,6 +898,7 @@ public class EventoController {
 		//editabilità
 		eventoWrapper.setEditSemiBloccato(eventoService.isEditSemiBloccato(evento));
 		eventoWrapper.setEventoIniziato(eventoService.isEventoIniziato(evento));
+		eventoWrapper.setHasRiedizioni(eventoService.existRiedizioniOfEventoId(evento.getId()));
 //		eventoWrapper.setHasDataInizioRestrictions(eventoService.hasDataInizioRestrictions(evento));
 		//flag per capire se la segreteria fa modifiche che toccano il numero dei crediti
 		if(evento.getCrediti() != null)
@@ -1861,7 +1871,7 @@ public class EventoController {
 	}
 
 	//update dell'evento modificato nella lista in sessione
-	private void updateEventoList(Long eventoId, HttpSession session, boolean rimozione) {
+	private void updateEventoList(Long eventoId, HttpSession session, boolean rimozione, boolean updateRiedizioni) {
 		Collection<Evento> eventoList = (Collection<Evento>) session.getAttribute("eventoList");
 
 		Evento eventoToUpdate = eventoService.getEvento(eventoId);
@@ -1870,12 +1880,34 @@ public class EventoController {
 			eventoList.remove(eventoToUpdate);
 			if(rimozione == false)
 				eventoList.add(eventoToUpdate);
+			if(updateRiedizioni) {
+				Set<Evento> riedizioni = eventoService.getRiedizioniOfEventoId(eventoId);
+				for(Evento ev : riedizioni)
+					updateEventoList(ev.getId(), session, false, true);
+			}
 			session.setAttribute("eventoList", eventoList);
 		}
 	}
 
 	private void updateEventoList(Long eventoId, HttpSession session) {
-		updateEventoList(eventoId, session, false);
+		updateEventoList(eventoId, session, false, false);
+	}
+
+	@RequestMapping(value="/provider/{providerId}/evento/{eventoId}/updateOrari", method=RequestMethod.POST)
+	   public String updateOrari(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper,
+			   Model model, RedirectAttributes redirectAttrs,
+			   @RequestBody ModificaOrarioAttivitaWrapper jsonObj) {
+		try{
+			boolean ok = eventoService.updateOrariAttivita(jsonObj, eventoWrapper);
+			//non posso spostare le date perchè scavalcano la fine della giornata
+			if(!ok)
+				model.addAttribute("erroreSpostamentoOrario", true);
+			return EDIT + " :: attivitaRES";
+		}catch (Exception ex){
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return EDIT + " :: attivitaRES";
+		}
 	}
 
 }

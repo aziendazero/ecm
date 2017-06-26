@@ -1,10 +1,15 @@
 package it.tredi.ecm.service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,6 +26,11 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.proxy.HibernateProxy;
+import org.springframework.beans.PropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,8 +46,10 @@ import it.tredi.ecm.cogeaps.Helper;
 import it.tredi.ecm.cogeaps.XmlReportBuilder;
 import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagrafeRegionaleCrediti;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
+import it.tredi.ecm.dao.entity.BaseEntityDefaultId;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
 import it.tredi.ecm.dao.entity.Disciplina;
@@ -83,11 +95,13 @@ import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
+import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
+import it.tredi.ecm.web.bean.ModificaOrarioAttivitaWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 import it.tredi.ecm.web.validator.FileValidator;
@@ -123,6 +137,8 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired private ReportRitardiService reportRitardiService;
 
+	@Autowired private AccreditamentoService accreditamentoService;
+
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -131,8 +147,9 @@ public class EventoServiceImpl implements EventoService {
 
 	@Override
 	@Transactional
-	public void save(Evento evento) {
+	public void save(Evento evento) throws Exception {
 		LOGGER.debug("Salvataggio evento");
+		Evento eventoDB = null;
 		if(evento.isNew()) {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
 			evento.handleDateScadenza();
@@ -140,12 +157,11 @@ public class EventoServiceImpl implements EventoService {
 			evento.buildPrefix();
 		}else{
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + " - Salvataggio"));
-			Evento eventoDB = eventoRepository.getOne(evento.getId());
+			eventoDB = eventoRepository.getOne(evento.getId());
 			if(!evento.getDataFine().equals(eventoDB.getDataFine()))
 				evento.handleDateScadenza();
-//			W.I.P.
-//			if(existRiedizioniOfEventoId(evento.getId()))
-//				handleSincronizzazioneRiedizioni(evento, eventoDB);
+			if(existRiedizioniOfEventoId(evento.getId()))
+				handleSincronizzazioneRiedizioni(evento, eventoDB);
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		evento = eventoRepository.saveAndFlush(evento);
@@ -161,11 +177,9 @@ public class EventoServiceImpl implements EventoService {
 		//se attuazione di evento del piano formativo con data fine all'anno successivo...l'evento viene inserito nel piano formativo dell'anno successivo
 		if(evento.isEventoDaPianoFormativo()){
 			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
-
 			if(evento.getStato() == EventoStatoEnum.CANCELLATO){
 				//TODO al momento non lo faccio....poi lo chiederenno loro...da tenere presente che....se settiamo a flase il flag..l'evento piano formativo sarà eli
 				//bisgna gestire tutti i cascade corretti -> eventoPianoFormativo è presente in più piani formativi e nell'evento che lo ha attuato
-
 				//se annullo un evento che è stato attuato da piano formativo...rimuovo il flag in modo tale da poter rieditare l'evento
 				//eventoPianoFormativo.setAttuato(false);
 			}else{
@@ -176,18 +190,397 @@ public class EventoServiceImpl implements EventoService {
 					if(pf == null){
 						pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
 					}
-
 					pf.addEvento(eventoPianoFormativo);
 					pianoFormativoService.save(pf);
 				}
-
 				if(!evento.getEventoPianoFormativo().isAttuato()){
 					eventoPianoFormativo.setAttuato(true);
 				}
 			}
-
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
+	}
+
+	//gestione della sincronizzazione ad-hoc delle riedizioni degli eventi
+	private void handleSincronizzazioneRiedizioni(Evento eventoToSave, Evento eventoDB) throws Exception {
+		LOGGER.info(Utils.getLogMessage("Inizio della procedura di sincronizzazione delle riedizioni"));
+		//analizza le differenze da sincronizzare tra le riedizioni/evento padre
+		Map<String, Object> diffMap = populateDiffMap(eventoToSave, eventoDB);
+		//lista degli eventi da sincronizzare
+		Set<Evento> eventiDaAggiornare = getRiedizioniOfEventoId(eventoToSave.getId());
+		//aggiornamento degli eventi a seconda del diff (utilizza la reflection)
+		for(Evento ev : eventiDaAggiornare) {
+			syncEventoByDiffMap(ev, diffMap);
+		}
+	}
+
+	//metodo per l'individuazioni dei campi/valori modificati nell'ultimo salvataggio, messi in una mappa
+	//e utilizzati poi la reflection per l'aggiornamento delle altre riedizioni.
+	//ATTENZIONE: i campi presi in considerazione sono solo un piccolo subset dei campi (solo quelli da tenere sincronizzati)
+	private Map<String, Object> populateDiffMap(Evento eventoToSave, Evento eventoDB) {
+		LOGGER.info(Utils.getLogMessage("Creazione della mappa delle modifiche dall'ultimo salvataggio"));
+		Map<String, Object> diffMap = new HashMap<String, Object>();
+
+		//hibernate unproxy
+		if(eventoToSave instanceof	HibernateProxy){
+			eventoToSave = (Evento) entityManager.unwrap(SessionImplementor.class).getPersistenceContext().unproxy(eventoToSave);
+		}
+		if(eventoDB instanceof	HibernateProxy){
+			eventoDB = (Evento) entityManager.unwrap(SessionImplementor.class).getPersistenceContext().unproxy(eventoDB);
+		}
+
+		//PARTE IN COMUNE A TUTTI GLI EVENTI
+		if(!Objects.equals(eventoToSave.getTitolo(), eventoDB.getTitolo())) {
+			diffMap.put("titolo", eventoToSave.getTitolo());
+		}
+		if(!Objects.equals(eventoToSave.getObiettivoNazionale(), eventoDB.getObiettivoNazionale())) {
+			diffMap.put("obiettivoNazionale", eventoToSave.getObiettivoNazionale());
+		}
+		if(!Objects.equals(eventoToSave.getObiettivoRegionale(), eventoDB.getObiettivoRegionale())) {
+			diffMap.put("obiettivoRegionale", eventoToSave.getObiettivoRegionale());
+		}
+		if(!Objects.equals(eventoToSave.getDiscipline(), eventoDB.getDiscipline())) {
+			diffMap.put("discipline", eventoToSave.getDiscipline());
+		}
+		//le professioni sono aggiornate automaticamente con la modifica delle discipline
+		if(!Objects.equals(eventoToSave.getDestinatariEvento(), eventoDB.getDestinatariEvento())) {
+			diffMap.put("destinatariEvento", eventoToSave.getDestinatariEvento());
+		}
+		if(!Objects.equals(eventoToSave.getContenutiEvento(), eventoDB.getContenutiEvento())) {
+			diffMap.put("contenutiEvento", eventoToSave.getContenutiEvento());
+		}
+		if(!Objects.equals(eventoToSave.getNumeroPartecipanti(), eventoDB.getNumeroPartecipanti())) {
+			diffMap.put("numeroPartecipanti", eventoToSave.getNumeroPartecipanti());
+		}
+		if(!Objects.equals(eventoToSave.getConfermatiCrediti(), eventoDB.getConfermatiCrediti())) {
+			diffMap.put("confermatiCrediti", eventoToSave.getConfermatiCrediti());
+		}
+		if(!Objects.equals(eventoToSave.getCrediti(), eventoDB.getCrediti())) {
+			diffMap.put("crediti", eventoToSave.getCrediti());
+		}
+		if(!Objects.equals(eventoToSave.getQuotaPartecipazione(), eventoDB.getQuotaPartecipazione())) {
+			diffMap.put("quotaPartecipazione", eventoToSave.getQuotaPartecipazione());
+		}
+		if(!Objects.equals(eventoToSave.getEventoSponsorizzato(), eventoDB.getEventoSponsorizzato())) {
+			diffMap.put("eventoSponsorizzato", eventoToSave.getEventoSponsorizzato());
+		}
+		if(!Objects.equals(eventoToSave.getSponsors(), eventoDB.getSponsors())) {
+			diffMap.put("sponsors", eventoToSave.getSponsors());
+		}
+		if(!Objects.equals(eventoToSave.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(), eventoDB.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia())) {
+			diffMap.put("eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", eventoToSave.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia());
+		}
+		if(!File.equals(eventoToSave.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), eventoDB.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia())) {
+			diffMap.put("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", eventoToSave.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia());
+		}
+		if(!File.equals(eventoToSave.getAutocertificazioneAutorizzazioneMinisteroSalute(), eventoDB.getAutocertificazioneAutorizzazioneMinisteroSalute())) {
+			diffMap.put("autocertificazioneAutorizzazioneMinisteroSalute", eventoToSave.getAutocertificazioneAutorizzazioneMinisteroSalute());
+		}
+		if(!Objects.equals(eventoToSave.getAltreFormeFinanziamento(), eventoDB.getAltreFormeFinanziamento())) {
+			diffMap.put("altreFormeFinanziamento", eventoToSave.getAltreFormeFinanziamento());
+		}
+		if(!File.equals(eventoToSave.getAutocertificazioneAssenzaFinanziamenti(), eventoDB.getAutocertificazioneAssenzaFinanziamenti())) {
+			diffMap.put("autocertificazioneAssenzaFinanziamenti", eventoToSave.getAutocertificazioneAssenzaFinanziamenti());
+		}
+		if(!File.equals(eventoToSave.getContrattiAccordiConvenzioni(), eventoDB.getContrattiAccordiConvenzioni())) {
+			diffMap.put("contrattiAccordiConvenzioni", eventoToSave.getContrattiAccordiConvenzioni());
+		}
+		if(!Objects.equals(eventoToSave.getEventoAvvalePartner(), eventoDB.getEventoAvvalePartner())) {
+			diffMap.put("eventoAvvalePartner", eventoToSave.getEventoAvvalePartner());
+		}
+		if(!Objects.equals(eventoToSave.getPartners(), eventoDB.getPartners())) {
+			diffMap.put("partners", eventoToSave.getPartners());
+		}
+		if(!File.equals(eventoToSave.getDichiarazioneAssenzaConflittoInteresse(), eventoDB.getDichiarazioneAssenzaConflittoInteresse())) {
+			diffMap.put("dichiarazioneAssenzaConflittoInteresse", eventoToSave.getDichiarazioneAssenzaConflittoInteresse());
+		}
+		if(!Objects.equals(eventoToSave.getProceduraVerificaQualitaPercepita(), eventoDB.getProceduraVerificaQualitaPercepita())) {
+			diffMap.put("proceduraVerificaQualitaPercepita", eventoToSave.getProceduraVerificaQualitaPercepita());
+		}
+		if(!Objects.equals(eventoToSave.getAutorizzazionePrivacy(), eventoDB.getAutorizzazionePrivacy())) {
+			diffMap.put("autorizzazionePrivacy", eventoToSave.getAutorizzazionePrivacy());
+		}
+		//PARTE SPECIFICA RES
+		if(eventoToSave instanceof EventoRES) {
+			if(!Objects.equals(((EventoRES) eventoToSave).getWorkshopSeminariEcm(), ((EventoRES) eventoDB).getWorkshopSeminariEcm())) {
+				diffMap.put("workshopSeminariEcm", ((EventoRES) eventoToSave).getWorkshopSeminariEcm());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getTitoloConvegno(), ((EventoRES) eventoDB).getTitoloConvegno())) {
+				diffMap.put("titoloConvegno", ((EventoRES) eventoToSave).getTitoloConvegno());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getRazionale(), ((EventoRES) eventoDB).getRazionale())) {
+				diffMap.put("razionale", ((EventoRES) eventoToSave).getRazionale());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getRisultatiAttesi(), ((EventoRES) eventoDB).getRisultatiAttesi())) {
+				diffMap.put("risultatiAttesi", ((EventoRES) eventoToSave).getRisultatiAttesi());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getVerificaApprendimento(), ((EventoRES) eventoDB).getVerificaApprendimento())) {
+				diffMap.put("verificaApprendimento", ((EventoRES) eventoToSave).getVerificaApprendimento());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getVerificaPresenzaPartecipanti(), ((EventoRES) eventoDB).getVerificaPresenzaPartecipanti())) {
+				diffMap.put("verificaPresenzaPartecipanti", ((EventoRES) eventoToSave).getVerificaPresenzaPartecipanti());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getMaterialeDurevoleRilasciatoAiPratecipanti(), ((EventoRES) eventoDB).getMaterialeDurevoleRilasciatoAiPratecipanti())) {
+				diffMap.put("materialeDurevoleRilasciatoAiPratecipanti", ((EventoRES) eventoToSave).getMaterialeDurevoleRilasciatoAiPratecipanti());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getSoloLinguaItaliana(), ((EventoRES) eventoDB).getSoloLinguaItaliana())) {
+				diffMap.put("soloLinguaItaliana", ((EventoRES) eventoToSave).getSoloLinguaItaliana());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getLinguaStranieraUtilizzata(), ((EventoRES) eventoDB).getLinguaStranieraUtilizzata())) {
+				diffMap.put("linguaStranieraUtilizzata", ((EventoRES) eventoToSave).getLinguaStranieraUtilizzata());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getEsisteTraduzioneSimultanea(), ((EventoRES) eventoDB).getEsisteTraduzioneSimultanea())) {
+				diffMap.put("esisteTraduzioneSimultanea", ((EventoRES) eventoToSave).getEsisteTraduzioneSimultanea());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getVerificaRicaduteFormative(), ((EventoRES) eventoDB).getVerificaRicaduteFormative())) {
+				diffMap.put("verificaRicaduteFormative", ((EventoRES) eventoToSave).getVerificaRicaduteFormative());
+			}
+			if(!Objects.equals(((EventoRES) eventoToSave).getDescrizioneVerificaRicaduteFormative(), ((EventoRES) eventoDB).getDescrizioneVerificaRicaduteFormative())) {
+				diffMap.put("descrizioneVerificaRicaduteFormative", ((EventoRES) eventoToSave).getDescrizioneVerificaRicaduteFormative());
+			}
+			if(!File.equals(((EventoRES) eventoToSave).getDocumentoVerificaRicaduteFormative(), ((EventoRES) eventoDB).getDocumentoVerificaRicaduteFormative())) {
+				diffMap.put("documentoVerificaRicaduteFormative", ((EventoRES) eventoToSave).getDocumentoVerificaRicaduteFormative());
+			}
+			//gestione del programma
+			diffMap.put("programmaRES", populateDiffMapProgrammaRES(((EventoRES) eventoToSave).getProgramma(), ((EventoRES) eventoDB).getProgramma()));
+		}
+		//PARTE SPECIFICA FSC
+		else if (eventoToSave instanceof EventoFSC) {
+			if(!Objects.equals(((EventoFSC) eventoToSave).getTipologiaGruppo(), ((EventoFSC) eventoDB).getTipologiaGruppo())) {
+				diffMap.put("tipologiaGruppo", ((EventoFSC) eventoToSave).getTipologiaGruppo());
+			}
+			if(!Objects.equals(((EventoFSC) eventoToSave).getSperimentazioneClinica(), ((EventoFSC) eventoDB).getSperimentazioneClinica())) {
+				diffMap.put("sperimentazioneClinica", ((EventoFSC) eventoToSave).getSperimentazioneClinica());
+			}
+			if(!Objects.equals(((EventoFSC) eventoToSave).getOttenutoComitatoEtico(), ((EventoFSC) eventoDB).getOttenutoComitatoEtico())) {
+				diffMap.put("ottenutoComitatoEtico", ((EventoFSC) eventoToSave).getOttenutoComitatoEtico());
+			}
+			if(!Objects.equals(((EventoFSC) eventoToSave).getDescrizioneProgetto(), ((EventoFSC) eventoDB).getDescrizioneProgetto())) {
+				diffMap.put("descrizioneProgetto", ((EventoFSC) eventoToSave).getDescrizioneProgetto());
+			}
+			if(!Objects.equals(((EventoFSC) eventoToSave).getVerificaApprendimento(), ((EventoFSC) eventoDB).getVerificaApprendimento())) {
+				diffMap.put("verificaApprendimento", ((EventoFSC) eventoToSave).getVerificaApprendimento());
+			}
+			if(!Objects.equals(((EventoFSC) eventoToSave).getVerificaPresenzaPartecipanti(), ((EventoFSC) eventoDB).getVerificaPresenzaPartecipanti())) {
+				diffMap.put("verificaPresenzaPartecipanti", ((EventoFSC) eventoToSave).getVerificaPresenzaPartecipanti());
+			}
+			if(!Objects.equals(((EventoFSC) eventoToSave).getIndicatoreEfficaciaFormativa(), ((EventoFSC) eventoDB).getIndicatoreEfficaciaFormativa())) {
+				diffMap.put("indicatoreEfficaciaFormativa", ((EventoFSC) eventoToSave).getIndicatoreEfficaciaFormativa());
+			}
+			//gestione del programma
+			diffMap.put("fasiAzioniRuoliFSC", populateDiffMapProgrammaFSC(((EventoFSC) eventoToSave).getFasiAzioniRuoli(), ((EventoFSC) eventoDB).getFasiAzioniRuoli()));
+		}
+		//I FAD NON SONO RIEDITABILI
+		return diffMap;
+	}
+
+	//metodo che controlla le differenze tra il programma res da salvare e quello già salvato
+	//DEVE essere garantito lato inserimento che il numero e l'ordinamento dei programmi e dei dettagli attività non cambi durante le riedizioni
+	//new guinness world record di mappe annidate map<string, map<int, map<int, map<string, object>>>> (._.)
+	private Map<Integer, Map<Integer, Map<String, Object>>> populateDiffMapProgrammaRES(List<ProgrammaGiornalieroRES> programmaToSaveList, List<ProgrammaGiornalieroRES> programmaDBList) {
+		LOGGER.info(Utils.getLogMessage("Gestione ad-hoc delle differenze nel Programma RES"));
+		//mappa <index, modifiche programma>
+		Map<Integer, Map<Integer, Map<String, Object>>> diffProgMap = new HashMap<Integer, Map<Integer, Map<String, Object>>>();
+		//ordino i programmi per giorno
+		Collections.sort(programmaToSaveList, (a,b) -> a.getGiorno().compareTo(b.getGiorno()));
+		Collections.sort(programmaDBList, (a,b) -> a.getGiorno().compareTo(b.getGiorno()));
+		for(int i = 0; i < programmaToSaveList.size(); i++) {
+			List<DettaglioAttivitaRES> dettaglioToSaveList = programmaToSaveList.get(i).getProgramma();
+			List<DettaglioAttivitaRES> dettaglioDBList = programmaDBList.get(i).getProgramma();
+			//ordino i dettagli attività per orario di inizio
+			Collections.sort(dettaglioToSaveList, (a,b) -> a.getOrarioInizio().compareTo(b.getOrarioInizio()));
+			Collections.sort(dettaglioDBList, (a,b) -> a.getOrarioInizio().compareTo(b.getOrarioInizio()));
+			boolean someChangesProgramma = false;
+			//mappa <index, modifiche dettaglio>
+			Map<Integer, Map<String, Object>> indexDiffDettaglioMap = new HashMap<Integer, Map<String, Object>>();
+			for(int k = 0; k < dettaglioToSaveList.size(); k++) {
+				DettaglioAttivitaRES dettaglioToSave = dettaglioToSaveList.get(k);
+				DettaglioAttivitaRES dettaglioDB = dettaglioDBList.get(k);
+				boolean someChangesDettaglio = false;
+				//mappa <setter, value>
+				Map<String, Object> diffDettaglioMap = new HashMap<String, Object>();
+				if(!Objects.equals(dettaglioToSave.getArgomento(), dettaglioDB.getArgomento())) {
+					diffDettaglioMap.put("argomento", dettaglioToSave.getArgomento());
+					someChangesDettaglio = true;
+				}
+				if(!Objects.equals(dettaglioToSave.getRisultatoAtteso(), dettaglioDB.getRisultatoAtteso())) {
+					diffDettaglioMap.put("risultatoAtteso", dettaglioToSave.getRisultatoAtteso());
+					someChangesDettaglio = true;
+				}
+				if(!Objects.equals(dettaglioToSave.getObiettivoFormativo(), dettaglioDB.getObiettivoFormativo())) {
+					diffDettaglioMap.put("obiettivoFormativo", dettaglioToSave.getObiettivoFormativo());
+					someChangesDettaglio = true;
+				}
+				if(!Objects.equals(dettaglioToSave.getMetodologiaDidattica(), dettaglioDB.getMetodologiaDidattica())) {
+					diffDettaglioMap.put("metodologiaDidattica", dettaglioToSave.getMetodologiaDidattica());
+					someChangesDettaglio = true;
+				}
+				//se ci sono stati cambiamenti aggiungo alla mappa con l'indice del dettaglio
+				if(someChangesDettaglio) {
+					someChangesProgramma = true;
+					indexDiffDettaglioMap.put(k, diffDettaglioMap);
+				}
+			}
+			//se ci sono stati cambiamenti aggiungo alla mappa con l'indice del programma
+			if(someChangesProgramma) {
+				diffProgMap.put(i, indexDiffDettaglioMap);
+			}
+		}
+		return diffProgMap;
+	}
+
+	//metodo che controlla le differenze tra il programma fsc da salvare e quello già salvato
+	//DEVE essere garantito lato inserimento che il numero e l'ordinamento dei programmi e dei dettagli attività non cambi durante le riedizioni
+	//new guinness world record di mappe annidate map<string, map<int, map<int, map<string, object>>>> (._.)
+	private Map<Integer, Map<Integer, Map<String, Object>>> populateDiffMapProgrammaFSC(List<FaseAzioniRuoliEventoFSCTypeA> fasiAzioniRuoliToSave, List<FaseAzioniRuoliEventoFSCTypeA> fasiAzioniRuoliDB) {
+		LOGGER.info(Utils.getLogMessage("Gestione ad-hoc delle differenze nel Programma FSC"));
+		//mappa <index, modifiche fasi>
+		Map<Integer, Map<Integer, Map<String, Object>>> diffProgMap = new HashMap<Integer, Map<Integer, Map<String, Object>>>();
+		//N.B. CRITICO SE NON DOVESSE FUNZIONARE trovare un modo univoco per ordinare sempre nello stesso modo le list nella entity
+		for(int i = 0; i < fasiAzioniRuoliToSave.size(); i++) {
+			List<AzioneRuoliEventoFSC> azioneToSaveList = fasiAzioniRuoliToSave.get(i).getAzioniRuoli();
+			List<AzioneRuoliEventoFSC> azioneDBList = fasiAzioniRuoliDB.get(i).getAzioniRuoli();
+			//N.B. stesso problema ordinamento!!!
+			boolean someChangesFase = false;
+			//mappa <index, azioni>
+			Map<Integer, Map<String, Object>> indexDiffAzioneMap = new HashMap<Integer, Map<String, Object>>();
+			for(int k = 0; k < azioneToSaveList.size(); k++) {
+				AzioneRuoliEventoFSC azioneToSave = azioneToSaveList.get(k);
+				AzioneRuoliEventoFSC azioneDB = azioneDBList.get(k);
+				boolean someChangesAzione = false;
+				//mappa <setter, value>
+				Map<String, Object> diffAzioneMap = new HashMap<String, Object>();
+				if(!Objects.equals(azioneToSave.getAzione(), azioneDB.getAzione())) {
+					diffAzioneMap.put("azione", azioneToSave.getAzione());
+					someChangesAzione = true;
+				}
+				if(!Objects.equals(azioneToSave.getObiettivoFormativo(), azioneDB.getObiettivoFormativo())) {
+					diffAzioneMap.put("obiettivoFormativo", azioneToSave.getObiettivoFormativo());
+					someChangesAzione = true;
+				}
+				if(!Objects.equals(azioneToSave.getRisultatiAttesi(), azioneDB.getRisultatiAttesi())) {
+					diffAzioneMap.put("risultatiAttesi", azioneToSave.getRisultatiAttesi());
+					someChangesAzione = true;
+				}
+				if(!Objects.equals(azioneToSave.getMetodiDiLavoro(), azioneDB.getMetodiDiLavoro())) {
+					diffAzioneMap.put("metodiDiLavoro", azioneToSave.getMetodiDiLavoro());
+					someChangesAzione = true;
+				}
+				//se ci sono stati cambiamenti aggiungo alla mappa con l'indice dell'azione
+				if(someChangesAzione) {
+					someChangesFase = true;
+					indexDiffAzioneMap.put(k, diffAzioneMap);
+				}
+			}
+			//se ci sono stati cambiamenti aggiungo al programma con l'indice della fase
+			if(someChangesFase) {
+				diffProgMap.put(i, indexDiffAzioneMap);
+			}
+		}
+		return diffProgMap;
+	}
+
+	private void syncEventoByDiffMap(Evento evento, Map<String, Object> diffMap) throws Exception {
+		LOGGER.info(Utils.getLogMessage("Sincronizzazione dell'evento " + evento.getCodiceIdentificativo()));
+		for(String key : diffMap.keySet()) {
+			//gestione ad-hoc per i programmi (non vado a sostituire tutto il programma, ma entro dentro)
+			if(key == "programmaRES" || key == "fasiAzioniRuoliFSC") {
+				handleProgrammaDiffMap(evento, diffMap);
+			}
+			//gestione di tutti gli altri campi
+			else {
+				Object value = diffMap.get(key);
+				handleCollectionsThenSetValue(evento, key, value);
+			}
+		}
+		eventoRepository.save(evento);
+	}
+
+	//salvataggio delle modifiche ai programmi segnate nella diffMap nell'evento passato come argomento
+	private void handleProgrammaDiffMap(Evento evento, Map<String, Object> diffMap) throws Exception {
+		if(evento instanceof EventoRES) {
+			@SuppressWarnings("unchecked")
+			Map<Integer, Map<Integer, Map<String, Object>>> mappaProgramma = (Map<Integer, Map<Integer, Map<String, Object>>>) diffMap.get("programmaRES");
+			for(int i : mappaProgramma.keySet()) {
+				Map<Integer, Map<String, Object>> mappaDettaglio = mappaProgramma.get(i);
+				for(int k : mappaDettaglio.keySet()) {
+					Map<String, Object> mappaModifiche = mappaDettaglio.get(k);
+					DettaglioAttivitaRES dettaglioRES = ((EventoRES) evento).getProgramma().get(i).getProgramma().get(k);
+					for(String key : mappaModifiche.keySet()) {
+						Object value = mappaModifiche.get(key);
+						handleCollectionsThenSetValue(dettaglioRES, key, value);
+					}
+				}
+			}
+		}
+		else if(evento instanceof EventoFSC) {
+			@SuppressWarnings("unchecked")
+			Map<Integer, Map<Integer, Map<String, Object>>> mappaFasi = (Map<Integer, Map<Integer, Map<String, Object>>>) diffMap.get("fasiAzioniRuoliFSC");
+			for(int i : mappaFasi.keySet()) {
+				Map<Integer, Map<String, Object>> mappaAzioni = mappaFasi.get(i);
+				for(int k : mappaAzioni.keySet()) {
+					Map<String, Object> mappaModifiche = mappaAzioni.get(k);
+					AzioneRuoliEventoFSC azioniRuoliFSC = ((EventoFSC) evento).getFasiAzioniRuoli().get(i).getAzioniRuoli().get(k);
+					for(String key : mappaModifiche.keySet()) {
+						Object value = mappaModifiche.get(key);
+						handleCollectionsThenSetValue(azioniRuoliFSC, key, value);
+					}
+				}
+			}
+		}
+	}
+
+	//gestisce le collection dai campi che si possono settare direttamente
+	private void handleCollectionsThenSetValue(Object object, String key, Object value) throws Exception {
+		//se è una collection devo ciclare
+		if(value instanceof Collection) {
+			Collection<Object> collection = null;
+			if(value instanceof HashSet) {
+				collection = new HashSet<Object>();
+			}
+			else if (value instanceof ArrayList) {
+				collection = new ArrayList<Object>();
+			}
+			for(Object iter : (Collection<?>) value) {
+				collection.add(handleIdOggetto(iter));
+			}
+			invokeSetter(object, key, collection);
+		}
+		else {
+			invokeSetter(object, key, handleIdOggetto(value));
+		}
+	}
+
+	//gestisce la clonazione se necessario
+	private Object handleIdOggetto(Object value) throws Exception {
+		if(value != null) {
+			//gestione adhoc per i file (che contengono la parte Data)
+			if(value instanceof File) {
+				return fileService.copyFile((File) value);
+			}
+			//se l'oggetto in questione estende la classe delle entity devo clonarlo
+			else if(value.getClass().isAssignableFrom(BaseEntityDefaultId.class)) {
+				Utils.touchFirstLevelOfEverything(value);
+				LOGGER.debug(Utils.getLogMessage("DETACH dell'oggetto id: " + ((BaseEntityDefaultId)value).getId() + " di classe: " + value.getClass()));
+				//N.B. non abbiamo entity all'interno degli oggetti che andiamo a detachare ora..
+				//se ci fossero state altre BaseEntityDefaultId all'interno si sarebbe dovuto detachate anche loro o si sarebbe
+				//ottenuto un reference e non una nuova instanza
+				//FIXME probabilmente mai chiamato e mai sarà chiamato (per i File vedere sopra)
+				entityManager.detach(value);
+				((BaseEntityDefaultId)value).setId(null);
+				entityManager.persist(value);
+				return value;
+			}
+			//altrimenti posso settarlo direttamente
+			else return value;
+		}
+		return null;
+	}
+	//invoka il setter dell'object per settare il value usando reflection
+	private void invokeSetter(Object object, String property, Object value) throws Exception {
+		//reflection by spring framework
+		PropertyAccessor myAccessor = PropertyAccessorFactory.forDirectFieldAccess(object);
+		myAccessor.setPropertyValue(property, value);
 	}
 
 	@Override
@@ -202,7 +595,6 @@ public class EventoServiceImpl implements EventoService {
 			eventoPianoFormativo.setAttuato(false);
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
-
 		eventoRepository.delete(id);
 	}
 
@@ -1134,10 +1526,16 @@ public class EventoServiceImpl implements EventoService {
 
 	//seleziona gli eventi rieditabili
 	@Override
-	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) {
+	public Set<Evento> getAllEventiRieditabiliForProviderId(Long providerId) throws AccreditamentoNotFoundException {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti gli eventi del piano formativo rieditabili per il provider: " + providerId));
-		//mostra tutti gli eventi del provider non in bozza e già iniziati e che finiscono dopo l'inizio dell'anno corrente
-		return eventoRepository.findAllByProviderIdAndStatoNotAndDataInizioBeforeAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, LocalDate.now(), LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1));
+		//mostra tutti gli eventi del provider non in bozza, non cancellati,
+		//non FAD, selezionabili secondo le procedureFormative del provider,
+		//che finiscono dopo l'inizio dell'anno corrente
+		Accreditamento accreditamento = accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
+		Set<ProceduraFormativa> procedureFormative = accreditamento.getDatiAccreditamento().getProcedureFormative();
+		procedureFormative.remove(ProceduraFormativa.FAD);
+
+		return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1));
 	}
 
 	//trovo ultima edizione di un evento con il determinato prefix
@@ -1862,7 +2260,7 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
-	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode) {
+	public void saveAndCheckContrattoSponsorEvento(File sponsorFile, Sponsor sponsor, Long eventoId, String mode) throws Exception {
 		Evento evento = getEvento(eventoId);
 		if(mode.equals("edit")) {
 			Long fileId = sponsor.getSponsorFile().getId();
@@ -2047,5 +2445,51 @@ public class EventoServiceImpl implements EventoService {
 				return true;
 		}
 		return false;
+	}
+
+	//metodo che aggiorna gli orari delle attività nel wrapper (non nell'evento poichè questi orari devono ancora passare per il validatore)
+	@Override
+	public boolean updateOrariAttivita(ModificaOrarioAttivitaWrapper orariDescriptor, EventoWrapper eventoWrapper) {
+		//formatto la data
+		LocalTime ora = LocalTime.parse(orariDescriptor.getOra());
+		List<DettaglioAttivitaRES> listaAttivita = eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(orariDescriptor.getProgrammaId()).getProgramma().getProgramma();
+		LocalTime primaAttivitaStart = LocalTime.parse("23:59");
+		//trovo la prima (in distanza temporale) attività
+		for(Long pos : orariDescriptor.getListaRowId()) {
+			DettaglioAttivitaRES da = listaAttivita.get((int) (long) pos);
+			if(primaAttivitaStart.isAfter(da.getOrarioInizio()))
+				primaAttivitaStart = da.getOrarioInizio();
+		}
+		//calcolo i minuti da aggiungere/sottrarre
+		long minutes = Duration.between(primaAttivitaStart, ora).toMinutes();
+		//controllo se posso spostare tutte le date o se fanno il giro (scavalcano al giorno dopo)
+		for(Long pos : orariDescriptor.getListaRowId()) {
+			DettaglioAttivitaRES da = listaAttivita.get((int) (long) pos);
+			if(da.getOrarioFine().plusMinutes(minutes).isBefore(da.getOrarioFine()) && minutes > 0)
+				return false;
+		}
+		//setto le date
+		for(Long pos : orariDescriptor.getListaRowId()) {
+			DettaglioAttivitaRES da = listaAttivita.get((int) (long) pos);
+			da.setOrarioInizio(da.getOrarioInizio().plusMinutes(minutes));
+			da.setOrarioFine(da.getOrarioFine().plusMinutes(minutes));
+		}
+		return true;
+	}
+
+	@Override
+	public boolean existRiedizioniOfEventoId(Long eventoId) {
+		int riedizioniCounter = eventoRepository.countRiedizioniOfEventoId(eventoId);
+		return riedizioniCounter > 0;
+	}
+
+	@Override
+	//metodo ricorsivo sui figli per prendere anche i nipoti
+	public Set<Evento> getRiedizioniOfEventoId(Long eventoId) {
+		Set<Evento> riedizioni = eventoRepository.getRiedizioniOfEventoId(eventoId);
+		for(Evento riedizione : riedizioni) {
+			riedizioni.addAll(getRiedizioniOfEventoId(riedizione.getId()));
+		}
+		return riedizioni;
 	}
 }

@@ -149,8 +149,9 @@ public class EventoValidator {
 			}
 			//se l'evento è un riedizione il numero delle date deve coincidere
 			if(evento.isRiedizione()) {
-				if((!Utils.getAuthenticatedUser().isSegreteria())
-						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
+				if(!Utils.getAuthenticatedUser().isSegreteria()
+						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear())
+						&& evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio()))
 					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida");
 				if(evento instanceof EventoRES) {
 					//numero date da rispettare
@@ -424,6 +425,16 @@ public class EventoValidator {
 		 * */
 		if(evento.getAutorizzazionePrivacy() == null || evento.getAutorizzazionePrivacy() == false)
 			errors.rejectValue(prefix + "autorizzazionePrivacy", "error.empty");
+
+		/* CREDITI (campo obbligatorio/autocompilato)
+		 * il campo viene autocompilato
+		 * a questo punto l'utente può scegliere di accettare il valore
+		 * o inserirne uno lui -> se NON accetta il valore il campo crediti che deve inserire è obbligatorio
+		 * campo numerico (Float)
+		 * */
+		if(evento.getCrediti() == null)
+			errors.rejectValue(prefix + "crediti", "error.empty");
+
 	}
 
 	//validate RES
@@ -476,9 +487,19 @@ public class EventoValidator {
 		 * -------------
 		 * per quanto riguarda la riedizione, il padre e il rieditato devono evere lo stesso numero di date intermedie
 		 * */
+		LocalDate prevLd = null;
+		boolean sorted = true;
 		if(evento.getDataInizio() != null && evento.getDataFine() != null) {
+			//controllo se la lista delle date è ordinata...
+			//altimenti do errore, dovuto al fatto che le riedizioni invertirebbero i programmi
+			//se la lista non è perfettamente ordinata
 			for (LocalDate ld : evento.getDateIntermedie()) {
-				if(ld.isAfter(evento.getDataFine()) || ld.isEqual(evento.getDataFine()) || ld.isBefore(evento.getDataInizio()) || ld.isEqual(evento.getDataInizio())) {
+				if(prevLd != null) {
+					sorted = ld.isAfter(prevLd);
+				}
+				if(sorted)
+					prevLd = ld;
+				if(ld.isAfter(evento.getDataFine()) || ld.isEqual(evento.getDataFine()) || ld.isBefore(evento.getDataInizio()) || ld.isEqual(evento.getDataInizio()) || !sorted) {
 					//ciclo alla ricerca di questa data per farmi dare le chiavi nella mappa
 					Set<Long> keys = new HashSet<Long>();
 					for(Entry<Long, EventoRESProgrammaGiornalieroWrapper> entry : wrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().entrySet()) {
@@ -488,8 +509,12 @@ public class EventoValidator {
 						}
 					}
 					//genero gli errori
-					for(Long l : keys)
-						errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + l + "]", "error.data_intermedia_res_non_valida");
+					for(Long l : keys) {
+						if(!sorted)
+							errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + l + "]", "error.ordinare_le_date_intermedie");
+						else
+							errors.rejectValue("eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + l + "]", "error.data_intermedia_res_non_valida");
+					}
 				}
 			}
 		}
@@ -685,15 +710,6 @@ public class EventoValidator {
 		if(evento.getDurata() < ecmProperties.getDurataMinimaEventoRES())
 			errors.rejectValue(prefix + "durata", "error.durata_minima_complessiva_non_raggiunta");
 
-		/* CREDITI (campo obbligatorio/autocompilato)
-		 * il campo viene autocompilato
-		 * a questo punto l'utente può scegliere di accettare il valore
-		 * o inserirne uno lui -> se NON accetta il valore il campo crediti che deve inserire è obbligatorio
-		 * campo numerico (Float)
-		 * */
-		if(evento.getCrediti() == null)
-			errors.rejectValue(prefix + "crediti", "error.empty");
-
 		/* QUOTA DI PARTECIPAZIONE (campo obbligatorio)
 		 * campo numerico (BigDecimal)
 		 * */
@@ -744,7 +760,6 @@ public class EventoValidator {
 			if(!fileValidator.validateFirmaCF(evento.getDocumentoVerificaRicaduteFormative(), evento.getProvider().getId()))
 				errors.rejectValue("documentoVerificaRicaduteFormative", "error.codiceFiscale.firmatario");
 		}
-
 	}
 
 	//validate FSC
@@ -1121,15 +1136,6 @@ public class EventoValidator {
 		 * */
 		if(evento.getSupportoSvoltoDaEsperto() == null)
 			errors.rejectValue(prefix + "supportoSvoltoDaEsperto", "error.empty");
-
-		/* CREDITI (campo obbligatorio/autocompilato)
-		 * il campo viene autocompilato
-		 * a questo punto l'utente può scegliere di accettare il valore
-		 * o inserirne uno lui -> se NON accetta il valore il campo crediti che deve inserire è obbligatorio
-		 * campo numerico (Float)
-		 * */
-		if(evento.getCrediti() == null)
-			errors.rejectValue(prefix + "crediti", "error.empty");
 
 		/* QUOTA DI PARTECIPAZIONE (campo obbligatorio)
 		 * campo numerico (BigDecimal)

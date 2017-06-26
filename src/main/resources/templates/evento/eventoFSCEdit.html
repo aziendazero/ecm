@@ -48,7 +48,8 @@
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+											hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 									<!-- AZIONE -->
 									<div id="container-azione" class="item form-group">
@@ -147,7 +148,10 @@
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoliCoinvolti">
 											<span th:text="#{label.ruoli_coinvolti}">Ruoli Coinvolti</span>
 										</label>
-										<a id="add-ruolo" class="btn btn-success" th:title="#{label.inserisci_attivita}" data-toggle="modal" data-target=".modal-add-ruoloOreFSC">
+										<a id="add-ruolo" th:unless="${hasRiedizioni}" class="btn btn-success" th:title="#{label.inserisci_attivita}" data-toggle="modal" data-target=".modal-add-ruoloOreFSC">
+											<span><i class="fa fa-plus"></i></span>
+										</a>
+										<a id="add-ruolo-disabled" th:if="${hasRiedizioni}" class="btn btn-success disabled" th:title="#{label.inserisci_attivita}">
 											<span><i class="fa fa-plus"></i></span>
 										</a>
 										<div id="container-ruoloOreFSC" class="col-xs-offset-3 col-xs-9">
@@ -156,7 +160,10 @@
 													<label class="control-label" th:text="${ruoloOre.ruolo?.nome} + ' (' + ${ruoloOre.tempoDedicato} + 'h)'"></label>
 													<input type="hidden" th:field="${eventoWrapper.tempAttivitaFSC.ruoli[__${row.index}__].ruolo}" />
 													<input type="hidden" th:field="${eventoWrapper.tempAttivitaFSC.ruoli[__${row.index}__].tempoDedicato}" />
-													<a onclick="removeRuoloOreFSC(this)" class="btn btn-danger">
+													<a th:unless="${hasRiedizioni}" onclick="removeRuoloOreFSC(this)" class="btn btn-danger">
+														<span><i class="fa fa-minus"></i></span>
+													</a>
+													<a th:if="${hasRiedizioni}" class="btn btn-danger disabled">
 														<span><i class="fa fa-minus"></i></span>
 													</a>
 												</li>
@@ -278,9 +285,10 @@
 <!-- 								<div th:text="'MAPPA ERRORI VALIDAZIONE: '+${eventoWrapper.mappaErroriValidazione}"></div> -->
 
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
-											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-											isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
+										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- DENOMINAZIONE LEGALE PROVIDER -->
 								<div class="item form-group">
@@ -661,7 +669,7 @@
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
 											onchange="updateRuoliCoinvolti()"
-												title="Seleziona una tipologia FSC..." th:disabled="${isRiedizione or isEditSemiBloccato}">
+												title="Seleziona una tipologia FSC..." th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}">
 											<option
 												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).values()}"
 												th:value="${tipologia}"
@@ -763,7 +771,8 @@
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- DESCRIZIONE DEL PROGETTO -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.descrizioneProgetto')} ? 'bad'">
@@ -828,8 +837,8 @@
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, brochure, null, null, null, false, null, false)" ></th:block> -->
-											<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_BROCHURE_EVENTO}', brochure, null, null, null, false, 'edit', false)" ></th:block>
-											<th:block th:if="${isRiedizione or isEditSemiBloccato}">
+											<th:block th:unless="${isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_BROCHURE_EVENTO}', brochure, null, null, null, false, 'edit', false)" ></th:block>
+											<th:block th:if="${isEditSemiBloccato}">
 												<div class="value-edit" th:if="${eventoWrapper.evento.brochureEvento != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.brochureEvento.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.brochureEvento.id}|}"></a></div>
 												<div class="value-edit danger" th:unless="${eventoWrapper.evento.brochureEvento != null}" th:text="#{label.allegato_non_inserito}"></div>
 											</th:block>
@@ -845,7 +854,8 @@
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
-										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')}">
+										isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+										hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 
 								<!-- RUOLI COINVOLTI -->
 								<div class="item form-group">

@@ -106,14 +106,14 @@
 				       	}],
 				    });
 			    });
-			    
+
 			    function createFilter(searchWord, columns, same) {
 			    	//clean
 			    	ripristinaTable();
-			    	
+
 			    	console.log("Called: " + searchWord + " columns: " + columns + " flag: " + same);
-			    	
-					//sovrascrive la funzione di cerca, perchè quello schifo funziona solo in AND e a me (ti pareva) serve in OR
+
+					//sovrascrive la funzione di cerca, perchÃ¨ quello schifo funziona solo in AND e a me (ti pareva) serve in OR
 					$.fn.dataTable.ext.search.push(function(
 					    settings,
 					    searchData,
@@ -129,7 +129,6 @@
 						    	}
 					    	}
 					    	else if (searchData[columns[i]].toLowerCase().indexOf(val) !== -1) {
-					    		console.log("lol");
 					      		return true;
 					    	}
 					    }
@@ -137,13 +136,13 @@
 					});
 					table.draw();
 				}
-			    
+
 			    //ripristina la datatable della ricerca
 			    function ripristinaTable() {
 			    	$.fn.dataTable.ext.search.pop();
 			    	table.draw();
 			    }
-			    
+
 			/*]]>*/
 			</script>
 		</div>
