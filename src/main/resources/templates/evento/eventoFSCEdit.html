@@ -45,6 +45,9 @@
 									th:object="${eventoWrapper.tempAttivitaFSC}" method="post" enctype="multipart/form-data"
 									novalidate="novalidate">
 
+<!-- 								input hidden per poter riprendere il bean diversificato corretto -->
+<!-- 								<input type="hidden" name="eventoWrapper_cId" th:value="${eventoWrapper_cId}"/> -->
+
 									<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 											isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 											isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
@@ -204,6 +207,9 @@
 										th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRuoloOreFSCTo|}"
 										method="post" enctype="multipart/form-data"
 										novalidate="novalidate">
+
+<!-- 									input hidden per poter riprendere il bean diversificato corretto -->
+<!-- 									<input type="hidden" name="eventoWrapper_cId" th:value="${eventoWrapper_cId}"/> -->
 
 									<div id="container-ruoloFSC" class="item form-group tempRuoloOreFSC.ruolo">
 										<label class="control-label col-md-3 col-sm-3 col-xs-11" for="ruoloFSC">
@@ -1174,7 +1180,7 @@
 											</label>
 												<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
 												<i class="fa fa-file-text"></i>
-												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29212.docx"></a>
+												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29211.docx"></a>
 											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block> -->
@@ -1707,7 +1713,7 @@
 				function sendAjaxAddAttivitaToProgramma(){
 					var target = $('#targetTableAttivitaFSC').val();
 					var programmaIndex = $('#addAttivitaTo').val();
-					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaFSC').serialize())
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaFSC').serialize() + eventoWrapper_cId)
 						.done(function(data) {
 						  	$('#'+target).empty().html(data);
 							closeModaleAddAttivitaTo();
@@ -1769,7 +1775,7 @@
 
 				/*parametrizzabile passando solo FSC*/
 				function sendAjaxReloadSection(sectionIndex){
-					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoFSC').serialize())
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoFSC').serialize() + eventoWrapper_cId)
 					.done(function(data) {
 					  	$('#section-' + sectionIndex).empty().html(data);
 					  	reInitComponents(sectionIndex);
@@ -1805,7 +1811,7 @@
 
 				function sendAjaxAddRuoloOreToTemp(){
 					var $form = $('#addRuoloOreFSC');
-					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRuoloOreToTemp|}]], $('#addRuoloOreFSC').serialize())
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRuoloOreToTemp|}]], $('#addRuoloOreFSC').serialize() + eventoWrapper_cId)
 					.done(function(data) {
 						$('#container-ruoloOreFSC').empty().html(data);
 					  	closeModaleAddRuoloOreFSCTo();

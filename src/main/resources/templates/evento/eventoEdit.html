@@ -79,6 +79,9 @@
 								 method="post" enctype="multipart/form-data"
 								novalidate="novalidate">
 
+<!-- 							input hidden per poter riprendere il bean diversificato corretto -->
+<!-- 							<input type="hidden" name="eventoWrapper_cId" th:value="${eventoWrapper_cId}"/> -->
+
 							<!-- COGNOME -->
 							<div class="item form-group">
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cognome_persona">
@@ -234,6 +237,9 @@
 								th:object="${eventoWrapper.tempPersonaFullEvento}" method="post" enctype="multipart/form-data"
 								novalidate="novalidate">
 
+<!-- 							input hidden per poter riprendere il bean diversificato corretto -->
+<!-- 							<input type="hidden" name="eventoWrapper_cId" th:value="${eventoWrapper_cId}"/> -->
+
 							<!-- COGNOME -->
 							<div class="item form-group">
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cognome_personaFull">
@@ -341,6 +347,9 @@
 								method="post" enctype="multipart/form-data"
 								novalidate="novalidate">
 
+<!-- 							input hidden per poter riprendere il bean diversificato corretto -->
+<!-- 							<input type="hidden" name="eventoWrapper_cId" th:value="${eventoWrapper_cId}"/> -->
+
 							<!-- NOME SPONSOR -->
 							<div class="item form-group">
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="nome_sponsor">
@@ -391,6 +400,9 @@
 								th:action="@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPartnerTo|}"
 								method="post" enctype="multipart/form-data"
 								novalidate="novalidate">
+
+<!-- 							input hidden per poter riprendere il bean diversificato corretto -->
+<!-- 							<input type="hidden" name="eventoWrapper_cId" th:value="${eventoWrapper_cId}"/> -->
 
 							<!-- NOME PARTNER -->
 							<div class="item form-group">
@@ -491,6 +503,8 @@
 
          	var days;
 			var months;
+
+			var eventoWrapper_cId = '&eventoWrapper_cId=' + [[${eventoWrapper_cId}]]
 
 			//Contatore caratteri titolo evento
 			var text_max = 3000;
@@ -626,6 +640,11 @@
 			  			initProvinciaComune($(this).attr('id'), $('.comune  [data-programma-comune="' + $(this).attr("data-programma-provincia") + '"]').attr('id'));
 			  		}
 			  	});
+
+			  	//ajax setup per passare il conversation id del bean (multitab) come request parameter in tutte le chiamate ajax get
+			  	$.ajaxSetup({
+					data: { eventoWrapper_cId: [[${eventoWrapper_cId}]] }
+				});
 
 				days = getDayNamesShort();
 				months = getMonthNames();
@@ -1104,7 +1123,7 @@
 			//sumbit della modale di inserimento persona
 			function sendAjaxAddPersonaTo(){
 				var target = $('#targetTable').val();
-				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}]], $('#addPersonaTo').serialize())
+				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}]], $('#addPersonaTo').serialize() + eventoWrapper_cId)
 					.done(function(data) {
 						//errore validazione
 						if($(data).find(".hasErrorAjax").length) {
@@ -1121,7 +1140,6 @@
 						  		sendAjaxRequestDocentiAttivitaRES();
 						  	if([[${eventoWrapper.evento instanceof T(it.tredi.ecm.dao.entity.EventoFAD)}]])
 						  		sendAjaxRequestDocentiAttivitaFAD();
-						  	reInitDataTableById(target);
 						}
 					})
 				  	.fail(function() {
@@ -1133,7 +1151,7 @@
 			//sumbit della modale di inserimento personaFull
 			function sendAjaxAddPersonaFullTo(){
 				var target = $('#targetTableFull').val();
-				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaFullTo|}]], $('#addPersonaFullTo').serialize())
+				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaFullTo|}]], $('#addPersonaFullTo').serialize() + eventoWrapper_cId)
 					.done(function(data) {
 						//errore validazione [target, msg]
 						if($(data).find(".hasErrorAjax").length) {
@@ -1171,7 +1189,7 @@
 
 			//sumbit della modale di inserimento sponsor
 			function sendAjaxAddSponsorTo(){
-				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addSponsorTo|}]], $('#addSponsorTo').serialize())
+				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addSponsorTo|}]], $('#addSponsorTo').serialize() + eventoWrapper_cId)
 					.done(function(data) {
 						$('#sponsors').empty().html(data);
 						closeModaleAddSponsor();
@@ -1185,7 +1203,7 @@
 
 			//sumbit della modale di inserimento partner
 			function sendAjaxAddPartnerTo(){
-				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPartnerTo|}]], $('#addPartnerTo').serialize())
+				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPartnerTo|}]], $('#addPartnerTo').serialize() + eventoWrapper_cId)
 					.done(function(data) {
 						$('#partners').empty().html(data);
 						closeModaleAddPartner();

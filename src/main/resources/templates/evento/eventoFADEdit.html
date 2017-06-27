@@ -24,6 +24,9 @@
 								th:object="${eventoWrapper.tempAttivitaFAD}" method="post" enctype="multipart/form-data"
 								novalidate="novalidate">
 
+<!-- 							input hidden per poter riprendere il bean diversificato corretto -->
+<!-- 							<input type="hidden" name="eventoWrapper_cId" th:value="${eventoWrapper_cId}"/> -->
+
 								<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 										isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 										isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
@@ -1044,7 +1047,7 @@
 											</label>
 												<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
 												<i class="fa fa-file-text"></i>
-												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29210.docx"></a>
+												<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29211.docx"></a>
 											</div>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block> -->
@@ -1391,7 +1394,7 @@
 
 				//funzione che aggiunge un risultato atteso
 				function aggiungiRisultatoAtteso(caller, target) {
-					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRisultatoAtteso/|}]] + target, $('#formEventoFAD').serialize())
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRisultatoAtteso/|}]] + target, $('#formEventoFAD').serialize() + eventoWrapper_cId)
 					.done(function(data) {
 						//alert(data);
 					  	$('#' + target).empty().html(data);
@@ -1408,7 +1411,7 @@
 
 				//rimuove un risultato atteso
 				function rimuoviRisultatoAtteso(caller, target, key) {
-					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeRisultatoAtteso/|}]] + key + '/' + target, $('#formEventoFAD').serialize())
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removeRisultatoAtteso/|}]] + key + '/' + target, $('#formEventoFAD').serialize() + eventoWrapper_cId)
 					.done(function(data) {
 						//alert(data);
 					  	$('#' + target).empty().html(data);
@@ -1460,7 +1463,7 @@
 				function sendAjaxAddAttivitaToProgramma(){
 					var target = $('#targetTableAttivitaFAD').val();
 					$('#addAttivitaTo').val('0'); //dummy
-					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaFAD').serialize())
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addAttivitaTo|}]], $('#addAttivitaFAD').serialize() + eventoWrapper_cId)
 						.done(function(data) {
 						  	$('#'+target).empty().html(data);
 						  	closeModaleAddAttivitaTo();
@@ -1613,7 +1616,7 @@
 				}
 
 				function sendAjaxReloadSection(sectionIndex){
-					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoFAD').serialize())
+					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/showSection/|}]] + sectionIndex, $('#formEventoFAD').serialize() + eventoWrapper_cId)
 					.done(function(data) {
 					  	$('#section-' + sectionIndex).empty().html(data);
 					  	reInitComponents(sectionIndex);

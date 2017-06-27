@@ -18,8 +18,8 @@
 									th:text="#{label.indietro}">Indietro</a>
 							<th:block th:switch="${auditArg}">
 								<th:block th:case="provider">
-									<button type="button" onclick="createFilter('Inserimento Relazione Annuale', [3], false);" class="btn btn-primary pull-right" th:text="#{label.filtra_piano_formativo}"></button>
-									<button type="button" onclick="createFilter('Scadenza Inserimento Piano Formativo', [3], false);" class="btn btn-primary pull-right" th:text="#{label.filtra_relazione_annuale}"></button>
+									<button type="button" onclick="createFilter('Inserimento Relazione Annuale', [3], false);" class="btn btn-primary pull-right" th:text="#{label.filtra_relazione_annuale}"></button>
+									<button type="button" onclick="createFilter('Scadenza Inserimento Piano Formativo', [3], false);" class="btn btn-primary pull-right" th:text="#{label.filtra_piano_formativo}"></button>
 									<button type="button" onclick="ripristinaTable()" class="btn btn-success pull-right" th:text="#{label.ripristina_tabella}"></button>
 								</th:block>
 								<th:block th:case="evento">
@@ -30,10 +30,10 @@
 									<button type="button" onclick="ripristinaTable()" class="btn btn-success pull-right" th:text="#{label.ripristina_tabella}"></button>
 								</th:block>
 								<th:block th:case="accreditamento">
-								
+
 								</th:block>
 							</th:block>
-									
+
 						</div>
 						<div class="clearfix"></div>
 					</div>

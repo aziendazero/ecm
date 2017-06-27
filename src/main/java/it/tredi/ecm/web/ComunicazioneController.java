@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -285,7 +286,7 @@ public class ComunicazioneController {
 			model.addAttribute("tipo", tipo);
 			model.addAttribute("returnLink", "/comunicazione/dashboard");
 
-			return goToComunicazioneList(request, model);
+			return goToComunicazioneList(request, model, null);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /comunicazione/received/list"),ex);
 			redirectAttrs.addFlashAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
@@ -302,7 +303,7 @@ public class ComunicazioneController {
 		try {
 			Provider provider = providerService.getProvider(providerId);
 
-			if(model.asMap().get("listaComunicazioni") == null){
+			if(model.asMap().get("listaComunicazioni") == null || !Objects.equals(providerId, model.asMap().get("providerId"))){
 				if(nonRisposte != null && nonRisposte == true) {
 					model.addAttribute("listaComunicazioni", comunicazioneService.getAllComunicazioniNonRisposteFromProviderBySegreteria(provider));
 					model.addAttribute("tipologiaLista", "label.non_risposte_al_provider");
@@ -320,7 +321,7 @@ public class ComunicazioneController {
 			else
 				model.addAttribute("returnLink", "/home");
 
-			return goToComunicazioneList(request, model);
+			return goToComunicazioneList(request, model, providerId);
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET: /provider/" + providerId + "/comunicazione/list"),ex);
 			redirectAttrs.addFlashAttribute("message",new Message("message.errore", "message.errore_eccezione", "error"));
@@ -468,8 +469,9 @@ public class ComunicazioneController {
 		}
 	}
 
-	private String goToComunicazioneList(HttpServletRequest request, Model model) {
+	private String goToComunicazioneList(HttpServletRequest request, Model model, Long providerId) {
 		LOGGER.info(Utils.getLogMessage("VIEW: "+LIST));
+		model.addAttribute("providerId", providerId);
 		//tasto indietro
 		String returnLink = request.getRequestURI().substring(request.getContextPath().length());
 	    if(request.getQueryString() != null)
