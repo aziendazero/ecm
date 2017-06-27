@@ -176,6 +176,8 @@
 				<input type="hidden" name="editId" th:value="${eventoWrapper.evento.id}" />
 				<input type="hidden" name="providerId" th:value="${eventoWrapper.providerId}" />
 				<input type="hidden" name="proceduraFormativa" th:value="${eventoWrapper.proceduraFormativa}" />
+				<!-- input hidden per poter riprendere il bean diversificato corretto -->
+				<input type="hidden" name="eventoWrapper_cId" th:value="${eventoWrapper_cId}"/>
 
 				<div id="eventoTabs" class="" role="tabpanel" data-example-id="togglable-tabs">
 					<ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">

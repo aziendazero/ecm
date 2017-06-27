@@ -466,6 +466,10 @@
 						<div class="clearfix"></div>
 					</div>
 
+<!-- 					DEBUG USEFULL STAMPS -->
+<!-- 					<div th:each="attr: ${T(java.util.Collections).list(#ctx.httpSession.attributeNames)}"><div th:text="${attr}"></div></div> -->
+<!-- 					<div th:text="${eventoWrapper_cId}"></div> -->
+
 					<th:block th:switch="${eventoWrapper.proceduraFormativa}">
 						<th:block th:case="${T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
 							<th:block th:include="evento/eventoFADEdit :: eventoFADEdit"></th:block>
