@@ -27,6 +27,7 @@ import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
+import org.hibernate.collection.internal.PersistentSet;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.PropertyAccessor;
@@ -165,7 +166,7 @@ public class EventoServiceImpl implements EventoService {
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		evento = eventoRepository.saveAndFlush(evento);
-		eventoRepository.save(evento);
+//		eventoRepository.save(evento);
 
 //		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
 //			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
@@ -493,7 +494,7 @@ public class EventoServiceImpl implements EventoService {
 				handleCollectionsThenSetValue(evento, key, value);
 			}
 		}
-		eventoRepository.save(evento);
+		eventoRepository.saveAndFlush(evento);
 	}
 
 	//salvataggio delle modifiche ai programmi segnate nella diffMap nell'evento passato come argomento
@@ -535,7 +536,7 @@ public class EventoServiceImpl implements EventoService {
 		//se è una collection devo ciclare
 		if(value instanceof Collection) {
 			Collection<Object> collection = null;
-			if(value instanceof HashSet) {
+			if(value instanceof HashSet || value instanceof PersistentSet) {
 				collection = new HashSet<Object>();
 			}
 			else if (value instanceof ArrayList) {
@@ -544,7 +545,7 @@ public class EventoServiceImpl implements EventoService {
 			for(Object iter : (Collection<?>) value) {
 				collection.add(handleIdOggetto(iter));
 			}
-			invokeSetter(object, key, collection);
+			invokeSetterForCollections(object, key, collection);
 		}
 		else {
 			invokeSetter(object, key, handleIdOggetto(value));
@@ -559,28 +560,39 @@ public class EventoServiceImpl implements EventoService {
 				return fileService.copyFile((File) value);
 			}
 			//se l'oggetto in questione estende la classe delle entity devo clonarlo
-			else if(value.getClass().isAssignableFrom(BaseEntityDefaultId.class)) {
+			else if(value instanceof BaseEntityDefaultId) {
 				Utils.touchFirstLevelOfEverything(value);
 				LOGGER.debug(Utils.getLogMessage("DETACH dell'oggetto id: " + ((BaseEntityDefaultId)value).getId() + " di classe: " + value.getClass()));
-				//N.B. non abbiamo entity all'interno degli oggetti che andiamo a detachare ora..
-				//se ci fossero state altre BaseEntityDefaultId all'interno si sarebbe dovuto detachate anche loro o si sarebbe
-				//ottenuto un reference e non una nuova instanza
-				//FIXME probabilmente mai chiamato e mai sarà chiamato (per i File vedere sopra)
 				entityManager.detach(value);
 				((BaseEntityDefaultId)value).setId(null);
+				//FIXME probabilmente chiamato solo per i casi sponsor e partner
+				if(value instanceof Sponsor) {
+					((Sponsor) value).setSponsorFile(fileService.copyFile(((Sponsor) value).getSponsorFile()));
+				}
+				else if(value instanceof Partner) {
+					((Partner) value).setPartnerFile(fileService.copyFile(((Partner) value).getPartnerFile()));
+				}
+				//N.B. si suppone che non ci siano altre BaseEntityDefaultId dentro l'oggetto prima di detacharlo / clonarlo
+				//o si crerebbero dei reference non voluti
 				entityManager.persist(value);
-				return value;
 			}
-			//altrimenti posso settarlo direttamente
-			else return value;
 		}
-		return null;
+		//altrimenti posso settarlo direttamente
+		return value;
 	}
+
 	//invoka il setter dell'object per settare il value usando reflection
 	private void invokeSetter(Object object, String property, Object value) throws Exception {
 		//reflection by spring framework
 		PropertyAccessor myAccessor = PropertyAccessorFactory.forDirectFieldAccess(object);
 		myAccessor.setPropertyValue(property, value);
+	}
+
+	//invoka il get della collection, fa un clear e riaggiunge gli elementi (per evitare l'ex all-deleted-orphans di hibernate)
+	private void invokeSetterForCollections(Object object, String property, Collection<Object> collectionToSave) {
+		PropertyAccessor myAccessor = PropertyAccessorFactory.forDirectFieldAccess(object);
+		((Collection<Object>)myAccessor.getPropertyValue(property)).clear();
+		((Collection<Object>)myAccessor.getPropertyValue(property)).addAll(collectionToSave);
 	}
 
 	@Override

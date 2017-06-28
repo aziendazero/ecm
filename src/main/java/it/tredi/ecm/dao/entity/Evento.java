@@ -315,7 +315,7 @@ public class Evento extends BaseEntity {
 
 	private Boolean letteInfoAllegatoSponsor;
 
-	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="evento_id")
 	private Set<Sponsor> sponsors = new HashSet<Sponsor>();
 
@@ -332,7 +332,7 @@ public class Evento extends BaseEntity {
 	private File contrattiAccordiConvenzioni;
 
 	private Boolean eventoAvvalePartner;
-	@OneToMany(cascade=CascadeType.MERGE, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
 	@JoinColumn(name="evento_id")
 	private Set<Partner> partners = new HashSet<Partner>();
 

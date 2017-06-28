@@ -404,11 +404,16 @@ public class EventoController {
 	@PreAuthorize("@securityAccessServiceImpl.canCreateEvento(principal, #providerId)")
 	@RequestMapping(value= "/provider/{providerId}/evento/validate", method = RequestMethod.POST)
 	public String validaEvento(@ModelAttribute EventoWrapper eventoWrapper,
-			HttpSession session, BindingResult result, @PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
+			HttpSession session, BindingResult result, @PathVariable Long providerId, Model model,
+			RedirectAttributes redirectAttrs, @RequestParam("eventoWrapper_cId") String cIdWrapper){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"));
 		try {
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
+
+			//riaggiungo il cId nel caso abbia un passaggio view -> controller -> view senza reinit del bean
+			//ottenuto come requestParam da un input hidden
+			model.addAttribute("eventoWrapper_cId", cIdWrapper);
 
 			//validator
 			eventoValidator.validate(evento, eventoWrapper, result, "evento.");
