@@ -151,6 +151,7 @@ public class EventoServiceImpl implements EventoService {
 	public void save(Evento evento) throws Exception {
 		LOGGER.debug("Salvataggio evento");
 		Evento eventoDB = null;
+		Map<String, Object> diffMap = new HashMap<String, Object>();
 		if(evento.isNew()) {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
 			evento.handleDateScadenza();
@@ -162,7 +163,7 @@ public class EventoServiceImpl implements EventoService {
 			if(!evento.getDataFine().equals(eventoDB.getDataFine()))
 				evento.handleDateScadenza();
 			if(existRiedizioniOfEventoId(evento.getId()))
-				handleSincronizzazioneRiedizioni(evento, eventoDB);
+				diffMap = populateDiffMap(evento, eventoDB);
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		evento = eventoRepository.saveAndFlush(evento);
@@ -200,15 +201,10 @@ public class EventoServiceImpl implements EventoService {
 			}
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
-	}
 
-	//gestione della sincronizzazione ad-hoc delle riedizioni degli eventi
-	private void handleSincronizzazioneRiedizioni(Evento eventoToSave, Evento eventoDB) throws Exception {
-		LOGGER.info(Utils.getLogMessage("Inizio della procedura di sincronizzazione delle riedizioni"));
-		//analizza le differenze da sincronizzare tra le riedizioni/evento padre
-		Map<String, Object> diffMap = populateDiffMap(eventoToSave, eventoDB);
+		//devo farlo alla fine per contrasti con Hibernate
 		//lista degli eventi da sincronizzare
-		Set<Evento> eventiDaAggiornare = getRiedizioniOfEventoId(eventoToSave.getId());
+		Set<Evento> eventiDaAggiornare = getRiedizioniOfEventoId(evento.getId());
 		//aggiornamento degli eventi a seconda del diff (utilizza la reflection)
 		for(Evento ev : eventiDaAggiornare) {
 			syncEventoByDiffMap(ev, diffMap);
@@ -494,6 +490,14 @@ public class EventoServiceImpl implements EventoService {
 				handleCollectionsThenSetValue(evento, key, value);
 			}
 		}
+		//ricontrollo se i file degli sponsor sono stati caricati!
+		boolean allSponsorsOk = true;
+		for(Sponsor s : evento.getSponsors()) {
+			if(s.getSponsorFile() == null || s.getSponsorFile().isNew())
+				allSponsorsOk = false;
+		}
+		evento.setSponsorUploaded(allSponsorsOk);
+
 		eventoRepository.saveAndFlush(evento);
 	}
 
@@ -860,9 +864,19 @@ public class EventoServiceImpl implements EventoService {
 			evento.setAutocertificazioneAutorizzazioneMinisteroSalute(null);
 		}
 
-		//non  deve essere possibile caricare gli allegati degli sponsor
-		if(evento.getEventoSponsorizzato() != null && !evento.getEventoSponsorizzato().booleanValue())
-			evento.setSponsorUploaded(true);
+//		//non  deve essere possibile caricare gli allegati degli sponsor
+//		if(evento.getEventoSponsorizzato() != null && !evento.getEventoSponsorizzato().booleanValue())
+//			evento.setSponsorUploaded(true);
+
+		//check se sono stati inseriti tutti i Contratti sponsor
+		//tiommi 28/06/2017
+		//FIXME spostare nel salvataggio??
+		boolean allSponsorsOk = true;
+		for(Sponsor s : evento.getSponsors()) {
+			if(s.getSponsorFile() == null || s.getSponsorFile().isNew())
+				allSponsorsOk = false;
+		}
+		evento.setSponsorUploaded(allSponsorsOk);
 
 		return evento;
 	}

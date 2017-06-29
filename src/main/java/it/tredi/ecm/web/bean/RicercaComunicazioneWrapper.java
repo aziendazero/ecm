@@ -27,4 +27,5 @@ public class RicercaComunicazioneWrapper {
 	private Set<ComunicazioneTipologiaEnum> tipologieSelezionate;
 
 	private Long providerId;
+	private Long userId;
 }

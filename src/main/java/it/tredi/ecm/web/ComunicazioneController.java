@@ -397,12 +397,17 @@ public class ComunicazioneController {
 			String returnRedirect = "";
 
 			if(wrapper.getProviderId() != null){
+				//caso provider
 				wrapper.setCampoIdProvider(wrapper.getProviderId());
 				returnRedirect = "redirect:/provider/" + wrapper.getProviderId() + "/comunicazione/list";
 			}else{
+				//alti utenti non provider
+				if(!Utils.getAuthenticatedUser().isSegreteria()) {
+					//filtro su accountId se NON segreteria
+					wrapper.setUserId(Utils.getAuthenticatedUser().getAccount().getId());
+				}
 				returnRedirect = "redirect:/comunicazione/cerca/list";
 			}
-
 
 			Set<Comunicazione> listaComunicazioni = new HashSet<>();
 			listaComunicazioni.addAll(comunicazioneService.cerca(wrapper));

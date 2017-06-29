@@ -107,7 +107,8 @@
 			</div>
 		</div>
 
-		<h2 th:if="${eventoWrapperRendiconto.evento.canDoUploadSponsor()}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.upload_sponsor_before}"></h2>
+		<!-- il controllo ridondante è per la segreteria -->
+		<h2 th:if="${eventoWrapperRendiconto.evento.canDoUploadSponsor() and !(eventoWrapperRendiconto.evento.sponsorUploaded != null and eventoWrapperRendiconto.evento.sponsorUploaded)}" class="col-xs-12 alert alert-info with-margin-top text-center" th:text="#{label.upload_sponsor_before}"></h2>
 
 		<div class="row">
 

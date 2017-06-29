@@ -159,10 +159,10 @@
 		                </ul>
 		              </li>
 		              <li class="">
-					  	<th:block th:if="${#authentication.principal.isSegreteria()}">
+					  	<th:block th:unless="${#authentication.principal.account.isProviderVisualizzatore()}">
 					    	<a target="new" href="http://wiki.3di.it/doku.php?id=documentazione_3di:progetto_ecm:indice&amp;s[]=manuale&amp;s[]=ecm&amp;s[]=segreteria" th:text="#{label.help}"></a>
 					  	</th:block>
-						<th:block th:unless="${#authentication.principal.isSegreteria()}">
+						<th:block th:if="${#authentication.principal.account.isProviderVisualizzatore()}">
 					    	<a target="new" href="http://wiki.3di.it/doku.php?id=documentazione_3di:progetto_ecm:manuale" th:text="#{label.help}"></a>
 					  	</th:block>
 					  </li>

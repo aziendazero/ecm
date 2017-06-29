@@ -418,7 +418,7 @@ public class Evento extends BaseEntity {
 	*   5) la segreteria può sempre
 	*/
 	public boolean canDoUploadSponsor(){
-		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO)
+		if(stato == EventoStatoEnum.BOZZA || stato == EventoStatoEnum.CANCELLATO || (eventoSponsorizzato != null && !eventoSponsorizzato.booleanValue()))
 			return false;
 
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
@@ -481,7 +481,12 @@ public class Evento extends BaseEntity {
 			return false;
 
 		if(dataFine != null && LocalDate.now().isAfter(dataFine)){
-			if(dataScadenzaInvioRendicontazione != null && sponsorUploaded != null && sponsorUploaded.booleanValue() && !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione) && pagato != null && pagato.booleanValue())
+			if(dataScadenzaInvioRendicontazione != null
+					//o ha allegato tutti gli sponsor
+					&& ((sponsorUploaded != null && sponsorUploaded.booleanValue())
+							//o non è sponsorizzato per niente
+							|| eventoSponsorizzato != null && !eventoSponsorizzato.booleanValue())
+					&& !LocalDate.now().isAfter(dataScadenzaInvioRendicontazione) && pagato != null && pagato.booleanValue())
 				return true;
 		}
 

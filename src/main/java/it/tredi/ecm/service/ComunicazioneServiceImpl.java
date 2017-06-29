@@ -527,6 +527,12 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			params.put("denominazioneLegale", "%" + wrapper.getDenominazioneLegale().toUpperCase() + "%");
 		}
 
+		//USER ID (per non segreteria - REFEREE e COMMISSIONE)
+		if(wrapper.getUserId() != null){
+			query = Utils.QUERY_AND(query, "(d.id = :userId OR m.id = :userId)");
+			params.put("userId", wrapper.getUserId());
+		}
+
 		//PROVIDER ID
 		if(wrapper.getCampoIdProvider() != null){
 			query = Utils.QUERY_AND(query, "(d.provider.id = :providerId OR m.provider.id = :providerId)");
