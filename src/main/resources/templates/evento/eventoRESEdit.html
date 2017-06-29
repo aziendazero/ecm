@@ -562,16 +562,16 @@
 														<input type="hidden" th:value="${data.key}" />
 														<input id="dataIntermedia" type="text" class="form-control datapicker-intermedia"
 															th:field="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.giorno}" th:disabled="${isEditSemiBloccato or (isRiedizione and #sets.isEmpty(eventoWrapper.evento.eventoPadre.dateIntermedie))}" />
-														<span th:unless="${isEditSemiBloccato or (isRiedizione and #sets.isEmpty(eventoWrapper.evento.eventoPadre.dateIntermedie))}" class="input-group-addon not-last" onclick="$(this).prev().click()">
+														<span th:unless="${isEditSemiBloccato or (isRiedizione and #sets.isEmpty(eventoWrapper.evento.eventoPadre.dateIntermedie)) or hasRiedizioni}" class="input-group-addon not-last" onclick="$(this).prev().click()">
 								 							<i class="glyphicon glyphicon-calendar"></i>
 														</span>
-														<span th:if="${isEditSemiBloccato or (isRiedizione and #sets.isEmpty(eventoWrapper.evento.eventoPadre.dateIntermedie))}" class="input-group-addon not-last disabled-addon">
+														<span th:if="${isEditSemiBloccato or (isRiedizione and #sets.isEmpty(eventoWrapper.evento.eventoPadre.dateIntermedie)) or hasRiedizioni}" class="input-group-addon not-last disabled-addon">
 								 							<i class="glyphicon glyphicon-calendar"></i>
 														</span>
-														<span th:unless="${isEditSemiBloccato or isRiedizione}" class="input-group-addon" th:onclick="${row.count == (row.size - 1) ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}" th:classappend="${row.count == (row.size - 1) ? 'add' : 'remove'}">
+														<span th:unless="${isEditSemiBloccato or isRiedizione or hasRiedizioni}" class="input-group-addon" th:onclick="${row.count == (row.size - 1) ? 'aggiungiDataIntermedia(this, ''dateIntermedieId'')' : 'rimuoviDataIntermedia(this, ''dateIntermedieId'', ' + data.key + ')'}" th:classappend="${row.count == (row.size - 1) ? 'add' : 'remove'}">
 															<i th:class="${row.count == (row.size - 1) ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 														</span>
-														<span th:if="${isEditSemiBloccato or isRiedizione}" class="input-group-addon disabled-addon" th:classappend="${row.count == (row.size - 1) ? 'add' : 'remove'}">
+														<span th:if="${isEditSemiBloccato or isRiedizione or hasRiedizioni}" class="input-group-addon disabled-addon" th:classappend="${row.count == (row.size - 1) ? 'add' : 'remove'}">
 															<i th:class="${row.count == (row.size - 1) ? 'fa fa-plus' : 'fa fa-minus'}"></i>
 														</span>
 													</div>
@@ -1748,7 +1748,7 @@
 							$("#item-spostamento").append($("<div class='alert col-xs-3'></div>").text([[#{label.nessun_attivita_selezionata}]]));
 						}
 						else {
-							var url = [[@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/updateOrari|}]];
+							var url = [[@{|/provider/${eventoWrapper.providerId}/evento/${eventoWrapper.evento.id}/updateOrari?|}]] + $.param({ eventoWrapper_cId: [[${eventoWrapper_cId}]]});
 							var token = [[${_csrf.token}]];
 							var header = [[${_csrf.headerName}]];
 							var dataSend = JSON.stringify({programmaId: programmaId, listaRowId: listaRowId, ora: ora});

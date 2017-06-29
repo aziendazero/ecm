@@ -1419,16 +1419,16 @@
 						<th th:text="#{label.stato_cv}">CV</th>
 						<th style="padding-right: 8px;">
 							<div class="evento-button-container">
-								<a th:unless="${isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary evento-table-button" onclick="openLookupPersona('responsabiliScientifici','base')" data-toggle="modal" data-target=".modal-lookup-persona">
+								<a th:unless="${isRiedizione or isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary evento-table-button" onclick="openLookupPersona('responsabiliScientifici','base')" data-toggle="modal" data-target=".modal-lookup-persona">
 									<span><i class="fa fa-search"></i></span>
 								</a>
-								<a th:unless="${isEditSemiBloccato}" id="add-responsabiliScientifici" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('responsabiliScientifici','base',false,undefined,true)" data-toggle="modal" data-target=".modal-add-persona">
+								<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-responsabiliScientifici" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('responsabiliScientifici','base',false,undefined,true)" data-toggle="modal" data-target=".modal-add-persona">
 									<span><i class="fa fa-plus"></i></span>
 								</a>
-								<a th:if="${isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary disabled evento-table-button">
+								<a th:if="${isRiedizione or isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary disabled evento-table-button">
 									<span><i class="fa fa-search"></i></span>
 								</a>
-								<a th:if="${isEditSemiBloccato}" id="add-responsabiliScientifici" class="btn btn-success disabled evento-table-button">
+								<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-responsabiliScientifici" class="btn btn-success disabled evento-table-button">
 									<span><i class="fa fa-plus"></i></span>
 								</a>
 							</div>
@@ -1454,16 +1454,16 @@
 							</th:block>
 						</td>
 						<td>
-							<a th:unless="${isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
+							<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-							<a th:unless="${isEditSemiBloccato}" onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+							<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
-							<a th:if="${isEditSemiBloccato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+							<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-							<a th:if="${isEditSemiBloccato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+							<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>
@@ -1570,16 +1570,16 @@
 						<th th:text="#{label.cellulare}">Cellulare</th>
 						<th style="padding-right: 8px;">
 							<div class="evento-button-container">
-								<a th:unless="${isRiedizione or isEditSemiBloccato}" id="lookup-responsabileSegreteria" class="btn btn-primary evento-table-button" onclick="openLookupPersona('responsabileSegreteria','Full')" data-toggle="modal" data-target=".modal-lookup-persona">
+								<a th:unless="${isEditSemiBloccato}" id="lookup-responsabileSegreteria" class="btn btn-primary evento-table-button" onclick="openLookupPersona('responsabileSegreteria','Full')" data-toggle="modal" data-target=".modal-lookup-persona">
 									<span><i class="fa fa-search"></i></span>
 								</a>
-								<a th:unless="${isRiedizione or isEditSemiBloccato}" id="add-responsabileSegreteria" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('responsabileSegreteria','Full',false,undefined,true)" data-toggle="modal" data-target=".modal-add-personaFull">
+								<a th:unless="${isEditSemiBloccato}" id="add-responsabileSegreteria" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('responsabileSegreteria','Full',false,undefined,true)" data-toggle="modal" data-target=".modal-add-personaFull">
 									<span><i class="fa fa-plus"></i></span>
 								</a>
-								<a th:if="${isRiedizione or isEditSemiBloccato}" id="lookup-responsabileSegreteria" class="btn btn-primary disabled evento-table-button">
+								<a th:if="${isEditSemiBloccato}" id="lookup-responsabileSegreteria" class="btn btn-primary disabled evento-table-button">
 									<span><i class="fa fa-search"></i></span>
 								</a>
-								<a th:if="${isRiedizione or isEditSemiBloccato}" id="add-responsabileSegreteria" class="btn btn-success disabled evento-table-button">
+								<a th:if="${isEditSemiBloccato}" id="add-responsabileSegreteria" class="btn btn-success disabled evento-table-button">
 									<span><i class="fa fa-plus"></i></span>
 								</a>
 							</div>
@@ -1596,16 +1596,16 @@
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.telefono}"></td>
 						<td th:text="${eventoWrapper.evento.responsabileSegreteria.anagrafica.cellulare}"></td>
 						<td>
-							<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabileSegreteria',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
+							<a th:unless="${isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabileSegreteria',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-								<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removePersonaFrom('responsabileSegreteria',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+								<a th:unless="${isEditSemiBloccato}" onclick="removePersonaFrom('responsabileSegreteria',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
-								<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-warning disabled btn-table single" th:text="#{label.modifica}">
+								<a th:if="${isEditSemiBloccato}" class="btn btn-warning disabled btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-								<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-danger disabled btn-table single" th:text="#{label.elimina}">
+								<a th:if="${isEditSemiBloccato}" class="btn btn-danger disabled btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 						</td>

@@ -249,6 +249,9 @@ public class EventoServiceImpl implements EventoService {
 		if(!Objects.equals(eventoToSave.getNumeroPartecipanti(), eventoDB.getNumeroPartecipanti())) {
 			diffMap.put("numeroPartecipanti", eventoToSave.getNumeroPartecipanti());
 		}
+		if(!Objects.equals(eventoToSave.getResponsabili(), eventoDB.getResponsabili())) {
+			diffMap.put("responsabili", eventoToSave.getResponsabili());
+		}
 		if(!Objects.equals(eventoToSave.getConfermatiCrediti(), eventoDB.getConfermatiCrediti())) {
 			diffMap.put("confermatiCrediti", eventoToSave.getConfermatiCrediti());
 		}
@@ -575,6 +578,9 @@ public class EventoServiceImpl implements EventoService {
 				}
 				else if(value instanceof Partner) {
 					((Partner) value).setPartnerFile(fileService.copyFile(((Partner) value).getPartnerFile()));
+				}
+				else if(value instanceof PersonaEvento) {
+					((PersonaEvento)value).getAnagrafica().setCv(fileService.copyFile(((PersonaEvento)value).getAnagrafica().getCv()));
 				}
 				//N.B. si suppone che non ci siano altre BaseEntityDefaultId dentro l'oggetto prima di detacharlo / clonarlo
 				//o si crerebbero dei reference non voluti

@@ -111,7 +111,7 @@ public class EventoValidator {
 		 * -------------------
 		 * la segreteria gestisce le date come vuole
 		 * -------------------
-		 * le riedizioni si devono svolgere nell'anno solare di riferimento del padre (anno data fine)
+		 * le riedizioni si devono svolgere nell'anno solare di riferimento del padre (anno data fine) e non possono iniziare prima del padre
 		 * */
 		int minGiorni;
 		if(evento.getProvider().getTipoOrganizzatore().getGruppo().equals("A"))
@@ -124,10 +124,16 @@ public class EventoValidator {
 			if(evento.isRiedizione()) {
 				if(evento.getDataInizio() == null)
 					errors.rejectValue(prefix + "dataInizio", "error.empty");
-				else if(!Utils.getAuthenticatedUser().isSegreteria())
-					if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni))
-						|| (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
-					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida");
+				else {
+					if(!Utils.getAuthenticatedUser().isSegreteria()) {
+						if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni))
+								|| (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
+							errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida");
+					}
+					if(evento.getDataInizio().isBefore(evento.getEventoPadre().getDataFine())) {
+						errors.rejectValue(prefix + "dataInizio", "error.data_inizio_antecedente_al_padre");
+					}
+				}
 			}
 			else {
 				if(evento.getDataInizio() == null)
@@ -147,26 +153,19 @@ public class EventoValidator {
 				if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)))
 					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_non_valida");
 			}
+			//impedisce di unificare le date di inizio / fine se l'evento ha riedizioni
+			if(eventoService.existRiedizioniOfEventoId(evento.getId())) {
+				//numero date da rispettare
+				checkDateInizioFine(evento, eventoDaDB, prefix, errors);
+			}
 			//se l'evento è un riedizione il numero delle date deve coincidere
 			if(evento.isRiedizione()) {
-				if(!Utils.getAuthenticatedUser().isSegreteria()
-						&& (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear())
+				if((evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear())
 						&& evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio()))
 					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida");
 				if(evento instanceof EventoRES) {
 					//numero date da rispettare
-					//data inizio fine uguali
-					if(eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
-							&& !evento.getDataFine().isEqual(evento.getDataInizio())) {
-						errors.rejectValue(prefix + "dataInizio", "error.date_non_separabili");
-						errors.rejectValue(prefix + "dataFine", "error.date_non_separabili");
-					}
-					//data inizio fine non uguali
-					else if (!eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
-							&& evento.getDataFine().isEqual(evento.getDataInizio())) {
-						errors.rejectValue(prefix + "dataInizio", "error.date_non_unificabili");
-						errors.rejectValue(prefix + "dataFine", "error.date_non_unificabili");
-					}
+					checkDateInizioFine(evento, eventoDaDB, prefix, errors);
 				}
 			}
 		}
@@ -435,6 +434,21 @@ public class EventoValidator {
 		if(evento.getCrediti() == null)
 			errors.rejectValue(prefix + "crediti", "error.empty");
 
+	}
+
+	private void checkDateInizioFine(Evento evento, Evento eventoDaDB, String prefix, Errors errors) {
+		//data inizio fine uguali
+		if(eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
+				&& !evento.getDataFine().isEqual(evento.getDataInizio())) {
+			errors.rejectValue(prefix + "dataInizio", "error.date_non_separabili");
+			errors.rejectValue(prefix + "dataFine", "error.date_non_separabili");
+		}
+		//data inizio fine non uguali
+		else if (!eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
+				&& evento.getDataFine().isEqual(evento.getDataInizio())) {
+			errors.rejectValue(prefix + "dataInizio", "error.date_non_unificabili");
+			errors.rejectValue(prefix + "dataFine", "error.date_non_unificabili");
+		}
 	}
 
 	//validate RES

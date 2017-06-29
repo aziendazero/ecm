@@ -1900,7 +1900,7 @@ public class EventoController {
 
 	@RequestMapping(value="/provider/{providerId}/evento/{eventoId}/updateOrari", method=RequestMethod.POST)
 	   public String updateOrari(@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper,
-			   Model model, RedirectAttributes redirectAttrs,
+			   Model model, RedirectAttributes redirectAttrs,@RequestParam("eventoWrapper_cId") String cIdWrapper,
 			   @RequestBody ModificaOrarioAttivitaWrapper jsonObj) {
 		try{
 			boolean ok = eventoService.updateOrariAttivita(jsonObj, eventoWrapper);
