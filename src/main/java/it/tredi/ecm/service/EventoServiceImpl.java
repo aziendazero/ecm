@@ -160,7 +160,7 @@ public class EventoServiceImpl implements EventoService {
 		}else{
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + " - Salvataggio"));
 			eventoDB = eventoRepository.getOne(evento.getId());
-			if(!evento.getDataFine().equals(eventoDB.getDataFine()))
+			if(!Objects.equals(evento.getDataFine(), eventoDB.getDataFine()))
 				evento.handleDateScadenza();
 			if(existRiedizioniOfEventoId(evento.getId()))
 				diffMap = populateDiffMap(evento, eventoDB);
@@ -807,25 +807,11 @@ public class EventoServiceImpl implements EventoService {
 		evento.setResponsabili(attachedListPersona);
 
 		//Sponsor
-		Iterator<Sponsor> itSponsor = eventoWrapper.getSponsors().iterator();
-		Set<Sponsor> attachedSetSponsor = new HashSet<Sponsor>();
-		while(itSponsor.hasNext()){
-			Sponsor s = itSponsor.next();
-			//s.setEvento(evento);
-			sponsorRepository.save(s);
-			attachedSetSponsor.add(s);
-		}
+		List<Sponsor> attachedSetSponsor = eventoWrapper.getSponsors();
 		evento.setSponsors(attachedSetSponsor);
 
 		//Partner
-		Iterator<Partner> itPartner = eventoWrapper.getPartners().iterator();
-		Set<Partner> attachedSetPartner = new HashSet<Partner>();
-		while(itPartner.hasNext()){
-			Partner s = itPartner.next();
-			//s.setEvento(evento);
-			partnerRepository.save(s);
-			attachedSetPartner.add(s);
-		}
+		List<Partner> attachedSetPartner = eventoWrapper.getPartners();
 		evento.setPartners(attachedSetPartner);
 
 		//brochure

@@ -705,7 +705,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		return toRet;
 	}
 
-	private void addCellLabelCampoValorePartners(String labelCampo, Set<Partner> partners, PdfPTable table) throws DocumentException {
+	private void addCellLabelCampoValorePartners(String labelCampo, List<Partner> partners, PdfPTable table) throws DocumentException {
 		PdfPTable subTable = null;
 		if(partners != null && partners.size() > 0) {
 			subTable = new PdfPTable(2);
@@ -760,7 +760,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), tablePers, table, true);
 	}
 
-	private void addCellLabelCampoValoreSponsors(String labelCampo, Set<Sponsor> sponsors, PdfPTable table) throws DocumentException {
+	private void addCellLabelCampoValoreSponsors(String labelCampo, List<Sponsor> sponsors, PdfPTable table) throws DocumentException {
 		PdfPTable subTable = null;
 		if(sponsors != null && sponsors.size() > 0) {
 			subTable = new PdfPTable(2);

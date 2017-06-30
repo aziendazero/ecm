@@ -8,5 +8,4 @@ import it.tredi.ecm.dao.entity.Sponsor;
 
 public interface SponsorRepository extends CrudRepository<Sponsor, Long>{
 	Set<Sponsor> findAll();
-
 }
