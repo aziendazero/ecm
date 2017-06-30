@@ -1715,13 +1715,14 @@ public class EventoServiceImpl implements EventoService {
 				LOGGER.debug(Utils.getLogMessage("Clonazione DettaglioAttivitaFAD: " + daf.getId()));
 				daf.setId(null);
 				LOGGER.debug(Utils.getLogMessage("Clonazione dei Docenti del DettaglioAttivitaFAD"));
+				Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
 				for(PersonaEvento pe : daf.getDocenti()) {
 					Long newId = mapIdDocenti.get(pe.getId());
-					pe = personaEventoRepository.findOne(newId);
-					personaEventoRepository.save(pe);
+					PersonaEvento nuovaPersona = personaEventoRepository.findOne(newId);
+					docentiSet.add(nuovaPersona);
 				}
-				Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
-				docentiSet.addAll(Arrays.asList(daf.getDocenti().toArray(new PersonaEvento[daf.getDocenti().size()])));
+//				Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
+//				docentiSet.addAll(Arrays.asList(dar.getDocenti().toArray(new PersonaEvento[dar.getDocenti().size()])));
 				daf.setDocenti(docentiSet);
 				dettaglioAttivitaFADList.add(daf);
 			}
@@ -1773,13 +1774,14 @@ public class EventoServiceImpl implements EventoService {
 					LOGGER.debug(Utils.getLogMessage("Clonazione DettaglioAttivitaRES: " + dar.getId()));
 					dar.setId(null);
 					LOGGER.debug(Utils.getLogMessage("Clonazione dei Docenti del DettaglioAttivitaRES"));
+					Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
 					for(PersonaEvento pe : dar.getDocenti()) {
 						Long newId = mapIdDocenti.get(pe.getId());
-						pe = personaEventoRepository.findOne(newId);
-						personaEventoRepository.save(pe);
+						PersonaEvento nuovaPersona = personaEventoRepository.findOne(newId);
+						docentiSet.add(nuovaPersona);
 					}
-					Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
-					docentiSet.addAll(Arrays.asList(dar.getDocenti().toArray(new PersonaEvento[dar.getDocenti().size()])));
+//					Set<PersonaEvento> docentiSet = new HashSet<PersonaEvento>();
+//					docentiSet.addAll(Arrays.asList(dar.getDocenti().toArray(new PersonaEvento[dar.getDocenti().size()])));
 					dar.setDocenti(docentiSet);
 					dettaglioAttivitaRESList.add(dar);
 				}
@@ -1848,8 +1850,10 @@ public class EventoServiceImpl implements EventoService {
 			verificaPresenzaPartecipanti.addAll(Arrays.asList(((EventoFSC) riedizione).getVerificaPresenzaPartecipanti().toArray(new VerificaPresenzaPartecipantiEnum[((EventoFSC) riedizione).getVerificaPresenzaPartecipanti().size()])));
 			((EventoFSC) riedizione).setVerificaPresenzaPartecipanti(verificaPresenzaPartecipanti);
 
-			//ricalcolato
-			((EventoFSC) riedizione).setRiepilogoRuoli(new ArrayList<RiepilogoRuoliFSC>());
+			LOGGER.debug(Utils.getLogMessage("Clonazione riepilogo ruoli (in realtà solo dei partecipanti)"));
+			List<RiepilogoRuoliFSC> riepilogoRuoli = new ArrayList<RiepilogoRuoliFSC>();
+			riepilogoRuoli.addAll(Arrays.asList(((EventoFSC) riedizione).getRiepilogoRuoli().toArray(new RiepilogoRuoliFSC[((EventoFSC) riedizione).getRiepilogoRuoli().size()])));
+			((EventoFSC) riedizione).setRiepilogoRuoli(riepilogoRuoli);
 		}
 
 		//parte in comune

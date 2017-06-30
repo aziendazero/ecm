@@ -1858,7 +1858,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				sendEmailToResponsabili(accreditamentoId);
 			} else if(stato == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE) {
 				File lettera = accreditamento.getLetteraAccompagnatoriaDiniego();
-				File decreto = accreditamento.getDecretoAccreditamento();
+				File decreto = accreditamento.getDecretoDiniego();
 				Set<Long> fileAllegatiIds = new HashSet<Long>();
 				fileAllegatiIds.add(decreto.getId());
 				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, lettera.getId(), fileAllegatiIds);
@@ -2728,6 +2728,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		File fileDecreto = fileService.getFile(fileIdDecreto);
 		fileDecreto.setDataDelibera(dataDelibera);
 		fileDecreto.setNumeroDelibera(numeroDelibera);
+		fileService.save(fileDecreto);
 
 		File fileLettera = fileService.getFile(fileIdLettera);
 
@@ -2771,6 +2772,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		File fileDecreto = fileService.getFile(fileIdDecreto);
 		fileDecreto.setDataDelibera(dataDelibera);
 		fileDecreto.setNumeroDelibera(numeroDelibera);
+		fileService.save(fileDecreto);
 
 		File fileLettera = fileService.getFile(fileIdLettera);
 

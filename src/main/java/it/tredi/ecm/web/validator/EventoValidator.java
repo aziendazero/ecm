@@ -133,6 +133,10 @@ public class EventoValidator {
 					if(evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())) {
 						errors.rejectValue(prefix + "dataInizio", "error.data_inizio_antecedente_al_padre");
 					}
+					if(evento instanceof EventoRES) {
+						//numero date da rispettare
+						checkDateInizioFine(evento, evento.getEventoPadre(), prefix, errors);
+					}
 				}
 			}
 			else {
@@ -158,14 +162,14 @@ public class EventoValidator {
 				//numero date da rispettare
 				checkDateInizioFine(evento, eventoDaDB, prefix, errors);
 			}
-			//se l'evento è un riedizione il numero delle date deve coincidere
 			if(evento.isRiedizione()) {
 				if((evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear())
 						|| evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio()))
-					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida");
+					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida_anno_padre");
+				//se l'evento è un riedizione il numero delle date deve coincidere
 				if(evento instanceof EventoRES) {
 					//numero date da rispettare
-					checkDateInizioFine(evento, eventoDaDB, prefix, errors);
+					checkDateInizioFine(evento, evento.getEventoPadre(), prefix, errors);
 				}
 			}
 		}
@@ -196,7 +200,7 @@ public class EventoValidator {
 		if(evento.getResponsabili() == null || evento.getResponsabili().isEmpty())
 			errors.rejectValue(prefix + "responsabili", "error.empty");
 		else if(evento.getResponsabili().size() > ecmProperties.getNumeroMassimoResponsabiliEvento())
-				errors.rejectValue(prefix + "responsabili", "error.troppi_responsabili3");
+			errors.rejectValue(prefix + "responsabili", "error.troppi_responsabili3");
 		else {
 			int counter = 0;
 			boolean atLeastOneErrorPersonaEvento = false;
@@ -436,15 +440,15 @@ public class EventoValidator {
 
 	}
 
-	private void checkDateInizioFine(Evento evento, Evento eventoDaDB, String prefix, Errors errors) {
+	private void checkDateInizioFine(Evento evento, Evento evento2, String prefix, Errors errors) {
 		//data inizio fine uguali
-		if(eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
+		if(evento2.getDataFine().isEqual(evento2.getDataInizio())
 				&& !evento.getDataFine().isEqual(evento.getDataInizio())) {
 			errors.rejectValue(prefix + "dataInizio", "error.date_non_separabili");
 			errors.rejectValue(prefix + "dataFine", "error.date_non_separabili");
 		}
 		//data inizio fine non uguali
-		else if (!eventoDaDB.getDataFine().isEqual(eventoDaDB.getDataInizio())
+		else if (!evento2.getDataFine().isEqual(evento2.getDataInizio())
 				&& evento.getDataFine().isEqual(evento.getDataInizio())) {
 			errors.rejectValue(prefix + "dataInizio", "error.date_non_unificabili");
 			errors.rejectValue(prefix + "dataFine", "error.date_non_unificabili");
