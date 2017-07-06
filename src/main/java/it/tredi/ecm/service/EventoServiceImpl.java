@@ -167,7 +167,8 @@ public class EventoServiceImpl implements EventoService {
 		}
 		evento.setDataUltimaModifica(LocalDateTime.now());
 		evento = eventoRepository.saveAndFlush(evento);
-//		eventoRepository.save(evento);
+		//guai a chi rimuovere questo save, serve per l'audit
+		eventoRepository.save(evento);
 
 //		if(evento.isEventoDaPianoFormativo() && !evento.getEventoPianoFormativo().isAttuato()) {
 //			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
@@ -501,7 +502,9 @@ public class EventoServiceImpl implements EventoService {
 		}
 		evento.setSponsorUploaded(allSponsorsOk);
 
-		eventoRepository.saveAndFlush(evento);
+		evento = eventoRepository.saveAndFlush(evento);
+		//non togliere il doppio salvataggio, serve per l'audit
+		eventoRepository.save(evento);
 	}
 
 	//salvataggio delle modifiche ai programmi segnate nella diffMap nell'evento passato come argomento
