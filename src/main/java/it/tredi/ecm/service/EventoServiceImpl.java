@@ -1553,7 +1553,8 @@ public class EventoServiceImpl implements EventoService {
 		//non FAD, selezionabili secondo le procedureFormative del provider,
 		//che finiscono dopo l'inizio dell'anno corrente
 		Accreditamento accreditamento = accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
-		Set<ProceduraFormativa> procedureFormative = accreditamento.getDatiAccreditamento().getProcedureFormative();
+		Set<ProceduraFormativa> procedureFormative = new HashSet<ProceduraFormativa>();
+		procedureFormative.addAll(accreditamento.getDatiAccreditamento().getProcedureFormative());
 		procedureFormative.remove(ProceduraFormativa.FAD);
 
 		return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1));

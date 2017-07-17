@@ -99,9 +99,12 @@
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group ora" id="razionale">
 												<input type="text" required="required" class="form-control"
 													th:field="${eventoWrapper.tempAttivitaRES.orarioInizio}" th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" />
-													<span class="input-group-addon openClock">
+													<span th:unless="${isEditSemiBloccato}" class="input-group-addon openClock">
 		     											<i class="glyphicon glyphicon-time"></i>
 		  											</span>
+		  											<span th:if="${isEditSemiBloccato}" class="input-group-addon disabled-addon">
+							 							<i class="glyphicon glyphicon-time"></i>
+													</span>
 											</div>
 										</div>
 
@@ -114,9 +117,12 @@
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group ora" id="razionale">
 												<input type="text" required="required" class="form-control"
 													th:field="${eventoWrapper.tempAttivitaRES.orarioFine}" th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" />
-													<span class="input-group-addon openClock">
+													<span th:unless="${isEditSemiBloccato}" class="input-group-addon openClock">
 		     											<i class="glyphicon glyphicon-time"></i>
 		  											</span>
+		  											<span th:if="${isEditSemiBloccato}" class="input-group-addon disabled-addon">
+							 							<i class="glyphicon glyphicon-time"></i>
+													</span>
 											</div>
 										</div>
 
@@ -1360,7 +1366,7 @@
 													</label>
 													<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
 														<i class="fa fa-file-text"></i>
-														<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29211.docx"></a>
+														<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29210.docx"></a>
 													</div>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 														<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block> -->

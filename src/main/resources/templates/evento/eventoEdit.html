@@ -1861,7 +1861,7 @@
 <!-- 												<button type="button" th:unless="${isEditSemiBloccato}" onclick="selezionaTutteAttivita($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.seleziona_tutti}"> -->
 <!-- 													<span><i class="fa fa-list-ol"></i></span> -->
 <!-- 												</button> -->
-												<button type="button" th:unless="${isEditSemiBloccato}" onclick="openModaleSpostaOrario($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.sposta_orario_selezionati}">
+												<button type="button" th:unless="${isEventoIniziato or isEditSemiBloccato}" onclick="openModaleSpostaOrario($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.sposta_orario_selezionati}">
 													<span><i class="fa fa-clock-o"></i></span>
 												</button>
 											</div>
