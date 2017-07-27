@@ -43,4 +43,12 @@ public class Protocollo extends BaseEntityDefaultId {
 			this.file = null;
 		}
 	}
+
+	//FIXME una volta gestita meglio si può lasciare il setter di lombok
+	// introdotto perchè il service di protocollazione della regione non accetta oggetti
+	// con caratteri superiori a 200 caratteri
+	public void setOggetto(String oggetto) {
+		if(oggetto.length() > 199)
+			this.oggetto = oggetto.substring(0, 199);
+	}
 }
