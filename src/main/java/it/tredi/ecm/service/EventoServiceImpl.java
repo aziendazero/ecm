@@ -569,6 +569,10 @@ public class EventoServiceImpl implements EventoService {
 			if(value instanceof File) {
 				return fileService.copyFile((File) value);
 			}
+			//BaseEntityDefaultId da settare direttamente
+			else if(value instanceof Disciplina || value instanceof Obiettivo) {
+				return value;
+			}
 			//se l'oggetto in questione estende la classe delle entity devo clonarlo
 			else if(value instanceof BaseEntityDefaultId) {
 				Utils.touchFirstLevelOfEverything(value);
