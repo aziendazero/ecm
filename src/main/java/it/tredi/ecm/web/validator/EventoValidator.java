@@ -1336,7 +1336,7 @@ public class EventoValidator {
 				return true;
 			Set<PersonaEvento> docentiTitolariDettaglio = new HashSet<PersonaEvento>();
 			for(PersonaEvento docente : dettaglio.getDocenti()) {
-				if(docente.getTitolare().equalsIgnoreCase("titolare"))
+				if("titolare".equalsIgnoreCase(docente.getTitolare()))
 					docentiTitolariDettaglio.add(docente);
 			}
 			if(dettaglio.getObiettivoFormativo() == null)
