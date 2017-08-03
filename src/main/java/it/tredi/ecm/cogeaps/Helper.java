@@ -126,8 +126,10 @@ public class Helper {
 		Element eventoEl = xmlDoc.getRootElement().element("evento");
 		List<Element> partecipantiEl = eventoEl.elements(PARTECIPANTE_NODE_NAME);
 		for(Element partecipanteEl : partecipantiEl) {
-			PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl);
-			pdfInfo.getPartecipanti().add(pdfPartecipanteInfo);
+			if(partecipanteEl.attributeValue("ruolo", "").equalsIgnoreCase("P")){
+				PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl);
+				pdfInfo.getPartecipanti().add(pdfPartecipanteInfo);
+			}
 		}
 		return pdfInfo;
 	}
