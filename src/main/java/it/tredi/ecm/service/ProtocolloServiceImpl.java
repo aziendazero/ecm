@@ -282,6 +282,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		String requestString = writer.toString();
 
+		LOGGER.info("ProtocollaArrivo - " + requestString);
+
 		if(ecmProperties.isDebugSaltaProtocollo()) {
 			String start = "2016-01-01 00:00";
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -397,6 +399,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			transformer.transform(new JAXBSource(getProtoBatchReqContext(), richiesta), new StreamResult(writer));
 
 			String requestString = writer.toString();
+
+			LOGGER.info("ProtocollaInUscita - " + requestString);
 
 			idProtoBatch = port.protoBatch(requestString);
 			LOGGER.debug(idProtoBatch);
