@@ -190,7 +190,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        document.add(parTitolo);
 
 	        document.add(Chunk.NEWLINE);
-	        document.add(Chunk.NEWLINE);
+	        //document.add(Chunk.NEWLINE);
 
 	        //SOTTOTITOLO
 	        Paragraph parSubTitle = new Paragraph();
@@ -249,7 +249,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        par3.add(c11);
 	        document.add(par3);
 
-	        document.add(Chunk.NEWLINE);
+	       // document.add(Chunk.NEWLINE);
 	        document.add(Chunk.NEWLINE);
 
 	        //VERIFICA RAPPRESENTANTE
@@ -305,7 +305,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        par6.add(c22);
 	        document.add(par6);
 
-	        document.add(Chunk.NEWLINE);
+	       // document.add(Chunk.NEWLINE);
 	        document.add(Chunk.NEWLINE);
 
 	        //FOOTER CONTAINER
