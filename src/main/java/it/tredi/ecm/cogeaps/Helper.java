@@ -127,11 +127,13 @@ public class Helper {
 		List<Element> partecipantiEl = eventoEl.elements(PARTECIPANTE_NODE_NAME);
 
 		if(withDocenti){
+			//prendo tutti
 			for(Element partecipanteEl : partecipantiEl) {
 				PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl);
 				pdfInfo.getPartecipanti().add(pdfPartecipanteInfo);
 			}
 		}else{
+			//prendo solo i partecipanti e non i docenti
 			for(Element partecipanteEl : partecipantiEl) {
 				if(partecipanteEl.attributeValue("ruolo", "").equalsIgnoreCase("P")){
 					PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl);
