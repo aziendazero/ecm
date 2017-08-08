@@ -2516,10 +2516,14 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	//metodo ricorsivo sui figli per prendere anche i nipoti
 	public Set<Evento> getRiedizioniOfEventoId(Long eventoId) {
+		Set<Evento> riedizioniToAdd = new HashSet<Evento>();
+
 		Set<Evento> riedizioni = eventoRepository.getRiedizioniOfEventoId(eventoId);
 		for(Evento riedizione : riedizioni) {
-			riedizioni.addAll(getRiedizioniOfEventoId(riedizione.getId()));
+			riedizioniToAdd.addAll(getRiedizioniOfEventoId(riedizione.getId()));
 		}
+
+		riedizioni.addAll(riedizioniToAdd);
 		return riedizioni;
 	}
 }
