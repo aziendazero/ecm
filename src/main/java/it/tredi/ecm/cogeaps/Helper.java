@@ -121,16 +121,25 @@ public class Helper {
 	}
 
 	//crea la lista di oggetti utilizzati per estrapolare i dati relativi al partecipante
-	public static PdfRiepilogoPartecipantiInfo extractRiepilogoPartecipantiFromXML(Document xmlDoc) throws Exception {
+	public static PdfRiepilogoPartecipantiInfo extractRiepilogoPartecipantiFromXML(Document xmlDoc, boolean withDocenti) throws Exception {
 		PdfRiepilogoPartecipantiInfo pdfInfo = new PdfRiepilogoPartecipantiInfo();
 		Element eventoEl = xmlDoc.getRootElement().element("evento");
 		List<Element> partecipantiEl = eventoEl.elements(PARTECIPANTE_NODE_NAME);
-		for(Element partecipanteEl : partecipantiEl) {
-			if(partecipanteEl.attributeValue("ruolo", "").equalsIgnoreCase("P")){
+
+		if(withDocenti){
+			for(Element partecipanteEl : partecipantiEl) {
 				PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl);
 				pdfInfo.getPartecipanti().add(pdfPartecipanteInfo);
 			}
+		}else{
+			for(Element partecipanteEl : partecipantiEl) {
+				if(partecipanteEl.attributeValue("ruolo", "").equalsIgnoreCase("P")){
+					PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl);
+					pdfInfo.getPartecipanti().add(pdfPartecipanteInfo);
+				}
+			}
 		}
+
 		return pdfInfo;
 	}
 

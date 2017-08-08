@@ -69,7 +69,7 @@ public class XSLTController {
 	        Evento evento = eventoService.getEvento(eventoId);
 	        response.setHeader("Content-Disposition", String.format("attachment; filename=\"Riepilogo Partecipanti inviato al CO.Ge.A.P.S. Evento: " + evento.getCodiceIdentificativo() + ".pdf\""));
 
-			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfRiepilogoPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc), evento.getCodiceIdentificativo());
+			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfRiepilogoPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc,true), evento.getCodiceIdentificativo());
 			response.setContentLength(pdfOutputStream.size());
 			response.getOutputStream().write(pdfOutputStream.toByteArray());
 		}
@@ -89,7 +89,7 @@ public class XSLTController {
 	        Evento evento = eventoService.getEvento(eventoId);
 	        response.setHeader("Content-Disposition", String.format("attachment; filename=\"Attestati per i Partecipanti " + evento.getCodiceIdentificativo() + ".pdf\""));
 
-			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfAttestatiPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc), evento);
+			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfAttestatiPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc,false), evento);
 			response.setContentLength(pdfOutputStream.size());
 			response.getOutputStream().write(pdfOutputStream.toByteArray());
 		}
