@@ -1,5 +1,7 @@
 package it.tredi.ecm.cogeaps;
 
+import java.net.URLEncoder;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -100,6 +102,10 @@ public class CogeapsWsRestClient {
 
 	public CogeapsStatoElaborazioneResponse statoElaborazione(String fileName) throws Exception {
 		String complete_url = "";
+
+		//dpranteda 09/08/2017
+		fileName = URLEncoder.encode(fileName,"UTF-8");
+
 		if(port != -1)
 			complete_url = protocol + "://" + host + ":" + port +  stato_elaborazione_service + "?nomeFile=" + fileName;
 		else
