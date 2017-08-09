@@ -202,6 +202,11 @@ public class EngineeringServiceImpl implements EngineeringService {
 			throw new PagInCorsoException("Il pagamento risulta già in corso!");
 		}
 
+		//dpranteda 2017-08-09
+		if(e.getPagato() != null && e.getPagato().booleanValue()) {
+			throw new PagInCorsoException("Il pagamento risulta già effettuato!");
+		}
+
 		Pagamento p = pagamentoService.getPagamentoByEvento(e);
 		if (p == null) {
 			p = new Pagamento();
