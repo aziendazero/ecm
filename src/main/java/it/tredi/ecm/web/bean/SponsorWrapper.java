@@ -15,4 +15,5 @@ public class SponsorWrapper {
 	private String denominazioneProvider;
 	private Long eventoId;
 	private File sponsorFile;
+	private String codiceIdentificativoEvento;
 }

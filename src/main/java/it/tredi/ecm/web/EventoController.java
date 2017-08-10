@@ -1002,6 +1002,7 @@ public class EventoController {
 		wrapper.setProviderId(providerId);
 		wrapper.setDenominazioneProvider(providerService.getProvider(providerId).getDenominazioneLegale());
 		wrapper.setEventoId(evento.getId());
+		wrapper.setCodiceIdentificativoEvento(evento.getCodiceIdentificativo());
 		return wrapper;
 	}
 
