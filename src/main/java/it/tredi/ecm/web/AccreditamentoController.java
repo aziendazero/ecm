@@ -1760,4 +1760,19 @@ public class AccreditamentoController {
 	    model.addAttribute("returnLink", returnLink);
 		return "accreditamento/accreditamentoList";
 	}
+
+	@PreAuthorize("@securityAccessServiceImpl.isUserSegreteria(principal)")
+	@RequestMapping("/provider/{providerId}/createAccreditamentoDiff")
+	public String createDiffForAccreditamento(@PathVariable Long providerId, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/createAccreditamentoDiff"));
+		try {
+				accreditamentoService.createAccreditamentoDiff(providerId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.creazione_diff_accreditamento", "success"));
+				return "redirect:/home";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/createAccreditamentoDiff"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_creazione_diff_accreditamento", "error"));
+			return "redirect:/home";
+		}
+	}
 }

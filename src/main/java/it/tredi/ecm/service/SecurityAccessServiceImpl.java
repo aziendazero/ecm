@@ -408,4 +408,9 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 			return true;
 		return false;
 	}
+
+	@Override
+	public boolean isUserSegreteria(CurrentUser currentUser) {
+		return currentUser.isSegreteria();
+	}
 }

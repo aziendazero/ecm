@@ -147,4 +147,6 @@ public interface AccreditamentoService{
 	public boolean canRiassegnaRefereeVariazioneDati(Long accreditamentoId, CurrentUser currentUser);
 	public void aggiungiDatiDelibera(Long idFileDelibera, String numeroDelibera, LocalDate dataDelibera);
 	public Accreditamento getAccreditamentoAttivoOppureUltimoForProvider(Long providerId) throws AccreditamentoNotFoundException;
+
+	public void createAccreditamentoDiff(Long providerId) throws Exception;
 }

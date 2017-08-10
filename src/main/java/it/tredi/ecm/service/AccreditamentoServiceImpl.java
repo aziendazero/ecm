@@ -205,6 +205,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 	}
 
+	@Transactional
+	@Override
+	public void createAccreditamentoDiff(Long providerId) throws Exception{
+		Accreditamento ultimoAccreditamento = getAccreditamentoAttivoForProvider(providerId);
+		diffService.creaAllDiffAccreditamento(ultimoAccreditamento);
+	}
+
 	@Override
 	public Accreditamento getAccreditamento(Long accreditamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Caricamento domanda di accreditamento: " + accreditamentoId));
