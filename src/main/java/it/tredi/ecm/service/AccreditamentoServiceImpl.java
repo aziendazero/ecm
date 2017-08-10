@@ -152,10 +152,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				}
 
 				if(tipoDomanda == AccreditamentoTipoEnum.STANDARD){
-					try{
-						Accreditamento ultimoAccreditamento = getAccreditamentoAttivoForProvider(provider.getId());
-
+						Accreditamento ultimoAccreditamento = getAccreditamentoAttivoOppureUltimoForProvider(provider.getId());
 						diffService.creaAllDiffAccreditamento(ultimoAccreditamento);
+
+						save(accreditamento);
 
 						if(ultimoAccreditamento != null && ultimoAccreditamento.getDatiAccreditamento() != null){
 							DatiAccreditamento ultimoDatiAccreditamento = ultimoAccreditamento.getDatiAccreditamento();
@@ -193,9 +193,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 								datiAccreditamentoService.save(datiAccreditamento, accreditamento.getId());
 							}
 						}
-					}catch(Exception ex){
-						ex.printStackTrace();
-					}
+				}else{
+					save(accreditamento);
 				}
 
 				return accreditamento;
