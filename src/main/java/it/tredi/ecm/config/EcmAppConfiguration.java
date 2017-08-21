@@ -16,6 +16,8 @@ public class EcmAppConfiguration {
 	private int accountExpiresDay = 10;
 	@Value("${file.multipart.maxFileSize}")
 	private int multipartMaxFileSize = 2;
+	@Value("${file.multipart.maxFileSize4MB}")
+	private int multipartMaxFileSize4MB = 4;
 	@Value("${seduta.validation.minutes}")
 	private int sedutaValidationMinutes = 30;
 	@Value("${application.baseurl}")
@@ -102,6 +104,7 @@ public class EcmAppConfiguration {
 		EcmProperties ecmProperties = new EcmProperties();
 		ecmProperties.setAccountExpiresDay(accountExpiresDay);
 		ecmProperties.setMultipartMaxFileSize(multipartMaxFileSize*1024*1024);
+		ecmProperties.setMultipartMaxFileSize4MB(multipartMaxFileSize4MB*1024*1024);
 		ecmProperties.setSedutaValidationMinutes(sedutaValidationMinutes);
 		ecmProperties.setApplicationBaseUrl(applicationBaseUrl);
 		ecmProperties.setEmailSegreteriaEcm(emailSegreteriaEcm);

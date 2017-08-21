@@ -8,6 +8,7 @@ import lombok.Setter;
 public class EcmProperties {
 	private int accountExpiresDay;
 	private int multipartMaxFileSize;
+	private int multipartMaxFileSize4MB;
 	private int sedutaValidationMinutes;
 	private String applicationBaseUrl;
 	private String emailSegreteriaEcm;

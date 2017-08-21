@@ -45,8 +45,17 @@ public class FileValidator {
 			errors.rejectValue(prefix, "error.empty");
 		}else{
 
-			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
-				errors.rejectValue(prefix, "error.maxFileSize", new Object[]{String.valueOf(ecmProperties.getMultipartMaxFileSize()/(1024*1024) )},"");
+//			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
+//				errors.rejectValue(prefix, "error.maxFileSize", new Object[]{String.valueOf(ecmProperties.getMultipartMaxFileSize()/(1024*1024) )},"");
+//			}
+
+			int maxSize = ecmProperties.getMultipartMaxFileSize();
+			if(file.isATTOCOSTITUTIVO()){
+				maxSize = ecmProperties.getMultipartMaxFileSize4MB();
+			}
+
+			if(file.getData().length > maxSize){
+				errors.rejectValue(prefix, "error.maxFileSize", new Object[]{String.valueOf(maxSize/(1024*1024))},"");
 			}
 		}
 	}
@@ -122,8 +131,18 @@ public class FileValidator {
 				if (!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".P7M") || file.getNomeFile().toUpperCase().endsWith(".P7C")))
 					error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
 			}
-			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
-				error = messageSource.getMessage("error.maxFileSize", new Object[]{String.valueOf(ecmProperties.getMultipartMaxFileSize()/(1024*1024) )}, Locale.getDefault());
+
+//			if(file.getData().length > ecmProperties.getMultipartMaxFileSize()){
+//				error = messageSource.getMessage("error.maxFileSize", new Object[]{String.valueOf(ecmProperties.getMultipartMaxFileSize()/(1024*1024) )}, Locale.getDefault());
+//			}
+
+			int maxSize = ecmProperties.getMultipartMaxFileSize();
+			if(file.isATTOCOSTITUTIVO()){
+				maxSize = ecmProperties.getMultipartMaxFileSize4MB();
+			}
+
+			if(file.getData().length > maxSize){
+				error = messageSource.getMessage("error.maxFileSize", new Object[]{String.valueOf(maxSize/(1024*1024) )}, Locale.getDefault());
 			}
 		}
 		return error;
