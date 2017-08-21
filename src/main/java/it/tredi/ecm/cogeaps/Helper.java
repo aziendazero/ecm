@@ -82,23 +82,14 @@ public class Helper {
 		if (evento instanceof EventoFSC) { //FSC
 			//tiommi 15/06/2017
 			//old -> cod_tipologia_form = Integer.toString(((EventoFSC)evento).getTipologiaEventoFSC().getId());
-			//new
-			if(((EventoFSC) evento).getTipologiaEventoFSC() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO)
-				cod_tipologia_form = "7";
-			else
-				cod_tipologia_form = Integer.toString(((EventoFSC)evento).getTipologiaEventoFSC().getId());
-			//end
+			//new dpranteda 21/08/2017: ripristinato il meccanismo in quanto sono stati modificati direttamente gli id nel enum
+			cod_tipologia_form = Integer.toString(((EventoFSC)evento).getTipologiaEventoFSC().getId());
 		}
 		else if (evento instanceof EventoRES) { //RES
 			//tiommi 22/05/2017
 			//old -> cod_tipologia_form = Integer.toString(((EventoRES)evento).getTipologiaEventoRES().getId());
-			//new
-			if(((EventoRES) evento).getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO)
-				cod_tipologia_form = "1";
-			else if(((EventoRES) evento).getTipologiaEventoRES() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO)
-				cod_tipologia_form = "2";
-			else if(((EventoRES) evento).getTipologiaEventoRES() == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO)
-				cod_tipologia_form = "4";
+			//new dpranteda 21/08/2017: ripristinato il meccanismo in quanto sono stati modificati direttamente gli id nel enum
+			cod_tipologia_form = Integer.toString(((EventoRES)evento).getTipologiaEventoRES().getId());
 			//end
 		}
 		else if (evento instanceof EventoFAD) { //FAD

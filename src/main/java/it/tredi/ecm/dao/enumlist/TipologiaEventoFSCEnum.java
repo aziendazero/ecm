@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 public enum TipologiaEventoFSCEnum implements INomeEnum {
-	TRAINING_INDIVIDUALIZZATO(1,"Training individualizzato",Arrays.asList(
+	TRAINING_INDIVIDUALIZZATO(6,"Training individualizzato",Arrays.asList(
 			RuoloFSCEnum.PARTECIPANTE_A,
 			RuoloFSCEnum.PARTECIPANTE_B,
 			RuoloFSCEnum.PARTECIPANTE_C,
@@ -20,11 +20,11 @@ public enum TipologiaEventoFSCEnum implements INomeEnum {
 			RuoloFSCEnum.ESPERTO_C,
 			RuoloFSCEnum.COORDINATORE)),
 
-	GRUPPI_DI_MIGLIORAMENTO(2,"Gruppi di miglioramento",Arrays.asList(
+	GRUPPI_DI_MIGLIORAMENTO(7,"Gruppi di miglioramento",Arrays.asList(
 			RuoloFSCEnum.PARTECIPANTE,
 			RuoloFSCEnum.COORDINATORE_GRUPPI)),//QUESTO ATTIVA LA SOTTOLISTA
 
-	PROGETTI_DI_MIGLIORAMENTO(3,"Progetti di miglioramento",Arrays.asList(
+	PROGETTI_DI_MIGLIORAMENTO(7,"Progetti di miglioramento",Arrays.asList(
 			RuoloFSCEnum.PARTECIPANTE_A,
 			RuoloFSCEnum.PARTECIPANTE_B,
 			RuoloFSCEnum.PARTECIPANTE_C,
@@ -36,13 +36,13 @@ public enum TipologiaEventoFSCEnum implements INomeEnum {
 			RuoloFSCEnum.COORDINATORE_GRUPPI_C,
 			RuoloFSCEnum.RESPONSABILE_PROGETTO)), //sstagni - tolto in quando non gestito dal cogeaps
 
-	ATTIVITA_DI_RICERCA(4,"Attivita di ricerca",Arrays.asList(
+	ATTIVITA_DI_RICERCA(8,"Attivita di ricerca",Arrays.asList(
 			RuoloFSCEnum.PARTECIPANTE_A,
 			RuoloFSCEnum.PARTECIPANTE_B,
 			RuoloFSCEnum.PARTECIPANTE_C,
 			RuoloFSCEnum.COORDINATORE_ATTIVITA_RICERCA)),
 
-	AUDIT_CLINICO_ASSISTENZIALE(5,"Audit clinico e/o assistenziale",Arrays.asList(
+	AUDIT_CLINICO_ASSISTENZIALE(9,"Audit clinico e/o assistenziale",Arrays.asList(
 			RuoloFSCEnum.PARTECIPANTE_A,
 			RuoloFSCEnum.PARTECIPANTE_B,
 			RuoloFSCEnum.PARTECIPANTE_C,
