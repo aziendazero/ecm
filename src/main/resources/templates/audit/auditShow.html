@@ -13,9 +13,14 @@
 					<div class="x_title">
 						<h2 th:text="#{label.visualizzazione_withParam(${visualizzazione})}">label.info_sede</h2>
 						<div class="pull-right buttons-header">
-							<a class="btn btn-primary pull-right"
+							<a th:if="${returnLink}" class="btn btn-primary pull-right"
 									th:href="@{__${returnLink}__}"
 									th:text="#{label.indietro}">Indietro</a>
+
+							<a th:unless="${returnLink}" class="btn btn-primary pull-right"
+									href="javascript: history.back()"
+									th:text="#{label.indietro}">Indietro</a>
+
 							<th:block th:switch="${auditArg}">
 								<th:block th:case="provider">
 									<button type="button" onclick="createFilter('Inserimento Relazione Annuale', [3], false);" class="btn btn-primary pull-right" th:text="#{label.filtra_relazione_annuale}"></button>

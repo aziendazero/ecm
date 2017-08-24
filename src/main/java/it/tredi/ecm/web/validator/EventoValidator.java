@@ -436,7 +436,7 @@ public class EventoValidator {
 		 * campo numerico (Float)
 		 * */
 		if(evento.getCrediti() == null)
-			errors.rejectValue(prefix + "crediti", "error.empty");
+			errors.rejectValue(prefix + "crediti", "error.empty_crediti");
 
 	}
 

@@ -946,7 +946,7 @@
 				 				</div>
 
 								<!-- CREDITI FORMATIVI PROPOSTI-->
-									<div class="item form-group">
+									<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')} ? 'bad'">
 										<label class="control-label col-xs-1">
 											<span>22</span>
 										</label>
@@ -963,6 +963,7 @@
 											</label>
 											</span>
 										</div>
+										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.crediti')}__}"></div>
 									</div>
 
 									<!-- CREDITI FORMATIVI INSERITI DALL'UTENTE-->

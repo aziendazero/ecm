@@ -136,6 +136,8 @@ public class AuditController {
 				model.addAttribute("auditArg", "accreditamento");
 				Accreditamento accreditamento = accreditamentoService.getAccreditamento(entityId);
 				model.addAttribute("visualizzazione", " della Domanda di Accreditamento " + entityId + " del Provider " + accreditamento.getProvider().getId());
+			}else{
+				model.addAttribute("visualizzazione", entity);
 			}
 
 			model.addAttribute("auditInfo", auditInfo);
@@ -216,6 +218,12 @@ public class AuditController {
 			//auditInfo.setFullText(changeLog);
 
 			model.addAttribute("auditInfo", auditInfo);
+
+			model.addAttribute("visualizzazione", entity + " " + entityId);
+			int slashIndex = pathValueObject.indexOf("/");
+			if(slashIndex != -1)
+				model.addAttribute("visualizzazione", pathValueObject.substring(0, slashIndex) + " di " + entity + " " + entityId);
+
 			return SHOW;
 		}
 		catch (Exception ex) {

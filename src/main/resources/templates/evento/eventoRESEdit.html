@@ -99,10 +99,10 @@
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group ora" id="razionale">
 												<input type="text" required="required" class="form-control"
 													th:field="${eventoWrapper.tempAttivitaRES.orarioInizio}" th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" />
-													<span th:unless="${isEditSemiBloccato}" class="input-group-addon openClock">
+													<span th:unless="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" class="input-group-addon openClock">
 		     											<i class="glyphicon glyphicon-time"></i>
 		  											</span>
-		  											<span th:if="${isEditSemiBloccato}" class="input-group-addon disabled-addon">
+		  											<span th:if="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" class="input-group-addon disabled-addon">
 							 							<i class="glyphicon glyphicon-time"></i>
 													</span>
 											</div>
@@ -117,10 +117,10 @@
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group ora" id="razionale">
 												<input type="text" required="required" class="form-control"
 													th:field="${eventoWrapper.tempAttivitaRES.orarioFine}" th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" />
-													<span th:unless="${isEditSemiBloccato}" class="input-group-addon openClock">
+													<span th:unless="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" class="input-group-addon openClock">
 		     											<i class="glyphicon glyphicon-time"></i>
 		  											</span>
-		  											<span th:if="${isEditSemiBloccato}" class="input-group-addon disabled-addon">
+		  											<span th:if="${isRiedizione or isEditSemiBloccato or hasRiedizioni}" class="input-group-addon disabled-addon">
 							 							<i class="glyphicon glyphicon-time"></i>
 													</span>
 											</div>
@@ -1032,7 +1032,7 @@
 						 				</div>
 
 										<!-- CREDITI FORMATIVI PROPOSTI-->
-										<div class="item form-group">
+										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')} ? 'bad'">
 											<label class="control-label col-xs-1">
 												<span>37</span>
 											</label>
@@ -1049,6 +1049,7 @@
 												</label>
 												</span>
 											</div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.crediti')}__}"></div>
 										</div>
 
 										<!-- CREDITI FORMATIVI INSERITI DALL'UTENTE-->
