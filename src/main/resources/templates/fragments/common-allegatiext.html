@@ -32,7 +32,7 @@
 
 		function submitFirma(propertyName) {
 			//var propertyName = $(element).parent().parent().find('input[type=file]').attr("propertyName");
-			console.log('propertyName: ' + propertyName);
+			console.log('submitFirma() -> propertyName: ' + propertyName);
 			$("#firmaFrame").attr("src", [[@{|/engineering/firma/invio|}]] + '?idFile=' + $("#"+propertyName+"\\.id").val());
 			$("#modalFrame").show();
 		}
@@ -94,20 +94,36 @@
 		}
 
 		function setFileExtForSignatureResponse(response){
+			console.log('setFileExtForSignatureResponse() -> entering');
 			if(response.id != null && response.id != 0) {
 				var prefixUrl = [[@{/file/}]];
 				var propertyName = $('body').find('input[type=file][typefile=' + response.tipo + ']').attr('propertyname');
-				console.log(propertyName);
-				$("#"+propertyName+"_label").text(response.nomeFile);
-				$("#"+propertyName+"_label").attr('href',prefixUrl + response.id);
-				$("#"+propertyName+"\\.id").attr('value', response.id);
-				$("#"+propertyName+"\\.nomeFile").attr('value', response.nomeFile);
+
+				if(propertyName != null){
+					console.log('setFileExtForSignatureResponse() -> ' + propertyName);
+					$("#"+propertyName+"_label").text(response.nomeFile);
+					$("#"+propertyName+"_label").attr('href',prefixUrl + response.id);
+					$("#"+propertyName+"\\.id").attr('value', response.id);
+					$("#"+propertyName+"\\.nomeFile").attr('value', response.nomeFile);
+				}else
+					{
+						console.log('New File ID:' + response.id);
+						location.reload();
+					}
 			}
 			else {
 				//$("#"+inputName+"_label").text([[#{label.nessun_file_selezionato}]]);
 				sendNotifyStatic([[#{message.errore}]], response, "error");
 			}
+			console.log('setFileExtForSignatureResponse() -> exiting');
 		}
+
+		function submitFirmaById(fileId) {
+			console.log('submitFirmaById() -> fileId: ' + fileId);
+			$("#firmaFrame").attr("src", [[@{|/engineering/firma/invio|}]] + '?idFile=' + fileId);
+			$("#modalFrame").show();
+		}
+
 		/*]]>*/
 	</script>
 </th:block>

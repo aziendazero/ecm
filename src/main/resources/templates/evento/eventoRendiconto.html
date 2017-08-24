@@ -181,7 +181,7 @@
 								</div>
 								<!-- pulsante per aggiungere firma -->
 								<div class="col-xs-1" th:if="${eventoWrapperRendiconto.evento.reportPartecipantiXML}">
-									<button type="button" onclick="alert('alert temporaneo, questo onclick verrà sostituito dal service per la firma digitale!')" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
+									<button type="button" th:onclick="|submitFirmaById('__${eventoWrapperRendiconto.evento.reportPartecipantiXML.id}__');|" class="btn btn-primary firma pull-right" th:title="#{label.firma_digitalmente}"><i class="fa fa-pencil"></i></button>
 								</div>
 							</div>
 

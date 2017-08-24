@@ -739,7 +739,7 @@ public class EventoController {
 				@PathVariable Long eventoId, @ModelAttribute("eventoWrapperRendiconto") EventoWrapper wrapper, BindingResult result,
 				Model model, RedirectAttributes redirectAttrs) {
 			try{
-				LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
+				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/" + eventoId + "/rendiconto/inviaACogeaps"));
 				eventoService.inviaRendicontoACogeaps(eventoId);
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.invio_cogeaps_ok", "success"));
 				return "redirect:/provider/{providerId}/evento/{eventoId}/rendiconto";
