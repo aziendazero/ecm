@@ -94,6 +94,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	public static String ENDPOINT_PROTOCOLLO = "";
 
 	public static final String AVVENUTA_CONSEGNA = "avvenuta-consegna";
+	
+	//Test creating a new branch KLAL
 
 	@PostConstruct
 	public void init(){

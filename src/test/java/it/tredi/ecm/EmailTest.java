@@ -22,8 +22,8 @@ import it.tredi.ecm.service.ProviderService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("demo")
-@WithUserDetails("Provider")
+@ActiveProfiles("papa")
+@WithUserDetails("Segreteria")
 @Rollback(false)
 @Ignore
 public class EmailTest {
@@ -33,15 +33,15 @@ public class EmailTest {
 	@Test
 	public void inviaEmail() throws Exception{
 		Set<String> s = new HashSet<String>();
-		s.add("dpranteda@3di.it");
+		s.add("lpapa@3dial.eu");
 
-//		emailService.inviaNotificaATeamLeader("dpranteda@3di.it", "provider1");
-		emailService.inviaConvocazioneValutazioneSulCampo(s, LocalDateTime.now(), "provider2");
+		emailService.inviaNotificaATeamLeader("lpapa@3dial.eu", "Segreteria ECM");
+		emailService.inviaConvocazioneValutazioneSulCampo(s, LocalDateTime.now(), "Segreteria ECM");
 //
-//		emailService.inviaConvocazioneACommissioneECM(s);
-//		emailService.inviaNotificaAReferee("dpranteda@3di.it", "provider1");
-//		emailService.inviaNotificaASegreteriaMancataValutazioneReferee("dpranteda@3di.it", "provider1");
-//		emailService.inviaNotificaATeamLeader("dpranteda@3di.it", "provider1");
+		emailService.inviaConvocazioneACommissioneECM(s);
+		emailService.inviaNotificaAReferee("lpapa@3dial.eu", "Segreteria ECM");
+		emailService.inviaNotificaASegreteriaMancataValutazioneReferee("lpapa@3dial.eu", "Segreteria ECM");
+		emailService.inviaNotificaATeamLeader("lpapa@3dial.eu", "Segreteria ECM");
 	}
 
 }

@@ -39,7 +39,7 @@ public class ScheduledTasks {
 	public void taskExecutor() throws Exception{
 		pagamentoTask.controllaEsitoPagamenti();
 		invioCogeapsTask.checkStatoElaborazioneCogeaps();
-		protocolloTask.controllaStatoProtocollazione();
+		//protocolloTask.controllaStatoProtocollazione();
 		sedutaTask.bloccaSedute();
 		updateDateProviderTask.updateDateScadenza();
 		if(ecmProperties.isTaskSendAlertEmail())
