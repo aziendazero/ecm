@@ -19,11 +19,24 @@ public class FooterWithInfo extends PdfPageEventHelper {
 	private int sizeFooter = 9;
 	private Font.FontFamily fontFamily = Font.FontFamily.TIMES_ROMAN;
 	private Font footerFont = new Font(fontFamily, sizeFooter, Font.NORMAL, BaseColor.DARK_GRAY);
+	private String nomeLogo = "";
+
+	public FooterWithInfo(){
+		super();
+	}
+
+	public FooterWithInfo(String nomeLogo) throws Exception{
+		super();
+		if(nomeLogo == null || nomeLogo.isEmpty())
+			throw new Exception("nomeLogo non specificato");
+
+		setNomeLogo(nomeLogo);
+	}
 
 	@Override
 	public void onStartPage(PdfWriter writer, Document document) {
 		PdfContentByte cb = writer.getDirectContent();
-		Image img = createLogo();
+		Image img = createLogo(getNomeLogo());
 		img.setAbsolutePosition((document.getPageSize().getWidth() - img.getScaledWidth()) / 2, document.top());
 		try {
 			cb.addImage(img);
@@ -54,12 +67,13 @@ public class FooterWithInfo extends PdfPageEventHelper {
         ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT, new Phrase("P.IVA 02392630279", footerFont), document.right() - 2, bottom + lineOffset, 0);
     }
 
-    public static Image createLogo(){
+    public static Image createLogo(String nomeLogo){
 		//Creazione immagine
         Image img = null;
-		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoRegioneVeneto.png");
+        //LogoRegioneVeneto.png
 		//String pathImgFile = "C:\\__Progetti\\ECM\\Doc da produrre in pdf\\LogoRegioneVeneto.png";
 		try {
+			URL url = Thread.currentThread().getContextClassLoader().getResource(nomeLogo);
 			img = Image.getInstance(url);
 			//img = Image.getInstance(pathImgFile);
 			Float scala = 1.2F;
@@ -71,5 +85,13 @@ public class FooterWithInfo extends PdfPageEventHelper {
 			//Non mostro l'immagine
 		}
 		return img;
+	}
+
+	public String getNomeLogo() {
+		return nomeLogo;
+	}
+
+	public void setNomeLogo(String nomeLogo) {
+		this.nomeLogo = nomeLogo;
 	}
 }

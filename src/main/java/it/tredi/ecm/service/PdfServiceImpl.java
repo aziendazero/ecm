@@ -66,6 +66,8 @@ public class PdfServiceImpl implements PdfService {
 	private Font footerFont = new Font(fontFamily, sizeFooter, Font.NORMAL, BaseColor.GRAY);
 	private Font fontCorpoSmall = new Font(fontFamily, sizeFooter, Font.NORMAL);
 
+	private final String LOGO_REGIONE_VENETO = "LogoRegioneVeneto.png";
+
 	private float indentationLeftList = 15F;
 	private float spacingBefore = 10F;
 	private float spacingAfter = 10F;
@@ -199,7 +201,7 @@ public class PdfServiceImpl implements PdfService {
 
 	private void writePdfAccreditamentoProvvisiorioPreavvisoRigetto(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception {
         try {
-        	Document document = createDocument(outputStream, true, true);
+        	Document document = createDocument(outputStream, true, LOGO_REGIONE_VENETO, true);
 
             //Info documento
             document.addAuthor("Ecm");
@@ -360,7 +362,7 @@ public class PdfServiceImpl implements PdfService {
             parSignature2.add("Direzione Risorse Strumentali SSR - CRAV\n"
             		+ "Direttore della Direzione: Dott. Claudio Costa\n"
             		+ "U.O. Personale e professioni SSR\n"
-            		+ "Referente per l’istruttoria: dott.ssa Francesca Salafia\n"
+            		+ "Referente per l’istruttoria: dott.ssa Serena Lion\n"
             		+ "Tel. 041/2793071-3073-3077\n"
             		+ "E-mail: segreteria.ECMVeneto@regione.veneto.it");
             parSignature2.setSpacingAfter(spacingAfter);
@@ -398,7 +400,7 @@ public class PdfServiceImpl implements PdfService {
 
 	private void writePdfAccreditamentoProvvisiorioIntegrazione(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception {
         try {
-    		Document document = createDocument(outputStream, true, true);
+    		Document document = createDocument(outputStream, true, LOGO_REGIONE_VENETO,true);
     		MessageFormat msgFormat = new MessageFormat("");
 
             //Info documento
@@ -542,7 +544,7 @@ public class PdfServiceImpl implements PdfService {
             parSignature2.add("Direzione Risorse Strumentali SSR - CRAV\n"
             		+ "Direttore della Direzione: Dott. Claudio Costa\n"
             		+ "U.O. Personale e professioni SSR\n"
-            		+ "Referente per l’istruttoria: dott.ssa Francesca Salafia\n"
+            		+ "Referente per l’istruttoria: dott.ssa Serena Lion\n"
             		+ "Tel. 041/2793071-3073-3077\n"
             		+ "E-mail: segreteria.ECMVeneto@regione.veneto.it");
             parSignature2.setSpacingAfter(spacingAfter);
@@ -594,7 +596,7 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
-            Image img = FooterWithInfo.createLogo();
+            Image img = FooterWithInfo.createLogo(LOGO_REGIONE_VENETO);
             if(img != null)
             	document.add(img);
 
@@ -806,7 +808,7 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
-            Image img = FooterWithInfo.createLogo();
+            Image img = FooterWithInfo.createLogo(LOGO_REGIONE_VENETO);
             if(img != null)
             	document.add(img);
 
@@ -1008,7 +1010,7 @@ public class PdfServiceImpl implements PdfService {
 
 	private void writePdfAccreditamentoStandardPreavvisoRigetto(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo preavvisoRigettoInfo) throws Exception {
         try {
-        	Document document = createDocument(outputStream, true, true);
+        	Document document = createDocument(outputStream, true, LOGO_REGIONE_VENETO, true);
 
             //Info documento
             document.addAuthor("Ecm");
@@ -1172,7 +1174,7 @@ public class PdfServiceImpl implements PdfService {
             parSignature2.add("Direzione Risorse Strumentali SSR - CRAV\n"
             		+ "Direttore della Direzione: Dott. Claudio Costa\n"
             		+ "U.O. Personale e professioni SSR\n"
-            		+ "Referente per l’istruttoria: dott.ssa Francesca Salafia\n"
+            		+ "Referente per l’istruttoria: dott.ssa Serena Lion\n"
             		+ "Tel. 041/2793071-3073-3077\n"
             		+ "E-mail: segreteria.ECMVeneto@regione.veneto.it");
             parSignature2.setSpacingAfter(spacingAfter);
@@ -1212,7 +1214,7 @@ public class PdfServiceImpl implements PdfService {
 	private void writePdfAccreditamentoStandardIntegrazione(OutputStream outputStream, PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo integrazioneInfo) throws Exception {
         try {
 
-        	Document document = createDocument(outputStream, true, true);
+        	Document document = createDocument(outputStream, true, LOGO_REGIONE_VENETO, true);
 
             //Info documento
             document.addAuthor("Ecm");
@@ -1355,7 +1357,7 @@ public class PdfServiceImpl implements PdfService {
             parSignature2.add("Direzione Risorse Strumentali SSR - CRAV\n"
             		+ "Direttore della Direzione: Dott. Claudio Costa\n"
             		+ "U.O. Personale e professioni SSR\n"
-            		+ "Referente per l’istruttoria: dott.ssa Francesca Salafia\n"
+            		+ "Referente per l’istruttoria: dott.ssa Serena Lion\n"
             		+ "Tel. 041/2793071-3073-3077\n"
             		+ "E-mail: segreteria.ECMVeneto@regione.veneto.it");
             parSignature2.setSpacingAfter(spacingAfter);
@@ -1407,7 +1409,7 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
-            Image img = FooterWithInfo.createLogo();
+            Image img = FooterWithInfo.createLogo(LOGO_REGIONE_VENETO);
             if(img != null)
             	document.add(img);
 
@@ -1661,7 +1663,7 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
-            Image img = FooterWithInfo.createLogo();
+            Image img = FooterWithInfo.createLogo(LOGO_REGIONE_VENETO);
             if(img != null)
             	document.add(img);
 
@@ -2113,7 +2115,7 @@ public class PdfServiceImpl implements PdfService {
 //            Document document = new Document();
 //            PdfWriter.getInstance(document, outputStream);
 
-            Document document = createDocument(outputStream, true, true);
+            Document document = createDocument(outputStream, true, LOGO_REGIONE_VENETO, true);
 
 //            document.open();
             //Info documento
@@ -2257,12 +2259,12 @@ public class PdfServiceImpl implements PdfService {
         return parInfoProtocollo;
     }
 
-    private Document createDocument(OutputStream outputStream, boolean headerAndFooter, boolean infoProtocollo) throws DocumentException{
+    private Document createDocument(OutputStream outputStream, boolean headerAndFooter, String nomeLogo, boolean infoProtocollo) throws Exception{
 		Document document = new Document();
 		if(headerAndFooter){
 			document = new Document(PageSize.A4, 36, 36, 80, 120);
 			PdfWriter writer = PdfWriter.getInstance(document, outputStream);
-			writer.setPageEvent(new FooterWithInfo());
+			writer.setPageEvent(new FooterWithInfo(nomeLogo));
 		}
 
 		document.open();

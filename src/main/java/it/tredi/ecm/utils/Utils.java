@@ -319,41 +319,41 @@ public class Utils {
 		String oggetto = null;
 		switch(fileEnum) {
 		case FILE_ACCREDITAMENTO_PROVVISORIO_INTEGRAZIONE:
-			oggetto = "Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento Provvisorio - " + provider.getDenominazioneLegale();
+			oggetto = "Richiesta integrazione documentazione ai sensi della l. 241/90 e smi - Accreditamento provvisorio - " + provider.getDenominazioneLegale();
 		break;
 		case FILE_ACCREDITAMENTO_PROVVISORIO_PREAVVISO_RIGETTO:
-			oggetto = "Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni - Accreditamento provvisorio - " + provider.getDenominazioneLegale();
+			oggetto = "Comunicazione motivi ostativi all’accoglimento della domanda ex art. 10 bis l.241/90 e smi - Accreditamento provvisorio - " + provider.getDenominazioneLegale();
 		break;
 		case FILE_LETTERA_ACCOMPAGNATORIA_PROVVISORIO_DINIEGO:
 		case FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_DINIEGO:
-			oggetto = "Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento provvisorio come provider regionale ECM di " + provider.getDenominazioneLegale() + " ai sensi delle DD.G.R. n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013";
+			oggetto = "Rigetto istanza di accreditamento provvisorio come provider regionale ECM ex DGR nn. 1969 del 02/10/12 e 1236 del 16/07/13 - " + provider.getDenominazioneLegale();
 		break;
 		case FILE_LETTERA_ACCOMPAGNATORIA_PROVVISORIO_ACCREDITAMENTO:
 		case FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_ACCREDITAMENTO:
-			oggetto = "Programma regionale per l’Educazione Continua in Medicina (ECM): riconoscimento dell’accreditamento provvisorio come provider regionale ECM di " + provider.getDenominazioneLegale() + " ai sensi delle DD.G.R n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013";
+			oggetto = "Riconoscimento dell’accreditamento provvisorio come Provider regionale ECM ex DGR nn. 1969 del 02/10/12 e 1236 del 16/07/13 - " + provider.getDenominazioneLegale();
 		break;
 		case FILE_ACCREDITAMENTO_STANDARD_INTEGRAZIONE:
-			oggetto = "Richiesta integrazione documentazione ai sensi della l. 241/90 e successive modificazioni e integrazioni - Accreditamento standard - " + provider.getDenominazioneLegale();
+			oggetto = "Richiesta integrazione documentazione ai sensi della l. 241/90 e smi - Accreditamento standard - " + provider.getDenominazioneLegale();
 		break;
 		case FILE_ACCREDITAMENTO_STANDARD_PREAVVISO_RIGETTO:
-			oggetto = "Comunicazione motivi ostativi all’accoglimento della domanda ai sensi dell’art. 10 bis della l.241/90 e successive integrazioni e modificazioni - Accreditamento Standard - " + provider.getDenominazioneLegale();
+			oggetto = "Comunicazione motivi ostativi all’accoglimento della domanda ex art. 10 bis della l.241/90 e smi - Accreditamento standard - " + provider.getDenominazioneLegale();
 		break;
 		case FILE_LETTERA_ACCOMPAGNATORIA_STANDARD_DINIEGO:
 		case FILE_ACCREDITAMENTO_STANDARD_DECRETO_DINIEGO:
-			oggetto = "Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento standard come provider regionale ECM di " + provider.getDenominazioneLegale() + " ai sensi della D.G.R. n. 1247 del 28 settembre 2015";
+			oggetto = "Rigetto dell’istanza di accreditamento standard come Provider regionale ECM ai sensi della DGR n. 1247 del 28/09/2015 - " + provider.getDenominazioneLegale();
 		break;
 		case FILE_LETTERA_ACCOMPAGNATORIA_STANDARD_ACCREDITAMENTO:
 		case FILE_ACCREDITAMENTO_STANDARD_DECRETO_ACCREDITAMENTO:
-			oggetto = "Programma regionale per l’Educazione Continua in Medicina (ECM): riconoscimento dell’accreditamento standard come provider regionale ECM di " + provider.getDenominazioneLegale() + " ai sensi delle DD.G.R n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013";
+			oggetto = "Riconoscimento dell’accreditamento standard come Provider regionale ECM ai sensi della D.G.R n. 1247 del 28/09/2015 - " + provider.getDenominazioneLegale();
 		break;
 		case FILE_DICHIARAZIONE_LEGALE:
-			oggetto = "Richiesta accreditamento provvisorio del provider " + provider.getDenominazioneLegale();
+			oggetto = "Domanda di Accreditamento Provvisorio come Provider ECM";
 		break;
 		case FILE_RICHIESTA_ACCREDITAMENTO_STANDARD:
-			oggetto = "Richiesta accreditamento standard del provider " + provider.getDenominazioneLegale();
+			oggetto = "Domanda di Accreditamento Standard come Provider ECM";
 		break;
 		case FILE_DECADENZA:
-			oggetto = "Comunicazione di decadenza dell’accreditamento del Provider regionale ECM " + provider.getCodiceIdentificativoUnivoco()  + " - " + provider.getDenominazioneLegale();
+			oggetto = "Comunicazione di decadenza dell’accreditamento provvisorio del Provider regionale - " + provider.getDenominazioneLegale();
 		break;
 		}
 		if(oggetto == null)

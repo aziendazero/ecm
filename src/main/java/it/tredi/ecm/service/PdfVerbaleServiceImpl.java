@@ -43,6 +43,7 @@ import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
+import it.tredi.ecm.pdf.FooterWithInfo;
 
 @Service
 public class PdfVerbaleServiceImpl implements PdfVerbaleService {
@@ -93,6 +94,8 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 	private float spacingBefore = 10F;
 	private float spacingAfter = 10F;
 
+	private final String LOGO_AZIENDA_ZERO = "LogoAziendaZero.png";
+
     Image imgCheck = null;
     Image imgRemove = null;
     Image imgQuestion = null;
@@ -110,6 +113,11 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
             document.addCreationDate();
             document.addCreator("Ecm");
             document.addTitle("Valutazione formale della domanda di accreditamento standard del Provider: " + accreditamento.getProvider().getDenominazioneLegale());
+
+            Image img = FooterWithInfo.createLogo(LOGO_AZIENDA_ZERO);
+            if(img != null)
+            	document.add(img);
+
             //TODO sostituire
         	writePdf(document, accreditamento);
         } catch (Exception ex) {
