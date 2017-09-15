@@ -119,4 +119,6 @@
 
 	<include file="20170615_001_report_ritardi.xml" relativeToChangelogFile="true" />
 
+	<include file="20170915_001_flag_pag_quietanza_evento.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>

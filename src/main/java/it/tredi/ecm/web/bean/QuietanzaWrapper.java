@@ -10,4 +10,6 @@ public class QuietanzaWrapper {
 	private File quietanzaPagamento;
 
 	private boolean submitError = false;
+
+	private String returnLink;
 }

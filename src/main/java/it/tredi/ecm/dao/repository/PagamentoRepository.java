@@ -11,15 +11,14 @@ import it.tredi.ecm.dao.entity.Pagamento;
 
 public interface PagamentoRepository extends CrudRepository<Pagamento, Long> {
 	public Set<Pagamento> findAll();
-	
+
 	public Pagamento findOneByQuotaAnnualeId(Long quotaAnnualeId);
-	
+
 	@Query("SELECT p FROM Pagamento p WHERE p.evento = :evento")
 	public Pagamento getPagamentoByEvento(@Param("evento") Evento evento);
 
 	@Query("SELECT p FROM Pagamento p WHERE p.evento.pagato = false AND p.evento.pagInCorso = true")
 	public Set<Pagamento> getPagamentiEventiDaVerificare();
-	
 }
 
 

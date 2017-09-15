@@ -612,4 +612,33 @@ public class EngineeringServiceImpl implements EngineeringService {
 		return causale;
 	}
 
+	public void createPagamentoForEvento(Long eventoId) throws Exception {
+		Evento e = eventoRepository.findOne(eventoId);
+
+		if(e.getPagInCorso() != null && e.getPagInCorso().booleanValue()) {
+			throw new PagInCorsoException("Il pagamento risulta già in corso!");
+		}
+
+		//dpranteda 2017-08-09
+		if(e.getPagato() != null && e.getPagato().booleanValue()) {
+			throw new PagInCorsoException("Il pagamento risulta già effettuato!");
+		}
+
+		Pagamento p = pagamentoService.getPagamentoByEvento(e);
+		if (p == null) {
+			p = new Pagamento();
+			p.setEvento(e);
+		}
+
+		Provider soggetto = e.getProvider();
+		p.setAnagrafica(soggetto.getDenominazioneLegale());
+		p.setCodiceFiscale("");
+		p.setPartitaIva(soggetto.getPartitaIva());
+		p.setEmail(soggetto.getEmailStruttura());
+		p.setTipoVersamento(EngineeringServiceImpl.TIPO_VERSAMENTO_ALL);
+		p.setCausale(formatCausale(CAUSALE_PAGAMENTO_EVENTO + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo() + " - " + e.getTitolo()));
+		p.setImporto(e.getCosto());
+		pagamentoService.save(p);
+	}
+
 }

@@ -19,33 +19,33 @@ import it.tredi.ecm.utils.Utils;
 @Service
 public class PagamentoServiceImpl implements PagamentoService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PagamentoServiceImpl.class);
-	
+
 	@Autowired private PagamentoRepository pagamentoRepository;
-	
+
 	@Override
 	public Pagamento getPagamentoById(Long pagamentoId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento " + pagamentoId));
 		return pagamentoRepository.findOne(pagamentoId);
 	}
-	
+
 	@Override
 	public Set<Pagamento> getAllPagamenti(){
 		LOGGER.debug(Utils.getLogMessage("Recupero lista di tutti i pagamenti"));
 		return pagamentoRepository.findAll();
 	}
-	
+
 	@Override
 	public Pagamento getPagamentoByQuotaAnnualeId(Long quotaAnnualeId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento per quota annuale: " + quotaAnnualeId));
 		return pagamentoRepository.findOneByQuotaAnnualeId(quotaAnnualeId);
 	}
-	
+
 	@Override
 	public Pagamento getPagamentoByEvento(Evento evento) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Pagamento evento " + evento.getId()));
 		return pagamentoRepository.getPagamentoByEvento(evento);
 	}
-	
+
 	@Override
 	public Set<Pagamento> getPagamentiEventiDaVerificare() {
 		LOGGER.debug("Recupero lista di Pagamenti quota di Eventi in sospeso");
@@ -53,20 +53,18 @@ public class PagamentoServiceImpl implements PagamentoService {
 		LOGGER.debug("Trovati: " + ((pagamenti!=null) ? pagamenti.size() : "0")  + " Pagamenti in sospeso");
 		return pagamenti;
 	}
-	
+
 	@Override
 	@Transactional
 	public void save(Pagamento p) {
 		LOGGER.debug(Utils.getLogMessage("Salvataggio Pagamento"));
 		pagamentoRepository.save(p);
 	}
-	
+
 	@Override
 	@Transactional
 	public void deleteAll(Iterable<Pagamento> pagamenti) {
 		LOGGER.debug(Utils.getLogMessage("Eliminazione tutti Pagamenti"));
 		pagamentoRepository.delete(pagamenti);
 	}
-	
-	
 }
