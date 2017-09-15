@@ -84,4 +84,7 @@ public interface EventoService {
 	public boolean updateOrariAttivita(ModificaOrarioAttivitaWrapper jsonObj, EventoWrapper eventoWrapper);
 	public boolean existRiedizioniOfEventoId(Long eventoId);
 	public Set<Evento> getRiedizioniOfEventoId(Long eventoId);
+
+	public void salvaQuietanzaPagamento(File quietanzaPagamento, Long eventoId) throws Exception;
+	public Long getFileQuietanzaId(Long eventoId);
 }

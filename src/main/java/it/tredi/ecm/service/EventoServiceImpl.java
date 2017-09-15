@@ -62,11 +62,14 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Obiettivo;
+import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -98,6 +101,7 @@ import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.exception.PagInCorsoException;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
@@ -139,6 +143,9 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private ReportRitardiService reportRitardiService;
 
 	@Autowired private AccreditamentoService accreditamentoService;
+
+	@Autowired private PagamentoService pagamentoService;
+	@Autowired private EngineeringService engineeringService;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -1917,6 +1924,7 @@ public class EventoServiceImpl implements EventoService {
 		riedizione.setAnagrafeRegionaleCrediti(null);
 		riedizione.setPagato(false);
 		riedizione.setPagInCorso(null);
+		riedizione.setPagatoQuietanza(false);
 		riedizione.setProceduraVerificaQualitaPercepita(null);
 		riedizione.setAutorizzazionePrivacy(null);
 		riedizione.setLetteInfoAllegatoSponsor(null);
@@ -2525,5 +2533,41 @@ public class EventoServiceImpl implements EventoService {
 
 		riedizioni.addAll(riedizioniToAdd);
 		return riedizioni;
+	}
+
+	@Override
+	public void salvaQuietanzaPagamento(File quietanzaPagamento, Long eventoId) throws Exception {
+		LOGGER.info("Salvataggio della Quietanza di Pagamento per evento: " + eventoId);
+
+		engineeringService.createPagamentoForEvento(eventoId);
+		Evento evento = eventoRepository.findOne(eventoId);
+
+		Pagamento pagamento = pagamentoService.getPagamentoByEvento(evento);
+		if (pagamento == null) {
+			throw new Exception("Pagamento non presente");
+		}
+
+		pagamento.setQuietanza(quietanzaPagamento);
+		pagamento.setDataPagamento(LocalDate.now());
+		pagamentoService.save(pagamento);
+
+		evento.setPagato(true);
+		evento.setPagInCorso(false);
+		evento.setPagatoQuietanza(true);
+		save(evento);
+	}
+
+	@Override
+	public Long getFileQuietanzaId(Long eventoId) {
+		LOGGER.info("Recupero ID file di Quietanza di Pagamento per evento: " + eventoId);
+		Evento e = eventoRepository.findOne(eventoId);
+		Pagamento p = pagamentoService.getPagamentoByEvento(e);
+		if(p != null && p.getQuietanza() != null){
+			LOGGER.info("Trovato pagamento con ID file di Quietanza: " + p.getQuietanza().getId() + " per evento: " + eventoId);
+			return p.getQuietanza().getId();
+		}
+
+		LOGGER.info("Pagamento o file di Quietanza NON TROVATO per evento: " + eventoId);
+		return null;
 	}
 }

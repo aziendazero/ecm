@@ -232,6 +232,8 @@ public class Evento extends BaseEntity {
 	@OneToOne
 	private File reportPartecipantiCSV;
 
+	private Boolean pagatoQuietanza = false;
+
 	@DiffIgnore
 	@OneToOne //valorizzato solo se è la realizzazione di un evento descritto nel piano formativo
 	private EventoPianoFormativo eventoPianoFormativo;

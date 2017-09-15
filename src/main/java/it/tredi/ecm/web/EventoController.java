@@ -105,6 +105,7 @@ import it.tredi.ecm.web.bean.ErrorsAjaxWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ModificaOrarioAttivitaWrapper;
+import it.tredi.ecm.web.bean.QuietanzaWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 import it.tredi.ecm.web.bean.SponsorWrapper;
@@ -1691,6 +1692,55 @@ public class EventoController {
 		}
 	}
 
+	@RequestMapping(value= "/provider/{providerId}/evento/{eventoId}/quietanzaPagamento/save", method = RequestMethod.POST)
+	public String allegaQuietanzaPagamentoEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
+													@ModelAttribute QuietanzaWrapper quietanzaWrapper, Model model, RedirectAttributes redirectAttrs,
+													HttpServletRequest request, HttpSession session){
+		LOGGER.info(Utils.getLogMessage("POST /provider/"+providerId+"/evento/"+eventoId+"/quietanzaPagamento/save"));
+		try {
+			File quietanzaPagamento = quietanzaWrapper.getQuietanzaPagamento();
+			if(quietanzaPagamento == null || quietanzaPagamento.isNew()) {
+				//errore validazione personalizzato
+				quietanzaWrapper.setSubmitError(true);
+				model.addAttribute("quietanzaWrapper", quietanzaWrapper);
+				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
+				return goToList(model, providerId, request);
+			}
+			else {
+				eventoService.salvaQuietanzaPagamento(quietanzaPagamento, eventoId);
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.quietanza_pagamento_salvata", "success"));
+				updateEventoList(eventoId, session);
+				return "redirect:"+quietanzaWrapper.getReturnLink();
+			}
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET " + LIST),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/provider/"+providerId+"/evento/list";
+		}
+	}
+
+	@RequestMapping(value= "/provider/{providerId}/evento/{eventoId}/quietanzaPagamento/show", method = RequestMethod.GET)
+	public String showQuietanzaPagamentoEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
+												Model model, RedirectAttributes redirectAttrs, HttpServletRequest request){
+		LOGGER.info(Utils.getLogMessage("GET /provider/"+providerId+"/evento/"+eventoId+"/quietanzaPagamento/show"));
+		try {
+			Long fileId = eventoService.getFileQuietanzaId(eventoId);
+			if(fileId == null) {
+				model.addAttribute("message", new Message("message.errore", "message.quietanza_non_presente", "error"));
+				return goToEventoList(request, model);
+			}
+			else {
+				return "redirect:/file/"+fileId;
+			}
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET " + LIST),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/provider/"+providerId+"/evento/list";
+		}
+	}
+
 	@RequestMapping("/provider/eventi/{search}/list")
 	public String getAllEventiByProviderIdForGruppo(@PathVariable("search") EventoSearchEnum search, Model model,
 			RedirectAttributes redirectAttrs, HttpServletRequest request) throws Exception {
@@ -1873,6 +1923,7 @@ public class EventoController {
 	    if(request.getQueryString() != null)
 	    	returnLink+="?"+request.getQueryString();
 	    model.addAttribute("returnLink", returnLink);
+	    model.addAttribute("quietanzaWrapper", new QuietanzaWrapper());
 		return LIST;
 	}
 
