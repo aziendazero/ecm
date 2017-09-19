@@ -1,5 +1,8 @@
 package it.tredi.ecm;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.Writer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,6 +24,19 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.TabSettings;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfDestination;
+import com.itextpdf.text.pdf.PdfWriter;
+
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Anagrafica;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
@@ -38,6 +54,7 @@ import it.tredi.ecm.dao.enumlist.ValutazioneTipoEnum;
 import it.tredi.ecm.dao.repository.AccountRepository;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.dao.repository.ProfileRepository;
+import it.tredi.ecm.pdf.FooterWithInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioAccreditatoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioIntegrazionePreavvisoRigettoInfo;
 import it.tredi.ecm.pdf.PdfAccreditamentoProvvisorioRigettoInfo;
@@ -53,10 +70,9 @@ import it.tredi.ecm.service.ValutazioneService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
-@WithUserDetails("segreteria1")
+@ActiveProfiles("demo")
+@WithUserDetails("test1")
 @Rollback(false)
-@Ignore
 public class PdfTest {
 
 	@Autowired
@@ -375,12 +391,11 @@ public class PdfTest {
 
 	@Test
 	@Transactional
-	@Ignore
 	public void createIntegrazioneStandard() throws Exception{
-		Long accreditamentoId = 1470L;
+		Long accreditamentoId = 218206L;
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 
-		Long sedutaId = 7378L;
+		Long sedutaId = 401076L;
 		Seduta seduta = sedutaService.getSedutaById(sedutaId);
 
 		List<String> listaCriticita = new ArrayList<String>();
@@ -412,5 +427,50 @@ public class PdfTest {
 		System.out.println("File Integrazione salvato: " + fileIntegrazione.getId());
 		System.out.println("File PreavvisoRigetto salvato: " + filePreavvisoRigetto.getId());
 	}
+
+	@Test
+	@Ignore
+	public void testProtocolloInfo() throws Exception{
+		boolean headerAndFooter = true;
+		boolean infoProtocollo = true;
+		String nomeLogo = "LogoRegioneVeneto.png";
+
+		java.io.File file = java.io.File.createTempFile("test_protocollo", ".pdf");
+		System.out.println(file.getAbsolutePath());
+		Document document = new Document();
+		PdfWriter writer = null;
+		if(headerAndFooter){
+			document = new Document(PageSize.A4, 36, 36, 80, 120);
+			writer = PdfWriter.getInstance(document, new FileOutputStream(file.getPath()));
+			writer.setPageEvent(new FooterWithInfo(nomeLogo));
+		}else{
+			writer = PdfWriter.getInstance(document, new FileOutputStream(file.getPath()));
+		}
+
+		document.open();
+
+		if(infoProtocollo){
+			createInfoProtocollo(writer.getDirectContent());
+		}
+
+		writer.close();
+	}
+
+	private void createInfoProtocollo(PdfContentByte cb){
+		Font protocolloFont = new Font(Font.FontFamily.TIMES_ROMAN, 11, Font.NORMAL);
+        int top = 687;
+        float left = 20;
+
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Data:", protocolloFont), left, top, 0);
+        left += 105;
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Protocollo N°:", protocolloFont), left, top, 0);
+        left += 105;
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Class:", protocolloFont), left, top, 0);
+        left += 105;
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Fasc:", protocolloFont), left, top, 0);
+        left += 100;
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Allegati N°:", protocolloFont), left, top, 0);
+	}
+
 
 }

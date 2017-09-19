@@ -24,6 +24,8 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.TabSettings;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -2259,11 +2261,27 @@ public class PdfServiceImpl implements PdfService {
         return parInfoProtocollo;
     }
 
+    private void createInfoProtocollo(PdfContentByte cb){
+		Font protocolloFont = new Font(Font.FontFamily.TIMES_ROMAN, 11, Font.NORMAL);
+        int top = 687;
+        float left = 20;
+
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Data:", protocolloFont), left, top, 0);
+        left += 105;
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Protocollo N°:", protocolloFont), left, top, 0);
+        left += 105;
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Class:", protocolloFont), left, top, 0);
+        left += 105;
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Fasc:", protocolloFont), left, top, 0);
+        left += 100;
+        ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Allegati N°:", protocolloFont), left, top, 0);
+	}
+
     private Document createDocument(OutputStream outputStream, boolean headerAndFooter, String nomeLogo, boolean infoProtocollo) throws Exception{
-		Document document = new Document();
+		Document document = new Document(PageSize.A4, 36, 36, 80, 120);
+		PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+
 		if(headerAndFooter){
-			document = new Document(PageSize.A4, 36, 36, 80, 120);
-			PdfWriter writer = PdfWriter.getInstance(document, outputStream);
 			writer.setPageEvent(new FooterWithInfo(nomeLogo));
 		}
 
@@ -2279,9 +2297,11 @@ public class PdfServiceImpl implements PdfService {
             document.add(parLineaVuota);
 
 			//INFO PROTOCOLLO
-            Paragraph parInfoProtocollo = createInfoProtocollo();
-            document.add(parInfoProtocollo);
+            //dpranteda - 19/09/2017: nuova modalita per allineare la stampa delle info 
+            createInfoProtocollo(writer.getDirectContent());
 
+            document.add(parLineaVuota);
+            document.add(parLineaVuota);
             document.add(parLineaVuota);
 		}
 
