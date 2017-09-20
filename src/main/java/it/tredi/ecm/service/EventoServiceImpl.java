@@ -2558,6 +2558,18 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
+	public Pagamento getPagamentoForQuietanza(Evento evento) throws Exception{
+		LOGGER.info("Creazione Pagamento per evento: " + evento.getId());
+		Pagamento pagamento = pagamentoService.getPagamentoByEvento(evento);
+
+		if (pagamento == null) {
+			pagamento = engineeringService.createPagamentoForEvento(evento.getId());
+		}
+
+		return pagamento;
+	}
+
+	@Override
 	public Long getFileQuietanzaId(Long eventoId) {
 		LOGGER.info("Recupero ID file di Quietanza di Pagamento per evento: " + eventoId);
 		Evento e = eventoRepository.findOne(eventoId);

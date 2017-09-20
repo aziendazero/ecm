@@ -6,6 +6,7 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
@@ -86,5 +87,6 @@ public interface EventoService {
 	public Set<Evento> getRiedizioniOfEventoId(Long eventoId);
 
 	public void salvaQuietanzaPagamento(File quietanzaPagamento, Long eventoId) throws Exception;
+	public Pagamento getPagamentoForQuietanza(Evento evento) throws Exception;
 	public Long getFileQuietanzaId(Long eventoId);
 }
