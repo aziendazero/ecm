@@ -321,8 +321,8 @@
 
 										<!-- TODO DISABILITATO PER LA PRODUZIONE -->
 										<th:block th:if="${evento.canDoPagamento()}">
-											<a th:if=		"${evento.provider.myPay == true or (evento.provider.myPay == null and evento.provider.isGruppoA())}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>
-											<button th:if=	"${evento.provider.myPay == false or (evento.provider.myPay == null and evento.provider.isGruppoB())}" class="btn btn-success btn-min-icon-width" th:onclick="|openModaleAllegaQuietanza(${evento.provider.id},${evento.id})|" th:title="#{label.allega_quietanza}"><i class="fa fa-euro"></i></button>
+											<a th:if=		"${evento.provider.myPay == true or (evento.provider.myPay == null and evento.provider.isGruppoB())}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>
+											<button th:if=	"${evento.provider.myPay == false or (evento.provider.myPay == null and evento.provider.isGruppoA())}" class="btn btn-success btn-min-icon-width" th:onclick="|openModaleAllegaQuietanza(${evento.provider.id},${evento.id})|" th:title="#{label.allega_quietanza}"><i class="fa fa-euro"></i></button>
 										</th:block>
 										<a target="_blank" th:if="${evento.pagato and evento.pagatoQuietanza}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/quietanzaPagamento/show|}" th:title="#{label.visualizza_quietanza}"><i class="fa fa-euro"> </i></a>
 
