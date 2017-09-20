@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20170920_001_change_type_note_valutazione_Text.xml">
+	<changeSet author="dpranteda" id="1">
+	    <modifyDataType tableName="field_editabile_accreditamento"
+	    				columnName="nota"
+	    				newDataType="text" />
+		 <rollback/>
+	</changeSet>
+	<changeSet author="dpranteda" id="2">
+	    <modifyDataType tableName="field_valutazione_accreditamento"
+	    				columnName="note"
+	    				newDataType="text" />
+		 <rollback/>
+	</changeSet>
+	<changeSet author="dpranteda" id="3">
+	    <modifyDataType tableName="valutazione"
+	    				columnName="valutazione_complessiva"
+	    				newDataType="text" />
+		 <rollback/>
+	</changeSet>
+	<changeSet author="dpranteda" id="4">
+	    <modifyDataType tableName="valutazione_commissione"
+	    				columnName="valutazione_commissione"
+	    				newDataType="text" />
+		 <rollback/>
+	</changeSet>
+</databaseChangeLog>

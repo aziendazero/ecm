@@ -48,6 +48,7 @@ public class Valutazione extends BaseEntityDefaultId{
 	@OneToMany (cascade = CascadeType.ALL)
 	@JsonIgnore
 	private Set<FieldValutazioneAccreditamento> valutazioni = new HashSet<FieldValutazioneAccreditamento>();
+	@Column(columnDefinition="text")
 	private String valutazioneComplessiva;
 
 	private Boolean storicizzato = false;

@@ -121,4 +121,6 @@
 
 	<include file="20170915_001_flag_pag_quietanza_evento.xml" relativeToChangelogFile="true" />
 
+	<include file="20170920_001_change_type_note_valutazione_Text.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>
