@@ -235,6 +235,9 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		//PARTE IN COMUNE A TUTTI GLI EVENTI
+		if(!Objects.equals(eventoToSave.getCosto(), eventoDB.getCosto())) {
+			diffMap.put("costo", eventoToSave.getCosto());
+		}
 		if(!Objects.equals(eventoToSave.getTitolo(), eventoDB.getTitolo())) {
 			diffMap.put("titolo", eventoToSave.getTitolo());
 		}
@@ -2564,6 +2567,9 @@ public class EventoServiceImpl implements EventoService {
 
 		if (pagamento == null) {
 			pagamento = engineeringService.createPagamentoForEvento(evento.getId());
+			pagamento.setDataScadenzaPagamento(evento.getDataScadenzaPagamento());
+			pagamento.setImporto(evento.getCosto());
+			pagamentoService.save(pagamento);
 		}
 
 		return pagamento;

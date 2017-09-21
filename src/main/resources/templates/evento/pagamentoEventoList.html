@@ -64,7 +64,7 @@
 							<tbody>
 								<tr>
 									<td th:text="${pagamento.causale}">3d informatica</td>
-									<td th:text="${pagamento.importo}">informatica</td>
+									<td th:text="${evento.costo}">informatica</td>
 									<td th:text="${#temporals.format(evento.dataScadenzaPagamento,'dd/MM/yyyy')}">stato</td>
 									<td th:if="${evento.pagato}">
 										<span th:text="#{label.pagato}" class="label-pagato"></span>
