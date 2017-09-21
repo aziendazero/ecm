@@ -21,7 +21,7 @@ public class ValutazioneCommissione extends BaseEntityDefaultId{
 
 	private String oggettoDiscussione;
 
-	@Column(name="valutazione_commissione")
+	@Column(name="valutazione_commissione",columnDefinition="text")
 	private String valutazioneCommissione;
 
 	@Enumerated(EnumType.STRING)

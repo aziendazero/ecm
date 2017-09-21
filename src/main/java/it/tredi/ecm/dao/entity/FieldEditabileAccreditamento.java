@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.entity;
 
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -13,10 +14,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FieldEditabileAccreditamento extends Field {
+	@Column(columnDefinition="text")
 	private String nota;
 	@ManyToOne
 	private Accreditamento accreditamento;
-	
+
 	public FieldEditabileAccreditamento() {}
 	public FieldEditabileAccreditamento(IdFieldEnum idField, Accreditamento accreditamento) {
 		super.setIdField(idField);
@@ -27,7 +29,7 @@ public class FieldEditabileAccreditamento extends Field {
 		setAccreditamento(accreditamento);
 		super.setObjectReference(objectReference);
 	}
-	
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -612,7 +612,7 @@ public class EngineeringServiceImpl implements EngineeringService {
 		return causale;
 	}
 
-	public void createPagamentoForEvento(Long eventoId) throws Exception {
+	public Pagamento createPagamentoForEvento(Long eventoId) throws Exception {
 		Evento e = eventoRepository.findOne(eventoId);
 
 		if(e.getPagInCorso() != null && e.getPagInCorso().booleanValue()) {
@@ -639,6 +639,8 @@ public class EngineeringServiceImpl implements EngineeringService {
 		p.setCausale(formatCausale(CAUSALE_PAGAMENTO_EVENTO + e.getProceduraFormativa() + " " + e.getCodiceIdentificativo() + " - " + e.getTitolo()));
 		p.setImporto(e.getCosto());
 		pagamentoService.save(p);
+
+		return p;
 	}
 
 }

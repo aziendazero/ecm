@@ -235,6 +235,9 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		//PARTE IN COMUNE A TUTTI GLI EVENTI
+		if(!Objects.equals(eventoToSave.getCosto(), eventoDB.getCosto())) {
+			diffMap.put("costo", eventoToSave.getCosto());
+		}
 		if(!Objects.equals(eventoToSave.getTitolo(), eventoDB.getTitolo())) {
 			diffMap.put("titolo", eventoToSave.getTitolo());
 		}
@@ -2555,6 +2558,21 @@ public class EventoServiceImpl implements EventoService {
 		evento.setPagInCorso(false);
 		evento.setPagatoQuietanza(true);
 		save(evento);
+	}
+
+	@Override
+	public Pagamento getPagamentoForQuietanza(Evento evento) throws Exception{
+		LOGGER.info("Creazione Pagamento per evento: " + evento.getId());
+		Pagamento pagamento = pagamentoService.getPagamentoByEvento(evento);
+
+		if (pagamento == null) {
+			pagamento = engineeringService.createPagamentoForEvento(evento.getId());
+			pagamento.setDataScadenzaPagamento(evento.getDataScadenzaPagamento());
+			pagamento.setImporto(evento.getCosto());
+			pagamentoService.save(pagamento);
+		}
+
+		return pagamento;
 	}
 
 	@Override
