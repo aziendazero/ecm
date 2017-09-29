@@ -1034,6 +1034,20 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " alla Firma"));
 
+		boolean conteggioGiorniAvanzatoAbilitato = ecmProperties.isConteggioGiorniAvanzatoAbilitato();
+		boolean conteggioGiorniAvanzatoBeforeDayMode = ecmProperties.isConteggioGiorniAvanzatoBeforeDayMode();
+		
+		//we get the current time in milliseconds
+		LocalDateTime currentTime = LocalDateTime.now();
+		Long currentHourInMilliseconds = (currentTime.getHour()*60)*millisecondiInMinuto;
+		Long currentMinuteInMilliseconds = currentTime.getMinute()*millisecondiInMinuto;
+		Long currentTimeInMillisecods = currentHourInMilliseconds + currentMinuteInMilliseconds;
+		
+		//we calculate the added time so that the timer in bonita stops at 23:59
+		Long milliseconds2359 = millisecondiInGiorno - millisecondiInMinuto;
+		Long addedTimeInMilliseconds = milliseconds2359 - currentTimeInMillisecods;
+		
+		
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
 
@@ -1047,6 +1061,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//saveAndAudit(accreditamento);
 
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
+		
+		if (conteggioGiorniAvanzatoAbilitato && !conteggioGiorniAvanzatoBeforeDayMode) {
+			timerIntegrazioneRigetto += addedTimeInMilliseconds;
+		}
+		else if (conteggioGiorniAvanzatoAbilitato && conteggioGiorniAvanzatoBeforeDayMode) {
+			timerIntegrazioneRigetto = (timerIntegrazioneRigetto - millisecondiInGiorno) + addedTimeInMilliseconds;
+		}
+		
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
 			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
 			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;

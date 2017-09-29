@@ -48,4 +48,6 @@ public class EcmProperties {
 	private boolean proxyAuthenticated;
 	private String proxyUsername;
 	private String proxyPassword;
+	private boolean conteggioGiorniAvanzatoAbilitato;
+	private boolean conteggioGiorniAvanzatoBeforeDayMode;
 }
