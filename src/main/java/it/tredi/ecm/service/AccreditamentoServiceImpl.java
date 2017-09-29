@@ -1077,6 +1077,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//rilascio semaforo bonita
 		tokenService.removeBonitaSemaphore(accreditamentoId);
+		
 	}
 
 	@Override
