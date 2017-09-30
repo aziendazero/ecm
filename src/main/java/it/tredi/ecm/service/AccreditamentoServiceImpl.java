@@ -1037,17 +1037,6 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		boolean conteggioGiorniAvanzatoAbilitato = ecmProperties.isConteggioGiorniAvanzatoAbilitato();
 		boolean conteggioGiorniAvanzatoBeforeDayMode = ecmProperties.isConteggioGiorniAvanzatoBeforeDayMode();
 		
-		//we get the current time in milliseconds
-		LocalDateTime currentTime = LocalDateTime.now();
-		Long currentHourInMilliseconds = (currentTime.getHour()*60)*millisecondiInMinuto;
-		Long currentMinuteInMilliseconds = currentTime.getMinute()*millisecondiInMinuto;
-		Long currentTimeInMillisecods = currentHourInMilliseconds + currentMinuteInMilliseconds;
-		
-		//we calculate the added time so that the timer in bonita stops at 23:59
-		Long milliseconds2359 = millisecondiInGiorno - millisecondiInMinuto;
-		Long addedTimeInMilliseconds = milliseconds2359 - currentTimeInMillisecods;
-		
-		
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
 
@@ -1063,10 +1052,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
 		
 		if (conteggioGiorniAvanzatoAbilitato && !conteggioGiorniAvanzatoBeforeDayMode) {
-			timerIntegrazioneRigetto += addedTimeInMilliseconds;
+			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
 		}
 		else if (conteggioGiorniAvanzatoAbilitato && conteggioGiorniAvanzatoBeforeDayMode) {
-			timerIntegrazioneRigetto = (timerIntegrazioneRigetto - millisecondiInGiorno) + addedTimeInMilliseconds;
+			giorniTimer--;
+			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
 		}
 		
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
@@ -1078,6 +1068,23 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//rilascio semaforo bonita
 		tokenService.removeBonitaSemaphore(accreditamentoId);
 		
+	}
+	
+	public Long millisecondsToAdd(Long giorniTimer) {
+		long millisecondiInGiorno = 86400000;
+		long millisecondiInMinuto = 60000;
+		//we get the current time in milliseconds
+		LocalDateTime currentTime = LocalDateTime.now();
+		Long currentHourInMilliseconds = (currentTime.getHour()*60)*millisecondiInMinuto;
+		Long currentMinuteInMilliseconds = currentTime.getMinute()*millisecondiInMinuto;
+		Long currentTimeInMillisecods = currentHourInMilliseconds + currentMinuteInMilliseconds;
+		
+		//we calculate the added time so that the timer in bonita stops at 23:59
+		Long milliseconds2359 = millisecondiInGiorno - millisecondiInMinuto;
+		Long addedTimeInMilliseconds = milliseconds2359 - currentTimeInMillisecods;
+		
+		//returns giorniTimer + added time from the moment the method is called till 23:59 in milliseconds
+		return (giorniTimer * millisecondiInGiorno) + addedTimeInMilliseconds;
 	}
 
 	@Override
