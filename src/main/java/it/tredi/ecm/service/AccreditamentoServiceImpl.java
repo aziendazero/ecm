@@ -1034,8 +1034,21 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void inviaRichiestaIntegrazione(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Integrazione della domanda " + accreditamentoId + " alla Firma"));
 
+		boolean conteggioGiorniAvanzatoAbilitato = ecmProperties.isConteggioGiorniAvanzatoAbilitato();
+		boolean conteggioGiorniAvanzatoBeforeDayMode = ecmProperties.isConteggioGiorniAvanzatoBeforeDayMode();
+		
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
+		
+		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
+		
+		if (conteggioGiorniAvanzatoAbilitato && !conteggioGiorniAvanzatoBeforeDayMode) {
+			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
+		}
+		else if (conteggioGiorniAvanzatoAbilitato && conteggioGiorniAvanzatoBeforeDayMode) {
+			giorniTimer--;
+			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
+		}
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
@@ -1045,8 +1058,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 		accreditamentoRepository.save(accreditamento);
 		//saveAndAudit(accreditamento);
-
-		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
+		
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
 			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
 			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
@@ -1055,6 +1067,24 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//rilascio semaforo bonita
 		tokenService.removeBonitaSemaphore(accreditamentoId);
+		
+	}
+	
+	public Long millisecondsToAdd(Long giorniTimer) {
+		long millisecondiInGiorno = 86400000;
+		long millisecondiInMinuto = 60000;
+		//we get the current time in milliseconds
+		LocalDateTime currentTime = LocalDateTime.now();
+		Long currentHourInMilliseconds = (currentTime.getHour()*60)*millisecondiInMinuto;
+		Long currentMinuteInMilliseconds = currentTime.getMinute()*millisecondiInMinuto;
+		Long currentTimeInMillisecods = currentHourInMilliseconds + currentMinuteInMilliseconds;
+		
+		//we calculate the added time so that the timer in bonita stops at 23:59
+		Long milliseconds2359 = millisecondiInGiorno - millisecondiInMinuto;
+		Long addedTimeInMilliseconds = milliseconds2359 - currentTimeInMillisecods;
+		
+		//returns giorniTimer + added time from the moment the method is called till 23:59 in milliseconds
+		return (giorniTimer * millisecondiInGiorno) + addedTimeInMilliseconds;
 	}
 
 	@Override
@@ -1084,16 +1114,28 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " alla Firma"));
+		
+		boolean conteggioGiorniAvanzatoAbilitato = ecmProperties.isConteggioGiorniAvanzatoAbilitato();
+		boolean conteggioGiorniAvanzatoBeforeDayMode = ecmProperties.isConteggioGiorniAvanzatoBeforeDayMode();
 
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
+		
+		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
+		
+		if (conteggioGiorniAvanzatoAbilitato && !conteggioGiorniAvanzatoBeforeDayMode) {
+			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
+		}
+		else if (conteggioGiorniAvanzatoAbilitato && conteggioGiorniAvanzatoBeforeDayMode) {
+			giorniTimer--;
+			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
+		}
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setGiorniPreavvisoRigetto(giorniTimer);
 		//accreditamentoRepository.save(accreditamento);
 		saveAndAudit(accreditamento);
 
-		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
 			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
 			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;

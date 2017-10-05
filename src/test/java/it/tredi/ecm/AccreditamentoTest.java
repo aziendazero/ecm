@@ -34,7 +34,7 @@ import it.tredi.ecm.utils.Utils;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 //@WithUserDetails("provider")
-//@Ignore
+@Ignore
 @Rollback(false)
 public class AccreditamentoTest {
 

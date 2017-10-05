@@ -97,6 +97,11 @@ public class EcmAppConfiguration {
 	private String proxyUsername = "";
 	@Value("${http.proxy.password}")
 	private String proxyPassword = "";
+	
+	@Value("${conteggioGiorniAvanzatoAbilitato}")
+	private boolean conteggioGiorniAvanzatoAbilitato;
+	@Value("${conteggioGiorniAvanzatoBeforeDayMode}")
+	private boolean conteggioGiorniAvanzatoBeforeDayMode;
 
 
 	@Bean
@@ -145,6 +150,9 @@ public class EcmAppConfiguration {
 		ecmProperties.setProxyAuthenticated(proxyAuthenticated);
 		ecmProperties.setProxyUsername(proxyUsername);
 		ecmProperties.setProxyPassword(proxyPassword);
+		
+		ecmProperties.setConteggioGiorniAvanzatoAbilitato(conteggioGiorniAvanzatoAbilitato);
+		ecmProperties.setConteggioGiorniAvanzatoBeforeDayMode(conteggioGiorniAvanzatoBeforeDayMode);
 		return ecmProperties;
 	}
 
