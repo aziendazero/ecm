@@ -1039,16 +1039,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
-
-		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
-		if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
-			accreditamento.setGiorniIntegrazione(giorniTimer);
-		} else {
-			accreditamento.getWorkflowInCorso().setGiorniIntegrazione(giorniTimer);
-		}
-		accreditamentoRepository.save(accreditamento);
-		//saveAndAudit(accreditamento);
-
+		
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
 		
 		if (conteggioGiorniAvanzatoAbilitato && !conteggioGiorniAvanzatoBeforeDayMode) {
@@ -1058,6 +1049,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			giorniTimer--;
 			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
 		}
+
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
+			accreditamento.setGiorniIntegrazione(giorniTimer);
+		} else {
+			accreditamento.getWorkflowInCorso().setGiorniIntegrazione(giorniTimer);
+		}
+		accreditamentoRepository.save(accreditamento);
+		//saveAndAudit(accreditamento);
 		
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
 			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
@@ -1114,16 +1114,28 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " alla Firma"));
+		
+		boolean conteggioGiorniAvanzatoAbilitato = ecmProperties.isConteggioGiorniAvanzatoAbilitato();
+		boolean conteggioGiorniAvanzatoBeforeDayMode = ecmProperties.isConteggioGiorniAvanzatoBeforeDayMode();
 
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
+		
+		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
+		
+		if (conteggioGiorniAvanzatoAbilitato && !conteggioGiorniAvanzatoBeforeDayMode) {
+			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
+		}
+		else if (conteggioGiorniAvanzatoAbilitato && conteggioGiorniAvanzatoBeforeDayMode) {
+			giorniTimer--;
+			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
+		}
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		accreditamento.setGiorniPreavvisoRigetto(giorniTimer);
 		//accreditamentoRepository.save(accreditamento);
 		saveAndAudit(accreditamento);
 
-		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
 			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
 			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
