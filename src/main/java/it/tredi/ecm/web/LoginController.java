@@ -109,6 +109,7 @@ public class LoginController {
 					wrapper.setProviderNotRelazioneAnnualeRegistrata(relazioneAnnualeService.countProviderNotRelazioneAnnualeRegistrataAllaScadenza());
 					wrapper.setEventiAlimentazionePrimaInfanzia(eventoService.countAllEventiAlimentazionePrimaInfanzia());
 					wrapper.setEventiMedicineNonConvenzionali(eventoService.countAllEventiMedicineNonConvenzionali());
+					wrapper.setDomandeTipoStandart(12);
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);

@@ -1478,6 +1478,30 @@ public class AccreditamentoController {
 			return "redirect:/home";
 		}
 	}
+	
+	@RequestMapping("/accreditamento/standart/list")
+	public String getAllAccreditamentiTipoStandart(Model model, RedirectAttributes redirectAttrs,
+			HttpServletRequest request, HttpSession session) throws Exception{
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/standart/list"));
+		try {
+			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllDomandeNonValutateByRefereeId(1223L);
+			model.addAttribute("label", "label.tipo_standart");
+			model.addAttribute("accreditamentoList", listaAccreditamenti);
+			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
+			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
+			//prende la mappa<id domanda, set account di chi ha una valutazione per la domanda> per ogni elemento della lista di accreditamenti
+//			Map<Long, Set<Account>> mappaCarica = new HashMap<Long, Set<Account>>();
+//			mappaCarica = valutazioneService.getValutatoriForAccreditamentiList(listaAccreditamenti);
+//			model.addAttribute("mappaCarica", mappaCarica);
+
+			return goToAccreditamentoList(request, model);
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/standart/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
+			return "redirect:/home";
+		}
+	}
 
 	//solo segreteria
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canShowDaInserireInODG(principal)")
