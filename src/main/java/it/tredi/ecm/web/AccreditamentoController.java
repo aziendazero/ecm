@@ -1484,15 +1484,15 @@ public class AccreditamentoController {
 			HttpServletRequest request, HttpSession session) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/standart/list"));
 		try {
-			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllDomandeNonValutateByRefereeId(1223L);
+			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllTipoStandart();
 			model.addAttribute("label", "label.tipo_standart");
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);
 			model.addAttribute("canProviderCreateAccreditamentoStandard", false);
 			//prende la mappa<id domanda, set account di chi ha una valutazione per la domanda> per ogni elemento della lista di accreditamenti
-//			Map<Long, Set<Account>> mappaCarica = new HashMap<Long, Set<Account>>();
-//			mappaCarica = valutazioneService.getValutatoriForAccreditamentiList(listaAccreditamenti);
-//			model.addAttribute("mappaCarica", mappaCarica);
+			Map<Long, Set<Account>> mappaCarica = new HashMap<Long, Set<Account>>();
+			mappaCarica = valutazioneService.getValutatoriForAccreditamentiList(listaAccreditamenti);
+			model.addAttribute("mappaCarica", mappaCarica);
 
 			return goToAccreditamentoList(request, model);
 		}catch (Exception ex){

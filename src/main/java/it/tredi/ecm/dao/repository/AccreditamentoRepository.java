@@ -129,5 +129,11 @@ public interface AccreditamentoRepository extends JpaRepository<Accreditamento, 
 		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.dataScadenza BETWEEN :oggi AND :dateScadenza")
 		public int countAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
 		public Accreditamento findFirstByProviderIdOrderByDataFineAccreditamentoDesc(Long providerId);
+		
+		//query e count domande accreditamento a seconda dello stato e del tipo
+		@Query("SELECT a FROM Accreditamento a WHERE a.tipoDomanda = 'STANDARD' AND a.stato = 'VALUTAZIONE_SUL_CAMPO'")
+		public Set<Accreditamento> getAllDomandeTipoStandart();
+		@Query("SELECT COUNT(a) FROM Accreditamento a WHERE a.tipoDomanda = 'STANDARD' AND a.stato = 'VALUTAZIONE_SUL_CAMPO'")
+		public int countAllDomandeTipoStandart();
 
 }

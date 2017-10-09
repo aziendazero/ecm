@@ -100,6 +100,9 @@ public interface AccreditamentoService{
 	public Set<Accreditamento> getAllAccreditamentiInseribiliInODG();
 	public int countAllAccreditamentiInseribiliInODG();
 
+	public Set<Accreditamento> getAllTipoStandart();
+	public int countAllTipoStandart();
+	
 	public Set<Accreditamento> getAllAccreditamentiInScadenza();
 	public int countAllAccreditamentiInScadenza();
 
