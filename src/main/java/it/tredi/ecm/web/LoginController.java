@@ -109,14 +109,14 @@ public class LoginController {
 					wrapper.setProviderNotRelazioneAnnualeRegistrata(relazioneAnnualeService.countProviderNotRelazioneAnnualeRegistrataAllaScadenza());
 					wrapper.setEventiAlimentazionePrimaInfanzia(eventoService.countAllEventiAlimentazionePrimaInfanzia());
 					wrapper.setEventiMedicineNonConvenzionali(eventoService.countAllEventiMedicineNonConvenzionali());
-					wrapper.setDomandeTipoStandart(accreditamentoService.countAllTipoStandart());
+					wrapper.setDomandeTipoStandart(accreditamentoService.countAllTipoStandart(currentUser));
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);
 					wrapper.setDomandeDaValutareNotDone(accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum.VALUTAZIONE_CRECM, null, Utils.getAuthenticatedUser().getAccount().getId(), true)
 							+ accreditamentoService.countAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum.VALUTAZIONE_TEAM_LEADER, null, Utils.getAuthenticatedUser().getAccount().getId(), true));
 					wrapper.setDomandeNonValutateConsecutivamente(accountService.getUserById(currentUser.getAccount().getId()).getValutazioniNonDate());
-					wrapper.setDomandeTipoStandart(accreditamentoService.countAllTipoStandart());
+					wrapper.setDomandeTipoStandart(accreditamentoService.countAllTipoStandart(currentUser));
 					break;
 				case COMMISSIONE:
 					wrapper.setIsCommissione(true);

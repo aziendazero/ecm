@@ -131,9 +131,21 @@ public interface AccreditamentoRepository extends JpaRepository<Accreditamento, 
 		public Accreditamento findFirstByProviderIdOrderByDataFineAccreditamentoDesc(Long providerId);
 		
 		//query e count domande accreditamento a seconda dello stato e del tipo
-		@Query("SELECT a FROM Accreditamento a WHERE a.tipoDomanda = 'STANDARD' AND a.stato = 'VALUTAZIONE_SUL_CAMPO'")
-		public Set<Accreditamento> getAllDomandeTipoStandart();
-		@Query("SELECT COUNT(a) FROM Accreditamento a WHERE a.tipoDomanda = 'STANDARD' AND a.stato = 'VALUTAZIONE_SUL_CAMPO'")
-		public int countAllDomandeTipoStandart();
+		@Query("SELECT a FROM Accreditamento a "
+				+ "WHERE (a.tipoDomanda = 'STANDARD' AND a.stato = 'VALUTAZIONE_SUL_CAMPO') "
+				+ "AND (a.verbaleValutazioneSulCampo.valutatore.id = :id "
+				+ "OR a.verbaleValutazioneSulCampo.teamLeader.id = :id "
+				+ "OR a.verbaleValutazioneSulCampo.osservatoreRegionale.id = :id "
+				+ "OR a.verbaleValutazioneSulCampo.referenteInformatico.id = :id "
+				+ "OR :id IN (SELECT v.id FROM a.verbaleValutazioneSulCampo.componentiSegreteria v))")
+		public Set<Accreditamento> getAllDomandeTipoStandart(@Param("id") Long id);
+		@Query("SELECT COUNT(a) FROM Accreditamento a "
+				+ "WHERE (a.tipoDomanda = 'STANDARD' AND a.stato = 'VALUTAZIONE_SUL_CAMPO')"
+				+ "AND (a.verbaleValutazioneSulCampo.valutatore.id = :id " 
+				+ "OR a.verbaleValutazioneSulCampo.teamLeader.id = :id " 
+				+ "OR a.verbaleValutazioneSulCampo.osservatoreRegionale.id = :id " 
+				+ "OR a.verbaleValutazioneSulCampo.referenteInformatico.id = :id "
+				+ "OR :id IN (SELECT v.id FROM a.verbaleValutazioneSulCampo.componentiSegreteria v))")
+		public int countAllDomandeTipoStandart(@Param("id") Long id);
 
 }

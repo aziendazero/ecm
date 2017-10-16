@@ -1484,7 +1484,8 @@ public class AccreditamentoController {
 			HttpServletRequest request, HttpSession session) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/standart/list"));
 		try {
-			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllTipoStandart();
+			CurrentUser user = Utils.getAuthenticatedUser();
+			Set<Accreditamento> listaAccreditamenti = accreditamentoService.getAllTipoStandart(user);
 			model.addAttribute("label", "label.tipo_standart");
 			model.addAttribute("accreditamentoList", listaAccreditamenti);
 			model.addAttribute("canProviderCreateAccreditamentoProvvisorio", false);

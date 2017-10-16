@@ -2850,12 +2850,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	public Set<Accreditamento> getAllTipoStandart() {
-		return accreditamentoRepository.getAllDomandeTipoStandart();
+	public Set<Accreditamento> getAllTipoStandart(CurrentUser currentUser) {
+		return accreditamentoRepository.getAllDomandeTipoStandart(currentUser.getAccount().getId());
 	}
 
 	@Override
-	public int countAllTipoStandart() {
-		return accreditamentoRepository.countAllDomandeTipoStandart();
+	public int countAllTipoStandart(CurrentUser currentUser) {
+		return accreditamentoRepository.countAllDomandeTipoStandart(currentUser.getAccount().getId());
 	}
+
+	
 }

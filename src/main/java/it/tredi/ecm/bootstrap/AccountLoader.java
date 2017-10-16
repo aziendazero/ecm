@@ -22,7 +22,7 @@ import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.WorkflowService;
 
 @Component
-@org.springframework.context.annotation.Profile({"demo","simone","abarducci", "tom", "joe19"})
+@org.springframework.context.annotation.Profile({"demo","simone","abarducci", "tom", "joe19", "papa"})
 public class AccountLoader implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AccountLoader.class);
