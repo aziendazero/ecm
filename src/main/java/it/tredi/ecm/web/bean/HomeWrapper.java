@@ -47,6 +47,7 @@ public class HomeWrapper {
 	private Integer eventiAlimentazionePrimaInfanzia;
 	private Integer eventiMedicineNonConvenzionali;
 	private Integer providerNotRelazioneAnnualeRegistrata;
+	private Integer domandeTipoStandart;
 
 
 	//Referee

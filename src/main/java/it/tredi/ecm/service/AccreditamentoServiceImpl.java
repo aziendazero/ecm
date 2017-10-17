@@ -2848,4 +2848,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		fileService.save(fileProtocollato);
 
 	}
+
+	@Override
+	public Set<Accreditamento> getAllTipoStandart(CurrentUser currentUser) {
+		return accreditamentoRepository.getAllDomandeTipoStandart(currentUser.getAccount().getId());
+	}
+
+	@Override
+	public int countAllTipoStandart(CurrentUser currentUser) {
+		return accreditamentoRepository.countAllDomandeTipoStandart(currentUser.getAccount().getId());
+	}
+
+	
 }
