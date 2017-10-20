@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+				  <div class="x_title">
+					<h1 th:text="${date}">{date}</h1>
+					</div>
+				  </div>
+				</div>
+			</div>
+	    </div>
+  </body>
+</html>
+		

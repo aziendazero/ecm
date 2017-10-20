@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.quotaAnnuale_list}"></h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+							<a class="btn btn-primary pull-right" th:href="@{|/quotaAnnuale/sposta|}"
+							 th:text="#{label.sposta_data_scadenza_pagamento}"></a>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+					<div id='calendar'></div>
+						<table  class="datatable-responsive-quotaAnnuale table table-striped table-bordered dt-responsive nowrap" cellspacing="0" style="float:left; width:45%; margin:0 10px; ">
+							<thead>
+								<tr>
+									<th></th>
+									<th th:text="#{label.id_quotaAnnuale}"></th>
+									<th th:text="#{label.denominazioneLegale}"></th>
+									<th th:text="#{label.dataScadenzaPagamento}"></th>
+									<th th:text="#{label.importo}"></th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr  th:each="quotaAnnuale, row : ${quotaAnnualeList}">
+									<td><input type="checkbox" /></td>
+									<td th:text="${quotaAnnuale.provider.id}"></td>
+									<td th:text="${quotaAnnuale.provider.denominazioneLegale}"></td>
+									<!-- <td th:text="${quotaAnnuale.pagamento.dataScadenzaPagamento}"></td> -->
+									<!-- <td th:text="${quotaAnnuale.pagamento.importo}"></td> -->
+								</tr>
+							</tbody>
+						</table>
+						<table class="datatable-responsive-quotaAnnuale table table-striped table-bordered dt-responsive nowrap" cellspacing="0"  style="float:left;  width:45%;">
+							<thead>
+								<tr>
+									<th></th>
+									<th th:text="#{label.id_quotaAnnuale}"></th>
+									<th th:text="#{label.denominazioneLegale}"></th>
+									<th th:text="#{label.dataScadenzaPagamento}"></th>
+									<th th:text="#{label.importo}"></th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr  th:each="quotaAnnuale, row : ${quotaAnnualeList}">
+									<td><input type="checkbox" /></td>
+									<td th:text="${quotaAnnuale.provider.id}"></td>
+									<td th:text="${quotaAnnuale.provider.denominazioneLegale}"></td>
+									<!-- <td th:text="${quotaAnnuale.pagamento.dataScadenzaPagamento}"></td> -->
+									<!-- <td th:text="${quotaAnnuale.pagamento.importo}"></td> -->
+								</tr>
+							</tbody>
+						</table>		
+					</div>
+				</div>
+			</div>
+		</div>
+		<script th:inline="javascript">
+		$(':checkbox').on('change', function() {
+			  $(this).closest('tr').find(':checkbox').prop('checked', this.checked);
+			});
+		</script>
+	</div>
+</body>
+</html>
