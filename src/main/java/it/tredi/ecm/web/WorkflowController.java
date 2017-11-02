@@ -193,5 +193,21 @@ public class WorkflowController {
 		//accreditamentoService.setStato(accreditamentoId, stato);
 	}
 
+	@RequestMapping("/bugfix/workflow/token/{token}/accreditamento/{accreditamentoId}/stato/{stato}")
+	@ResponseBody
+	public ResponseState bugfixSetStatoFromBonita(@PathVariable("token") String token, @PathVariable("accreditamentoId") Long accreditamentoId, @PathVariable("stato") AccreditamentoStatoEnum stato,
+			@RequestParam(required = false) Integer numeroValutazioniNonDate, @RequestParam(required = false) String dataOraScadenzaPossibiltaValutazione,
+			@RequestParam(required = false) Boolean eseguitoDaUtente) throws Exception{
+
+		if(!tokenService.checkTokenAndDelete(token)) {
+			String msg = "Impossibile trovare il token passato token: " + token;
+			LOGGER.error(msg);
+			return new ResponseState(true, msg);
+		}
+
+		return new ResponseState(false, "Stato modificato");
+	}
+
+
 
 }
