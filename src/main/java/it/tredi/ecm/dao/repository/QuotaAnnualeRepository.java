@@ -27,6 +27,9 @@ public interface QuotaAnnualeRepository extends CrudRepository<QuotaAnnuale, Lon
 	
 	@Query("SELECT p FROM Provider p WHERE p.status IN ('ACCREDITATO_PROVVISORIAMENTE','ACCREDITATO_STANDARD') AND p.id NOT IN (SELECT distinct qa.provider.id FROM QuotaAnnuale qa WHERE qa.annoRiferimento = :annoRiferimento)")
 	public Set<Provider> findAllProviderNotPagamentoRegistrato(@Param("annoRiferimento")Integer annoRiferimento);
+	
+	@Query("SELECT q FROM QuotaAnnuale q WHERE q.pagamento.dataScadenzaPagamento < :now AND q.pagato = false")
+	public Set<QuotaAnnuale> findAllPagamentiScaduti(@Param("now") LocalDate now);
 }
 
 // and p.codiceEsito not in ('PAA_ESEGUITO', 'PAA_PAGAMENTO_ANNULLATO', 'PAA_PAGAMENTO_SCADUTO', 'PAA_ENTE_NON_VALIDO', 'PAA_ID_SESSION_NON_VALIDO')")

@@ -1,6 +1,7 @@
 package it.tredi.ecm.service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -211,5 +212,22 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 		quota.setPagato(true);
 		pagamentoService.save(quota.getPagamento());
 		save(quota);
+	}
+
+	@Override
+	public Set<QuotaAnnuale> getAllPagamentiScaduti(LocalDate now) {
+		return quotaAnnualeRepository.findAllPagamentiScaduti(LocalDate.now());
+	}
+
+	@Override
+	public void spostaDataScadenzaPagamenti(HashMap<Long, LocalDate> quoteAnnualiSpostate) {
+		for(Long id : quoteAnnualiSpostate.keySet()) {
+			QuotaAnnuale quotaAnnuale = quotaAnnualeRepository.findOne(id);
+			if(quotaAnnuale != null) {
+				LocalDate newDate = quoteAnnualiSpostate.get(id);
+				quotaAnnuale.getPagamento().setDataScadenzaPagamento(newDate);
+				quotaAnnualeRepository.save(quotaAnnuale);
+			}
+		}
 	}
 }

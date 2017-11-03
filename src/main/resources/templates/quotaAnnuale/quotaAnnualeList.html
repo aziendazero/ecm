@@ -1,148 +1,172 @@
-	<!DOCTYPE html>
-	<html xmlns:th="http://www.thymeleaf.org"
-	 xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
-	 layout:decorator="fragments/template">
-	<head lang="it">
-	</head>
-	<body>
-	 <div layout:fragment="content">
-	  <div class="row">
-	   <div class="col-xs-12">
-	    <div class="x_panel">
-	     <div class="x_title">
-	      <h2 th:text="#{label.quotaAnnuale_list}"></h2>
-	      <div class="pull-right buttons-header">
-	       <a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a> 
-	       <button data-toggle="modal"  class="btn btn-primary pull-right" onClick="openModal()">Sposta</button>
-	       <div class="modal fade" id="myModal">
-	        <div class="modal-dialog">
-	         <div class="modal-content">
-	          <div class="modal-header">
-	          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">x</span>
-			   </button>
-	           <h4 class="modal-title">Sposta data scadenza pagamento</h4>
-	          </div>
-	          <div class="modal-body">
-				 <form method="post" th:action="@{/quotaAnnuale/conferma}">
-			      <div class="form-group"> 
-			        <label class="control-label" for="date">Data</label>
-			        <input class="form-control" id="date" name="date" type="text"/>
-			      </div>
-			     </form>
-	          	</div>
-	          <div class="modal-footer">
-	           <div class="form-group">
-	            <a class="btn btn-primary " name="submit" type="submit">Conferma</a>
-	           </div>
-	          </div>
-	         </div>
-	        </div>
-	       </div>
-	      </div>
-	      <div class="clearfix"></div>
-	     </div>
-	     <div class="x_content">
-	     <div style="padding-bottom:50px;">
-	      <table class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-ordering-user-search"
-	       cellspacing="0" style="width:100%;">
-	       <thead>
-	        <tr>
-	         <th><input type="checkbox" id="selectAll"/></th>
-	         <th th:text="#{label.id_quotaAnnuale}"></th>
-	         <th th:text="#{label.denominazioneLegale}"></th>
-	         <th th:text="#{label.dataScadenzaPagamento}"></th>
-	         <th th:text="#{label.importo}"></th>
-	        </tr>
-	       </thead>
-	       <tbody th:remove="all-but-first">
-	        <tr th:each="quotaAnnuale, row : ${quotaAnnualeList}">
-	         <td><input type="checkbox" name="ids" th:value="${quotaAnnuale.id}"/></td>
-	         <td th:text="${quotaAnnuale.provider.id}"></td>
-	         <td th:text="${quotaAnnuale.provider.denominazioneLegale}"></td>
-	         <td></td>
-	         <td></td>
-	         <!--<td th:text="${quotaAnnuale.pagamento.dataScadenzaPagamento}"></td> -->
-	         <!-- <td th:text="${quotaAnnuale.pagamento.importo}"></td> -->
-	        </tr>
-	       </tbody>
-	      </table>
-	      </div>
-	      <div>
-	      <table class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-ordering-user-search"
-	       cellspacing="0" style="width:100%">
-	       <thead>
-	        <tr>
-	         <th><input type="checkbox" id="selectAll1"/></th>
-	         <th th:text="#{label.id_quotaAnnuale}"></th>
-	         <th th:text="#{label.denominazioneLegale}"></th>
-	         <th th:text="#{label.dataScadenzaPagamento}"></th>
-	         <th th:text="#{label.importo}"></th>
-	        </tr>
-	       </thead>
-	       <tbody th:remove="all-but-first">
-	        <tr th:each="quotaAnnuale, row : ${quotaAnnualeList}">
-	         <td><input type="checkbox" name="ids" th:value="${quotaAnnuale.id}"/></td>
-	         <td th:text="${quotaAnnuale.provider.id}"></td>
-	         <td th:text="${quotaAnnuale.provider.denominazioneLegale}"></td>
-	         <td></td>
-	         <td></td>
-	         <!--<td th:text="${quotaAnnuale.pagamento.dataScadenzaPagamento}"></td> -->
-	         <!-- <td th:text="${quotaAnnuale.pagamento.importo}"></td> -->
-	        </tr>
-	       </tbody>
-	      </table>
-	      </div>
-	     </div>
-	    </div>
-	   </div>
-	  </div>
-	  <script th:inline="javascript">
-	  /*<![CDATA[*/ 		  
-	   $(document).ready(function() {  
-		   
-		    var days = getDayNamesShort();
-		    var months = getMonthNames();
-		
-		    $('#date').daterangepicker({
-			     singleDatePicker : true,
-			     autoApply : true,
-			     autoUpdateInput : true,
-			     format : "DD/MM/YYYY",
-			     locale : {
-				      daysOfWeek : days,
-				      monthNames : months,
-	     		}
-	    	})
-
-	   });
-	  
-		function openModal(){
-			$('#myModal').modal('toggle');
-			writeInput();
-		}
-		
-		function writeInput(){
-			var favorite = [];
-			$.each($("input[name='ids']:checked"), function(){            
-                favorite.push($(this).val());
-                $('#myModal').find('input[name="date"]').val(favorite);
-                favorite=[];
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.quotaAnnuale_list}"></h2>
+						<div class="pull-right buttons-header">
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
+							<a data-toggle="modal" class="btn btn-primary pull-right" onclick="openModal()">Sposta</a>
+							<div class="modal fade" id="myModal">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h4 class="modal-title" th:text="#{label.sposta}">Sposta data scadenza pagamento</h4>
+										</div>
+										<div class="modal-body">
+											<form id="form" method="post" th:action="@{/quotaAnnuale/scaduteENonPagate/confermaSposta}" >
+												<div class="form-group">
+													<input id="qa_Id" name="qa_Id" type="hidden" value="" class="form-control" readonly="readonly"/>
+													<label class="control-label" for="date">Data</label> 
+													<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('scadenzaPagamentoProviderWrapper.dataScadenzaPagamento')} ? 'bad'">
+														<div>
+															<input id="date" class="form-control" type="text" th:field="${scadenzaPagamentoProviderWrapper.dataScadenzaPagamento}" readonly="readonly"/>
+														</div>
+													</div>
+													<div th:if="${#fields.hasErrors('scadenzaPagamentoProviderWrapper.dataScadenzaPagamento')}" class="alert pull-right" th:errors="${scadenzaPagamentoProviderWrapper.dataScadenzaPagamento}"></div>
+												</div>
+												<div class="form-group">
+													<input id="submitDateButton" class="btn btn-primary" name="submit1" type="submit" style="display: none;"/>
+												</div>
+											</form>
+										</div>
+										<div class="modal-footer">
+											<label for="submitDateButton" class="btn btn-success pull-right">Conferma</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<div style="padding-bottom: 40px">
+							<table id="tableA"
+								class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-ordering-user-search"
+								cellspacing="0" style="width: 100%">
+								<caption> <h5 align="center" style="color: #73879c;" th:text="#{label.provider_gruppoA}">Gruppo A</h5></caption>
+								<thead>
+									<tr>
+										<th><input type="checkbox" id="selectAll"/></th>
+										<th th:text="#{label.id_quotaAnnuale_provider}"></th>
+										<th th:text="#{label.denominazioneLegale}"></th>
+										<th th:text="#{label.dataScadenzaPagamento}"></th>
+										<th th:text="#{label.importo}"></th>
+									</tr>
+								</thead>
+								<tbody th:remove="all-but-first">
+									<tr th:each="quotaAnnuale, row : ${quotaAnnualeList}" th:if="${quotaAnnuale.provider.gruppo == 'A'}">
+										<td><input type="checkbox" th:value="${quotaAnnuale.id}"/></td>
+										<td th:text="${quotaAnnuale.provider.id}"></td>
+										<td th:text="${quotaAnnuale.provider.denominazioneLegale}"></td>
+										<td th:text="${quotaAnnuale.pagamento.dataScadenzaPagamento}"></td>
+										<td th:text="${quotaAnnuale.pagamento.importo}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<table id="tableB"
+							class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-ordering-user-search"
+							cellspacing="0" style="width: 100%">
+							<caption> <h5 align="center" style="color: #73879c;" th:text="#{label.provider_gruppoB}">Gruppo B</h5></caption>
+							<thead>
+								<tr>
+									<th><input type="checkbox" id="selectAll1"/></th>
+									<th th:text="#{label.id_quotaAnnuale_provider}"></th>
+									<th th:text="#{label.denominazioneLegale}"></th>
+									<th th:text="#{label.dataScadenzaPagamento}"></th>
+									<th th:text="#{label.importo}"></th>
+								</tr>
+							</thead>
+							<tbody th:remove="all-but-first">
+								<tr th:each="quotaAnnuale, row : ${quotaAnnualeList}" th:if="${quotaAnnuale.provider.gruppo == 'B'}">
+									<td><input type="checkbox" th:value="${quotaAnnuale.id}"/></td>
+									<td th:text="${quotaAnnuale.provider.id}"></td>
+									<td th:text="${quotaAnnuale.provider.denominazioneLegale}"></td>
+									<td th:text="${quotaAnnuale.pagamento.dataScadenzaPagamento}"></td>
+									<td th:text="${quotaAnnuale.pagamento.importo}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+			/*[+
+	
+				$(document).ready(function() {
 				
-			});
+					var days = getDayNamesShort();
+					var months = getMonthNames();
+					
+					$('#date').daterangepicker({
+						singleDatePicker : true,
+						autoApply : true,
+						autoUpdateInput : true,
+						format : "DD/MM/YYYY",
+						locale : {
+							daysOfWeek : days,
+							monthNames : months,
+						}
+					
+					});
+				});
 
-		}
-		
-		$('#selectAll').click(function(e){
-		    var table= $(e.target).closest('table');
-		    $('td input:checkbox',table).prop('checked',this.checked);
-		});
-		
-		$('#selectAll1').click(function(e){
-		    var table= $(e.target).closest('table');
-		    $('td input:checkbox',table).prop('checked',this.checked);
-		});
-	   /*]]>*/
-	  </script>
-	 </div>
-	</body>
-	</html>
+				function openModal() {
+					var array = tableToArray();
+					
+					if(array.length > 0){
+						writeInput(array);
+						$('#myModal').modal('toggle');
+					}else{
+						alert('No Quota Annuale Selected!')
+					}
+					
+					
+					
+				}
+				
+				function writeInput(array) {
+					$("#myModal").find('input[id="qa_Id"]').val(array);
+					
+				}
+				
+				function tableToArray(){
+				   var favorite = [];
+				   $('#tableA td input:checkbox:checked').each(function() {            
+				        favorite.push($(this).val());
+				   });
+				   
+				   $('#tableB td input:checkbox:checked').each(function() {            
+				        favorite.push($(this).val());
+				   });
+				   return favorite;
+
+				}
+				
+				$('#selectAll').click(function(e){
+				    var table= $(e.target).closest('table');
+		 		    $('td input:checkbox',table).prop('checked',this.checked);
+				});
+				
+				$('#selectAll1').click(function(e){
+				    var table= $(e.target).closest('table');
+				    $('td input:checkbox',table).prop('checked',this.checked);
+				});
+			
+			+]*/
+			
+	    /*]]>*/
+		</script>
+	</div>
+</body>
+</html>
