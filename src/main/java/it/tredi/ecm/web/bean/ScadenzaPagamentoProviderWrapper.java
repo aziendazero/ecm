@@ -13,6 +13,7 @@ public class ScadenzaPagamentoProviderWrapper {
 	
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private LocalDate dataScadenzaPagamento;
+	private String ids = "";
 	
 	private boolean submitScadenzePagamentoProviderError = false;
 	

@@ -15,14 +15,14 @@ public class ScadenzaPagamentoProviderValidator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScadenzaPagamentoProviderValidator.class);
 
-	public void validate(Object target, Errors errors, String prefix) throws Exception{
+	public void validate(Object target, Errors errors) throws Exception{
 		ScadenzaPagamentoProviderWrapper scadenze = (ScadenzaPagamentoProviderWrapper) target;
 
 		//check inserimento
 		if(scadenze.getDataScadenzaPagamento() == null)
-			errors.rejectValue(prefix + "dataScadenzaPagamento", "error.empty");
+			errors.rejectValue("dataScadenzaPagamento", "error.empty");
 		else if(scadenze.getDataScadenzaPagamento().isBefore(LocalDate.now()))
-			errors.rejectValue(prefix + "dataScadenzaPagamento", "error.data_non_valida_verbale");
+			errors.rejectValue("dataScadenzaPagamento", "error.data_non_valida_verbale");
 		
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}

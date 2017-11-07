@@ -33,9 +33,10 @@ import it.tredi.ecm.web.validator.ScadenzaPagamentoProviderValidator;
 @Controller
 public class QuotaAnnualeController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QuotaAnnualeController.class);
+	private final String LIST = "quotaAnnuale/quotaAnnualeList";
 	
 	@Autowired private QuotaAnnualeService quotaAnnualeService;
-	@Autowired private ScadenzaPagamentoProviderValidator validator;
+	@Autowired private ScadenzaPagamentoProviderValidator dateValidator;
 	
 	@RequestMapping(value = "/quotaAnnuale/scaduteENonPagate")
 	public String showAllQuotaAnnuale(@ModelAttribute("scadenzaPagamentoProviderWrapper") ScadenzaPagamentoProviderWrapper wrapper, Model model, BindingResult result, RedirectAttributes redirectAttrs) {
@@ -45,7 +46,7 @@ public class QuotaAnnualeController {
 			Set<QuotaAnnuale> quotaAnnualeList = quotaAnnualeService.getAllPagamentiScaduti(LocalDate.now());
 			model.addAttribute("quotaAnnualeList", quotaAnnualeList);
 			model.addAttribute("scadenzaPagamentoProviderWrapper", wrapper);
-			return "quotaAnnuale/quotaAnnualeList";
+			return LIST;
 			
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /quotaAnnuale/scaduteENonPagate"),ex);
@@ -59,16 +60,20 @@ public class QuotaAnnualeController {
 	public String archiviaSelezionate(@RequestParam("qa_Id") String ids, @ModelAttribute("scadenzaPagamentoProviderWrapper") ScadenzaPagamentoProviderWrapper wrapper, Model model, BindingResult result, RedirectAttributes redirectAttrs, HttpServletRequest request) {
 		LOGGER.info(Utils.getLogMessage("POST /quotaAnnuale/scaduteENonPagate/confermaSposta"));
 		try{
-			validator.validate(wrapper, result, "");
+			dateValidator.validate(wrapper, result);
+			wrapper.setIds(ids);
 			if(result.hasErrors()) {
 				wrapper.setSubmitScadenzePagamentoProviderError(true);
+				Set<QuotaAnnuale> quotaAnnualeList = quotaAnnualeService.getAllPagamentiScaduti(LocalDate.now());
+				model.addAttribute("quotaAnnualeList", quotaAnnualeList);
 				model.addAttribute("scadenzaPagamentoProviderWrapper", wrapper);
 				model.addAttribute("message",new Message("message.errore", "message.inserire_campi_required_data", "error"));
-				return "redirect:/quotaAnnuale/scaduteENonPagate";
+				return LIST;
 			}else {
-				HashMap<Long, LocalDate> quoteAnnualiSpostate = fromStringToHashMap(ids, wrapper.getDataScadenzaPagamento());
+				HashMap<Long, LocalDate> quoteAnnualiSpostate = fromStringToHashMap(wrapper.getIds(), wrapper.getDataScadenzaPagamento());
 				quotaAnnualeService.spostaDataScadenzaPagamenti(quoteAnnualiSpostate);
 				LOGGER.info(Utils.getLogMessage("REDIRECT success: /quotaAnnuale/scaduteENonPagate"));
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.quotaAnnuale_salvata", "success"));
 				return "redirect:/quotaAnnuale/scaduteENonPagate";
 			}
 		}catch (Exception ex){
@@ -85,7 +90,8 @@ public class QuotaAnnualeController {
 		List<String> numbers = Arrays.asList(ids.split(","));
 		List<Long> longIds = new ArrayList<>();
 		for (String number : numbers) {
-			longIds.add(Long.valueOf(number));
+			if(!number.isEmpty())
+				longIds.add(Long.valueOf(number));
 		}
 		
 		for(Long id : longIds) {

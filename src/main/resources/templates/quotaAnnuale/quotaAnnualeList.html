@@ -22,14 +22,12 @@
 										</div>
 										<div class="modal-body">
 											<form id="form" method="post" th:action="@{/quotaAnnuale/scaduteENonPagate/confermaSposta}" >
-												<div class="form-group">
-													<input id="qa_Id" name="qa_Id" type="hidden" value="" class="form-control" readonly="readonly"/>
-													<label class="control-label" for="date">Data</label> 
-													<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('scadenzaPagamentoProviderWrapper.dataScadenzaPagamento')} ? 'bad'">
+												<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('scadenzaPagamentoProviderWrapper.dataScadenzaPagamento')} ? 'bad'">
+														<input id="qa_Id" name="qa_Id" type="hidden" class="form-control" readonly="readonly"/>
+														<label class="control-label" for="date">Data</label> 
 														<div>
 															<input id="date" class="form-control" type="text" th:field="${scadenzaPagamentoProviderWrapper.dataScadenzaPagamento}" readonly="readonly"/>
 														</div>
-													</div>
 													<div th:if="${#fields.hasErrors('scadenzaPagamentoProviderWrapper.dataScadenzaPagamento')}" class="alert pull-right" th:errors="${scadenzaPagamentoProviderWrapper.dataScadenzaPagamento}"></div>
 												</div>
 												<div class="form-group">
@@ -104,7 +102,13 @@
 			/*[+
 	
 				$(document).ready(function() {
+					
+					if([[${scadenzaPagamentoProviderWrapper.ids}]] != "")
+						$("#myModal").find('input[id="qa_Id"]').val([[${scadenzaPagamentoProviderWrapper.ids}]]);
 				
+					if([[${scadenzaPagamentoProviderWrapper.submitScadenzePagamentoProviderError}]])
+						$('#myModal').modal('show');
+					
 					var days = getDayNamesShort();
 					var months = getMonthNames();
 					
@@ -126,12 +130,10 @@
 					
 					if(array.length > 0){
 						writeInput(array);
-						$('#myModal').modal('toggle');
+						$('#myModal').modal('show');
 					}else{
 						alert('No Quota Annuale Selected!')
 					}
-					
-					
 					
 				}
 				
@@ -141,15 +143,15 @@
 				}
 				
 				function tableToArray(){
-				   var favorite = [];
+				   var array = [];
 				   $('#tableA td input:checkbox:checked').each(function() {            
-				        favorite.push($(this).val());
+				        array.push($(this).val());
 				   });
 				   
 				   $('#tableB td input:checkbox:checked').each(function() {            
-				        favorite.push($(this).val());
+				        array.push($(this).val());
 				   });
-				   return favorite;
+				   return array;
 
 				}
 				
