@@ -5,10 +5,13 @@ import java.util.Objects;
 
 import javax.persistence.MappedSuperclass;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 @MappedSuperclass
 public abstract class BaseEntity implements Cloneable, Serializable{
 	private static final long serialVersionUID = 9109342126172139038L;
 
+	@JsonView({JsonViewModel.Integrazione.class, JsonViewModel.ComunicazioniDestinatari.class, JsonViewModel.EventoLookup.class})
 	public abstract Long getId();
 
     public boolean isNew() {
