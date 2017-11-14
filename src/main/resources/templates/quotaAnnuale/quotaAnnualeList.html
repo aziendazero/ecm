@@ -46,9 +46,7 @@
 					</div>
 					<div class="x_content">
 						<div style="padding-bottom: 40px">
-							<table id="tableA"
-								class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-ordering-user-search"
-								cellspacing="0" style="width: 100%">
+							<table id="tableA" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" style="width: 100%">
 								<caption> <h5 align="center" style="color: #73879c;" th:text="#{label.provider_gruppoA}">Gruppo A</h5></caption>
 								<thead>
 									<tr>
@@ -70,8 +68,7 @@
 								</tbody>
 							</table>
 						</div>
-						<table id="tableB"
-							class="table table-striped table-bordered dt-responsive nowrap datatable-responsive-ordering-user-search"
+						<table id="tableB" class="table table-striped table-bordered dt-responsive nowrap"
 							cellspacing="0" style="width: 100%">
 							<caption> <h5 align="center" style="color: #73879c;" th:text="#{label.provider_gruppoB}">Gruppo B</h5></caption>
 							<thead>
@@ -124,63 +121,81 @@
 					
 					});
 					
-					$('input').iCheck({
+					var draw = function () {
+						$('input').iCheck({
+							checkboxClass: 'icheckbox_flat-green'
+						});
+						
+						//table A check all
+						
+						$('#selectAll').on('ifChecked', function (event) {
+						    $('.check').iCheck('check');
+						    triggeredByChild = false;
+						});
+
+						$('#selectAll').on('ifUnchecked', function (event) {
+						    if (!triggeredByChild) {
+						        $('.check').iCheck('uncheck');
+						    }
+						    triggeredByChild = false;
+						});
+						
+						// Removed the checked state from "All" if any checkbox is unchecked
+						$('.check').on('ifUnchecked', function (event) {
+						    triggeredByChild = true;
+						    $('#selectAll').iCheck('uncheck');
+						});
+
+						$('.check').on('ifChecked', function (event) {
+						    if ($('.check').filter(':checked').length == $('.check').length) {
+						        $('#selectAll').iCheck('check');
+						    }
+						});
+						
+						//table B check all
+						
+						$('#selectAll1').on('ifChecked', function (event) {
+						    $('.check1').iCheck('check');
+						    triggeredByChild = false;
+						});
+
+						$('#selectAll1').on('ifUnchecked', function (event) {
+						    if (!triggeredByChild) {
+						        $('.check1').iCheck('uncheck');
+						    }
+						    triggeredByChild = false;
+						});
+						
+						// Removed the checked state from "All" if any checkbox is unchecked
+						$('.check1').on('ifUnchecked', function (event) {
+						    triggeredByChild = true;
+						    $('#selectAll1').iCheck('uncheck');
+						});
+
+						$('.check1').on('ifChecked', function (event) {
+						    if ($('.check1').filter(':checked').length == $('.check1').length) {
+						        $('#selectAll1').iCheck('check');
+						    }
+						});
+					}
+					
+					$('#tableB').DataTable( {
+					   "drawCallback": draw
+					});
+					
+					$('#tableA').DataTable( {
+						   "drawCallback": draw
+						});
+					
+					
+					
+					
+				});
+			
+				$('input').iCheck({
 						checkboxClass: 'icheckbox_flat-green'
 					});
-					
-					//table A check all
-					
-					$('#selectAll').on('ifChecked', function (event) {
-					    $('.check').iCheck('check');
-					    triggeredByChild = false;
-					});
-
-					$('#selectAll').on('ifUnchecked', function (event) {
-					    if (!triggeredByChild) {
-					        $('.check').iCheck('uncheck');
-					    }
-					    triggeredByChild = false;
-					});
-					
-					// Removed the checked state from "All" if any checkbox is unchecked
-					$('.check').on('ifUnchecked', function (event) {
-					    triggeredByChild = true;
-					    $('#selectAll').iCheck('uncheck');
-					});
-
-					$('.check').on('ifChecked', function (event) {
-					    if ($('.check').filter(':checked').length == $('.check').length) {
-					        $('#selectAll').iCheck('check');
-					    }
-					});
-					
-					//table B check all
-					
-					$('#selectAll1').on('ifChecked', function (event) {
-					    $('.check1').iCheck('check');
-					    triggeredByChild = false;
-					});
-
-					$('#selectAll1').on('ifUnchecked', function (event) {
-					    if (!triggeredByChild) {
-					        $('.check1').iCheck('uncheck');
-					    }
-					    triggeredByChild = false;
-					});
-					
-					// Removed the checked state from "All" if any checkbox is unchecked
-					$('.check1').on('ifUnchecked', function (event) {
-					    triggeredByChild = true;
-					    $('#selectAll1').iCheck('uncheck');
-					});
-
-					$('.check1').on('ifChecked', function (event) {
-					    if ($('.check1').filter(':checked').length == $('.check1').length) {
-					        $('#selectAll1').iCheck('check');
-					    }
-					});
-				});
-
+			
 				function openModal() {
 					var array = tableToArray();
 					
