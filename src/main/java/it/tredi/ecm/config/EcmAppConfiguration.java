@@ -1,5 +1,8 @@
 package it.tredi.ecm.config;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 
 @Configuration
 @EntityScan(basePackages={"it.tredi.ecm.dao.entity","it.tredi.springdatautil"})
@@ -103,6 +107,10 @@ public class EcmAppConfiguration {
 	@Value("${conteggioGiorniAvanzatoBeforeDayMode}")
 	private boolean conteggioGiorniAvanzatoBeforeDayMode;
 
+	@Value("#{T(it.tredi.ecm.service.enumlist.EventoVersioneEnum).getByNumeroVersione(${evento.numeroversione.default})}")
+	private EventoVersioneEnum eventoVersioneDefault = EventoVersioneEnum.DUE_DAL_2018;
+	@Value("#{T(java.time.LocalDate).parse(\"${evento.data.passaggio.versione.due}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
+	private LocalDate eventoDataPassaggioVersioneDue = LocalDate.of(2018, 1, 1);
 
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -150,9 +158,11 @@ public class EcmAppConfiguration {
 		ecmProperties.setProxyAuthenticated(proxyAuthenticated);
 		ecmProperties.setProxyUsername(proxyUsername);
 		ecmProperties.setProxyPassword(proxyPassword);
-		
+
 		ecmProperties.setConteggioGiorniAvanzatoAbilitato(conteggioGiorniAvanzatoAbilitato);
 		ecmProperties.setConteggioGiorniAvanzatoBeforeDayMode(conteggioGiorniAvanzatoBeforeDayMode);
+		ecmProperties.setEventoVersioneDefault(eventoVersioneDefault);
+		ecmProperties.setEventoDataPassaggioVersioneDue(eventoDataPassaggioVersioneDue);
 		return ecmProperties;
 	}
 

@@ -103,6 +103,7 @@ import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.exception.PagInCorsoException;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -1238,7 +1239,7 @@ public class EventoServiceImpl implements EventoService {
 		return durata;
 	}
 
-	private float calcoloCreditiEvento(EventoWrapper eventoWrapper) {
+	private float calcoloCreditiEvento(EventoWrapper eventoWrapper) throws Exception {
 		float crediti = 0;
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
@@ -1255,7 +1256,8 @@ public class EventoServiceImpl implements EventoService {
 			return crediti;
 		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
 			EventoFAD evento = ((EventoFAD)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
+			//crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
+			crediti = calcoloCreditiFormativiEventoFAD(evento);
 			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FAD"));
 			return crediti;
@@ -1502,9 +1504,61 @@ public class EventoServiceImpl implements EventoService {
 
 		return max;
 	}
+	
+	private EventoVersioneEnum versioneEvento(Evento evento) {
+		EventoVersioneEnum versione = ecmProperties.getEventoVersioneDefault();
+		//se la data inizio dell'evento e' maggiore uguale al 2018 utilizzo il nuovo metodo di calcolo
+		if(evento.getDataInizio() != null) {
+			if(evento.getDataInizio().isAfter(ecmProperties.getEventoDataPassaggioVersioneDue()) || evento.getDataInizio().isEqual(ecmProperties.getEventoDataPassaggioVersioneDue())) {
+				versione = EventoVersioneEnum.DUE_DAL_2018;
+			} else {
+				versione = EventoVersioneEnum.UNO_PRIMA_2018;
+			}
+		}
+		return versione;
+	}
 
+	private float calcoloCreditiFormativiEventoFAD(EventoFAD evento) throws Exception {
+		//13/11/2017 task 12870 - Modifiche eventi FAD
+		EventoVersioneEnum versione = versioneEvento(evento);
+		switch (versione) {
+		case DUE_DAL_2018:
+			return calcoloCreditiFormativiEventoFADDal2018(evento);
+		case UNO_PRIMA_2018:
+			return calcoloCreditiFormativiEventoFADPre2018(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
+		default:
+			throw new Exception("Versione: " + versione + " non gestita");
+		}
+	}
+	
+	private float calcoloCreditiFormativiEventoFADDal2018(EventoFAD evento){
+		//crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
+		float crediti = 0.0f;
+		float durata = Utils.getRoundedHALFDOWNFloatValue(evento.getDurata());
+		
+		switch (evento.getTipologiaEventoFAD()) {
+		case APPRENDIMENTO_INDIVIDUALE_NO_ONLINE:
+			crediti = (int) durata * 1.0f;
+			break;
+		case APPRENDIMENTO_INDIVIDUALE_SI_ONLINE:
+		case APPRENDIMENTO_CONTESTO_SOCIALE:
+			if(evento.getSupportoSvoltoDaEsperto() != null && evento.getSupportoSvoltoDaEsperto())
+				crediti = (int) durata * 1.5f;
+			else
+				crediti = (int) durata * 1.0f;
+			break;
+		case EVENTI_SEMINARIALI_IN_RETE:
+			crediti = (int) durata * 1.5f;
+			break;
+		}
 
-	private float calcoloCreditiFormativiEventoFAD(float durata, Boolean conTutor){
+		if(crediti > 50f)
+			crediti = 50f;
+		crediti = Utils.getRoundedFloatValue(crediti, 1);
+		return crediti;
+	}
+
+	private float calcoloCreditiFormativiEventoFADPre2018(float durata, Boolean conTutor){
 		float crediti = 0.0f;
 		durata = Utils.getRoundedHALFDOWNFloatValue(durata);
 

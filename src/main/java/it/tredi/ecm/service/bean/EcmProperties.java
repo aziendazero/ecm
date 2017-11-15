@@ -1,5 +1,8 @@
 package it.tredi.ecm.service.bean;
 
+import java.time.LocalDate;
+
+import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,4 +53,7 @@ public class EcmProperties {
 	private String proxyPassword;
 	private boolean conteggioGiorniAvanzatoAbilitato;
 	private boolean conteggioGiorniAvanzatoBeforeDayMode;
+	private EventoVersioneEnum eventoVersioneDefault;
+	private LocalDate eventoDataPassaggioVersioneDue;
+
 }

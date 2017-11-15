@@ -123,4 +123,11 @@
 
 	<include file="20170920_001_change_type_note_valutazione_Text.xml" relativeToChangelogFile="true" />
 
+	<include file="20171115_002_applySQL_update_nome_obiettiviNazionali.xml" relativeToChangelogFile="true"/>
+
+	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
+      Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali" 
+      Obiettivo n. 35 "Argomenti di carattere generale: sanità digitale, informatica di livello avanzato e lingua inglese scientifica;  normativa in materia sanitaria: principi etici e civili del S.S.N.  con acquisizione di nozioni tecnico-professionali" 	
+	 -->
+	<!-- include file="20171115_004_applySQL_insert_obiettiviNazionali.xml" relativeToChangelogFile="true"/ -->
 </databaseChangeLog>
