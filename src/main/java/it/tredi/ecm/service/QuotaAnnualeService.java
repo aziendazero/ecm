@@ -1,5 +1,7 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
@@ -27,4 +29,8 @@ public interface QuotaAnnualeService {
 
 	public void save(QuotaAnnuale quotaAnnuale);
 	public void salvaQuietanzaPagamento(File quietanzaPagamento, Long quotaAnnualeId);
+	
+	public Set<QuotaAnnuale> getAllPagamentiScaduti(LocalDate now);
+	
+	public void spostaDataScadenzaPagamenti(HashMap<Long, LocalDate> quoteAnnualiSpostate);
 }
