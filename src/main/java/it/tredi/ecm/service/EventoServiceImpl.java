@@ -103,6 +103,7 @@ import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.exception.PagInCorsoException;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -1238,7 +1239,7 @@ public class EventoServiceImpl implements EventoService {
 		return durata;
 	}
 
-	private float calcoloCreditiEvento(EventoWrapper eventoWrapper) {
+	private float calcoloCreditiEvento(EventoWrapper eventoWrapper) throws Exception {
 		float crediti = 0;
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
@@ -1503,15 +1504,30 @@ public class EventoServiceImpl implements EventoService {
 
 		return max;
 	}
+	
+	private EventoVersioneEnum versioneEvento(Evento evento) {
+		EventoVersioneEnum versione = ecmProperties.getEventoVersioneDefault();
+		//se la data inizio dell'evento e' maggiore uguale al 2018 utilizzo il nuovo metodo di calcolo
+		if(evento.getDataInizio() != null) {
+			if(evento.getDataInizio().isAfter(ecmProperties.getEventoDataPassaggioVersioneDue()) || evento.getDataInizio().isEqual(ecmProperties.getEventoDataPassaggioVersioneDue())) {
+				versione = EventoVersioneEnum.DUE_DAL_2018;
+			} else {
+				versione = EventoVersioneEnum.UNO_PRIMA_2018;
+			}
+		}
+		return versione;
+	}
 
-
-	private float calcoloCreditiFormativiEventoFAD(EventoFAD evento){
+	private float calcoloCreditiFormativiEventoFAD(EventoFAD evento) throws Exception {
 		//13/11/2017 task 12870 - Modifiche eventi FAD
-		//se la data inizio dell'evento e' maggiore uguaale del 2018 utilizzo il nuovo metodo di calcolo
-		if(evento.getDataInizio() != null && evento.getDataInizio().getYear() >= 2018) {
+		EventoVersioneEnum versione = versioneEvento(evento);
+		switch (versione) {
+		case DUE_DAL_2018:
 			return calcoloCreditiFormativiEventoFADDal2018(evento);
-		} else {
+		case UNO_PRIMA_2018:
 			return calcoloCreditiFormativiEventoFADPre2018(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
+		default:
+			throw new Exception("Versione: " + versione + " non gestita");
 		}
 	}
 	
