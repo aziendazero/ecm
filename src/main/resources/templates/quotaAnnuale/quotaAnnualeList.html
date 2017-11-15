@@ -12,8 +12,8 @@
 					<div class="x_title">
 						<h2 th:text="#{label.quotaAnnuale_list}"></h2>
 						<div class="pull-right buttons-header">
+							<a data-toggle="modal" class="btn btn-success pull-right" onclick="openModal()">Sposta</a>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/home|}"></a>
-							<a data-toggle="modal" class="btn btn-primary pull-right" onclick="openModal()">Sposta</a>
 							<div class="modal fade" id="myModal">
 								<div class="modal-dialog">
 									<div class="modal-content">
