@@ -73,7 +73,7 @@
 							<caption> <h5 align="center" style="color: #73879c;" th:text="#{label.provider_gruppoB}">Gruppo B</h5></caption>
 							<thead>
 								<tr>
-									<th><input type="checkbox" id="selectAll1"/></th>
+									<th><input type="checkbox" id="selectAllB"/></th>
 									<th th:text="#{label.id_quotaAnnuale_provider}"></th>
 									<th th:text="#{label.denominazioneLegale}"></th>
 									<th th:text="#{label.dataScadenzaPagamento}"></th>
@@ -82,7 +82,7 @@
 							</thead>
 							<tbody th:remove="all-but-first">
 								<tr th:each="quotaAnnuale, row : ${quotaAnnualeList}" th:if="${quotaAnnuale.provider.gruppo == 'B'}">
-									<td><input type="checkbox" th:value="${quotaAnnuale.id}" class="check1"/></td>
+									<td><input type="checkbox" th:value="${quotaAnnuale.id}" class="checkB"/></td>
 									<td th:text="${quotaAnnuale.provider.id}"></td>
 									<td th:text="${quotaAnnuale.provider.denominazioneLegale}"></td>
 									<td th:text="${quotaAnnuale.pagamento.dataScadenzaPagamento}"></td>
@@ -121,81 +121,150 @@
 					
 					});
 					
-					var draw = function () {
-						$('input').iCheck({
-							checkboxClass: 'icheckbox_flat-green'
-						});
-						
-						//table A check all
-						
-						$('#selectAll').on('ifChecked', function (event) {
-						    $('.check').iCheck('check');
-						    triggeredByChild = false;
-						});
-
-						$('#selectAll').on('ifUnchecked', function (event) {
-						    if (!triggeredByChild) {
-						        $('.check').iCheck('uncheck');
-						    }
-						    triggeredByChild = false;
-						});
-						
-						// Removed the checked state from "All" if any checkbox is unchecked
-						$('.check').on('ifUnchecked', function (event) {
-						    triggeredByChild = true;
-						    $('#selectAll').iCheck('uncheck');
-						});
-
-						$('.check').on('ifChecked', function (event) {
-						    if ($('.check').filter(':checked').length == $('.check').length) {
-						        $('#selectAll').iCheck('check');
-						    }
-						});
-						
-						//table B check all
-						
-						$('#selectAll1').on('ifChecked', function (event) {
-						    $('.check1').iCheck('check');
-						    triggeredByChild = false;
-						});
-
-						$('#selectAll1').on('ifUnchecked', function (event) {
-						    if (!triggeredByChild) {
-						        $('.check1').iCheck('uncheck');
-						    }
-						    triggeredByChild = false;
-						});
-						
-						// Removed the checked state from "All" if any checkbox is unchecked
-						$('.check1').on('ifUnchecked', function (event) {
-						    triggeredByChild = true;
-						    $('#selectAll1').iCheck('uncheck');
-						});
-
-						$('.check1').on('ifChecked', function (event) {
-						    if ($('.check1').filter(':checked').length == $('.check1').length) {
-						        $('#selectAll1').iCheck('check');
-						    }
-						});
-					}
-					
-					$('#tableB').DataTable( {
-					   "drawCallback": draw
+					tableA = $('#tableA').DataTable({
+						"bFilter" : true,
+						"bInfo" : false,
+						"bPaginate" : true,
+						"drawCallback": function() {
+							$('input').iCheck({
+								checkboxClass: 'icheckbox_flat-green'
+							});
+							$('input').on('ifChecked', function(event){
+								  if(!$(this).parent().parent().parent().hasClass('selected')){
+									  $(this).parent().parent().parent().addClass('selected');
+								  }
+							});
+							
+							$('input').on('ifUnchecked', function(event){
+								  if($(this).parent().parent().parent().hasClass('selected')){
+									  $(this).parent().parent().parent().removeClass('selected');
+								  }
+							});
+					    }
 					});
 					
-					$('#tableA').DataTable( {
-						   "drawCallback": draw
-						});
-					
-					
-					
-					
+					tableB = $('#tableB').DataTable({
+						"bFilter" : true,
+						"bInfo" : false,
+						"bPaginate" : true,
+						"drawCallback": function() {
+							$('input').iCheck({
+								checkboxClass: 'icheckbox_flat-green'
+							});
+							$('input').on('ifChecked', function(event){
+								  if(!$(this).parent().parent().parent().hasClass('selected')){
+									  $(this).parent().parent().parent().addClass('selected');
+								  }
+							});
+							
+							$('input').on('ifUnchecked', function(event){
+								  if($(this).parent().parent().parent().hasClass('selected')){
+									  $(this).parent().parent().parent().removeClass('selected');
+								  }
+							});
+					    }
+					});
+
+					initSelectableDataTable();
 				});
 			
-				$('input').iCheck({
+				function initSelectableDataTable() {
+					$('input').iCheck({
 						checkboxClass: 'icheckbox_flat-green'
 					});
-			
+					
+					initSelectAll();
+					
+					$('#tableA tbody').on('click', 'tr', function () {
+				        if ($(this).hasClass('selected')) {
+				            $(this).removeClass('selected');
+				            $(this).iCheck("uncheck");
+				        }
+				        else {
+				            $(this).addClass('selected');
+				            $(this).iCheck("check");
+				        }
+					});
+					
+					$('#tableB tbody').on('click', 'tr', function () {
+				        if ($(this).hasClass('selected')) {
+				            $(this).removeClass('selected');
+				            $(this).iCheck("uncheck");
+				        }
+				        else {
+				            $(this).addClass('selected');
+				            $(this).iCheck("check");
+				        }
+					});
+				        
+					$('input').on('ifChecked', function(event){
+						  if(!$(this).parent().parent().parent().hasClass('selected')){
+							  $(this).parent().parent().parent().addClass('selected');
+						  }
+					});
+					
+					$('input').on('ifUnchecked', function(event){
+						  if($(this).parent().parent().parent().hasClass('selected')){
+							  $(this).parent().parent().parent().removeClass('selected');
+						  }
+					});
+				}
+				
+				function initSelectAll() {
+					//table A check all
+					
+					$('#selectAll').on('ifChecked', function (event) {
+					    $('.check').iCheck('check');
+					    triggeredByChild = false;
+					});
+
+					$('#selectAll').on('ifUnchecked', function (event) {
+					    if (!triggeredByChild) {
+					        $('.check').iCheck('uncheck');
+					    }
+					    triggeredByChild = false;
+					});
+					
+					// Removed the checked state from "All" if any checkbox is unchecked
+					$('.check').on('ifUnchecked', function (event) {
+					    triggeredByChild = true;
+					    $('#selectAll').iCheck('uncheck');
+					});
+
+					$('.check').on('ifChecked', function (event) {
+					    if ($('.check').filter(':checked').length == $('.check').length) {
+					        $('#selectAll').iCheck('check');
+					    }
+					});
+					
+					//table B check all
+					
+					$('#selectAllB').on('ifChecked', function (event) {
+					    $('.checkB').iCheck('check');
+					    triggeredByChild = false;
+					});
+
+					$('#selectAllB').on('ifUnchecked', function (event) {
+					    if (!triggeredByChild) {
+					        $('.checkB').iCheck('uncheck');
+					    }
+					    triggeredByChild = false;
+					});
+					
+					// Removed the checked state from "All" if any checkbox is unchecked
+					$('.checkB').on('ifUnchecked', function (event) {
+					    triggeredByChild = true;
+					    $('#selectAllB').iCheck('uncheck');
+					});
+
+					$('.checkB').on('ifChecked', function (event) {
+					    if ($('.checkB').filter(':checked').length == $('.checkB').length) {
+					        $('#selectAllB').iCheck('check');
+					    }
+					});
+					
+				}
+					 
 				function openModal() {
 					var array = tableToArray();
 					
@@ -203,6 +272,7 @@
 						writeInput(array);
 						$('#myModal').modal('show');
 					}else{
+						$("#myModal").find('input[id="qa_Id"]').val(array);
 						alert('No Quota Annuale Selected!')
 					}
 					
@@ -213,31 +283,23 @@
 					
 				}
 				
-				function tableToArray(){
-				   var array = [];
-				   $('#tableA td input:checkbox:checked').each(function() {            
-				        array.push($(this).val());
-				   });
-				   
-				   $('#tableB td input:checkbox:checked').each(function() {            
-				        array.push($(this).val());
-				   });
-				   return array;
-
+				function tableToArray() {
+					var ids = [];
+					var $rowsA = tableA.rows('.selected').data();
+					for(var i = 0; i < $rowsA.length; i++) {
+						var id = Number.parseInt((($rowsA[i][0]).match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [] ).map(function (v) {return +v;}).shift());
+						ids.push(id);
+					}
+					
+					var $rowsB = tableB.rows('.selected').data();
+					for(var i = 0; i < $rowsB.length; i++) {
+						var id = Number.parseInt((($rowsB[i][0]).match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [] ).map(function (v) {return +v;}).shift());
+						ids.push(id);
+					}
+					
+					return ids;
 				}
 				
-				// Remove the checked state from "All" if any checkbox is unchecked
-				$('#selectAll').on('ifUnchecked', function (event) {
-				    $('#selectAll').iCheck('uncheck');
-				});
-
-				// Make "All" checked if all checkboxes are checked
-				$('#selectAll').on('ifChecked', function (event) {
-				    if ($('.check').filter(':checked').length == $('.check').length) {
-				        $('#selectAll').iCheck('check');
-				    }
-				});
-			
 			+]*/
 			
 	    /*]]>*/
