@@ -126,6 +126,8 @@
 	<include file="20171115_002_applySQL_update_nome_obiettiviNazionali.xml" relativeToChangelogFile="true"/>
 	
 	<include file="20171119_001_epf_fromcsv.xml" relativeToChangelogFile="true"/>
+	
+	<include file="20171119_003_applySQL_vista_provider_accreditati.xml" relativeToChangelogFile="true"/>
 
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
       Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali" 
