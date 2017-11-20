@@ -755,14 +755,17 @@
 
 				//partner
 			    mostraNascondiCampiPartner($(".partner:checked").val());
-
+				
+				/* 
 				//radio alimenti prima infanzia
 				mostraNascondiRadioPrimaInfanzia($(".contenuto:checked").val());
 
 				//allegati alimenti prima infanzia
 				if($(".contenuto:checked").val() == "ALIMENTAZIONE_PRIMA_INFANZIA") {
 					 mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia:checked").val())
-				}
+				} */
+				
+				mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia:checked").val());
 
 			}
 
@@ -783,9 +786,9 @@
 					mostraNascondiCampiPartner($(this).val());
 				});
 
-				$(".contenuto").on("ifChecked", function() {
+				/* $(".contenuto").on("ifChecked", function() {
 					mostraNascondiRadioPrimaInfanzia($(this).val());
-				})
+				}) */
 
 				//gestione evento iCheck su radio riguardante le autocertificazioni alimenti prima infanzia
 				$(".sponsor-infanzia").on("ifChecked", function() {
@@ -825,6 +828,7 @@
 
 			//funzioni show/hide in base alle scelte effettuate (lato client)
 			//autocertificazioni alimenti prima infanzia show/hide
+			//TODO dpranteda
 			function mostraNascondiAllegatiAutocertificazioniSponsor(value) {
 				if(value == "true") {
 					$(".infanzia-sponsor-si").slideDown("slow");
