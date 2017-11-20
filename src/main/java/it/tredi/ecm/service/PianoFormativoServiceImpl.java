@@ -126,6 +126,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 				evento.setEdizione(0);
 				evento.setProceduraFormativa(getEventoProceduraformativaFromCSVRow(record, accreditamento.getDatiAccreditamento()));
 				evento.setPianoFormativo(pianoFormativo.getAnnoPianoFormativo());
+				evento.setFromCsv(true);
 				try {
 					evento.setObiettivoNazionale(getEventoObiettivoNazionaleFromCVSRow(record));
 				} catch (Exception obNex) {

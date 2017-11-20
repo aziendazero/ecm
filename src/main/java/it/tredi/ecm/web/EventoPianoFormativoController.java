@@ -490,9 +490,10 @@ public class EventoPianoFormativoController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/deleteAll")
 	public String removeAllEventoAccreditamento(@PathVariable Long accreditamentoId,@PathVariable Long providerId, @PathVariable Long pianoFormativoId,
+			@RequestParam(name = "onlycsv", required = false) Boolean onlycsv,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll"));
-		return removeAllEventi(accreditamentoId,providerId, pianoFormativoId, redirectAttrs);
+		return removeAllEventi(accreditamentoId,providerId, pianoFormativoId, redirectAttrs, onlycsv != null ? onlycsv.booleanValue() : false);
 	}
 
 	/*
@@ -501,12 +502,13 @@ public class EventoPianoFormativoController {
 	@PreAuthorize("@securityAccessServiceImpl.canEditPianoFormativo(principal,#pianoFormativoId)")
 	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/evento/deleteAll")
 	public String removeAllEventoPianoFormativo(@PathVariable Long providerId, @PathVariable Long pianoFormativoId,
+			@RequestParam(name = "onlycsv", required = false) Boolean onlycsv,
 			Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll"));
-		return removeAllEventi(null,providerId, pianoFormativoId, redirectAttrs);
+		return removeAllEventi(null,providerId, pianoFormativoId, redirectAttrs, onlycsv != null ? onlycsv.booleanValue() : false);
 	}
 
-	private String removeAllEventi(Long accreditamentoId, Long providerId, Long pianoFormativoId, RedirectAttributes redirectAttrs){
+	private String removeAllEventi(Long accreditamentoId, Long providerId, Long pianoFormativoId, RedirectAttributes redirectAttrs, boolean onlycsv){
 		try{
 			Set<Long> ids = new HashSet<Long>();
 			PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
@@ -516,8 +518,10 @@ public class EventoPianoFormativoController {
 			while(it.hasNext()){
 				EventoPianoFormativo epf = it.next();
 				if(!epf.isAttuato()){
-					ids.add(epf.getId());
-					it.remove();
+					if(!onlycsv || (onlycsv && epf.isFromCsv())) {
+						ids.add(epf.getId());
+						it.remove();
+					}
 				}
 			}
 

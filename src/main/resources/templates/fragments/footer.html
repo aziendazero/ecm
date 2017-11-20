@@ -476,21 +476,21 @@
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
 			}
 
-			function confirmDeleteAllEventiPianoFormativoModal(providerId,pianoFormativoId){
+			function confirmDeleteAllEventiPianoFormativoModal(providerId,pianoFormativoId,onlycsv){
 			    $('#deleteModal').modal();
 
 			    var prefix = [[@{/provider/}]];
-			    var url = prefix + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll";
+			    var url = prefix + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll" + "?onlycsv=" + onlycsv;
 
 			    $('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
 			}
 
-			function confirmDeleteAllEventiPianoFormativoAccreditamentoModal(providerId,pianoFormativoId,accreditamentoId){
+			function confirmDeleteAllEventiPianoFormativoAccreditamentoModal(providerId,pianoFormativoId,accreditamentoId,onlycsv){
 				 $('#deleteModal').modal();
 
 			    var prefix = [[@{/accreditamento/}]];
-			    var url = prefix + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll";
+			    var url = prefix + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll" + "?onlycsv=" + onlycsv;
 
 			    $('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");

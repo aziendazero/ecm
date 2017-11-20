@@ -94,6 +94,10 @@ public class EventoPianoFormativo extends BaseEntity{
 	@Column(columnDefinition="boolean default false")
 	private boolean attuato = false;
 
+	//flag per capire se è stato caricato da csv oppure no
+	@Column(columnDefinition="boolean default false")
+	private boolean fromCsv = false;
+	
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
 		if(discipline != null){

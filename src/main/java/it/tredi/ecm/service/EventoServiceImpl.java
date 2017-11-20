@@ -189,7 +189,7 @@ public class EventoServiceImpl implements EventoService {
 		if(evento.isEventoDaPianoFormativo()){
 			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
 			if(evento.getStato() == EventoStatoEnum.CANCELLATO){
-				//TODO al momento non lo faccio....poi lo chiederenno loro...da tenere presente che....se settiamo a flase il flag..l'evento piano formativo sarà eli
+				//TODO al momento non lo faccio....poi lo chiederenno loro...da tenere presente che....se settiamo a false il flag..l'evento piano formativo sarà eli
 				//bisgna gestire tutti i cascade corretti -> eventoPianoFormativo è presente in più piani formativi e nell'evento che lo ha attuato
 				//se annullo un evento che è stato attuato da piano formativo...rimuovo il flag in modo tale da poter rieditare l'evento
 				//eventoPianoFormativo.setAttuato(false);
