@@ -67,14 +67,14 @@ public class Helper {
 	}
 	
 	public static Set<String> createCodDisciplinaSetFromEvento(Evento evento){
-		Set<String> codProf = new HashSet<String>();
+		Set<String> codDisc = new HashSet<String>();
 		Set<Disciplina> discipline = evento.getDiscipline();
 
 		for(Disciplina d : discipline) {
-			codProf.add(d.getCodiceCogeaps());
+			codDisc.add(d.getCodiceCogeaps());
 		}
 		
-		return codProf;
+		return codDisc;
 	}
 
 	public static Map<String, String> createEventoDataMapFromEvento(Evento evento) {

@@ -39,7 +39,7 @@ public class XmlReportValidator {
 		validateEventoXmlWithDb(fileName, reportEventoXml, Helper.createEventoDataMapFromEvento(evento), Helper.createCodProfessioneSetFromEvento(evento), Helper.createCodDisciplinaSetFromEvento(evento));
 	}
 
-	private static void validateEventoXmlWithDb(String fileName, byte []reportEventoXml, Map<String, String> dbEventoDataMap, Set<String> ProfessioneSetFromEvento, Set<String> DisciplinaSetFromEvento) throws Exception {
+	private static void validateEventoXmlWithDb(String fileName, byte []reportEventoXml, Map<String, String> dbEventoDataMap, Set<String> codProfessioneSetFromEvento, Set<String> codDisciplinaSetFromEvento) throws Exception {
 		//estrazione xml
 		reportEventoXml = extractXml(fileName, reportEventoXml);
 
@@ -70,7 +70,7 @@ public class XmlReportValidator {
 				}
 			}
 		}
-		validateProfessioniAndDiscipline(eventoEl, ProfessioneSetFromEvento, DisciplinaSetFromEvento);
+		validateProfessioniAndDiscipline(eventoEl, codProfessioneSetFromEvento, codDisciplinaSetFromEvento);
 	}
 	
 	private static void validateProfessioniAndDiscipline(Element eventoEl, Set<String> prof, Set<String> disc) throws Exception {
@@ -103,7 +103,7 @@ public class XmlReportValidator {
 				}
 			}
 			else {
-				throw new Exception("There are no partecipanti in the XML");
+				throw new Exception("Non si trova nessun partecipante nel XML");
 			}
 			
 		}
