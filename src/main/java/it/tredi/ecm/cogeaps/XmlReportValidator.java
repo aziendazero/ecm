@@ -3,7 +3,9 @@ package it.tredi.ecm.cogeaps;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.transform.Source;
@@ -17,7 +19,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.Professione;
 
 
 public class XmlReportValidator {
@@ -32,10 +36,10 @@ public class XmlReportValidator {
 	}
 
 	public static void validateEventoXmlWithDb(String fileName, byte []reportEventoXml, Evento evento) throws Exception {
-		validateEventoXmlWithDb(fileName, reportEventoXml, Helper.createEventoDataMapFromEvento(evento));
+		validateEventoXmlWithDb(fileName, reportEventoXml, Helper.createEventoDataMapFromEvento(evento), Helper.createCodProfessioneSetFromEvento(evento), Helper.createCodDisciplinaSetFromEvento(evento));
 	}
 
-	private static void validateEventoXmlWithDb(String fileName, byte []reportEventoXml, Map<String, String> dbEventoDataMap) throws Exception {
+	private static void validateEventoXmlWithDb(String fileName, byte []reportEventoXml, Map<String, String> dbEventoDataMap, Set<String> ProfessioneSetFromEvento, Set<String> DisciplinaSetFromEvento) throws Exception {
 		//estrazione xml
 		reportEventoXml = extractXml(fileName, reportEventoXml);
 
@@ -66,6 +70,48 @@ public class XmlReportValidator {
 				}
 			}
 		}
+		validateProfessioniAndDiscipline(eventoEl, ProfessioneSetFromEvento, DisciplinaSetFromEvento);
+	}
+	
+	private static void validateProfessioniAndDiscipline(Element eventoEl, Set<String> prof, Set<String> disc) throws Exception {
+		List<Element> partecipanti = eventoEl.elements();
+		if(partecipanti != null) {
+			if(partecipanti.size() > 0) {
+				if(prof != null && disc != null) {
+					if(prof.size() > 0 && disc.size() > 0) {
+						for(Element partecipante : partecipanti) {
+							List<Element> professioni = partecipante.elements();
+							for(Element professione : professioni) {
+								if(!prof.contains(professione.attributeValue("cod_prof"))) {
+									throw new Exception("Le professioni dell'evento non corrispondono a quelli memorizzati nel database!");
+								}
+								List<Element> discpline = professione.elements();
+								for(Element disciplina : discpline) {
+									if(!disc.contains(disciplina.getTextTrim())) {
+										throw new Exception("Le discipline dell'evento non corrispondono a quelli memorizzati nel database!");
+									}
+								}
+							}
+						}
+					}
+					else {
+						throw new Exception("Non e stato restituito nessuna professione o disciplina dall database");
+					}
+				}
+				else {
+					throw new Exception("Errore durante la lettura della professione e disciplina dal database");
+				}
+			}
+			else {
+				throw new Exception("There are no partecipanti in the XML");
+			}
+			
+		}
+		else {
+			throw new Exception("Errore durante la lettura dei dati del xml");
+		}
+		
+		
 	}
 
 	public static byte []extractXml(String fileName, byte []data) throws Exception {

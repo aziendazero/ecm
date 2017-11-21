@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,10 +28,12 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
+import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
@@ -51,6 +54,28 @@ public class Helper {
 	public final static String PROFESSIONE_NODE_NAME = "professione";
 
 	//TODO - gestire eccezioni
+	
+	public static Set<String> createCodProfessioneSetFromEvento(Evento evento){
+		Set<String> codProf = new HashSet<String>();
+		Set<Professione> professioni = evento.getProfessioniSelezionate();
+
+		for(Professione p : professioni) {
+			codProf.add(p.getCodiceCogeaps());
+		}
+		
+		return codProf;
+	}
+	
+	public static Set<String> createCodDisciplinaSetFromEvento(Evento evento){
+		Set<String> codProf = new HashSet<String>();
+		Set<Disciplina> discipline = evento.getDiscipline();
+
+		for(Disciplina d : discipline) {
+			codProf.add(d.getCodiceCogeaps());
+		}
+		
+		return codProf;
+	}
 
 	public static Map<String, String> createEventoDataMapFromEvento(Evento evento) {
 		Map<String, String> dbEventoDataMap = new HashMap<String, String>();
