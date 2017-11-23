@@ -627,6 +627,7 @@
 								<ul class="dropdown-menu actions">
 									<!-- <li><a th:if="${accreditamentoWrapper.canShowValutazioneRiepilogo}" type="button" class="ajaxCallShowAllValutazioni" th:text="#{label.mostra_riepilogo_valutazioni}" data-toggle="modal" data-target=".modal-showAllValutazioni"></a></li> -->
 									<li><a th:text="#{label.modifica}" onclick="switchMode('edit')"></a></li>
+									<li><a th:text="#{label.riassegnaAccountValutazione}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/riassegnaAccountValutazione|}"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canShowValutazione and !accreditamentoWrapper.canValutaDomanda}" th:text="#{label.mostra_valutazione}" onclick="switchMode('validate')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canValutaDomanda and !(accreditamentoWrapper.accreditamento.isValutazioneSegreteriaVariazioneDati() or accreditamentoWrapper.accreditamento.isValutazioneCrecmVariazioneDati())}" th:text="#{label.valuta_domanda}" onclick="switchMode('validate')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canValutaDomanda and (accreditamentoWrapper.accreditamento.isValutazioneSegreteriaVariazioneDati() or accreditamentoWrapper.accreditamento.isValutazioneCrecmVariazioneDati())}" th:text="#{label.valuta_variazione_dati}" onclick="switchMode('validate')"></a></li>
