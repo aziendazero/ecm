@@ -481,8 +481,11 @@
 
 			    var prefix = [[@{/provider/}]];
 			    var url = prefix + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll" + "?onlycsv=" + onlycsv;
-
-			    $('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
+				if(onlycsv)
+			    	$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo (importati da csv)?</h2>");
+				else
+					$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
+				
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
 			}
 
@@ -491,8 +494,11 @@
 
 			    var prefix = [[@{/accreditamento/}]];
 			    var url = prefix + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll" + "?onlycsv=" + onlycsv;
-
-			    $('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
+			    if(onlycsv)
+			    	$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo (importati da csv)?</h2>");	
+			    else
+			    	$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
+			    
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
 			}
 
