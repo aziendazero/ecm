@@ -1,11 +1,7 @@
 package it.tredi.ecm.web;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,38 +13,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.base.Equivalence.Wrapper;
-
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
-import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.entity.Valutazione;
-import it.tredi.ecm.dao.entity.ValutazioneCommissione;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.service.AccountService;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
-import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.FieldValutazioniRipetibiliWrapper;
 import it.tredi.ecm.web.bean.Message;
-import it.tredi.ecm.web.bean.ScadenzaPagamentoProviderWrapper;
 import it.tredi.ecm.web.bean.ValutazioneWrapper;
-import scala.collection.immutable.HashSet;
 
 @Controller
 @SessionAttributes("valutazioneWrapper")
@@ -64,13 +51,6 @@ public class ValutazioneController {
 		dataBinder.setDisallowedFields("id");
 	}
 
-	@ModelAttribute("valutazioneWrapper")
-	public ValutazioneWrapper getValutazioneWrapper(@ModelAttribute("valutazioneWrapper") ValutazioneWrapper wrapper) {
-		if(wrapper != null)
-			return wrapper;
-		return new ValutazioneWrapper();
-	}
-	
 	@RequestMapping("/valutazioneDemo")
 	public String showValutazioneDemo(RedirectAttributes redirectAttrs) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /valutazioneDemo"));
@@ -128,27 +108,23 @@ public class ValutazioneController {
 	//Solo responsabile segreteria_ECM riassegnaAccountValutazione
 	@PreAuthorize("@securityAccessServiceImpl.isUserSegreteria(principal)")
 	@RequestMapping(value ="/accreditamento/{accreditamentoId}/riassegnaAccountValutazione")
-	public String riassegna(@PathVariable Long accreditamentoId,@ModelAttribute("valutazioneWrapper") ValutazioneWrapper wrapper, Model model) throws Exception{
+	public String riassegna(@PathVariable Long accreditamentoId, Model model) throws Exception{
 		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/riassegnaAccountValutazione"));
 		try{
-			String currentAccount = "";
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 			Set<Valutazione> valutazioneNonStoriccizate = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
+			Set<Account> accountProfileSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
+			
+			ValutazioneWrapper wrapper = new ValutazioneWrapper();
 			
 			for(Valutazione v : valutazioneNonStoriccizate ) {	
-				 if(!v.getStoricizzato()) {
-					currentAccount = v.getAccount().getNome();
-					 
-				 } 
+				wrapper.setAccountSelected(v.getAccount().getId());
 			}
-			Set<Account> accountProfileSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
-
+			
 			wrapper.setAccreditamentoId(accreditamentoId);
 			wrapper.setAllAccountProfileSegreteria(accountProfileSegreteria);
 			model.addAttribute("accreditamento",accreditamento);
-			model.addAttribute("valutazioneNonStoriccizate", valutazioneNonStoriccizate);
 			model.addAttribute("valutazioneWrapper", wrapper);
-			model.addAttribute("currentAccount", currentAccount);
 			return "accreditamento/accreditamentoRiassegnaAccountValutazione";
 			
 		}catch (Exception ex){
@@ -161,19 +137,10 @@ public class ValutazioneController {
 	@RequestMapping(value="/accreditamento/{accreditamentoId}/riassegnaAccountValutazione/riassegna", method = RequestMethod.POST)
 	public String riassegnaAccountValutazione(@PathVariable Long accreditamentoId, @ModelAttribute("valutazioneWrapper") ValutazioneWrapper wrapper, Model model, RedirectAttributes redirectAttrs, HttpServletRequest request) {
 		try{
-			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-			Set<Account> accountProfileSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
-			wrapper.setAllAccountProfileSegreteria(accountProfileSegreteria);
 			Set<Valutazione> valutazioneNonStoriccizate = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);	
 			for(Valutazione valutazione : valutazioneNonStoriccizate) {
-				if(!valutazione.getStoricizzato()) {		
-					valutazioneService.valutazioneIdNotStoricizzatoAndAccountId(valutazione.getId(), wrapper.getAccountSelected());
-				}
+				valutazioneService.riassegnaAccountValutazioneNotStoricizzato(valutazione.getId(), wrapper.getAccountSelected());
 			}
-			model.addAttribute("accreditamento", accreditamento);
-			model.addAttribute("accreditamentoId",accreditamentoId);
-			model.addAttribute("valutazioneWrapper", wrapper);
-			model.addAttribute("valutazioneNonStoriccizate", valutazioneNonStoriccizate);	
 			LOGGER.info(Utils.getLogMessage("REDIRECT success:/accreditamento/{accreditamentoId}/show"));
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.riassegna", "success"));
 			return "redirect:/accreditamento/{accreditamentoId}/show";	

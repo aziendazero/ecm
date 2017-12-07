@@ -545,6 +545,16 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		}
 	}
 	
+	@Override
+	public void riassegnaAccountValutazioneNotStoricizzato(Long valutazioneId, Long accountId) {
+		LOGGER.debug(Utils.getLogMessage("Riassegnamento valutazione " + valutazioneId + " di domanda di Accreditamento ad un ALTRO account: " + accountId));
+		
+		Valutazione valutazione = getValutazione(valutazioneId);
+		Account account = accountService.getUserById(accountId);
+		valutazione.setAccount(account);
+		save(valutazione);
+	}
+	
 		
 }
 
