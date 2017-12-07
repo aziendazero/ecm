@@ -1,7 +1,10 @@
 package it.tredi.ecm;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,6 +69,7 @@ import it.tredi.ecm.service.PdfService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.SedutaService;
 import it.tredi.ecm.service.ValutazioneService;
+import it.tredi.ecm.service.bean.CurrentUser;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -73,7 +77,6 @@ import it.tredi.ecm.service.ValutazioneService;
 @ActiveProfiles("demo")
 @WithUserDetails("test1")
 @Rollback(false)
-@Ignore
 public class PdfTest {
 
 	@Autowired
@@ -197,12 +200,11 @@ public class PdfTest {
 	}
 
 	@Test
-	@Ignore
 	@Transactional
 	public void creazionePdfPerAccreditamento() throws Exception {
-		Long accreditamentoId = 1696L;
+		Long accreditamentoId = 218206L;
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
-		AccreditamentoStatoEnum stato = AccreditamentoStatoEnum.DINIEGO;
+		AccreditamentoStatoEnum stato = AccreditamentoStatoEnum.ACCREDITATO;
 		Boolean eseguitoDaUtente = false;
 
 		//In alcuni stati devono essere effettuate altre operazioni
@@ -271,8 +273,9 @@ public class PdfTest {
 				listaCriticita.add(messageSource.getMessage("IdFieldEnum." + v.getIdField().name(), null, Locale.getDefault()));
 			});*/
 			PdfAccreditamentoProvvisorioRigettoInfo rigettoInfo = new PdfAccreditamentoProvvisorioRigettoInfo(accreditamento, sedutaRigetto, sedutaIntegrazione, sedutaPreavvisoRigetto);
-			File file = pdfService.creaPdfAccreditamentoProvvisiorioDiniego(rigettoInfo);
-			accreditamento.setDecretoDiniego(file);
+			File file = pdfService.creaPdfAccreditamentoStandardDiniego(rigettoInfo);
+			saveFile(file);
+			//accreditamento.setDecretoDiniego(file);
 		} else if(stato == AccreditamentoStatoEnum.ACCREDITATO) {
 			//Ricavo la seduta
 			Seduta sedutaAccreditamento = null;
@@ -290,8 +293,9 @@ public class PdfTest {
 			}
 			//Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamento(accreditamento.getId());
 			PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo = new PdfAccreditamentoProvvisorioAccreditatoInfo(accreditamento, sedutaAccreditamento, sedutaIntegrazione, sedutaPreavvisoRigetto);
-			File file = pdfService.creaPdfAccreditamentoProvvisiorioAccreditato(accreditatoInfo);
-			accreditamento.setDecretoAccreditamento(file);
+			File file = pdfService.creaPdfAccreditamentoStandardAccreditato(accreditatoInfo);
+			saveFile(file);
+			//accreditamento.setDecretoAccreditamento(file);
 		} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
 			//Cancelliamo le Valutazioni non completate
 			Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
@@ -309,7 +313,7 @@ public class PdfTest {
 		accreditamentoRepository.save(accreditamento);
 	}
 
-//	@Test
+////	@Test
 //	@Ignore
 //	@Transactional //Aggiunto transactional per poter caricare il lazy accreditamento.getprovider()
 //	public void creaPdf() throws Exception {
@@ -391,6 +395,7 @@ public class PdfTest {
 	}
 
 	@Test
+	@Ignore
 	@Transactional
 	public void createIntegrazioneStandard() throws Exception{
 		Long accreditamentoId = 218206L;
@@ -473,5 +478,11 @@ public class PdfTest {
         ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Allegati N°:", protocolloFont), left, top, 0);
 	}
 
+	private void saveFile(File file) throws IOException {
+		OutputStream out = new FileOutputStream("/Users/3dinformatica-albania-minimac/Desktop/pdfs/"+file.getNomeFile());
+		out.write(file.getData());
+		out.close();
+	}
+	
 
 }
