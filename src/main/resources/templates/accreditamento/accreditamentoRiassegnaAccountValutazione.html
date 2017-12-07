@@ -10,16 +10,36 @@
 			<div class="col-xs-12">
 				<div class="x_panel">
 					<div class="x_title x_menu">
+					<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamento.provider.denominazioneLegale + ' (' + accreditamento.provider.id + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamento.provider.tipoOrganizzatore.gruppo}"></h2>
 						<div class="pull-right buttons-header">
 							<form id="form" method="post" th:action="@{|/accreditamento/${valutazioneWrapper.accreditamentoId}/riassegnaAccountValutazione/riassegna|}">	
-							<label for="submitRiassegnaButton" class="btn btn-primary pull-right">Riassegna</label>	
+							<a data-toggle="modal" class="btn btn-primary pull-right" onclick="openModal()">Riassegna</a>
 							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoId}/show|}"></a>
 							</form>
+							<div class="modal fade" id="myModal">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h4 class="modal-title" th:text="#{label.riassegna_account}"></h4>
+										</div>
+										<div class="modal-body">
+											<form id="form" method="post" th:action="@{|/accreditamento/${valutazioneWrapper.accreditamentoId}/riassegnaAccountValutazione/riassegna|}" >
+												<div class="item form-group modalAlert">
+												  <h4 th:text="#{label.conferma_riassegna}"></h4>	
+												</div>
+											</form>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-default" data-dismiss="modal">Cancela</button>
+											<label for="submitRiassegnaButton" class="btn btn-success pull-right">Conferma</label>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="clearfix"></div>
 					</div>
-				</div>
-				
+				</div>		
 			</div>
 		</div>
 		
@@ -50,8 +70,7 @@
 									 <td th:text="${accreditamentoId}"></td>  	
 									 <td th:text="${accreditamento.tipoDomanda}"></td> 
 									 <td th:text="${accreditamento.stato}"></td> 
-									 <td th:text="${currentAccount}"></td>
-									<!--	<td th:text="${accreditamentoWrapper.provider.tipoOrganizzatore.gruppo}"></td> -->
+									 <td th:text="${accreditamento.workflowInfoAccreditamento}"></td>
 								</tr> 
 							  </tbody>
 						</table>
@@ -84,7 +103,7 @@
 					<!-- Info della valutazione non storicizzata (account attualmente presente)   -->
 					
 					 <div class="x_content">
-					 <form id="selection" method='post' th:action="@{|/accreditamento/${valutazioneWrapper.accreditamentoId}/riassegnaAccountValutazione/riassegna|}"
+					 <form id="selection" method='post'  th:action="@{|/accreditamento/${valutazioneWrapper.accreditamentoId}/riassegnaAccountValutazione/riassegna|}"
 					 enctype="multipart/form-data">
 							 <h4 style="color: #73879c;" th:text="#{label.account}"></h4>
 								<select id="segreteria" class="selectpicker required"
@@ -95,7 +114,7 @@
 									th:value="${segreteria.id}" th:text="${segreteria.nome}">
 													</option>
 							</select>
-							<input id="submitRiassegnaButton" class="btn btn-primary" name="submit1" type="submit" style="display: none;"/>
+							<input id="submitRiassegnaButton" class="btn btn-primary" name="submitRiassegna" type="submit" style="display: none;"/>
 							</form>
 					  </div>
 				</div>
@@ -110,8 +129,13 @@
 				    		$(this).attr('selected','selected');
 				            return;
 				    	}
-				    });		    			 
+				    });	
+
 			    });
+				function openModal(){
+					$('#myModal').modal('show');
+					
+				}
 
 			/*]]>*/
 			</script>
