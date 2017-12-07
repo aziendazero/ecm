@@ -1568,25 +1568,6 @@ public class AccreditamentoController {
 		}
 	}
 
-	//Solo responsabile segreteria_ECM riassegnaAccountValutazione
-	@RequestMapping("/accreditamento/{accreditamentoId}/riassegnaAccountValutazione")
-	public String riassegnaAccountValutazione(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper,
-			@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{
-		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/riassegnaAccountValutazione"));
-		try{
-			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-			Set<Account> accountProfileSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
-			wrapper.setAllAccountProfileSegreteria(accountProfileSegreteria);
-			wrapper = prepareAccreditamentoWrapperShow(accreditamento, wrapper, false);
-			model.addAttribute("accreditamentoWrapper", wrapper);
-			return "accreditamento/accreditamentoRiassegnaAccountValutazione";
-		}catch (Exception ex){
-			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/riassegnaAccountValutazione"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
-			return "redirect:/accreditamento/{accreditamentoId}/show";
-		}
-	}
 	//TODO @PreAuthorize("@securityAccessServiceImpl.canSendIntegrazione(principal,#accreditamentoId)")
 	@RequestMapping("/accreditamento/{accreditamentoId}/rivaluta")
 	public String rivaluta(@PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) throws Exception{

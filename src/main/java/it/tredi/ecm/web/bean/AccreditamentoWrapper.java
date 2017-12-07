@@ -38,10 +38,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccreditamentoWrapper {
-
-	//account profile segreteria
-	private Set<Account> allAccountProfileSegreteria;
-	
+		
 	//dati domanda di accreditamento
 	private Accreditamento accreditamento;
 
