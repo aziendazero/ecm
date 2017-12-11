@@ -1,7 +1,9 @@
 package it.tredi.ecm.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -16,18 +18,25 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.ExceptionConverter;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Font.FontStyle;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.List;
 import com.itextpdf.text.ListItem;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.TabSettings;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import it.tredi.ecm.dao.entity.File;
@@ -67,6 +76,10 @@ public class PdfServiceImpl implements PdfService {
 	private Font fontSymbol = new Font(Font.FontFamily.SYMBOL,sizeCorpo, Font.NORMAL);
 	private Font footerFont = new Font(fontFamily, sizeFooter, Font.NORMAL, BaseColor.GRAY);
 	private Font fontCorpoSmall = new Font(fontFamily, sizeFooter, Font.NORMAL);
+	private Font fontCorpoSmall10 = new Font(fontFamily, 10, Font.NORMAL);
+	private Font fontAziendaBig = new Font(fontFamily, 20, Font.BOLD);
+	private Font red = new Font(fontFamily, sizeCorpo, Font.NORMAL, BaseColor.RED);
+	private Font redStrikethrough = new Font(fontFamily, sizeCorpo, Font.STRIKETHRU, BaseColor.RED);
 
 	private final String LOGO_REGIONE_VENETO = "LogoRegioneVeneto.png";
 
@@ -588,8 +601,10 @@ public class PdfServiceImpl implements PdfService {
 	private void writePdfAccreditamentoProvvisiorioDiniego(OutputStream outputStream, PdfAccreditamentoProvvisorioRigettoInfo diniegoInfo) throws Exception {
         try {
             Object[] valuesProvDenom = {diniegoInfo.getProviderInfo().getProviderDenominazione()};
-            Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
+            Document document = new Document(PageSize.A4, 36, 36, 36, 90);
+            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+            HeaderFooterPageEvent event = new HeaderFooterPageEvent();
+    			writer.setPageEvent(event);
 
             document.open();
             //Info documento
@@ -598,15 +613,36 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
-            Image img = FooterWithInfo.createLogo(LOGO_REGIONE_VENETO);
-            if(img != null)
-            	document.add(img);
+            addDocumentHeader(document);
 
-            //DECRETO N. ………………  DEL ……….…………
-            addCorpoParagraph(document, false, true, "DECRETO N. ………………  DEL ……….…………");
+          //DECRETO DEL COMMISSARIO
+            Paragraph par = new Paragraph("DECRETO DEL COMMISSARIO");
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(spacingBefore);
+	        par.setSpacingAfter(0);
+	        document.add(par);
+	        
+	        MessageFormat msgFormat = new MessageFormat("Dott. Mauro Bonin, nominato con Decreto del Presidente della Giunta n. 131 del 10/11/2016");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
+			
+			msgFormat = new MessageFormat("N°         …                  del …");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
 
             //OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento provvisorio come provider regionale ECM di NOME PROVIDER ai sensi delle DD.G.R. n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013.
-            MessageFormat msgFormat = new MessageFormat("");
+            msgFormat = new MessageFormat("");
             addCorpoParagraph(document, false, true, "Oggetto: "+ Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_DINIEGO, providerService.getProvider(Long.parseLong(diniegoInfo.getProviderInfo().getProviderId()))));
 
             //Linea vuota
@@ -643,7 +679,7 @@ public class PdfServiceImpl implements PdfService {
 			//cell.setPaddingBottom(20);
 			msgFormat = new MessageFormat("La fase attuativa degli Accordi Stato-Regioni vigenti in materia di ECM prevede il passaggio da un sistema di accreditamento degli eventi ad un sistema di accreditamento dei Provider, intesi come soggetti attivi e qualificati nel campo della formazione continua in sanità abilitati a realizzare attività formative riconosciute idonee per il sistema di formazione continua (ECM). Con il presente provvedimento a seguito dell’istruttoria effettuata si procede al rigetto dell’istanza di accreditamento provvisorio come Provider regionale di {0}.");
 
-			Paragraph par = new Paragraph();
+			par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setFont(fontCorpo);
 	        par.add(msgFormat.format(valuesProvDenom));
@@ -660,78 +696,117 @@ public class PdfServiceImpl implements PdfService {
 
 			cell.addElement(new Phrase("Estremi dei principali documenti dell’istruttoria:", fontCorpo));
 
-			msgFormat = new MessageFormat("istanza di accreditamento provvisorio validata il {0} (protocollo n° {1} del {2})");
-            Object[] valuesDataValidAndProtocolloValid = {diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
-			cell.addElement(new Phrase(msgFormat.format(valuesDataValidAndProtocolloValid), fontCorpo));
+			msgFormat = new MessageFormat("istanza di accreditamento provvisorio validata il {0}");
+            Object[] valuesDataValid = {diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
+			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 			msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2}).");
-			Object[] valuesDataSed = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(yearFormatter)};
+			Object[] valuesDataSed = {
+					diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), 
+					diniegoInfo.getRigettoInfo().getVerbaleNumero(), 
+					diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(yearFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataSed), fontCorpo));
 
 			tableNoteTrasp.addCell(cell);
 
 			document.add(tableNoteTrasp);
 
-			//IL DIRETTORE
-			//DELLA SEZIONE CONTROLLI GOVERNO E PERSONALE SSR
-			par = new Paragraph("IL DIRETTORE");
-	        par.setAlignment(Element.ALIGN_CENTER);
+			msgFormat = new MessageFormat("Il Commissario dott. Mauro Bonin relaziona quanto segue:");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
 	        par.setSpacingBefore(0);
-	        par.setSpacingAfter(0);
-	        document.add(par);
-			par = new Paragraph("DELLA SEZIONE CONTROLLI GOVERNO E PERSONALE SSR");
-	        par.setAlignment(Element.ALIGN_CENTER);
-	        par.setFont(fontCorpo);
-	        par.setSpacingBefore(0);
-	        par.setSpacingAfter(15);
-	        document.add(par);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
 
 	        addCorpoParagraph(document, false, true, "VISTO il decreto legislativo 30 Dicembre 1992, n. 502, recante il “Riordino della disciplina in materia sanitaria, a norma dell’art.1 della legge 23 ottobre 1992,  n. 421”, e ss.mm.ii. e in particolare l’art. 16-ter che istituisce la Commissione Nazionale per la Formazione Continua in Medicina successivamente modificata nella sua composizione dall’art. 2, comma 357, della legge del 24 Dicembre 2007, n. 244;");
-	        addCorpoParagraph(document, false, true, "VISTO l’art. 92, comma 5, della legge 23 Dicembre 2000, n. 388 recante disposizioni in materia di accreditamento per lo svolgimento di attività formative dei soggetti pubblici e privati e delle società scientifiche;");
+	        addCorpoParagraph(document, false, true, "VISTO l’art. 92, comma 5, della legge 23 Dicembre 2000, n. 388 recante disposizioni in materia di accreditamento per lo svolgimento di attività formative dei soggetti pubblici e privati e delle società scientifiche; ");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2220 del 21 settembre 2010 recante il “Recepimento degli Accordi del 1° agosto 2007 e del 5 novembre 2009, adottati in sede di Conferenza Permanente per i Rapporti tra lo Stato, le Regioni e le Province Autonome di Trento e di Bolzano, in materia di Educazione Continua in Medicina (ECM). Piano regionale della formazione - anno 2010”;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2215 del 20 dicembre 2011 recante il “Programma regionale d’Educazione Continua in Medicina (ECM) anno 2011. Approvazione dei requisiti e delle procedure di accreditamento dei Provider regionali. Piano regionale della formazione. Impegno di spesa” con la quale è stato avviato il sistema di accreditamento dei Provider regionali e approvato il documento (Allegato “A”) che stabilisce le regole di funzionamento del sistema veneto denominato “Disciplinare e requisiti per l’accreditamento dei Provider ECM nella Regione del Veneto”;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1969 del 2 ottobre 2012 con la quale si è proceduto a recepire l’Accordo Stato-Regioni del 19 aprile 2012 (Rep. Atti n. 101/CSR) sul documento recante “Il nuovo sistema di formazione continua in medicina – Linee guida per i Manuali di accreditamento dei provider, albo nazionale dei provider, crediti formativi triennio 2011/2013, federazioni, ordini, collegi e associazioni professionali, sistema di verifiche, controlli e monitoraggio della qualità, liberi professionisti”;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1049 del 28 giugno 2013 recante “Aggiornamento della ricognizione dei procedimenti amministrativi regionali, con individuazione del relativo termine di conclusione”, in particolare l’allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei provider regionali;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali (Age.Na.S) e la Regione del Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
-	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 tra Regione del Veneto e Age.Na.S. sulla base di quanto approvato con la suddetta deliberazione n. 1236 del 16 luglio 2013;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1538 del 10 ottobre 2016 recante “Programma regionale per l’Educazione Continua in Medicina. Sospensione temporanea della procedura di accreditamento provvisorio dei Provider ECM. Proroga delle attività degli organismi di governance dell’ECM. Individuazione delle aree di interesse del Piano regionale della formazione 2017-2019” ed in particolare il punto 4) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 177 del 21 febbraio 2017 con il quale sono state trasferite all’Azienda Zero le funzioni in materia di accreditamento ECM previste all’art. 2, comma 1 lett. g) punto 4 della L.R. n.19/2016 ed in particolare la gestione del procedimento di accreditamento provvisorio e standard dei provider ECM;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1344 del 22 agosto 2017 recante “Programma regionale per l’Educazione Continua in Medicina (ECM). Recepimento dell’Accordo tra il Governo, le Regioni e le Province Autonome di Trento e di Bolzano sul documento recante “La formazione continua nel settore salute”, approvato in data 02 febbraio 2017. Proroga delle attività degli organismi di governo dell’ECM. – D.Lgs. n. 502/1992 e ss.mm.ii.”;");
 
-			msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S.- Regione del Veneto;");
-            Object[] valuesNomeProvDataValid = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma regionale;");
+            Object[] valuesNomeProvDataValid = {
+            		diniegoInfo.getProviderInfo().getProviderDenominazione(), 
+            		diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
-
-            addCorpoParagraph(document, false, true, "ATTESO CHE la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. n. 382498 del 13 settembre 2013, con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei provider e della sottoscrizione della richiesta di eventuali documenti integrativi, ivi compresa la sottoscrizione della comunicazione di preavviso di rigetto ai sensi dell’art.10bis della L.241/1990 e ss.mm.ii.;");
 
             //Integrazione
 			msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata all’aspirante Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
-            Object[] valuesIntegrazione = {diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(), (diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null) ? "" : diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getIntegrazioneInfo().getVerbaleNumero(), diniegoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
+            Object[] valuesIntegrazione = {
+            		diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(), 
+            		(diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null) ? "" : diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), 
+    				diniegoInfo.getProviderInfo().getProviderDenominazione(), 
+    				diniegoInfo.getIntegrazioneInfo().getVerbaleNumero(), 
+    				diniegoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
 	        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
 
             //Rigetto
 			msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata all’aspirante Provider {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii, a seguito a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
-            Object[] valuesRigetto = {diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
+            Object[] valuesRigetto = {
+            		diniegoInfo.getRigettoInfo().getNumeroProtocollo(), 
+            		diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), 
+    				diniegoInfo.getProviderInfo().getProviderDenominazione(), 
+    				diniegoInfo.getRigettoInfo().getVerbaleNumero(), 
+    				diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
 	        addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto));
 
-	        addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente ed il contenuto di cui alle citate comunicazioni trasmesse dal Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S.;");
 
 	        if(diniegoInfo.getRigettoInfo().isEseguitaDaProvider()) {
 				msgFormat = new MessageFormat("VISTA la documentazione inviata da parte dell’aspirante Provider {0} per il tramite del legale rappresentante pro-tempore contenente osservazioni e documentazioni in ossequio al richiamato art.10 bis della L.241/1990 e ss.mm.ii.;");
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
 	        } else {
-				msgFormat = new MessageFormat("PRESO ATTO che alla data della seduta della Commissione Regionale ECM del {0} sono decorsi inutilmente i termini indicati nella nota prot. n. {1}. del {2} senza che nessuna osservazione o documentazione sia pervenuta per essere sottoposta alla valutazione della Commissione Regionale ECM;");
-	            Object[] valuesAttoRigetto = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter)};
+				msgFormat = new MessageFormat("PRESO ATTO che alla data della seduta della Commissione Regionale ECM del {0} sono decorsi inutilmente i termini indicati nella nota prot. n. {1}. del {2} (10bis) senza che nessuna osservazione o documentazione sia pervenuta per essere sottoposta alla valutazione della Commissione Regionale ECM;");
+	            Object[] valuesAttoRigetto = {
+	            		diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), 
+	            		diniegoInfo.getRigettoInfo().getNumeroProtocollo(), 
+	            		diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter)};
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesAttoRigetto));
 	        }
 
-	        addCorpoParagraph(document, false, true, "VERIFICATA la non sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
+	        addCorpoParagraph(document, false, true, "VERIFICATA la non sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
 
-			msgFormat = new MessageFormat("RITENUTO di approvare la decisione assunta dalla Commissione Regionale ECM di cui al verbale n. {0} del {1} con la quale esprime parere motivato al rigetto della richiesta di accreditamento provvisorio come Provider regionale ECM del {2} in nome del legale rappresentante pro-tempore;");
-            Object[] valuesRigetto2 = {diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
+			msgFormat = new MessageFormat("RITENUTO di approvare la decisione assunta dalla Commissione Regionale ECM nella seduta del {0}, il cui verbale n. {0} è agli atti della UOC Formazione e Sviluppo delle Professioni Sanitarie, con la quale esprime parere motivato al rigetto della richiesta di accreditamento provvisorio come Provider regionale ECM del {0} in nome del legale rappresentante pro-tempore;");
+            Object[] valuesRigetto2 = {
+            		diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), 
+            		diniegoInfo.getRigettoInfo().getVerbaleNumero(), 
+            		diniegoInfo.getProviderInfo().getProviderDenominazione()};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto2));
 
-            addCorpoParagraph(document, false, true, "Tutto ciò premesso,");
-
-			par = new Paragraph("DECRETA");
+            par = new Paragraph("TUTTO CIÒ PREMESSO\nIL COMMISSARIO");
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(10);
+	        document.add(par);
+	        
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_JUSTIFIED);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(5);
+	        par.add("Visto il D.LGS. n. 502 del 30 dicembre 1992;");
+	        par.add("\nVista la DGR n. 2220 del 21 settembre 2010;");
+	        par.add("\nVista la DGR n. 2215 del 20 dicembre 2011;");
+	        par.add("\nVista la DGR n. 1969 del 02 ottobre 2012;");
+	        par.add("\nVista la DGR n. 1756 del 03 ottobre 2013;");
+	        par.add("\nVista la DGR n. 1538 del 10 ottobre 2016;");
+	        par.add("\nVista la LR 25 ottobre 2016, n. 19;");
+	        par.add("\nVista la DGR n. 177 del 21 febbraio 2017;");
+	        par.add("\nVisti i DPGR n. 131 del 10.11.2016 e n. 68 del 09.05.2017;");
+	        par.add("\nVista la DGR n. 1344 del 22 agosto 2017;");
+	        document.add(par);
+            
+	        parLineaVuota = new Paragraph();
+            parLineaVuota.setAlignment(Element.ALIGN_LEFT);
+            parLineaVuota.setFont(fontCorpo);
+            parLineaVuota.add(" ");
+			document.add(parLineaVuota);
+	        
+	        par = new Paragraph("DECRETA");
 	        par.setAlignment(Element.ALIGN_CENTER);
 	        par.setFont(fontCorpo);
 	        par.setSpacingBefore(0);
@@ -743,15 +818,19 @@ public class PdfServiceImpl implements PdfService {
             //Elimina l'indentazione del testo rispetto al simbolo, occorre vedere come indentare il testo
             //list.setAutoindent(false);
             list.setIndentationLeft(indentationLeftList);
-            list.add(getListItem("di ritenere le premesse parte integrale ed essenziale del presente atto;", fontListItem));
+            list.add(getListItem("di prendere atto di quanto espresso in premessa che costituisce parte integrante e sostanziale del presente provvedimento;", fontListItem));
 
 			msgFormat = new MessageFormat("di approvare la decisione assunta dalla Commissione Regionale ECM di cui al verbale n. {0} del {1};");
-            Object[] valuesRigetto3 = {diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
+            Object[] valuesRigetto3 = {
+            		diniegoInfo.getRigettoInfo().getVerbaleNumero(), 
+            		diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
             list.add(getListItem(msgFormat.format(valuesRigetto3), fontListItem));
 
             //di rigettare l’istanza di accreditamento provvisorio come Provider regionale ECM del NOME PROVIDER in nome del legale rappresentante pro-tempore validata in data DATA VALIDAZIONE per le seguenti motivazioni:
-			msgFormat = new MessageFormat("di rigettare l’istanza di accreditamento provvisorio come Provider regionale ECM del {0} in nome del legale rappresentante pro-tempore validata in data {1} (protocollo n° {2} del {3}) per le seguenti motivazioni:");
-            Object[] valuesRigetto4 = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("di rigettare l’istanza di accreditamento provvisorio come Provider regionale ECM del {0} in nome del legale rappresentante pro-tempore validata in data {1} per le seguenti motivazioni:");
+            Object[] valuesRigetto4 = {
+            		diniegoInfo.getProviderInfo().getProviderDenominazione(), 
+            		diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
             ListItem listItem = getListItem(msgFormat.format(valuesRigetto4), fontListItem);
 
             par = new Paragraph(diniegoInfo.getNoteSedutaDomanda(), fontListItem);
@@ -773,19 +852,11 @@ public class PdfServiceImpl implements PdfService {
             list.add(listItem);
 
             list.add(getListItem("di dare atto che avverso il presente provvedimento è ammesso il ricorso giurisdizionale al Tribunale Amministrativo Regionale o alternativamente ricorso straordinario al Capo dello Stato rispettivamente entro i termini previsti dalla legge;", fontListItem));
-            list.add(getListItem("di dare atto che il presente provvedimento è soggetto a pubblicazione ai sensi dell’art. 23 del decreto legislativo 14 marzo 2013, n. 33;", fontListItem));
-            list.add(getListItem("di pubblicare il presente decreto nel Bollettino Ufficiale della Regione del Veneto.", fontListItem));
+            list.add(getListItem("di dare atto che il presente provvedimento è soggetto a pubblicazione ai sensi dell’art. 23 del D.Lgs. n. 33 del 14 marzo 2013, così come modificato ed integrato dal D.Lgs n.97/2016:", fontListItem));
+            list.add(getListItem("di pubblicare il presente provvedimento nell’albo online di Azienda Zero.", fontListItem));
             //list.add(getListItem("", fontListItem));
 
             document.add(list);
-
-			par = new Paragraph("dott. Claudio Costa");
-	        par.setAlignment(Element.ALIGN_LEFT);
-	        par.setFont(fontCorpo);
-	        par.setIndentationLeft(320F);
-	        par.setSpacingBefore(100);
-	        par.setSpacingAfter(0);
-	        document.add(par);
 
             document.close();
             outputStream.close();
@@ -800,8 +871,10 @@ public class PdfServiceImpl implements PdfService {
 	private void writePdfAccreditamentoProvvisiorioAccreditato(OutputStream outputStream, PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo) throws Exception {
         try {
             Object[] valuesProvDenom = {accreditatoInfo.getProviderInfo().getProviderDenominazione()};
-            Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
+            Document document = new Document(PageSize.A4, 36, 36, 36, 90);
+            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+            HeaderFooterPageEvent event = new HeaderFooterPageEvent();
+    			writer.setPageEvent(event);
 
             document.open();
             //Info documento
@@ -809,26 +882,45 @@ public class PdfServiceImpl implements PdfService {
             document.addCreationDate();
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
+            
+            addDocumentHeader(document);
 
-            Image img = FooterWithInfo.createLogo(LOGO_REGIONE_VENETO);
-            if(img != null)
-            	document.add(img);
-
-            //DECRETO N. ………………  DEL ……….…………
-            addCorpoParagraph(document, false, true, "DECRETO N. ………………  DEL ……….…………");
+            //DECRETO DEL COMMISSARIO
+            Paragraph par = new Paragraph("DECRETO DEL COMMISSARIO");
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(spacingBefore);
+	        par.setSpacingAfter(0);
+	        document.add(par);
+	        
+	        MessageFormat msgFormat = new MessageFormat("Dott. Mauro Bonin, nominato con Decreto del Presidente della Giunta n. 131 del 10/11/2016");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
+			
+			msgFormat = new MessageFormat("N°         …                  del …");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
 
             //OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento provvisorio come provider regionale ECM di NOME PROVIDER ai sensi delle DD.G.R. n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013.
-            MessageFormat msgFormat = new MessageFormat("");
-            addCorpoParagraph(document, false, true, "OGGGETTO: " + Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_ACCREDITAMENTO, providerService.getProvider(Long.parseLong(accreditatoInfo.getProviderInfo().getProviderId()))));
+            msgFormat = new MessageFormat("");
+            addCorpoParagraph(document, false, true, "OGGETTO: " + Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_PROVVISORIO_DECRETO_ACCREDITAMENTO, providerService.getProvider(Long.parseLong(accreditatoInfo.getProviderInfo().getProviderId()))));
 
             //Linea vuota
-            /*
             Paragraph parLineaVuota = new Paragraph();
             parLineaVuota.setAlignment(Element.ALIGN_LEFT);
             parLineaVuota.setFont(fontCorpo);
             parLineaVuota.add(" ");
-			document.add(parLineaVuota);
-            */
+//			document.add(parLineaVuota);
 
             //Tabella
             //NOTE PER LA TRASPARENZA:
@@ -855,7 +947,7 @@ public class PdfServiceImpl implements PdfService {
 			//cell.setPaddingBottom(20);
 			msgFormat = new MessageFormat("La fase attuativa degli Accordi Stato-Regioni vigenti in materia di ECM prevede il passaggio da un sistema di accreditamento degli eventi ad un sistema di accreditamento dei Provider, intesi come soggetti attivi e qualificati nel campo della formazione continua in sanità abilitati a realizzare attività formative riconosciute idonee per il sistema di formazione continua (ECM), individuando ed attribuendo direttamente i crediti agli eventi formativi e quindi ai partecipanti. Con il presente provvedimento si procede all’accreditamento provvisorio come Provider regionale di {0}.");
 
-			Paragraph par = new Paragraph();
+			par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setFont(fontCorpo);
 	        par.add(msgFormat.format(valuesProvDenom));
@@ -865,60 +957,67 @@ public class PdfServiceImpl implements PdfService {
 
 			cell.addElement(new Phrase("Estremi dei principali documenti dell’istruttoria:", fontCorpo));
 
-			msgFormat = new MessageFormat("istanza di accreditamento provvisorio validata il {0} (protocollo n° {1} del {2})");
-            Object[] valuesDataValid = {accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("istanza di accreditamento provvisorio validata il {0};");
+            Object[] valuesDataValid = {
+            		accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), 
+            		accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 			msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2}).");
-            Object[] valuesDataSed = {accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(dateTimeFormatter), accreditatoInfo.getAccreditamentoInfo().getVerbaleNumero(), accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(yearFormatter)};
+            Object[] valuesDataSed = {
+            		accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(dateTimeFormatter), 
+            		accreditatoInfo.getAccreditamentoInfo().getVerbaleNumero(), 
+            		accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(yearFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataSed), fontCorpo));
 
 			tableNoteTrasp.addCell(cell);
 
 			document.add(tableNoteTrasp);
 
-			//IL DIRETTORE
-			//DELLA SEZIONE CONTROLLI GOVERNO E PERSONALE SSR
-			par = new Paragraph("IL DIRETTORE");
-	        par.setAlignment(Element.ALIGN_CENTER);
+			msgFormat = new MessageFormat("Il Commissario dott. Mauro Bonin relaziona quanto segue:");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
 	        par.setSpacingBefore(0);
-	        par.setSpacingAfter(0);
-	        document.add(par);
-			par = new Paragraph("DELLA SEZIONE CONTROLLI GOVERNO E PERSONALE SSR");
-	        par.setAlignment(Element.ALIGN_CENTER);
-	        par.setFont(fontCorpo);
-	        par.setSpacingBefore(0);
-	        par.setSpacingAfter(15);
-	        document.add(par);
-
-	        addCorpoParagraph(document, false, true, "VISTO il decreto legislativo n. 502 del 30 dicembre 1992 recante “Riordino della disciplina in materia sanitaria, a norma dell’art.1 della legge 23 ottobre 1992,  n. 421” e ss.mm.ii., e in particolare l’art. 16-quarter dove si rileva la  necessità per gli operatori sanitari di partecipare alle attività di formazione continua, considerato requisito indispensabile per svolgere la propria attività professionale;");
-	        addCorpoParagraph(document, false, true, "VISTO l’art. 92, comma 5, della legge n. 388 del 23 dicembre 2000 recante disposizioni in materia di accreditamento per lo svolgimento di attività formative dei soggetti pubblici e privati e delle società scientifiche;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2220 del 21 settembre 2010 recante “Recepimento degli Accordi del 1° agosto 2007 e del 5 novembre 2009, adottati in sede di Conferenza Permanente per i Rapporti tra lo Stato, le Regioni e le Province Autonome di Trento e di Bolzano, in materia di Educazione Continua in Medicina (ECM). Piano regionale della formazione - anno 2010”;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2215 del 20 dicembre 2011 recante “Programma regionale d’Educazione Continua in Medicina (ECM) anno 2011. Approvazione dei requisiti e delle procedure di accreditamento dei Provider regionali. Piano regionale della formazione. Impegno di spesa” con la quale è stato avviato il sistema di accreditamento dei Provider regionali e approvato il documento (Allegato “A”) che stabilisce le regole di funzionamento del sistema veneto denominato “Disciplinare e requisiti per l’accreditamento dei Provider ECM nella Regione del Veneto”;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1969 del 2 ottobre 2012 recante “Il nuovo sistema di formazione continua in medicina – Linee guida per i Manuali di accreditamento dei provider, albo nazionale dei provider, crediti formativi triennio 2011/2013, federazioni, ordini, collegi e associazioni professionali, sistema di verifiche, controlli e monitoraggio della qualità, liberi professionisti”, con la quale si è proceduto a recepire l’Accordo Stato-Regioni del 19 aprile 2012 (Rep. Atti n. 101/CSR) e in particolare l’Allegato “1” “Linee Guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” e l’Allegato “2” “Determina della CNFC in materia di violazioni” dell’08 ottobre 2010;");
-	        addCorpoParagraph(document, false, true, "VISTO il Decreto Ministeriale del 26 marzo 2013 sul “contributo alle spese dovuto ai soggetti pubblici e privati e dalle società scientifiche che chiedono il loro accreditamento per lo svolgimento di attività di formazione continua ovvero l’accreditamento di specifiche attività formative promosse o organizzate dagli stessi ai fini dell’attribuzione dei crediti formativi”;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali  (Age.Na.S) e la Regione Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
-	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 (rep. n. 29005) tra la Regione del Veneto e Age.Na.S. ai sensi della deliberazione n. 1236 del 16 luglio 2013;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2620 del 29 dicembre 2014 recante “Aggiornamento della ricognizione dei procedimenti amministrativi di competenza della Giunta regionale, con individuazione del relativo termine di conclusione”, in particolare l’allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei Provider regionali, quantificato in 180 giorni;");
-
-	        //Togliere nei casi:
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
+			
+	        addCorpoParagraph(document, false, false, "VISTO il decreto legislativo n. 502 del 30 dicembre 1992 recante “Riordino della disciplina in materia sanitaria, a norma dell’art.1 della legge 23 ottobre 1992,  n. 421” e ss.mm.ii., e in particolare l’art. 16-quarter dove si rileva la  necessità per gli operatori sanitari di partecipare alle attività di formazione continua, considerato requisito indispensabile per svolgere la propria attività professionale;");
+	        addCorpoParagraph(document, false, false, "VISTO l’art. 92, comma 5, della legge n. 388 del 23 dicembre 2000 recante disposizioni in materia di accreditamento per lo svolgimento di attività formative dei soggetti pubblici e privati e delle società scientifiche;");
+	        addCorpoParagraph(document, false, false, "VISTA la deliberazione della Giunta regionale n. 2220 del 21 settembre 2010 recante “Recepimento degli Accordi del 1° agosto 2007 e del 5 novembre 2009, adottati in sede di Conferenza Permanente per i Rapporti tra lo Stato, le Regioni e le Province Autonome di Trento e di Bolzano, in materia di Educazione Continua in Medicina (ECM). Piano regionale della formazione - anno 2010”;");
+	        addCorpoParagraph(document, false, false, "VISTA la deliberazione della Giunta regionale n. 2215 del 20 dicembre 2011 recante “Programma regionale d’Educazione Continua in Medicina (ECM) anno 2011. Approvazione dei requisiti e delle procedure di accreditamento dei Provider regionali. Piano regionale della formazione. Impegno di spesa” con la quale è stato avviato il sistema di accreditamento dei Provider regionali e approvato il documento (Allegato “A”) che stabilisce le regole di funzionamento del sistema veneto denominato “Disciplinare e requisiti per l’accreditamento dei Provider ECM nella Regione del Veneto”;");
+	        addCorpoParagraph(document, false, false, "VISTA la deliberazione della Giunta regionale n. 1969 del 2 ottobre 2012 recante “Il nuovo sistema di formazione continua in medicina – Linee guida per i Manuali di accreditamento dei provider, albo nazionale dei provider, crediti formativi triennio 2011/2013, federazioni, ordini, collegi e associazioni professionali, sistema di verifiche, controlli e monitoraggio della qualità, liberi professionisti”, con la quale si è proceduto a recepire l’Accordo Stato-Regioni del 19 aprile 2012 (Rep. Atti n. 101/CSR) e in particolare l’Allegato “1” “Linee Guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” e l’Allegato “2” “Determina della CNFC in materia di violazioni” dell’08 ottobre 2010;");
+			addCorpoParagraph(document, false, false, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
+			addCorpoParagraph(document, false, false, "VISTA la deliberazione della Giunta regionale n. 1538 del 10 ottobre 2016 recante “Programma regionale per l’Educazione Continua in Medicina. Sospensione temporanea della procedura di accreditamento provvisorio dei Provider ECM. Proroga delle attività degli organismi di governance dell’ECM. Individuazione delle aree di interesse del Piano regionale della formazione 2017-2019” ed in particolare il punto 4) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
+			addCorpoParagraph(document, false, false, "VISTA la deliberazione della Giunta regionale n. 177 del 21 febbraio 2017 con il quale sono state trasferite all’Azienda Zero le funzioni in materia di accreditamento ECM previste all’art. 2, comma 1 lett. g) punto 4 della L.R. n.19/2016 ed in particolare la gestione del procedimento di accreditamento provvisorio e standard dei provider ECM;");
+			addCorpoParagraph(document, false, false, "VISTA la deliberazione della Giunta regionale n. 1344 del 22 agosto 2017 recante “Programma regionale per l’Educazione Continua in Medicina (ECM). Recepimento dell’Accordo tra il Governo, le Regioni e le Province Autonome di Trento e di Bolzano sul documento recante “La formazione continua nel settore salute”, approvato in data 02 febbraio 2017. Proroga delle attività degli organismi di governo dell’ECM. – D.Lgs. n. 502/1992 e ss.mm.ii.”;");
+			
+			//Togliere nei casi:
 	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
 	        //abarducci 2017-02-06 richiesta modifica si deve vedere sempre indipendentemente se passato da integrazione e preavviso rigetto
 	        //if(accreditatoInfo.getIntegrazioneInfo() != null) {
-				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento provvisorio;");
-	            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma regionale ai fini del procedimento di accreditamento provvisorio;");
+	            Object[] valuesNomeProvDataValid = {
+	            		accreditatoInfo.getProviderInfo().getProviderDenominazione(), 
+	            		accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), 
+	            		accreditatoInfo.getNumeroProtocolloValidazione(), 
+	            		accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
 	            addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
 	        //}
 
-            addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. n. 382498 del 13 settembre 2013, con la quale codesta Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S. all’adempimento delle procedure formali della fase istruttoria dell’accreditamento provvisorio dei Provider e alla sottoscrizione della richiesta di documentazione integrativa ai sensi della L.241/1990 e ss.mm.ii;");
+            //addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. n. 382498 del 13 settembre 2013, con la quale codesta Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S. all’adempimento delle procedure formali della fase istruttoria dell’accreditamento provvisorio dei Provider e alla sottoscrizione della richiesta di documentazione integrativa ai sensi della L.241/1990 e ss.mm.ii;");
 
 	        //Togliere nei casi:
 	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
             //Integrazione
             if(accreditatoInfo.getIntegrazioneInfo() != null) {
 				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1} notificata al Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii. a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
-				Object[] valuesIntegrazione = {accreditatoInfo.getIntegrazioneInfo().getNumeroProtocollo(), accreditatoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  accreditatoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getIntegrazioneInfo().getVerbaleNumero(), accreditatoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
+				Object[] valuesIntegrazione = {
+						accreditatoInfo.getIntegrazioneInfo().getNumeroProtocollo(), 
+						accreditatoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  accreditatoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter), 
+						accreditatoInfo.getProviderInfo().getProviderDenominazione(), 
+						accreditatoInfo.getIntegrazioneInfo().getVerbaleNumero(), 
+						accreditatoInfo.getIntegrazioneInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
             }
 
@@ -928,8 +1027,13 @@ public class PdfServiceImpl implements PdfService {
             // in pratica mostrare solo se accreditamento avvunuto dopo il Preavviso di rigetto
             //Rigetto
             if(accreditatoInfo.getRigettoInfo() != null) {
-				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}. notificata al {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento standard che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii. a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
-	            Object[] valuesRigetto = {accreditatoInfo.getRigettoInfo().getNumeroProtocollo(), accreditatoInfo.getRigettoInfo().getDataProtocollo() == null ? "" : accreditatoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getRigettoInfo().getVerbaleNumero(), accreditatoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
+				msgFormat = new MessageFormat("VISTA la nota prot. n. {0} del {1} notificata al {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento provvisorio che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii. a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
+	            Object[] valuesRigetto = {
+	            		accreditatoInfo.getRigettoInfo().getNumeroProtocollo(), 
+	            		accreditatoInfo.getRigettoInfo().getDataProtocollo() == null ? "" : accreditatoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), 
+        				accreditatoInfo.getProviderInfo().getProviderDenominazione(), 
+        				accreditatoInfo.getRigettoInfo().getVerbaleNumero(), 
+        				accreditatoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto));
             }
 
@@ -942,16 +1046,43 @@ public class PdfServiceImpl implements PdfService {
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
             }
 
-	        addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente ed il contenuto di cui alla/e citata/e comunicazione/i trasmessa/e dal Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S.;");
-	        addCorpoParagraph(document, false, true, "VERIFICATA la sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
+	        addCorpoParagraph(document, false, true, "VERIFICATA la sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
 
-			msgFormat = new MessageFormat("TENUTO CONTO della decisione assunta dalla Commissione Regionale ECM nella seduta del {0}, il cui verbale è agli atti della scrivente Sezione, con la quale esprime il proprio parere positivo all’accoglimento della richiesta di accreditamento come Provider regionale ECM del {1} in nome del legale rappresentante pro-tempore;");
-			Object[] valuesDataCommissioneAccrDenom = {accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione()};
+			msgFormat = new MessageFormat("TENUTO CONTO della decisione assunta dalla Commissione Regionale ECM nella seduta del {0}, il cui verbale n. {1} è agli atti della UOC Formazione e Sviluppo delle Professioni Sanitarie, con la quale esprime il proprio parere positivo all’accoglimento della richiesta di accreditamento come Provider regionale ECM del {2} in nome del legale rappresentante pro-tempore;");
+			Object[] valuesDataCommissioneAccrDenom = {
+					accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter), 
+					accreditatoInfo.getAccreditamentoInfo().getVerbaleNumero(), 
+					accreditatoInfo.getProviderInfo().getProviderDenominazione()};
 			addCorpoParagraph(document, false, true, msgFormat.format(valuesDataCommissioneAccrDenom));
+			
+			document.add(parLineaVuota);
 
-            addCorpoParagraph(document, false, true, "Tutto ciò premesso,");
-
-			par = new Paragraph("DECRETA");
+			par = new Paragraph("TUTTO CIÒ PREMESSO\nIL COMMISSARIO");
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(10);
+	        document.add(par);
+	        
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_JUSTIFIED);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(5);
+	        par.add("Visto il D.LGS. n. 502 del 30 dicembre 1992;");
+	        par.add("\nVista la DGR n. 2220 del 21 settembre 2010;");
+	        par.add("\nVista la DGR n. 2215 del 20 dicembre 2011;");
+	        par.add("\nVista la DGR n. 1969 del 02 ottobre 2012;");
+	        par.add("\nVista la DGR n. 1756 del 03 ottobre 2013;");
+	        par.add("\nVista la DGR n. 1538 del 10 ottobre 2016;");
+	        par.add("\nVista la LR 25 ottobre 2016, n. 19;");
+	        par.add("\nVista la DGR n. 177 del 21 febbraio 2017;");
+	        par.add("\nVisti i DPGR n. 131 del 10.11.2016 e n. 68 del 09.05.2017;");
+	        par.add("\nVista la DGR n. 1344 del 22 agosto 2017;");
+	        document.add(par);
+	        
+			document.add(parLineaVuota);
+	        
+	        par = new Paragraph("DECRETA");
 	        par.setAlignment(Element.ALIGN_CENTER);
 	        par.setFont(fontCorpo);
 	        par.setSpacingBefore(0);
@@ -964,41 +1095,36 @@ public class PdfServiceImpl implements PdfService {
             //list.setAutoindent(false);
             list.setIndentationLeft(indentationLeftList);
             //1
-            list.add(getListItem("di ritenere le premesse parte integrale ed essenziale del presente atto;", fontListItem));
+            list.add(getListItem("di prendere atto di quanto espresso in premessa che costituisce parte integrante e sostanziale del presente provvedimento;", fontListItem));
 
             //2
-			msgFormat = new MessageFormat("di dare seguito a quanto deciso dalla Commissione Regionale ECM nella seduta del {0} in merito all’accoglimento della richiesta di accreditamento come Provider Provvisorio della {1} in nome del legale rappresentante pro-tempore;");
+			msgFormat = new MessageFormat("di dare seguito a quanto deciso dalla Commissione Regionale ECM nella seduta del {0} in merito all’accoglimento della richiesta di accreditamento come Provider Provvisorio della {2} in nome del legale rappresentante pro-tempore;");
             list.add(getListItem(msgFormat.format(valuesDataCommissioneAccrDenom), fontListItem));
 
             //3
 			msgFormat = new MessageFormat("di riconoscere l’accreditamento provvisorio in qualità di Provider regionale ECM al {0} con numero identificativo {1}, per un periodo di 24 mesi con decorrenza dal {2}, sulla base della rispondenza ai requisiti minimi e standard previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
-            Object[] values3 = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getProviderInfo().getProviderId(), accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter)};
+            Object[] values3 = {
+            		accreditatoInfo.getProviderInfo().getProviderDenominazione(), 
+            		accreditatoInfo.getProviderInfo().getProviderId(), 
+            		accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter)};
             list.add(getListItem(msgFormat.format(values3), fontListItem));
 
             //4
-			msgFormat = new MessageFormat("di stabilire che entro 90 giorni dalla data di comunicazione all’interessato del presente provvedimento, il {0} è tenuto al versamento del contributo annuo alle spese in qualità di Provider provvisoriamente accreditato ai sensi della deliberazione della Giunta regionale n. 1236/2013 e che per l’anno solare successivo il versamento dovrà essere corrisposto entro il 31 marzo;");
+			msgFormat = new MessageFormat("di stabilire che entro 90 giorni dalla data di comunicazione all’interessato del presente provvedimento, il {0} è tenuto al versamento del contributo annuo alle spese in qualità di Provider provvisoriamente accreditato ai sensi della deliberazione della Giunta regionale n. 1236/2013 e che per l’anno solare successivo il versamento dovrà essere corrisposto entro il 31 marzo; ");
             list.add(getListItem(msgFormat.format(valuesProvDenom), fontListItem));
 
             //5
             list.add(getListItem("di stabilire che per lo svolgimento di specifiche attività formative il Provider è tenuto a versare un contributo alle spese così come stabilito dalla deliberazione della Giunta regionale n. 1236/2013 entro 90 giorni dalla data di conclusione dell’evento formativo;", fontListItem));
             //6
-            list.add(getListItem("di stabilire altresì che il venir meno dei requisiti minimi e standard previsti nell’allegato “1” di cui al predetto punto 3) e il mancato pagamento del contributo annuo e del contributo alle spese per lo svolgimento di specifiche attività formative, fissato dalla deliberazione della Giunta regionale n. 1236/2013, nonché il mancato adempimento di quanto previsto dall’allegato “1” e dall’allegato “2” “Determina della CNFC del 08 ottobre 2010” dell’Accordo Stato-Regioni del 19 aprile 2012 danno luogo, previo contraddittorio, alle conseguenze stabilite dal citato allegato “2” assunte con provvedimento regionale;", fontListItem));
+            list.add(getListItem("di stabilire altresì che il venir meno dei requisiti minimi e standard previsti nell’allegato “1” di cui al predetto punto 3) e il mancato pagamento dei contributi  di cui ai punti 4) e 5) danno luogo, previo contraddittorio, alle conseguenze in materia di violazioni stabilite dalla disciplina vigente al momento dell’accertamento;", fontListItem));
             //7
-            list.add(getListItem("che i requisiti minimi, gli adempimenti richiesti e le eventuali sanzioni potranno essere modificati, con preavviso di giorni 30, in conseguenza di deliberazioni regionali che dovessero sopravvenire al presente provvedimento;", fontListItem));
+            list.add(getListItem("che i requisiti minimi, gli adempimenti richiesti e le eventuali sanzioni potranno essere modificati/integrati, con preavviso di giorni 30, in attuazione di successivi decreti che dovessero sopravvenire al presente atto;", fontListItem));
             //8
-            list.add(getListItem("di dare atto che il presente provvedimento è soggetto a pubblicazione ai sensi dell’art. 23 del decreto legislativo 14 marzo 2013, n. 33;", fontListItem));
+            list.add(getListItem("di dare atto che il presente provvedimento è soggetto a pubblicazione ai sensi dell’art. 23 del D.Lgs. n. 33 del 14 marzo 2013, così come modificato ed integrato dal D.Lgs n.97/2016;", fontListItem));
             //9
-            list.add(getListItem("di pubblicare il presente decreto nel Bollettino Ufficiale della Regione del Veneto.", fontListItem));
+            list.add(getListItem("di pubblicare il presente provvedimento nell’albo online di Azienda Zero.", fontListItem));
 
             document.add(list);
-
-			par = new Paragraph("dott. Claudio Costa");
-	        par.setAlignment(Element.ALIGN_LEFT);
-	        par.setFont(fontCorpo);
-	        par.setIndentationLeft(320F);
-	        par.setSpacingBefore(50);
-	        par.setSpacingAfter(0);
-	        document.add(par);
 
             document.close();
             outputStream.close();
@@ -1401,8 +1527,10 @@ public class PdfServiceImpl implements PdfService {
 	private void writePdfAccreditamentoStandardDiniego(OutputStream outputStream, PdfAccreditamentoProvvisorioRigettoInfo diniegoInfo) throws Exception {
         try {
             Object[] valuesProvDenom = {diniegoInfo.getProviderInfo().getProviderDenominazione()};
-            Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
+            Document document = new Document(PageSize.A4, 36, 36, 36, 90);
+            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+            HeaderFooterPageEvent event = new HeaderFooterPageEvent();
+    			writer.setPageEvent(event);
 
             document.open();
             //Info documento
@@ -1411,16 +1539,37 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
-            Image img = FooterWithInfo.createLogo(LOGO_REGIONE_VENETO);
-            if(img != null)
-            	document.add(img);
+            addDocumentHeader(document);
 
-            //DECRETO N. ………………  DEL ……….…………
-            addCorpoParagraph(document, false, true, "DECRETO N. ………………  DEL ……….…………");
+            //DECRETO DEL COMMISSARIO
+            Paragraph par = new Paragraph("DECRETO DEL COMMISSARIO");
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(spacingBefore);
+	        par.setSpacingAfter(0);
+	        document.add(par);
+	        
+	        MessageFormat msgFormat = new MessageFormat("Dott. Mauro Bonin, nominato con Decreto del Presidente della Giunta n. 131 del 10/11/2016");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
+			
+			msgFormat = new MessageFormat("N°         …                  del …");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
 
             //OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento Standard come provider regionale ECM di NOME PROVIDER ai sensi della D.G.R. n. 1247 del 28 settembre 2015.
-            MessageFormat msgFormat = new MessageFormat("");
-            addCorpoParagraph(document, false, true, Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_STANDARD_DECRETO_DINIEGO, providerService.getProvider(Long.parseLong(diniegoInfo.getProviderInfo().getProviderId()))));
+            msgFormat = new MessageFormat("");
+            addCorpoParagraph(document, false, true, "OGGETTO "+Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_STANDARD_DECRETO_DINIEGO, providerService.getProvider(Long.parseLong(diniegoInfo.getProviderInfo().getProviderId()))));
 
             //Linea vuota
             /*
@@ -1456,7 +1605,7 @@ public class PdfServiceImpl implements PdfService {
 			//cell.setPaddingBottom(20);
 			msgFormat = new MessageFormat("L’esercizio dell’attività dei Provider ECM regionali è subordinato, alla scadenza del periodo di accreditamento provvisorio, al conseguimento dello status di Provider ECM con accreditamento standard per continuare nell’attività di erogatori di attività formative ECM da rivolgere ai professionisti della Sanità. Con il presente provvedimento, a seguito dell’istruttoria e della visita in loco effettuata, si rigetta l’istanza di accreditamento standard come Provider regionale di {0}.");
 
-			Paragraph par = new Paragraph();
+			par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setFont(fontCorpo);
 	        par.add(msgFormat.format(valuesProvDenom));
@@ -1473,8 +1622,8 @@ public class PdfServiceImpl implements PdfService {
 
 			cell.addElement(new Phrase("Estremi dei principali documenti dell’istruttoria:", fontCorpo));
 
-			msgFormat = new MessageFormat("istanza di accreditamento standard validata il {0} (protocollo n° {1} del {2})");
-            Object[] valuesDataValid = {diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("istanza di accreditamento standard validata il {0};");
+            Object[] valuesDataValid = {diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 
 			msgFormat = new MessageFormat("verbale di visita di verifica in loco effettuata il {0};");
@@ -1482,7 +1631,10 @@ public class PdfServiceImpl implements PdfService {
 			cell.addElement(new Phrase(msgFormat.format(valuesDataVisita), fontCorpo));
 
 			msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2}).");
-			Object[] valuesDataSed = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(yearFormatter)};
+			Object[] valuesDataSed = {
+					diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), 
+					diniegoInfo.getRigettoInfo().getVerbaleNumero(), 
+					diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(yearFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataSed), fontCorpo));
 
 			tableNoteTrasp.addCell(cell);
@@ -1491,47 +1643,45 @@ public class PdfServiceImpl implements PdfService {
 
 			document.add(parLineaVuota);
 
-			//IL DIRETTORE
-			//DELLA SEZIONE CONTROLLI GOVERNO E PERSONALE SSR
-			par = new Paragraph("IL DIRETTORE");
-	        par.setAlignment(Element.ALIGN_CENTER);
+			msgFormat = new MessageFormat("Il Commissario dott. Mauro Bonin relaziona quanto segue:");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
 	        par.setSpacingBefore(0);
-	        par.setSpacingAfter(0);
-	        document.add(par);
-			par = new Paragraph("DELLA SEZIONE CONTROLLI GOVERNO E PERSONALE SSR");
-	        par.setAlignment(Element.ALIGN_CENTER);
-	        par.setFont(fontCorpo);
-	        par.setSpacingBefore(0);
-	        par.setSpacingAfter(15);
-	        document.add(par);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
 
 	        document.add(parLineaVuota);
 
 	        addCorpoParagraph(document, false, true, "VISTO il decreto legislativo 30 Dicembre 1992, n. 502, recante il “Riordino della disciplina in materia sanitaria, a norma dell’art.1 della legge 23 ottobre 1992,  n. 421”, e ss.mm.ii. e in particolare l’art. 16-ter che istituisce la Commissione Nazionale per la Formazione Continua in Medicina successivamente modificata nella sua composizione dall’art. 2, comma 357, della legge del 24 Dicembre 2007, n. 244;");
-	        addCorpoParagraph(document, false, true, "VISTO l’art. 92, comma 5, della legge 23 Dicembre 2000, n. 388 recante disposizioni in materia di accreditamento per lo svolgimento di attività formative dei soggetti pubblici e privati e delle società scientifiche;");
+	        addCorpoParagraph(document, false, true, "VISTO l’art. 92, comma 5, della legge 23 Dicembre 2000, n. 388 recante disposizioni in materia di accreditamento per lo svolgimento di attività formative dei soggetti pubblici e privati e delle società scientifiche; ");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2220 del 21 settembre 2010 recante il “Recepimento degli Accordi del 1° agosto 2007 e del 5 novembre 2009, adottati in sede di Conferenza Permanente per i Rapporti tra lo Stato, le Regioni e le Province Autonome di Trento e di Bolzano, in materia di Educazione Continua in Medicina (ECM). Piano regionale della formazione - anno 2010”;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2215 del 20 dicembre 2011 recante il “Programma regionale d’Educazione Continua in Medicina (ECM) anno 2011. Approvazione dei requisiti e delle procedure di accreditamento dei Provider regionali. Piano regionale della formazione. Impegno di spesa” con la quale è stato approvato l’Allegato A che stabilisce le regole di funzionamento del sistema veneto denominato “Disciplinare e requisiti per l’accreditamento dei Provider ECM nella Regione del Veneto” e sono state avviate le procedure di accreditamento come Provider delle Aziende Sanitarie/Ospedaliere e dell’Istituto Oncologico Veneto per l’anno 2012;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2215 del 20 dicembre 2011 recante il “Programma regionale d’Educazione Continua in Medicina (ECM) anno 2011. Approvazione dei requisiti e delle procedure di accreditamento dei Provider regionali. Piano regionale della formazione. Impegno di spesa” con la quale è stato approvato l’Allegato A che stabilisce le regole di funzionamento del sistema veneto denominato “Disciplinare e requisiti per l’accreditamento dei Provider ECM nella Regione del Veneto”;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1969 del 2 ottobre 2012 con la quale si è proceduto a recepire l’Accordo Stato-Regioni del 19 aprile 2012 (Rep. Atti n. 101/CSR) sul documento recante “Il nuovo sistema di formazione continua in medicina – Linee guida per i Manuali di accreditamento dei provider, albo nazionale dei provider, crediti formativi triennio 2011/2013, federazioni, ordini, collegi e associazioni professionali, sistema di verifiche, controlli e monitoraggio della qualità, liberi professionisti”, in particolare l’Allegato 1 “Linee Guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” e l’Allegato 2 “Determina della CNFC in materia di violazioni” dell’08 ottobre 2010;");
 	       // addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1049 del 28 giugno 2013 recante “Aggiornamento della ricognizione dei procedimenti amministrativi regionali, con individuazione del relativo termine di conclusione”, in particolare l’allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei provider regionali;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali (Age.Na.S) e la Regione del Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto diversificato per le Aziende Sanitarie e per gli Ospedali Classificati ex art. 1 L. n.132/1968 per cui viene fissato un contributo annuo comprensivo della quota annuale e della quota per evento calcolato sulla base del numero di eventi base (escluse le riedizioni) - residenziale, formazione sul campo, FAD - erogati nell’anno precedente; OPPURE diversificato per le Aziende Sanitarie e per gli Ospedali Classificati ex art. 1 L. n.132/1968 dagli altri soggetti per i quali viene fissato un contributo annuo e una quota per evento;");
-	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 tra Regione del Veneto e Age.Na.S. sulla base di quanto approvato con la suddetta deliberazione n. 1236 del 16 luglio 2013;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
-
 	        addCorpoParagraph(document, false, true, "RICHIAMATO l’art. 3 del Disciplinare  della deliberazione n. 2215/2011 sopra-citata  che dispone che il processo di accreditamento si articola in due momenti: l’accreditamento provvisorio della durata di due anni e l’accreditamento standard della durata di quattro anni;");
-	        addCorpoParagraph(document, false, true, "PRECISATO che per il passaggio dall’accreditamento provvisorio all’accreditamento standard secondo quanto indicato dal succitato articolo, sono previste verifiche finalizzate ad accertare la regolarità del possesso dei requisiti previsti dall’Allegato 1 dell’Accordo Stato-Regioni del 19 aprile 2012;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti)” che approva, tra l’altro, le procedure operative per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM del territorio regionale;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2620 del 29 dicembre 2014 recante “Aggiornamento della ricognizione dei procedimenti amministrativi di competenza della Giunta regionale, con individuazione del relativo termine di conclusione”, in particolare l’Allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei Provider regionali, quantificato in 180 giorni;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1247 del 28 settembre 2015 “Programma regionale per la formazione continua. Definizione delle evidenze documentali per la verifica dei requisiti dei Provider regionali di formazione pubblici e privati, previste nell’ambito del processo di accreditamento standard ai sensi della DGR n. 1753/2014. Proroga delle attività degli organismi di governance dell’ECM. Disciplina delle attività di monitoraggio presso le sedi dei Provider ECM”, in particolare l’Allegato A “Evidenze documentali valutazione dei requisiti per accreditamento standard dei provider pubblici e privati”;");
+	        addCorpoParagraph(document, false, true, "PRECISATO che per il passaggio dall’accreditamento provvisorio all’accreditamento standard secondo quanto indicato dal succitato articolo, sono previste verifiche finalizzate ad accertare la regolarità del possesso dei requisiti previsti dall’Allegato 1 dell'Accordo Stato-Regioni del 19 aprile 2012;");
 
-	        msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S.- Regione del Veneto ai fini del procedimento di accreditamento standard;");
-            Object[] valuesNomeProvDataValid = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti)” che approva, tra l’altro, le procedure operative per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM del territorio regionale;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1247 del 28 settembre 2015 “Programma regionale per la formazione continua. Definizione delle evidenze documentali per la verifica dei requisiti dei Provider regionali di formazione pubblici e privati, previste nell’ambito del processo di accreditamento standard ai sensi della DGR n. 1753/2014. Proroga delle attività degli organismi di governance dell’ECM. Disciplina delle attività di monitoraggio presso le sedi dei Provider ECM”, in particolare l’Allegato A “Evidenze documentali valutazione dei requisiti per accreditamento standard dei provider pubblici e privati”;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1538 del 10 ottobre 2016 recante “Programma regionale per l’Educazione Continua in Medicina. Sospensione temporanea della procedura di accreditamento provvisorio dei Provider ECM. Proroga delle attività degli organismi di governance dell’ECM. Individuazione delle aree di interesse del Piano regionale della formazione 2017-2019” ed in particolare il punto 4) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 177 del 21 febbraio 2017 con il quale sono state trasferite all’Azienda Zero le funzioni in materia di accreditamento ECM previste all’art. 2, comma 1 lett. g) punto 4 della L.R. n.19/2016 ed in particolare la gestione del procedimento di accreditamento provvisorio e standard dei provider ECM;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1344 del 22 agosto 2017 recante “Programma regionale per l’Educazione Continua in Medicina (ECM). Recepimento dell’Accordo tra il Governo, le Regioni e le Province Autonome di Trento e di Bolzano sul documento recante “La formazione continua nel settore salute”, approvato in data 02 febbraio 2017. Proroga delle attività degli organismi di governo dell’ECM. – D.Lgs. n. 502/1992 e ss.mm.ii.”;");
+
+	        msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma Age.Na.S.- Regione del Veneto ai fini del procedimento di accreditamento standard;");
+            Object[] valuesNomeProvDataValid = {
+            		diniegoInfo.getProviderInfo().getProviderDenominazione(), 
+            		diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
 
-            addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. 220017 del 21 maggio 2014 con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei Provider ai sensi della L.241/1990 e ss.mm.ii;");
+            //addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. 220017 del 21 maggio 2014 con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei Provider ai sensi della L.241/1990 e ss.mm.ii;");
 
-            msgFormat = new MessageFormat("TENUTO CONTO dell’esito negativo della visita in loco, effettuata in data {0} presso la sede del Provider {1}, il cui verbale è agli atti della scrivente Direzione;");
-            Object[] valuesDataVisitaNomeProv = {diniegoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
+            msgFormat = new MessageFormat("TENUTO CONTO dell’esito della visita in loco, effettuata in data {0} presso la sede del Provider {1}, il cui verbale è agli atti della scrivente Direzione;");
+            Object[] valuesDataVisitaNomeProv = {
+            		diniegoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter), 
+            		diniegoInfo.getProviderInfo().getProviderDenominazione()};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesDataVisitaNomeProv));
 
             //Togliere nei casi:
@@ -1539,10 +1689,11 @@ public class PdfServiceImpl implements PdfService {
             //Integrazione
             if(diniegoInfo.getIntegrazioneInfo() != null) {
 				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}., notificata al Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dal Team Leader del Team di Valutazione, referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 nel corso della visita in loco del {3};");
-				Object[] valuesIntegrazione = {diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(),
-						diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter),
-						diniegoInfo.getProviderInfo().getProviderDenominazione(),
-						diniegoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter)};
+				Object[] valuesIntegrazione = {
+					diniegoInfo.getIntegrazioneInfo().getNumeroProtocollo(),
+					diniegoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter),
+					diniegoInfo.getProviderInfo().getProviderDenominazione(),
+					diniegoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter)};
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
             }
 
@@ -1559,33 +1710,69 @@ public class PdfServiceImpl implements PdfService {
 //	        addCorpoParagraph(document, false, true, msgFormat.format(valuesIntegrazione));
 
             //Rigetto
-			msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}, notificata al Provider {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento standard che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii, a seguito dell’esito negativo della predetta visita di verifica;");
-            Object[] valuesRigetto = {diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
+			msgFormat = new MessageFormat("VISTA la nota prot. n. {0} del DATA {1}, notificata al {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento standard che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii, a seguito dell’esito negativo della predetta visita di verifica;");
+            Object[] valuesRigetto = {
+            		diniegoInfo.getRigettoInfo().getNumeroProtocollo(), 
+            		diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), 
+            		diniegoInfo.getProviderInfo().getProviderDenominazione()};
 	        addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto));
 
-	        addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente dell’Area funzionale “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S ed il contenuto di cui alla citata comunicazione trasmesse dalla Regione del Veneto;");
+	        //addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente dell’Area funzionale “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S ed il contenuto di cui alla citata comunicazione trasmesse dalla Regione del Veneto;");
 
 	        if(diniegoInfo.getRigettoInfo().isEseguitaDaProvider()) {
 				msgFormat = new MessageFormat("VISTA la documentazione inviata da parte dell’aspirante Provider {0} per il tramite del legale rappresentante pro-tempore contenente osservazioni e documentazioni in ossequio al richiamato art.10 bis della L.241/1990 e ss.mm.ii.;");
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
 	        } else {
-				msgFormat = new MessageFormat("PRESO ATTO che alla data della seduta della Commissione Regionale ECM del {0} sono decorsi inutilmente i termini indicati nella nota prot. n. {1}. del {2} (10bis) senza che nessuna osservazione o documentazione sia pervenuta;");
-	            Object[] valuesAttoRigetto = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getRigettoInfo().getNumeroProtocollo(), diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter)};
+				msgFormat = new MessageFormat("PRESO ATTO che alla data della seduta della Commissione Regionale ECM del {0} sono decorsi inutilmente i termini indicati nella nota prot. n. {1} del {2} (10bis) senza che nessuna osservazione o documentazione sia pervenuta;");
+	            Object[] valuesAttoRigetto = {
+	            		diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), 
+	            		diniegoInfo.getRigettoInfo().getNumeroProtocollo(), 
+	            		diniegoInfo.getRigettoInfo().getDataProtocollo() == null ? "" :  diniegoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter)};
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesAttoRigetto));
 	        }
 
-	        addCorpoParagraph(document, false, true, "VERIFICATA la non sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
+	        addCorpoParagraph(document, false, true, "VERIFICATA la non sussistenza dei requisiti minimi e standard  previsti dall’Allegato 1 dell'Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
 
-			msgFormat = new MessageFormat("RITENUTO di approvare la decisione assunta dalla Commissione Regionale ECM di cui al verbale n. {0} del {1} con la quale esprime parere motivato al rigetto della richiesta di accreditamento standard come Provider regionale ECM del {2} in nome del legale rappresentante pro-tempore;");
-            Object[] valuesRigetto2 = {diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
-            addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto2));
+//			msgFormat = new MessageFormat("RITENUTO di approvare la decisione assunta dalla Commissione Regionale ECM di cui al verbale n. {0} del {1} con la quale esprime parere motivato al rigetto della richiesta di accreditamento standard come Provider regionale ECM del {2} in nome del legale rappresentante pro-tempore;");
+//            Object[] valuesRigetto2 = {diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
+//            addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto2));
 
-            msgFormat = new MessageFormat("TENUTO CONTO della decisione assunta dalla Commissione Regionale ECM nella seduta del {0}, il cui verbale è agli atti della scrivente Direzione, con la quale esprime il proprio parere positivo al diniego della richiesta di accreditamento standard come Provider regionale ECM del {1} in nome del legale rappresentante pro-tempore;");
-            Object[] valuesRigettoTenutoConto = {diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), diniegoInfo.getProviderInfo().getProviderDenominazione()};
+            msgFormat = new MessageFormat("TENUTO CONTO della decisione assunta dalla Commissione Regionale ECM nella seduta del {0}, il cui verbale n. {1} è agli atti della UOC Formazione e Sviluppo delle Professioni Sanitarie, con la quale esprime il proprio parere positivo al diniego della richiesta di accreditamento standard come Provider regionale ECM del {2} in nome del legale rappresentante pro-tempore;");
+            Object[] valuesRigettoTenutoConto = {
+            		diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter), 
+            		diniegoInfo.getRigettoInfo().getVerbaleNumero(), 
+            		diniegoInfo.getProviderInfo().getProviderDenominazione()};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesRigettoTenutoConto));
 
-            addCorpoParagraph(document, false, true, "Tutto ciò premesso,");
-
+            document.add(parLineaVuota);
+            
+            par = new Paragraph("TUTTO CIÒ PREMESSO\nIL COMMISSARIO");
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(10);
+	        document.add(par);
+	        
+	        document.add(parLineaVuota);
+	        
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_JUSTIFIED);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(5);
+	        par.add("Visto il D.LGS. n. 502 del 30 dicembre 1992;");
+	        par.add("\nVista la DGR n. 2220 del 21 settembre 2010;");
+	        par.add("\nVista la DGR n. 2215 del 20 dicembre 2011;");
+	        par.add("\nVista la DGR n. 1969 del 02 ottobre 2012;");
+	        par.add("\nVista la DGR n. 1756 del 03 ottobre 2013;");
+	        par.add("\nVista la DGR n. 1538 del 10 ottobre 2016;");
+	        par.add("\nVista la LR 25 ottobre 2016, n. 19;");
+	        par.add("\nVista la DGR n. 177 del 21 febbraio 2017;");
+	        par.add("\nVisti i DPGR n. 131 del 10.11.2016 e n. 68 del 09.05.2017;");
+	        par.add("\nVista la DGR n. 1344 del 22 agosto 2017;");
+	        document.add(par);
+	        
+	        document.add(parLineaVuota);
+            
 			par = new Paragraph("DECRETA");
 	        par.setAlignment(Element.ALIGN_CENTER);
 	        par.setFont(fontCorpo);
@@ -1593,20 +1780,27 @@ public class PdfServiceImpl implements PdfService {
 	        par.setSpacingAfter(20);
 	        document.add(par);
 
+	        document.add(parLineaVuota);
+	        
 	        List list;
             list = new List(List.ORDERED);
             //Elimina l'indentazione del testo rispetto al simbolo, occorre vedere come indentare il testo
             //list.setAutoindent(false);
             list.setIndentationLeft(indentationLeftList);
-            list.add(getListItem("di ritenere le premesse parte integrale ed essenziale del presente atto;", fontListItem));
+            list.add(getListItem("di prendere atto di quanto espresso in premessa che costituisce parte integrante e sostanziale del presente provvedimento;", fontListItem));
 
 			msgFormat = new MessageFormat("di approvare la decisione assunta dalla Commissione Regionale ECM di cui al verbale n. {0} del {1};");
-            Object[] valuesRigetto3 = {diniegoInfo.getRigettoInfo().getVerbaleNumero(), diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
+            Object[] valuesRigetto3 = {
+            		diniegoInfo.getRigettoInfo().getVerbaleNumero(), 
+            		diniegoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
             list.add(getListItem(msgFormat.format(valuesRigetto3), fontListItem));
 
             //di rigettare l’istanza di accreditamento standard come Provider regionale ECM del NOME PROVIDER in nome del legale rappresentante pro-tempore validata in data DATA VALIDAZIONE per le seguenti motivazioni:
 			msgFormat = new MessageFormat("di rigettare l’istanza di accreditamento standard come Provider regionale ECM del {0} in nome del legale rappresentante pro-tempore validata in data {1} (protocollo n° {2} del {3}) per le seguenti motivazioni:");
-            Object[] valuesRigetto4 = {diniegoInfo.getProviderInfo().getProviderDenominazione(), diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+            Object[] valuesRigetto4 = {
+            		diniegoInfo.getProviderInfo().getProviderDenominazione(), 
+            		diniegoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), 
+            		diniegoInfo.getNumeroProtocolloValidazione(), diniegoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
             ListItem listItem = getListItem(msgFormat.format(valuesRigetto4), fontListItem);
 
             par = new Paragraph(diniegoInfo.getNoteSedutaDomanda(), fontListItem);
@@ -1628,19 +1822,11 @@ public class PdfServiceImpl implements PdfService {
             list.add(listItem);
 
             list.add(getListItem("di dare atto che avverso il presente provvedimento è ammesso il ricorso giurisdizionale al Tribunale Amministrativo Regionale o alternativamente ricorso straordinario al Capo dello Stato rispettivamente entro i termini previsti dalla legge;", fontListItem));
-            list.add(getListItem("di dare atto che il presente provvedimento è soggetto a pubblicazione ai sensi dell’art. 23 del decreto legislativo 14 marzo 2013, n. 33;", fontListItem));
-            list.add(getListItem("di pubblicare il presente decreto nel Bollettino Ufficiale della Regione del Veneto.", fontListItem));
+            list.add(getListItem("di dare atto che il presente provvedimento è soggetto a pubblicazione ai sensi dell’art. 23 del D.Lgs. n. 33 del 14 marzo 2013, così come modificato ed integrato dal D.Lgs n.97/2016;", fontListItem));
+            list.add(getListItem("di pubblicare il presente provvedimento nell’albo online di Azienda Zero.", fontListItem));
             //list.add(getListItem("", fontListItem));
 
             document.add(list);
-
-			par = new Paragraph("dott. Claudio Costa");
-	        par.setAlignment(Element.ALIGN_LEFT);
-	        par.setFont(fontCorpo);
-	        par.setIndentationLeft(320F);
-	        par.setSpacingBefore(100);
-	        par.setSpacingAfter(0);
-	        document.add(par);
 
             document.close();
             outputStream.close();
@@ -1655,8 +1841,10 @@ public class PdfServiceImpl implements PdfService {
 	private void writePdfAccreditamentoStandardAccreditato(OutputStream outputStream, PdfAccreditamentoProvvisorioAccreditatoInfo accreditatoInfo) throws Exception {
         try {
             Object[] valuesProvDenom = {accreditatoInfo.getProviderInfo().getProviderDenominazione()};
-            Document document = new Document();
-            PdfWriter.getInstance(document, outputStream);
+            Document document = new Document(PageSize.A4, 36, 36, 36, 90);
+            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+            HeaderFooterPageEvent event = new HeaderFooterPageEvent();
+    			writer.setPageEvent(event);
 
             document.open();
             //Info documento
@@ -1665,25 +1853,44 @@ public class PdfServiceImpl implements PdfService {
             document.addCreator("Ecm");
             document.addTitle("Richiesta integrazione");
 
-            Image img = FooterWithInfo.createLogo(LOGO_REGIONE_VENETO);
-            if(img != null)
-            	document.add(img);
+            addDocumentHeader(document);
 
-            //DECRETO N. ………………  DEL ……….…………
-            addCorpoParagraph(document, false, true, "DECRETO N. ………………  DEL ……….…………");
+          //DECRETO DEL COMMISSARIO
+            Paragraph par = new Paragraph("DECRETO DEL COMMISSARIO");
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(spacingBefore);
+	        par.setSpacingAfter(0);
+	        document.add(par);
+	        
+	        MessageFormat msgFormat = new MessageFormat("Dott. Mauro Bonin, nominato con Decreto del Presidente della Giunta n. 131 del 10/11/2016");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
+			
+			msgFormat = new MessageFormat("N°         …                  del …");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
 
             //OGGETTO: Programma regionale per l’Educazione Continua in Medicina (ECM): rigetto dell’istanza di accreditamento standard come provider regionale ECM di NOME PROVIDER ai sensi delle DD.G.R. n. 1969 del 2 ottobre 2012 e n. 1236 del 16 luglio 2013.
-            MessageFormat msgFormat = new MessageFormat("");
-            addCorpoParagraph(document, false, true, Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_STANDARD_DECRETO_ACCREDITAMENTO, providerService.getProvider(Long.parseLong(accreditatoInfo.getProviderInfo().getProviderId()))));
+            msgFormat = new MessageFormat("");
+            addCorpoParagraph(document, false, true, "OGGETTO: "+Utils.buildOggetto(FileEnum.FILE_ACCREDITAMENTO_STANDARD_DECRETO_ACCREDITAMENTO, providerService.getProvider(Long.parseLong(accreditatoInfo.getProviderInfo().getProviderId()))));
 
             //Linea vuota
-            /*
             Paragraph parLineaVuota = new Paragraph();
             parLineaVuota.setAlignment(Element.ALIGN_LEFT);
             parLineaVuota.setFont(fontCorpo);
             parLineaVuota.add(" ");
-			document.add(parLineaVuota);
-            */
+//			document.add(parLineaVuota);
 
             //Tabella
             //NOTE PER LA TRASPARENZA:
@@ -1708,9 +1915,9 @@ public class PdfServiceImpl implements PdfService {
 			//cell.setSpaceCharRatio(0);
 			cell.setPadding(cellPadding);
 			//cell.setPaddingBottom(20);
-			msgFormat = new MessageFormat("La fase attuativa degli Accordi Stato-Regioni vigenti in materia di ECM prevede il passaggio da un sistema di accreditamento degli eventi ad un sistema di accreditamento dei Provider, intesi come soggetti attivi e qualificati nel campo della formazione continua in sanità abilitati a realizzare attività formative riconosciute idonee per il sistema di formazione continua (ECM), individuando ed attribuendo direttamente i crediti agli eventi formativi e quindi ai partecipanti. Con il presente provvedimento si procede all’accreditamento standard come Provider regionale di {0}.");
+			msgFormat = new MessageFormat("L’esercizio dell’attività dei Provider ECM regionali è subordinato, alla scadenza del periodo di accreditamento provvisorio, al conseguimento dello status di Provider ECM con accreditamento standard per continuare nell’attività di erogatori di attività formative ECM da rivolgere ai professionisti della Sanità. Con il presente provvedimento si procede all’accreditamento standard come Provider regionale di {0}.");
 
-			Paragraph par = new Paragraph();
+			par = new Paragraph();
 	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setFont(fontCorpo);
 	        par.add(msgFormat.format(valuesProvDenom));
@@ -1720,8 +1927,9 @@ public class PdfServiceImpl implements PdfService {
 
 			cell.addElement(new Phrase("Estremi dei principali documenti dell’istruttoria:", fontCorpo));
 
-			msgFormat = new MessageFormat("istanza di accreditamento standard validata il {0} (protocollo n° {1} del {2})");
-            Object[] valuesDataValid = {accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+			msgFormat = new MessageFormat("istanza di accreditamento standard validata il {0}");
+            Object[] valuesDataValid = {
+            		accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
 			cell.addElement(new Phrase(msgFormat.format(valuesDataValid), fontCorpo));
 
 			msgFormat = new MessageFormat("verbale di visita di verifica in loco effettuata il {0}");
@@ -1730,7 +1938,10 @@ public class PdfServiceImpl implements PdfService {
 
 			if(accreditatoInfo.getAccreditamentoInfo() != null) {
 				msgFormat = new MessageFormat("parere della Commissione Regionale ECM in data {0} (verbale n.{1}/{2}).");
-	            Object[] valuesDataSed = {accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(dateTimeFormatter), accreditatoInfo.getAccreditamentoInfo().getVerbaleNumero(), accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(yearFormatter)};
+	            Object[] valuesDataSed = {
+	            		accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(dateTimeFormatter), 
+	            		accreditatoInfo.getAccreditamentoInfo().getVerbaleNumero(), 
+	            		accreditatoInfo.getAccreditamentoInfo().getDataSedutaCommissione().format(yearFormatter)};
 				cell.addElement(new Phrase(msgFormat.format(valuesDataSed), fontCorpo));
 			}
 
@@ -1738,20 +1949,14 @@ public class PdfServiceImpl implements PdfService {
 
 			document.add(tableNoteTrasp);
 
-			//IL DIRETTORE
-			//DELLA SEZIONE CONTROLLI GOVERNO E PERSONALE SSR
-			par = new Paragraph("IL DIRETTORE");
-	        par.setAlignment(Element.ALIGN_CENTER);
+			msgFormat = new MessageFormat("Il Commissario dott. Mauro Bonin relaziona quanto segue:");
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par.setFont(fontCorpo);
+	        par.add(msgFormat.format(valuesProvDenom));
 	        par.setSpacingBefore(0);
-	        par.setSpacingAfter(0);
-	        document.add(par);
-			par = new Paragraph("DELLA SEZIONE CONTROLLI GOVERNO E PERSONALE SSR");
-	        par.setAlignment(Element.ALIGN_CENTER);
-	        par.setFont(fontCorpo);
-	        par.setSpacingBefore(0);
-	        par.setSpacingAfter(15);
-	        document.add(par);
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
 
 	        addCorpoParagraph(document, false, true, "VISTO il decreto legislativo n. 502 del 30 dicembre 1992 recante “Riordino della disciplina in materia sanitaria, a norma dell’art.1 della legge 23 ottobre 1992,  n. 421” e ss.mm.ii., e in particolare l’art. 16-quarter dove si rileva la  necessità per gli operatori sanitari di partecipare alle attività di formazione continua, considerato requisito indispensabile per svolgere la propria attività professionale;");
 	        addCorpoParagraph(document, false, true, "VISTO l’art. 92, comma 5, della legge n. 388 del 23 dicembre 2000 recante disposizioni in materia di accreditamento per lo svolgimento di attività formative dei soggetti pubblici e privati e delle società scientifiche;");
@@ -1762,30 +1967,28 @@ public class PdfServiceImpl implements PdfService {
 	        //non nello standard
 	        //addCorpoParagraph(document, false, true, "VISTO il Decreto Ministeriale del 26 marzo 2013 sul “contributo alle spese dovuto ai soggetti pubblici e privati e dalle società scientifiche che chiedono il loro accreditamento per lo svolgimento di attività di formazione continua ovvero l’accreditamento di specifiche attività formative promosse o organizzate dagli stessi ai fini dell’attribuzione dei crediti formativi”;");
 
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1236 del 16 luglio 2013 recante “Approvazione dello schema di Convenzione tra l’Agenzia Nazionale per i Servizi Sanitari Regionali  (Age.Na.S) e la Regione Veneto finalizzato alla gestione del sistema di formazione continua” ed in particolare al punto 3) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
-	        addCorpoParagraph(document, false, true, "VISTA la Convenzione stipulata il 29 luglio 2013 (rep. n. 29005) tra la Regione del Veneto e Age.Na.S. ai sensi della deliberazione n. 1236 del 16 luglio 2013;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1756 del 3 ottobre 2013 in merito al rinnovo dei componenti  della Commissione Regionale ECM;");
-
-	        //Aggiunto standard
 	        addCorpoParagraph(document, false, true, "RICHIAMATO l’art. 3 del Disciplinare  della deliberazione n. 2215/2011 sopra-citata,  che dispone che il processo di accreditamento si articola in due momenti l’accreditamento provvisorio della durata di due anni e l’accreditamento standard della durata di quattro anni;");
-	        //Aggiunto standard
-	        addCorpoParagraph(document, false, true, "PRECISATO che per il passaggio dall’accreditamento provvisorio all’accreditamento standard secondo quanto indicato dal su citato articolo, sono previste verifiche finalizzate ad accertare la regolarità del possesso dei requisiti previsti dall’Allegato 1 dell’Accordo Stato-Regioni del 19 aprile 2012;");
-
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti)” che approva, tra l’altro le procedure operative per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM del territorio regionale;");
+	        addCorpoParagraph(document, false, true, "PRECISATO che per il passaggio dall’accreditamento provvisorio all’accreditamento standard secondo quanto indicato dal su citato articolo, sono previste verifiche finalizzate ad accertare la regolarità del possesso dei requisiti previsti dall’Allegato 1 dell'Accordo Stato-Regioni del 19 aprile 2012;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta Regionale n. 1753 del 29 settembre 2014 “Programma regionale per l’educazione continua in medicina. Sviluppo e ruolo dei Provider ECM pubblici (Aziende sanitarie e ospedaliere, Istituto Oncologico Veneto) nella realizzazione del Piano Regionale della formazione continua in medicina ECM. Approvazione delle procedure e delle modalità per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM ai sensi della DGR n. 2215 del 20.12.2011. Attivazione del corso di formazione dei valutatori e funzionalità dell’osservatorio regionale per la formazione continua (nomina del Coordinatore e sostituzione componenti)” che approva, tra l’altro le procedure operative per la conduzione delle visite di verifica nell’ambito del processo di accreditamento standard dei Provider ECM del territorio regionale; ");
 	        addCorpoParagraph(document, false, true, "TENUTO CONTO della Determinazione della Commissione Regionale ECM del 18 novembre 2014 in merito alla nomina del Team Leader all’interno del Team di valutazione ed alle funzioni allo stesso attribuite;");
-	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 2620 del 29 dicembre 2014 recante “Aggiornamento della ricognizione dei procedimenti amministrativi di competenza della Giunta regionale, con individuazione del relativo termine di conclusione”, in particolare l’Allegato A all’interno del quale viene indicato il termine ultimo per la conclusione del procedimento di accreditamento dei Provider regionali, quantificato in 180 giorni;");
 	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1247 del 28 settembre 2015 “Programma regionale per la formazione continua. Definizione delle evidenze documentali per la verifica dei requisiti dei Provider regionali di formazione pubblici e privati, previste nell’ambito del processo di accreditamento standard ai sensi della DGR n. 1753/2014. Proroga delle attività degli organismi di governance dell’ECM. Disciplina delle attività di monitoraggio presso le sedi dei Provider ECM”, in particolare l’Allegato A “Evidenze documentali valutazione dei requisiti per accreditamento standard dei provider pubblici e privati”;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1538 del 10 ottobre 2016 recante “Programma regionale per l’Educazione Continua in Medicina. Sospensione temporanea della procedura di accreditamento provvisorio dei Provider ECM. Proroga delle attività degli organismi di governance dell’ECM. Individuazione delle aree di interesse del Piano regionale della formazione 2017-2019” ed in particolare il punto 4) del deliberato dove si approva l’ammontare del contributo alle spese a carico dei soggetti che si accreditano presso il sistema di formazione continua della Regione del Veneto;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 177 del 21 febbraio 2017 con il quale sono state trasferite all’Azienda Zero le funzioni in materia di accreditamento ECM previste all’art. 2, comma 1 lett. g) punto 4 della L.R. n.19/2016 ed in particolare la gestione del procedimento di accreditamento provvisorio e standard dei provider ECM;");
+	        addCorpoParagraph(document, false, true, "VISTA la deliberazione della Giunta regionale n. 1344 del 22 agosto 2017 recante “Programma regionale per l’Educazione Continua in Medicina (ECM). Recepimento dell’Accordo tra il Governo, le Regioni e le Province Autonome di Trento e di Bolzano sul documento recante “La formazione continua nel settore salute”, approvato in data 02 febbraio 2017. Proroga delle attività degli organismi di governo dell’ECM. – D.Lgs. n. 502/1992 e ss.mm.ii.”;");
 
 	        //Togliere nei casi:
 	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
 	        //abarducci 2017-02-06 richiesta modifica si deve vedere sempre indipendentemente se passato da integrazione e preavviso rigetto
 	        //if(accreditatoInfo.getIntegrazioneInfo() != null) {
-				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} (protocollo n° {2} del {3}) nella piattaforma Age.Na.S. -Regione del Veneto ai fini del procedimento di accreditamento standard;");
-	            Object[] valuesNomeProvDataValid = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter), accreditatoInfo.getNumeroProtocolloValidazione(), accreditatoInfo.getDataProtocolloValidazione().format(dateTimeFormatter)};
+				msgFormat = new MessageFormat("VISTA l’istanza del Provider {0} validata in data {1} nella piattaforma regionale ai fini del procedimento di accreditamento standard;");
+	            Object[] valuesNomeProvDataValid = {
+	            		accreditatoInfo.getProviderInfo().getProviderDenominazione(), 
+	            		accreditatoInfo.getAccreditamentoDataValidazione().format(dateTimeFormatter)};
 	            addCorpoParagraph(document, false, true, msgFormat.format(valuesNomeProvDataValid));
 	        //}
-	        addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. 220017 del 21 maggio 2014 con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei Provider e della sottoscrizione della richiesta di documentazione integrativa, ai sensi della L.241/1990 e ss.mm.ii;");
-	        msgFormat = new MessageFormat("TENUTO CONTO dell’esito della visita in loco, effettuata in data {0} presso la sede del Provider {1}, il cui verbale è agli atti della scrivente Direzione;");
+//	        addCorpoParagraph(document, false, true, "ATTESO che la valutazione della suddetta istanza si è svolta secondo le modalità definite con nota prot. 220017 del 21 maggio 2014 con la quale questa Amministrazione ha delegato il Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S., all’adempimento delle procedure formali della fase istruttoria dell’accreditamento dei Provider e della sottoscrizione della richiesta di documentazione integrativa, ai sensi della L.241/1990 e ss.mm.ii;");
+	        msgFormat = new MessageFormat("TENUTO CONTO dell’esito della visita in loco, effettuata in data {0} presso la sede del Provider {1}, il cui verbale è agli atti della UOC Formazione e Sviluppo delle Professioni Sanitarie;");
             Object[] valuesDataVisitaNomeProv = {accreditatoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione()};
             addCorpoParagraph(document, false, true, msgFormat.format(valuesDataVisitaNomeProv));
 
@@ -1793,8 +1996,9 @@ public class PdfServiceImpl implements PdfService {
 	        //	accreditamento al primo giro, cioe' senza richiesta di integrazione e ovviamente preavviso di rigetto
             //Integrazione
             if(accreditatoInfo.getIntegrazioneInfo() != null) {
-				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}., notificata al Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii, a seguito delle decisioni assunte dal Team Leader del Team di Valutazione, referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 nel corso della visita in loco del {3};");
-				Object[] valuesIntegrazione = {accreditatoInfo.getIntegrazioneInfo().getNumeroProtocollo(),
+				msgFormat = new MessageFormat("VISTA la nota prot. n. {0} del {1} notificata al Provider {2} con la richiesta di integrazione documentale ai sensi della L.241/1990 e ss.mm.ii. a seguito delle decisioni assunte dal Team Leader del Team di Valutazione, referee di Commissione Regionale ECM, giusta delega riconosciuta dalla Determinazione della CRECM del 18/11/2014 nel corso della visita in loco del {3};");
+				Object[] valuesIntegrazione = {
+						accreditatoInfo.getIntegrazioneInfo().getNumeroProtocollo(),
 						accreditatoInfo.getIntegrazioneInfo().getDataProtocollo() == null ? "" :  accreditatoInfo.getIntegrazioneInfo().getDataProtocollo().format(dateTimeFormatter),
 						accreditatoInfo.getProviderInfo().getProviderDenominazione(),
 						accreditatoInfo.getAccreditamentoDataVisita().format(dateTimeFormatter)};
@@ -1813,8 +2017,13 @@ public class PdfServiceImpl implements PdfService {
             // in pratica mostrare solo se accreditamento avvunuto dopo il Preavviso di rigetto
             //Rigetto
             if(accreditatoInfo.getRigettoInfo() != null) {
-				msgFormat = new MessageFormat("VISTA la nota prot. n. {0}. del {1}. notificata al {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento standard che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii. a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
-	            Object[] valuesRigetto = {accreditatoInfo.getRigettoInfo().getNumeroProtocollo(), accreditatoInfo.getRigettoInfo().getDataProtocollo() == null ? "" : accreditatoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getRigettoInfo().getVerbaleNumero(), accreditatoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
+				msgFormat = new MessageFormat("VISTA la nota prot. n. {0} del {1} notificata al {2} sui rilevati motivi ostativi all’accoglimento della richiesta di accreditamento standard che anticipa il rigetto dell’istanza ai sensi dell’art.10 bis della L.241/90 e ss.mm.ii. a seguito delle decisioni assunte dalla Commissione Regionale ECM di cui al verbale n. {3} del {4};");
+	            Object[] valuesRigetto = {
+	            		accreditatoInfo.getRigettoInfo().getNumeroProtocollo(), 
+	            		accreditatoInfo.getRigettoInfo().getDataProtocollo() == null ? "" : accreditatoInfo.getRigettoInfo().getDataProtocollo().format(dateTimeFormatter), 
+        				accreditatoInfo.getProviderInfo().getProviderDenominazione(), 
+        				accreditatoInfo.getRigettoInfo().getVerbaleNumero(), 
+        				accreditatoInfo.getRigettoInfo().getDataSedutaCommissione().format(dateTimeFormatter)};
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesRigetto));
             }
 
@@ -1827,15 +2036,21 @@ public class PdfServiceImpl implements PdfService {
 		        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
             }
 
-            addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente ed il contenuto di cui alla/e citata/e comunicazione/i trasmessa/e dal Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S.;");
-	        addCorpoParagraph(document, false, true, "VERIFICATA la sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012;");
+//            addCorpoParagraph(document, false, true, "RITENUTO di approvare e fare proprie le risultanze dell’istruttoria condotta dalla struttura amministrativa competente ed il contenuto di cui alla/e citata/e comunicazione/i trasmessa/e dal Direttore pro-tempore della Sezione “Piani di rientro e Educazione continua in medicina - ECM” di Age.Na.S.;");
+	        addCorpoParagraph(document, false, true, "VERIFICATA la sussistenza dei requisiti minimi e standard  previsti dall’allegato “1” dell'Accordo Stato-Regioni del 19 aprile 2012 recante le “Linee guida per i Manuali di accreditamento dei provider nazionali e regionali/province autonome: requisiti minimi e standard” recepito dalla deliberazione della Giunta regionale n. 1969/2012; ");
 
 
             //FIN QUI
 			msgFormat = new MessageFormat("VERIFICATO che il Provider {0} è in regola con i contributi, così come stabilito dalla deliberazione della Giunta regionale n. 1236/2013;");
 	        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
-			msgFormat = new MessageFormat("CONSIDERATO che l’Ente accreditante ha richiesto al Provider {0} l’autocertificazione, ai sensi del D.P.R. 445/2000, che lo stesso non è soggetto alla disciplina relativa alla documentazione antimafia ai sensi dell’art. 83, comma 3, lettera e) del Decreto Legislativo n. 159 del 2011 e ss.mm.ii. “Codice delle leggi Antimafia”, riservandosi in caso contrario di acquisire la documentazione antimafia dai competenti uffici;");
-	        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
+			
+	        msgFormat = new MessageFormat("CONSIDERATO che l’Ente accreditante ha richiesto al Provider {0} l’autocertificazione, ai sensi del D.P.R. 445/2000, che lo stesso non è soggetto alla disciplina relativa alla documentazione antimafia ai sensi dell’art. 83, comma 3, lettera e) del Decreto Legislativo n. 159 del 2011 e ss.mm.ii. “Codice delle leggi Antimafia”, riservandosi in caso contrario di acquisire la documentazione antimafia dai competenti uffici;");
+			par = new Paragraph();
+			par.setFont(red);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
+			//addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
 
 			if(accreditatoInfo.getAccreditamentoInfo() != null) {
 		        if(accreditatoInfo.getAccreditamentoInfo().isSottoscrizioneAutocertificazione())
@@ -1845,20 +2060,54 @@ public class PdfServiceImpl implements PdfService {
 			} else {
 	        	msgFormat = new MessageFormat("PRESO ATTO che il Provider {0} in nome del legale rappresentante pro-tempore ha sottoscritto la predetta autocertificazione;");
 			}
-	        addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
+			par = new Paragraph();
+			par.setFont(redStrikethrough);
+	        par.add(msgFormat.format(valuesProvDenom));
+	        par.setSpacingAfter(spacingAfter);
+			document.add(par);
+			//addCorpoParagraph(document, false, true, msgFormat.format(valuesProvDenom));
 
-            addCorpoParagraph(document, false, true, "VISTO il carattere di urgenza dell’istanza, in considerazione dei succitati termini del procedimento amministrativo;");
+//            addCorpoParagraph(document, false, true, "VISTO il carattere di urgenza dell’istanza, in considerazione dei succitati termini del procedimento amministrativo;");
 
             Object[] valuesDataCommissioneAccrDenom = null;
             if(accreditatoInfo.getDataCommissioneAccreditamento() != null) {
-				msgFormat = new MessageFormat("TENUTO CONTO della decisione assunta dalla Commissione Regionale ECM nella seduta del {0}, il cui verbale è agli atti della scrivente Sezione, con la quale esprime il proprio parere positivo all’accoglimento della richiesta di accreditamento standard come Provider regionale ECM del {1} in nome del legale rappresentante pro-tempore;");
-				Object[] valuesDataCommissioneAccrDenomTmp = {accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter), accreditatoInfo.getProviderInfo().getProviderDenominazione()};
+				msgFormat = new MessageFormat("TENUTO CONTO della decisione assunta dalla Commissione Regionale ECM nella seduta del {0}, il cui verbale è agli atti della UOC Formazione e Sviluppo delle Professioni Sanitarie con la quale esprime il proprio parere positivo all’accoglimento della richiesta di accreditamento come Provider regionale ECM del NOME {1} in nome del legale rappresentante pro-tempore;");
+				Object[] valuesDataCommissioneAccrDenomTmp = {
+						accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter), 
+						accreditatoInfo.getProviderInfo().getProviderDenominazione()};
 				valuesDataCommissioneAccrDenom = valuesDataCommissioneAccrDenomTmp;
 				addCorpoParagraph(document, false, true, msgFormat.format(valuesDataCommissioneAccrDenom));
             }
 
-            addCorpoParagraph(document, false, true, "Tutto ciò premesso,");
-
+            document.add(parLineaVuota);
+            
+            par = new Paragraph("TUTTO CIÒ PREMESSO\nIL COMMISSARIO");
+	        par.setAlignment(Element.ALIGN_CENTER);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(0);
+	        par.setSpacingAfter(10);
+	        document.add(par);
+	        
+	        document.add(parLineaVuota);
+            
+	        par = new Paragraph();
+	        par.setAlignment(Element.ALIGN_JUSTIFIED);
+	        par.setFont(fontCorpo);
+	        par.setSpacingBefore(5);
+	        par.add("Visto il D.LGS. n. 502 del 30 dicembre 1992;");
+	        par.add("\nVista la DGR n. 2220 del 21 settembre 2010;");
+	        par.add("\nVista la DGR n. 2215 del 20 dicembre 2011;");
+	        par.add("\nVista la DGR n. 1969 del 02 ottobre 2012;");
+	        par.add("\nVista la DGR n. 1756 del 03 ottobre 2013;");
+	        par.add("\nVista la DGR n. 1538 del 10 ottobre 2016;");
+	        par.add("\nVista la LR 25 ottobre 2016, n. 19;");
+	        par.add("\nVista la DGR n. 177 del 21 febbraio 2017;");
+	        par.add("\nVisti i DPGR n. 131 del 10.11.2016 e n. 68 del 09.05.2017;");
+	        par.add("\nVista la DGR n. 1344 del 22 agosto 2017;");
+	        document.add(par);
+	        
+	        document.add(parLineaVuota);
+	        
 			par = new Paragraph("DECRETA");
 	        par.setAlignment(Element.ALIGN_CENTER);
 	        par.setFont(fontCorpo);
@@ -1872,18 +2121,21 @@ public class PdfServiceImpl implements PdfService {
             //list.setAutoindent(false);
             list.setIndentationLeft(indentationLeftList);
             //1
-            list.add(getListItem("di ritenere le premesse parte integrale ed essenziale del presente atto;", fontListItem));
+            list.add(getListItem("di prendere atto di quanto espresso in premessa che costituisce parte integrante e sostanziale del presente provvedimento;", fontListItem));
 
             //2
 			if(valuesDataCommissioneAccrDenom != null) {
-	            msgFormat = new MessageFormat("di dare seguito a quanto deciso dalla Commissione Regionale ECM nella seduta del {0} in merito all’accoglimento della richiesta di accreditamento standard come Provider Regionale ECM del {1} in nome del legale rappresentante pro-tempore;");
+	            msgFormat = new MessageFormat("di dare seguito a quanto deciso dalla Commissione Regionale ECM nella seduta del {0} in merito all’accoglimento della richiesta di accreditamento standard come Provider Regionale ECM del {1} in nome del legale rappresentante pro-tempore;;");
 	            list.add(getListItem(msgFormat.format(valuesDataCommissioneAccrDenom), fontListItem));
 			}
 
             //3
             if(accreditatoInfo.getDataCommissioneAccreditamento() != null) {
-				msgFormat = new MessageFormat("di riconoscere l’accreditamento standard in qualità di Provider regionale ECM al {0} con numero identificativo {1}, per un periodo di 4 anni con decorrenza dal {2}, sulla base della rispondenza ai requisiti minimi e standard previsti dall’allegato “1” dell’Accordo Stato-Regioni del 19 aprile 2012 recepito dalla deliberazione della Giunta regionale n. 1969/2012 e alle evidenze documentali approvate dalla deliberazione della Giunta regionale n. 1247/2015;");
-	            Object[] values3 = {accreditatoInfo.getProviderInfo().getProviderDenominazione(), accreditatoInfo.getProviderInfo().getProviderId(), accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter)};
+				msgFormat = new MessageFormat("di riconoscere l’accreditamento standard in qualità di Provider regionale ECM al {0} con numero identificativo {1}, per un periodo di 4 anni con decorrenza dal {2}, sulla base della rispondenza ai requisiti minimi e standard previsti dall’Allegato 1 dell'Accordo Stato-Regioni del 19 aprile 2012, recepito dalla deliberazione della Giunta regionale n. 1969/2012 e alle evidenze documentali approvate dalla deliberazione della Giunta regionale n. 1247/2015;");
+	            Object[] values3 = {
+	            		accreditatoInfo.getProviderInfo().getProviderDenominazione(), 
+	            		accreditatoInfo.getProviderInfo().getProviderId(), 
+	            		accreditatoInfo.getDataCommissioneAccreditamento().format(dateTimeFormatter)};
 	            list.add(getListItem(msgFormat.format(values3), fontListItem));
             }
 
@@ -1894,25 +2146,18 @@ public class PdfServiceImpl implements PdfService {
             //5
             list.add(getListItem("di stabilire che per lo svolgimento di specifiche attività formative il Provider è tenuto a versare un contributo alle spese così come stabilito dalla deliberazione della Giunta regionale n. 1236/2013 entro 90 giorni dalla data di conclusione dell’evento formativo;", fontListItem));
             //6
-            list.add(getListItem("di stabilire altresì che il venir meno dei requisiti minimi e standard previsti al predetto punto 3) e il mancato versamento dei contributi di cui ai punti 4) e 5) danno luogo, previo contraddittorio, alle conseguenze stabilite dall’Allegato 2 “Determina della CNFC in materia di violazioni del 08 ottobre 2010” dell’Accordo Stato-Regioni del 19 aprile 2012;", fontListItem));
+            list.add(getListItem("di stabilire altresì che il venir meno dei requisiti minimi e standard previsti al predetto punto 3) e il mancato versamento dei contributi di cui ai punti 4) e 5) danno luogo, previo contraddittorio, alle conseguenze in materia di violazioni stabilite dalla disciplina vigente al momento dell’accertamento;", fontListItem));
             //7
-            list.add(getListItem("che i requisiti minimi, gli adempimenti richiesti e le eventuali sanzioni potranno essere modificati, con preavviso di giorni 30, in conseguenza di deliberazioni regionali che dovessero sopravvenire al presente provvedimento;", fontListItem));
+            list.add(getListItem("che i requisiti minimi, gli adempimenti richiesti e le eventuali sanzioni potranno essere modificati/integrati, con preavviso di giorni 30, in attuazione di successivi decreti che dovessero sopravvenire al presente atto;", fontListItem));
             //8
-            list.add(getListItem("di stabilire che l’accreditamento standard di cui al presente provvedimento è soggetto a revoca qualora, acquisita la documentazione antimafia, dovesse essere accertata anche soltanto una delle cause di decadenza, divieto o sospensione ai sensi dell’art. 67 del D.Lgs. 159 del 6 settembre 2011 e ss.mm.ii.;", fontListItem));
+            msgFormat = new MessageFormat("di stabilire che l’accreditamento standard di cui al presente provvedimento è soggetto a revoca qualora, acquisita la documentazione antimafia, dovesse essere accertata anche soltanto una delle cause di decadenza, divieto o sospensione ai sensi dell’art. 67 del D.Lgs. 159 del 6 settembre 2011 e ss.mm.ii.;");
+            list.add(getListItem("di stabilire che l’accreditamento standard di cui al presente provvedimento è soggetto a revoca qualora, acquisita la documentazione antimafia, dovesse essere accertata anche soltanto una delle cause di decadenza, divieto o sospensione ai sensi dell’art. 67 del D.Lgs. 159 del 6 settembre 2011 e ss.mm.ii.;", red));
             //9
-            list.add(getListItem("di dare atto che il presente provvedimento è soggetto a pubblicazione ai sensi dell’art. 23 del decreto legislativo 14 marzo 2013, n. 33;", fontListItem));
+            list.add(getListItem("di dare atto che il presente provvedimento è soggetto a pubblicazione ai sensi dell’art. 23 del D.Lgs. n. 33 del 14 marzo 2013, così come modificato ed integrato dal D.Lgs n.97/2016;", fontListItem));
             //10
-            list.add(getListItem("di pubblicare il presente decreto nel Bollettino Ufficiale della Regione del Veneto", fontListItem));
+            list.add(getListItem("di pubblicare il presente provvedimento nell’albo online di Azienda Zero.", fontListItem));
 
             document.add(list);
-
-			par = new Paragraph("F.to dott. Claudio Costa");
-	        par.setAlignment(Element.ALIGN_LEFT);
-	        par.setFont(fontCorpo);
-	        par.setIndentationLeft(320F);
-	        par.setSpacingBefore(50);
-	        par.setSpacingAfter(0);
-	        document.add(par);
 
             document.close();
             outputStream.close();
@@ -2306,6 +2551,103 @@ public class PdfServiceImpl implements PdfService {
 		}
 
 		return document;
+    }
+
+    private void addDocumentHeader(Document document) throws DocumentException {
+	    PdfPTable header = new PdfPTable(2);
+    		header.setWidthPercentage(97);
+    		Image img = FooterWithInfo.createLogo(LOGO_REGIONE_VENETO);
+        if(img != null) {
+	        	img.scalePercent(50, 50);
+	        	PdfPCell headerImage = new PdfPCell(img);
+	        	headerImage.setBorderWidth(0);
+	        	headerImage.setHorizontalAlignment(Element.ALIGN_LEFT);
+	        	headerImage.setPadding(cellPadding);
+	        	header.addCell(headerImage);
+        }
+        
+        	PdfPCell headerText = new PdfPCell();
+        	headerText.setBorderWidth(0);
+        	headerText.setHorizontalAlignment(Element.ALIGN_CENTER);
+        	headerText.setPadding(cellPadding);
+        	Phrase phrase = new Phrase("REGIONE DEL VENETO\n");
+        	phrase.add(new Paragraph("AZIENDA ZERO\n", fontAziendaBig));
+        	phrase.add(new Paragraph("\n", new Font(fontFamily, 5, Font.NORMAL)));
+        	phrase.add(new Paragraph("Sede Legale: Passaggio Gaudenzio 1 35131 Padova\n", fontCorpoSmall));
+        	phrase.add(new Paragraph("\n", new Font(fontFamily, 3, Font.NORMAL)));
+        	phrase.add(new Paragraph("C.F. e P.Iva 05018720283", fontCorpoSmall));
+        	headerText.setPhrase(phrase);
+        	header.addCell(headerText);
+        	document.add(header);
+        	document.add(new Phrase("\n"));
+    }
+
+}
+
+class HeaderFooterPageEvent extends PdfPageEventHelper {
+
+	private PdfTemplate t;
+	private Image total;
+	
+	@Override
+    public void onOpenDocument(PdfWriter writer, Document document) {
+		t = writer.getDirectContent().createTemplate(30, 16);
+        try {
+            total = Image.getInstance(t);
+            total.setRole(PdfName.ARTIFACT);
+        } catch (DocumentException de) {
+            throw new ExceptionConverter(de);
+        }
+    }
+
+    @Override
+    public void onEndPage(PdfWriter writer, Document document) {
+    		addFooter(writer);
+    }
+
+    private void addFooter(PdfWriter writer){
+        PdfPTable footer = new PdfPTable(4);
+        try {
+            // set defaults
+            footer.setWidths(new int[]{14, 12, 4, 1});
+            footer.setTotalWidth(527);
+            footer.setLockedWidth(true);
+            footer.getDefaultCell().setFixedHeight(40);
+            footer.getDefaultCell().setBorderWidth(0);
+            footer.getDefaultCell().setBorderColor(BaseColor.LIGHT_GRAY);
+
+            // add copyright
+            footer.addCell(new Phrase("Decreto   n.            del     /  /2017", new Font(Font.FontFamily.TIMES_ROMAN, 11, Font.ITALIC)));
+            
+            // add Originale
+            footer.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            footer.addCell(new Phrase("Originale", new Font(Font.FontFamily.TIMES_ROMAN, 11, Font.ITALIC)));
+
+            // add current page count
+            footer.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            footer.addCell(new Phrase(String.format("Pag. %d di ", writer.getPageNumber()), new Font(Font.FontFamily.TIMES_ROMAN, 11, Font.ITALIC)));
+
+            // add placeholder for total page count
+            PdfPCell totalPageCount = new PdfPCell(total);
+            totalPageCount.setPaddingTop(footer.getDefaultCell().getPaddingTop());
+            totalPageCount.setBorderWidth(0);
+            footer.addCell(totalPageCount);
+
+            // write page
+            PdfContentByte canvas = writer.getDirectContent();
+            canvas.beginMarkedContentSequence(PdfName.ARTIFACT);
+            footer.writeSelectedRows(0, -1, 34, 50, canvas);
+            canvas.endMarkedContentSequence();
+        } catch(DocumentException de) {
+            throw new ExceptionConverter(de);
+        }
+    }
+
+    @Override
+    public void onCloseDocument(PdfWriter writer, Document document) {
+    	int totalLength = String.valueOf(writer.getPageNumber()).length();
+        int totalWidth = totalLength * 5;
+        ColumnText.showTextAligned(t, Element.ALIGN_RIGHT, new Phrase(String.valueOf(writer.getPageNumber()), new Font(Font.FontFamily.TIMES_ROMAN, 11, Font.ITALIC)), totalWidth, 5, 0);
     }
 }
 
