@@ -1,6 +1,5 @@
 package it.tredi.ecm.web.bean;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -23,7 +22,6 @@ import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.Professione;
-import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
 import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
@@ -59,6 +57,10 @@ public class EventoWrapper {
 
 	private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
 	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
+
+	private List<PersonaEvento> esperti = new ArrayList<PersonaEvento>();
+	private List<PersonaEvento> coordinatori = new ArrayList<PersonaEvento>();
+	private List<PersonaEvento> investigatori = new ArrayList<PersonaEvento>();
 
 	//liste edit
 	private Set<Obiettivo> obiettiviNazionali;
@@ -318,5 +320,38 @@ public class EventoWrapper {
 		if(evento.getProceduraFormativa() == ProceduraFormativa.RES)
 			this.eventoRESDateProgrammiGiornalieriWrapper = new EventoRESDateProgrammiGiornalieriWrapper((EventoRES)evento);
 		this.evento = evento;
+	}
+	
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici() {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(this.responsabiliScientifici != null) {
+			for(PersonaEvento pEv : this.responsabiliScientifici) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCResponsabileSCientifico());
+			}
+		}
+		return toRet;
+	}
+
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti() {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(this.esperti != null) {
+			for(PersonaEvento pEv : this.esperti) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCEsperto());
+			}
+		}
+		return toRet;
+	}
+
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori() {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(this.coordinatori != null) {
+			for(PersonaEvento pEv : this.coordinatori) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCCoordinatore());
+			}
+		}
+		return toRet;
 	}
 }

@@ -7,23 +7,16 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.javers.core.metamodel.annotation.TypeName;
-import org.javers.core.metamodel.annotation.ValueObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-
+import it.tredi.ecm.dao.enumlist.IdentificativoPersonaRuoloEvento;
 import it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum;
-import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.utils.Utils;
-import it.tredi.ecm.web.EventoController;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,14 +40,22 @@ public class PersonaEvento extends BaseEntityDefaultId implements Serializable{
 	private RuoloPersonaEventoEnum ruolo;
 
 	private String titolare;
+	
+	private boolean svolgeAttivitaDiDocenza = false;
+	@Enumerated(EnumType.STRING)
+	private IdentificativoPersonaRuoloEvento identificativoPersonaRuoloEvento;
 
+	@Transient
+	private IdentificativoPersonaRuoloEvento identificativoPersonaRuoloEventoTemp;
+	
 	public PersonaEvento(){}
 
 	public PersonaEvento(AnagraficaEvento anagrafica){
 		try{
 			//this.anagrafica = (AnagraficaEventoBase) anagrafica.getAnagrafica().clone();
 			//this.anagrafica = (AnagraficaEventoBase) Utils.copy(anagrafica.getAnagrafica());
-			anagrafica.getAnagrafica().getCv().getData();
+			if(anagrafica.getAnagrafica().getCv() != null)
+				anagrafica.getAnagrafica().getCv().getData();
 			this.anagrafica = (AnagraficaEventoBase) SerializationUtils.clone(anagrafica.getAnagrafica());
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore cast AnagraficaEventoBase"), ex);

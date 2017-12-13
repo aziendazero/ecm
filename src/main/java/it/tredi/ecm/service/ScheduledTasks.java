@@ -35,7 +35,7 @@ public class ScheduledTasks {
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private UpdateDateProviderTask updateDateProviderTask;
 
-	@Scheduled(fixedDelay=60000)
+	@Scheduled(fixedDelay=6000000)
 	public void taskExecutor() throws Exception{
 		pagamentoTask.controllaEsitoPagamenti();
 		invioCogeapsTask.checkStatoElaborazioneCogeaps();

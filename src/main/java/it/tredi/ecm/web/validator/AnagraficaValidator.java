@@ -130,15 +130,21 @@ public class AnagraficaValidator {
 
 	//validator anagrafica responsabile di segreteria evento (modale)
 	public Map<String, String> validateAnagraficaBaseEvento(AnagraficaEventoBase anagrafica, Long providerId, String prefix) throws Exception {
+		return validateAnagraficaBaseEvento(anagrafica, providerId, prefix, true);
+	}
+
+	public Map<String, String> validateAnagraficaBaseEvento(AnagraficaEventoBase anagrafica, Long providerId, String prefix, boolean checkCV) throws Exception {
 		Map<String, String> errMap = new HashMap<String, String>();
 		if(anagrafica.getNome() == null || anagrafica.getNome().isEmpty())
 			errMap.put(prefix + "nome", "error.empty");
 		if(anagrafica.getCognome() ==  null || anagrafica.getCognome().isEmpty())
 			errMap.put(prefix + "cognome", "error.empty");
-		if(anagrafica.getCv() == null || anagrafica.getCv().isNew())
-			errMap.put("file_cv_button", "error.empty");
-		else if(!fileValidator.validateFirmaCF(anagrafica.getCv(), providerId))
-			errMap.put("file_cv_button", "error.codiceFiscale.firmatario");
+		if(checkCV) {
+			if(anagrafica.getCv() == null || anagrafica.getCv().isNew())
+				errMap.put("file_cv_button", "error.empty");
+			else if(!fileValidator.validateFirmaCF(anagrafica.getCv(), providerId))
+				errMap.put("file_cv_button", "error.codiceFiscale.firmatario");
+		}
 		if(anagrafica.getCodiceFiscale() == null || anagrafica.getCodiceFiscale().isEmpty())
 			errMap.put(prefix + "codice_fiscale", "error.empty");
 		else if(!Pattern.matches(PATTERN_CODICE_FISCALE, anagrafica.getCodiceFiscale()) && !anagrafica.getStraniero())
@@ -148,7 +154,7 @@ public class AnagraficaValidator {
 
 		return errMap;
 	}
-
+	
 	//validator anagrafica responsabile di segreteria evento (modale)
 	public Map<String, String> validateAnagraficaFullEvento(AnagraficaFullEventoBase anagrafica, Long providerId, String prefix) {
 		Map<String, String> errMap = new HashMap<String, String>();

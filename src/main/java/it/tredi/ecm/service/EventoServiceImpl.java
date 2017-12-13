@@ -1,7 +1,5 @@
 package it.tredi.ecm.service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +24,6 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.PersistentSet;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
@@ -68,8 +65,6 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
-import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -81,6 +76,7 @@ import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
+import it.tredi.ecm.dao.enumlist.IdentificativoPersonaRuoloEvento;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
 import it.tredi.ecm.dao.enumlist.MotivazioneProrogaEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
@@ -101,7 +97,6 @@ import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
-import it.tredi.ecm.exception.PagInCorsoException;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.utils.Utils;
@@ -160,6 +155,20 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug("Salvataggio evento");
 		Evento eventoDB = null;
 		Map<String, Object> diffMap = new HashMap<String, Object>();
+		
+		if(evento instanceof EventoFSC) {
+			if(versioneEvento(evento) == EventoVersioneEnum.UNO_PRIMA_2018) {
+				//cancello eventuali esperti e coordinatori inseriti
+				if(((EventoFSC) evento).getEsperti() != null)
+					((EventoFSC) evento).getEsperti().clear();
+				if(((EventoFSC) evento).getCoordinatori() != null)
+					((EventoFSC) evento).getCoordinatori().clear();
+				//cancello eventuali investigatori
+				if(((EventoFSC) evento).getInvestigatori() != null)
+					((EventoFSC) evento).getInvestigatori().clear();				
+			}
+		}
+		
 		if(evento.isNew()) {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
 			evento.handleDateScadenza();
@@ -767,6 +776,42 @@ public class EventoServiceImpl implements EventoService {
 				((EventoFSC) evento).getRiepilogoRuoli().clear();
 				((EventoFSC) evento).getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());
 			}
+			
+			//Esperti
+			Iterator<PersonaEvento> itPersona = eventoWrapper.getEsperti().iterator();
+			List<PersonaEvento> attachedListPersona = new ArrayList<PersonaEvento>();
+			while(itPersona.hasNext()){
+				PersonaEvento p = itPersona.next();
+				IdentificativoPersonaRuoloEvento ident = p.getIdentificativoPersonaRuoloEventoTemp();
+				p = personaEventoRepository.findOne(p.getId());
+				p.setIdentificativoPersonaRuoloEvento(ident);
+				p.setIdentificativoPersonaRuoloEventoTemp(ident);
+				attachedListPersona.add(p);
+			}
+			((EventoFSC) evento).setEsperti(attachedListPersona);
+			
+			//Coordinatori
+			itPersona = eventoWrapper.getCoordinatori().iterator();
+			attachedListPersona = new ArrayList<PersonaEvento>();
+			while(itPersona.hasNext()){
+				PersonaEvento p = itPersona.next();
+				IdentificativoPersonaRuoloEvento ident = p.getIdentificativoPersonaRuoloEventoTemp();
+				p = personaEventoRepository.findOne(p.getId());
+				p.setIdentificativoPersonaRuoloEvento(ident);
+				p.setIdentificativoPersonaRuoloEventoTemp(ident);
+				attachedListPersona.add(p);
+			}
+			((EventoFSC) evento).setCoordinatori(attachedListPersona);
+
+			//Investigatori
+			itPersona = eventoWrapper.getInvestigatori().iterator();
+			attachedListPersona = new ArrayList<PersonaEvento>();
+			while(itPersona.hasNext()){
+				PersonaEvento p = itPersona.next();
+				p = personaEventoRepository.findOne(p.getId());
+				attachedListPersona.add(p);
+			}
+			((EventoFSC) evento).setInvestigatori(attachedListPersona);
 		}else if(evento instanceof EventoFAD){
 			//Docenti
 			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
@@ -819,7 +864,10 @@ public class EventoServiceImpl implements EventoService {
 		List<PersonaEvento> attachedListPersona = new ArrayList<PersonaEvento>();
 		while(itPersona.hasNext()){
 			PersonaEvento p = itPersona.next();
+			IdentificativoPersonaRuoloEvento ident = p.getIdentificativoPersonaRuoloEventoTemp();
 			p = personaEventoRepository.findOne(p.getId());
+			p.setIdentificativoPersonaRuoloEvento(ident);
+			p.setIdentificativoPersonaRuoloEventoTemp(ident);
 			attachedListPersona.add(p);
 		}
 		evento.setResponsabili(attachedListPersona);
@@ -1022,6 +1070,12 @@ public class EventoServiceImpl implements EventoService {
 			for(RiepilogoRuoliFSC r : ((EventoFSC) evento).getRiepilogoRuoli())
 				eventoWrapper.getRiepilogoRuoliFSC().put(r.getRuolo(), r);
 
+			//esperti
+			eventoWrapper.setEsperti(((EventoFSC) evento).getEsperti());
+			//coordinatori
+			eventoWrapper.setCoordinatori(((EventoFSC) evento).getCoordinatori());
+			//investigatori
+			eventoWrapper.setInvestigatori(((EventoFSC) evento).getInvestigatori());
 		}else if(evento instanceof EventoFAD){
 			//Docenti
 			eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
@@ -1203,7 +1257,7 @@ public class EventoServiceImpl implements EventoService {
 		int counter = 0;
 		if(riepilogoRuoliMap != null){
 			for(RiepilogoRuoliFSC rrf : riepilogoRuoliMap.values()) {
-				if(rrf.getRuolo().getRuoloBase() == ruolo) {
+				if(rrf.getRuolo() != null && rrf.getRuolo().getRuoloBase() == ruolo) {
 					counter = counter + rrf.getNumeroPartecipanti();
 				}
 			}
@@ -1505,7 +1559,7 @@ public class EventoServiceImpl implements EventoService {
 		return max;
 	}
 	
-	private EventoVersioneEnum versioneEvento(Evento evento) {
+	public EventoVersioneEnum versioneEvento(Evento evento) {
 		EventoVersioneEnum versione = ecmProperties.getEventoVersioneDefault();
 		//se la data inizio dell'evento e' maggiore uguale al 2018 utilizzo il nuovo metodo di calcolo
 		if(evento.getDataInizio() != null) {
@@ -1527,7 +1581,7 @@ public class EventoServiceImpl implements EventoService {
 		case UNO_PRIMA_2018:
 			return calcoloCreditiFormativiEventoFADPre2018(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
 		default:
-			throw new Exception("Versione: " + versione + " non gestita");
+			throw new Exception("Evento versione: " + versione + " non gestita");
 		}
 	}
 	
@@ -1592,6 +1646,50 @@ public class EventoServiceImpl implements EventoService {
 			}
 			*/
 		}else if(evento instanceof EventoFSC){
+			//controllo che i ruoli delle azioni siano validi in quanto potrebbero essere stati inseriti correttamente
+			//ma poi potrebbero essere stati modificati i responsabili scientifici o la data inizio passando da un evento della versione 2 alla versione 1 
+			//rendendo alcuni o tutti i ruoli "Responsabile scientifico X" (X = A o B o C) non piu' accettabili
+			EventoVersioneEnum versione = versioneEvento(evento);
+			for (FaseAzioniRuoliEventoFSCTypeA faseAzione : eventoWrapper.getProgrammaEventoFSC()) {
+				for(AzioneRuoliEventoFSC azioneRuolo : faseAzione.getAzioniRuoli()) {
+					for(RuoloOreFSC ruoloOre : azioneRuolo.getRuoli()) {
+						if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.RESPONSABILE_SCIENTIFICO) {
+							//potrebbe non essere valido
+							if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
+								// vengono settati tutti a null perche' nella versione 1 non esistevano 
+								ruoloOre.setRuolo(null);
+							} else {
+								if(!eventoWrapper.getListRuoloFSCEnumPerResponsabiliScientifici().contains(ruoloOre.getRuolo()))
+									ruoloOre.setRuolo(null);
+							}
+						} else if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE_X) {
+							//potrebbe non essere valido
+							if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
+								// vengono settati tutti a null perche' nella versione 1 non esistevano 
+								ruoloOre.setRuolo(null);
+							} else {
+								if(!eventoWrapper.getListRuoloFSCEnumPerCoordinatori().contains(ruoloOre.getRuolo()))
+									ruoloOre.setRuolo(null);
+							}
+						} else if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.ESPERTO) {
+							//potrebbe non essere valido
+							if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
+								//vengono accettati solo quelli validi per la tipologia corrente
+								if(((EventoFSC) evento).getTipologiaEventoFSC() == null) {
+									ruoloOre.setRuolo(null);
+								} else {
+									if(!((EventoFSC) evento).getTipologiaEventoFSC().getRuoliCoinvolti().contains(ruoloOre.getRuolo()))
+										ruoloOre.setRuolo(null);
+								}
+							} else {
+								if(!eventoWrapper.getListRuoloFSCEnumPerEsperti().contains(ruoloOre.getRuolo()))
+									ruoloOre.setRuolo(null);
+							}
+						}
+					}
+				}
+			}
+			
 			if(eventoWrapper.getProgrammaEventoFSC() != null){
 				((EventoFSC)evento).setFasiAzioniRuoli(eventoWrapper.getProgrammaEventoFSC());
 				for(FaseAzioniRuoliEventoFSCTypeA fase : ((EventoFSC)evento).getFasiAzioniRuoli()){

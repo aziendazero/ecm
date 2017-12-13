@@ -25,6 +25,10 @@ public class EcmProperties {
 	private int giorniMinEventoRiedizione;
 	private int numeroMassimoResponsabiliEvento;
 	private int giorniMaxEventoFSC;
+
+	private int giorniMaxEventoFscVersione2;
+	private int giorniMaxEventoFscVersione2AttivitaDiRicerca;
+	
 	private long giorniMaxEventoFAD;
 	private int numeroMinimoPartecipantiConvegnoCongressoRES;
 	private int numeroMassimoPartecipantiWorkshopSeminarioRES;
@@ -55,5 +59,10 @@ public class EcmProperties {
 	private boolean conteggioGiorniAvanzatoBeforeDayMode;
 	private EventoVersioneEnum eventoVersioneDefault;
 	private LocalDate eventoDataPassaggioVersioneDue;
-
+	
+	private LocalDate eventoFadDataFineMaxTriennio;
+	private LocalDate eventoFscDataFineMaxTriennio;
+	
+	private int numeroMassimoEspertiEvento;
+	private int numeroMassimoCoordinatoriEvento;
 }

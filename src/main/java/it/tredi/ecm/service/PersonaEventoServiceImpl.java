@@ -2,6 +2,7 @@ package it.tredi.ecm.service;
 
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -9,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.tredi.ecm.dao.entity.PersonaEvento;
+import it.tredi.ecm.dao.enumlist.IdentificativoPersonaRuoloEvento;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.utils.Utils;
 
@@ -29,4 +32,63 @@ public class PersonaEventoServiceImpl implements PersonaEventoService {
 		return ids;
 	}
 
+	@Override
+	public IdentificativoPersonaRuoloEvento prossimoIdentificativoPersonaRuoloEventoTempNonUtilizzato(List<PersonaEvento> personeEvento) {
+		IdentificativoPersonaRuoloEvento toRet = null;
+		boolean nonUtilizzato = true;
+		if(personeEvento != null && !personeEvento.isEmpty()) {
+			for(IdentificativoPersonaRuoloEvento ident : IdentificativoPersonaRuoloEvento.getOrderedValues()) {
+				nonUtilizzato = true;
+				for(PersonaEvento pers : personeEvento) {
+					if(ident == pers.getIdentificativoPersonaRuoloEventoTemp())
+						nonUtilizzato = false;
+				}
+				if(nonUtilizzato) {
+					toRet = ident;
+					break;
+				}
+			}
+		}
+		return toRet;
+	}
+	
+	@Override
+	public IdentificativoPersonaRuoloEvento prossimoIdentificativoPersonaRuoloEventoNonUtilizzato(List<PersonaEvento> personeEvento) {
+		IdentificativoPersonaRuoloEvento toRet = null;
+		boolean nonUtilizzato = true;
+		if(personeEvento != null && !personeEvento.isEmpty()) {
+			for(IdentificativoPersonaRuoloEvento ident : IdentificativoPersonaRuoloEvento.getOrderedValues()) {
+				nonUtilizzato = true;
+				for(PersonaEvento pers : personeEvento) {
+					if(ident == pers.getIdentificativoPersonaRuoloEvento())
+						nonUtilizzato = false;
+				}
+				if(nonUtilizzato) {
+					toRet = ident;
+					break;
+				}
+			}
+		}
+		return toRet;
+	}
+
+	@Override
+	public void setIdentificativoPersonaRuoloEventoTemp(List<PersonaEvento> personeEvento) {
+		for(PersonaEvento persEv : personeEvento) {
+			if(persEv.getIdentificativoPersonaRuoloEventoTemp() == null) {
+				persEv.setIdentificativoPersonaRuoloEventoTemp(prossimoIdentificativoPersonaRuoloEventoTempNonUtilizzato(personeEvento));
+				//personaEventoRepository.save(persEv);
+			}
+		}
+	}
+
+	@Override
+	public void setIdentificativoPersonaRuoloEvento(List<PersonaEvento> personeEvento) {
+		for(PersonaEvento persEv : personeEvento) {
+			if(persEv.getIdentificativoPersonaRuoloEvento() == null) {
+				persEv.setIdentificativoPersonaRuoloEvento(prossimoIdentificativoPersonaRuoloEventoNonUtilizzato(personeEvento));
+				//personaEventoRepository.save(persEv);
+			}
+		}
+	}
 }

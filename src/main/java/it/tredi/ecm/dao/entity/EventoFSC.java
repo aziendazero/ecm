@@ -12,7 +12,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import org.javers.core.metamodel.annotation.DiffIgnore;
@@ -21,6 +21,7 @@ import org.javers.core.metamodel.annotation.TypeName;
 import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaGruppoFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaSperimentazioneFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import lombok.Getter;
@@ -40,6 +41,8 @@ public class EventoFSC extends Evento{
 	private TipologiaEventoFSCEnum tipologiaEventoFSC;
 	@Enumerated(EnumType.STRING)
 	private TipologiaGruppoFSCEnum tipologiaGruppo;
+	@Enumerated(EnumType.STRING)
+	private TipologiaSperimentazioneFSCEnum tipologiaSperimentazione;
 
 	@Enumerated(EnumType.STRING)
 	private ProgettiDiMiglioramentoFasiDaInserireFSCEnum fasiDaInserire;
@@ -72,4 +75,15 @@ public class EventoFSC extends Evento{
 	@DiffIgnore
 	private Integer numeroTutor;
 
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@JoinColumn(name = "esperto_evento_id")
+	private List<PersonaEvento> esperti = new ArrayList<PersonaEvento>();
+
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@JoinColumn(name = "coordinatore_evento_id")
+	private List<PersonaEvento> coordinatori = new ArrayList<PersonaEvento>();
+
+	@OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+	@JoinColumn(name = "investigatore_evento_id")
+	private List<PersonaEvento> investigatori = new ArrayList<PersonaEvento>();
 }

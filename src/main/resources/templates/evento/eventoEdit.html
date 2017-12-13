@@ -122,7 +122,7 @@
 							</div>
 
 							<!-- STRANIERO -->
-							<div class="item form-group">
+							<div class="item form-group" id="container-straniero">
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codice_fiscale">
 									<span th:text="#{label.straniero}">Straniero</span>
 								</label>
@@ -130,6 +130,22 @@
 									<div class="checkbox">
 										<label>
 											<input id="anagraficaBase_straniero" type="checkbox" class="flat" th:field="${eventoWrapper.tempPersonaEvento.anagrafica.straniero}" />
+										</label>
+									</div>
+								</div>
+							</div>
+
+							<!-- SOLO PER RESPONSABILE SCIENTIFICO - VERSIONE EVENTO 2 -->
+							<!-- SOLO PER ESPERTI - PRESENTI SOLO IN VERSIONE EVENTO 2 -->
+							<!-- SOLO PER COORDINATORI - PRESENTI SOLO IN VERSIONE EVENTO 2 -->
+							<div class="item form-group" id="container-svolgeAttivitaDiDocenza">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="anagraficaBase_svolgeAttivitaDiDocenza">
+									<span th:text="#{label.svolge_attivita_docenza}">Svolge attività di docenza</span>
+								</label>
+								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+									<div class="checkbox">
+										<label>
+											<input id="anagraficaBase_svolgeAttivitaDiDocenza" type="checkbox" class="flat" th:field="${eventoWrapper.tempPersonaEvento.svolgeAttivitaDiDocenza}" />
 										</label>
 									</div>
 								</div>
@@ -195,7 +211,7 @@
 							</div>
 
 							<!-- CV -->
-							<div class="item form-group">
+							<div class="item form-group" id="container-cv">
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="cv">
 									<span th:text="#{label.cv}">cv</span>
 									<span class="required">*</span>
@@ -497,6 +513,9 @@
 				</div>
 			</div>
 		</div>
+		
+		<th:block th:include="evento/eventoVersione :: eventoVersione" />
+
 		<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
 		<script th:inline="javascript">
 		/*<![CDATA[*/
@@ -535,19 +554,22 @@
 					$("#modale-conferma-segreteria").modal("show");
 
 				//init datatable responsabili scientifici
-			    $('#responsabiliScientifici').DataTable({
+			    reInitDataTableById('responsabiliScientifici');
+				/*
+				$('#responsabiliScientifici').DataTable({
 			    	"bFilter" : false,
 					"bInfo" : false,
 					"bPaginate" : false,
 					"ordering" : false,
 					"columnDefs": [{
-						"targets": 6,
+						"targets": 7,
 						"width": "1px",
 						"sClass": "center",
 						"responsivePriority": 1
 					}]
 			    });
-
+				*/
+				
 			  	//init datatable docenti
 			    $('#docenti').DataTable({
 			    	"bFilter" : false,
@@ -880,12 +902,22 @@
 
  			//reinizializzazione delle datatable singole by id
 			function reInitDataTableById(target){
- 				console.log("reinit by id called!");
- 				//destroy della datatable prima della reinizializzazione
+ 				console.log("reinit by id called! - target: " + target);
+				var versione = getVersione();
+				//destroy della datatable prima della reinizializzazione
  				$("#"+target).DataTable().destroy();
 				var buttonColumn;
+				//indica se mostrare le colonne Identificativo e svolgeAttivitaDiDocenza 
+				var showExtCols = false;
 				switch(target) {
-					case "responsabiliScientifici": buttonColumn = 6;
+					case "responsabiliScientifici":
+						buttonColumn = 6;
+					break;
+					case "esperti": buttonColumn = 5;
+					break;
+					case "coordinatori": buttonColumn = 5;
+					break;
+					case "investigatori": buttonColumn = 4;
 					break;
 					case "docenti": buttonColumn = 7;
 					break;
@@ -899,19 +931,45 @@
 					break;
 					default: buttonColumn = -1;
 				}
+				
 				if(buttonColumn > -1) {
-					$('#'+target).DataTable({
-						"bFilter" : false,
-						"bInfo" : false,
-						"bPaginate" : false,
-						"ordering" : false,
-						"columnDefs": [{
-							"targets": buttonColumn,
-							"width": "1px",
-							"sClass": "center",
-							"responsivePriority": 1
-						}]
-				    });
+					if(target == 'responsabiliScientifici' && isFsc()) {
+						//solo i responsabiliScientifici del evento FSC hanno le colonne in piu'
+						buttonColumn = 8;
+						if(versione === 2) {
+							showExtCols = true;
+						} else {
+							showExtCols = false;
+						} 
+						$('#'+target).DataTable({
+							"bFilter" : false,
+							"bInfo" : false,
+							"bPaginate" : false,
+							"ordering" : false,
+							"columnDefs": [{
+								"targets": buttonColumn,
+								"width": "1px",
+								"sClass": "center",
+								"responsivePriority": 1
+							},{
+								"targets": [ 6, 7 ],
+				                "visible": showExtCols
+							}]
+					    });							
+					} else {
+						$('#'+target).DataTable({
+							"bFilter" : false,
+							"bInfo" : false,
+							"bPaginate" : false,
+							"ordering" : false,
+							"columnDefs": [{
+								"targets": buttonColumn,
+								"width": "1px",
+								"sClass": "center",
+								"responsivePriority": 1
+							}]
+					    });
+					}
 				}
 				else {
 					$('#'+target).DataTable({
@@ -925,7 +983,7 @@
 
 			//reinizializzazione delle datatable multiple by class
 			function reInitDataTableByClass(target){
- 				console.log("reinit by class called!");
+ 				console.log("reinit by class called! - target: " + target);
  				//destroy della datatable prima della reinizializzazione
  				$("."+target).each(function(i,v) {
  					$(v).DataTable().destroy();
@@ -969,6 +1027,10 @@
 			//apre la finestra di inserimento di una persona
 			//pulisce il binding del lookup se clean == true
 			function openAddPersonaTo(target,type,fromLookup,modificaElemento,clean){
+				//console.log('openAddPersonaTo-type: ' + type);
+				//console.log('openAddPersonaTo-target: ' + target);
+				var versione = getVersione();
+
 				if(clean) {
 					var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/setNewAnagraficaEvento/|}]] + type;
 					if(type == 'Full'){
@@ -1009,14 +1071,28 @@
 						$('#fromLookUp').val(fromLookup);
 						$('#modificaElementoPersona').val(modificaElemento);
 						console.log('fromLookUp:' + fromLookup);
+						$("#container-svolgeAttivitaDiDocenza").hide();
 						if(target == 'responsabiliScientifici'){
 							$("#container-qualifica").show();
+							if (isFsc() && versione === 2)
+								$("#container-svolgeAttivitaDiDocenza").show();
 							$("#container-ruolo").hide();
 							$("#container-titolare").hide();
 						}else if(target == 'docenti'){
 							$("#container-qualifica").hide();
 							$("#container-ruolo").show();
 							$("#container-titolare").show();
+						}else if(target == 'investigatori'){
+							$("#container-ruolo").hide();
+							$("#container-titolare").hide();
+							$('#container-cv').hide();
+						}else if(target == 'esperti' || target == 'coordinatori'){
+							$('#container-qualifica').hide();
+							$('#container-straniero').hide();
+							$('#container-ruolo').hide();
+							$('#container-titolare').hide();
+							$('#container-cv').hide();
+							$('#container-svolgeAttivitaDiDocenza').show();
 						}
 						if(fromLookup) {
 							$('#anagraficaBase_codice_fiscale').prop("disabled", true);
@@ -1125,6 +1201,7 @@
 				var target = $('#targetTable').val();
 				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}]], $('#addPersonaTo').serialize() + eventoWrapper_cId)
 					.done(function(data) {
+						//console.log('sendAjaxAddPersonaTo - data: ' + data);
 						//errore validazione
 						if($(data).find(".hasErrorAjax").length) {
 							$.each($(data).find(".hasErrorAjax"), function(i, errorDiv) {
@@ -1133,9 +1210,11 @@
 							})
 						}
 						else {
-						  	$('#'+target).empty().html(data);
+						  	//$('#'+target).empty().html(data);
+						  	$('#'+target+'Container').empty().html(data);
+						  	reInitDataTableById(target);
 						  	closeModaleAddPersona();
-						  	console.log(target);
+						  	//console.log(target);
 						  	if([[${eventoWrapper.evento instanceof T(it.tredi.ecm.dao.entity.EventoRES)}]])
 						  		sendAjaxRequestDocentiAttivitaRES();
 						  	if([[${eventoWrapper.evento instanceof T(it.tredi.ecm.dao.entity.EventoFAD)}]])
@@ -1217,10 +1296,14 @@
 
 			//delete di una persona
 			function removePersonaFrom(target,caller){
+				removePersonaFromWithContainer(target,target,caller)
+			}
+
+			function removePersonaFromWithContainer(container,target,caller){
 				var rowIndex = $(caller).parent().parent().data('row-id');
 				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/removePersonaFrom/|}]] + target + "/" + rowIndex;
 
-				$("#" + target).load(url, function(data) {
+				$("#" + container).load(url, function(data) {
 					reInitDataTableById(target);
 				});
 			}
@@ -1236,6 +1319,10 @@
 					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
 				}else if(target == 'responsabileSegreteria'){
 					sendAjaxModificaPersonaTo(target,'Full',false,modificaElemento);
+				}else if(target == 'esperti'){
+					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
+				}else if(target == 'coordinatori'){
+					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
 				}
 			}
 
@@ -1398,6 +1485,7 @@
 	<!-- spostare in un altro FILE dei FRAGMENT table per i ripetibili -->
 	<th:block style="display:none">
 		<th:block th:fragment="responsabiliScientifici">
+
 			<!-- <th:block th:if="${#lists.size(eventoWrapper.responsabiliScientifici) == 0}">
 				<label class="col-xs-offset-4 col-xs-4" th:text="${#lists.size(eventoWrapper.responsabiliScientifici)}"></label>
 				<label class="col-xs-offset-4 col-xs-4" th:text="#{label.nessun_responsabile_registrato}"></label>
@@ -1406,7 +1494,15 @@
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
-					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')},
+					isFsc=${eventoWrapper.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FSC}">
+
+			<script th:inline="javascript" th:if="${isFsc}">
+			/*<![CDATA[*/
+				ruoliRespScient = [[${eventoWrapper.getListRuoloFSCEnumPerResponsabiliScientifici()}]];
+			/*]]>*/
+			</script>
+		
 			<table id="responsabiliScientifici" class="datatable-responsive-responsabili no-order table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabili')} ? 'bad-table'">
 				<thead>
@@ -1417,6 +1513,8 @@
 						<th th:text="#{label.qualifica}">Qualifica</th>
 						<th th:text="#{label.cv}">CV</th>
 						<th th:text="#{label.stato_cv}">CV</th>
+						<th th:text="#{label.identificativo_persona_evento}" th:if="${isFsc}">Identificativo</th>
+						<th th:text="#{label.svolge_attivita_docenza}" th:if="${isFsc}">Svolge attività di docenza</th>
 						<th style="padding-right: 8px;">
 							<div class="evento-button-container">
 								<a th:unless="${isRiedizione or isEditSemiBloccato}" id="lookup-responsabiliScientifici" class="btn btn-primary evento-table-button" onclick="openLookupPersona('responsabiliScientifici','base')" data-toggle="modal" data-target=".modal-lookup-persona">
@@ -1453,11 +1551,13 @@
 								<span th:unless="${#temporals.createToday().minusYears(1).isAfter(persona.anagrafica?.cv.dataCreazione)}" th:text="#{label.cv_aggiornato}" class="green"></span>
 							</th:block>
 						</td>
+						<td th:text="${persona.identificativoPersonaRuoloEventoTemp?.nome}" th:if="${isFsc}"></td>
+						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}" th:if="${isFsc}"></td>
 						<td>
 							<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-							<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removePersonaFrom('responsabiliScientifici',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+							<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="removePersonaFromWithContainer('responsabiliScientificiContainer','responsabiliScientifici',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 							<a th:if="${isRiedizione or isEditSemiBloccato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
@@ -1534,7 +1634,7 @@
 							<a th:unless="${isEventoIniziato}" onclick="modificaPersonaFrom('docenti',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-							<a th:unless="${isEventoIniziato}" onclick="removePersonaFrom('docenti',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+							<a th:unless="${isEventoIniziato}" onclick="removePersonaFromWithContainer('docentiContainer','docenti',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 							<a th:if="${isEventoIniziato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
@@ -1599,7 +1699,7 @@
 							<a th:unless="${isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabileSegreteria',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
 							</a>
-								<a th:unless="${isEditSemiBloccato}" onclick="removePersonaFrom('responsabileSegreteria',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+								<a th:unless="${isEditSemiBloccato}" onclick="removePersonaFromWithContainer('responsabileSegreteriaContainer','responsabileSegreteria',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
 								<span><i class="fa fa-trash"></i></span>
 							</a>
 								<a th:if="${isEditSemiBloccato}" class="btn btn-warning disabled btn-table single" th:text="#{label.modifica}">
@@ -2078,5 +2178,212 @@
 		</th:block>
 	</th:block>
 
+	<th:block style="display:none">
+		<th:block th:fragment="esperti">
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
+					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')},
+					isFsc=${eventoWrapper.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FSC}">
+			<script th:inline="javascript" th:if="${isFsc}">
+			/*<![CDATA[*/
+				ruoliEsperti = [[${eventoWrapper.getListRuoloFSCEnumPerEsperti()}]];
+			/*]]>*/
+			</script>
+
+			<table id="esperti" class="table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.esperti')} ? 'bad-table'">
+				<thead>
+					 <tr>
+						<th th:text="#{label.cognome}">Cognome</th>
+						<th th:text="#{label.nome}">Nome</th>
+						<th th:text="#{label.cf}">CF</th>
+						<th th:text="#{label.identificativo_persona_evento}">Identificativo</th>
+						<th th:text="#{label.svolge_attivita_docenza}">Svolge attività di docenza</th>
+						<th style="padding-right: 8px;">
+							<div class="evento-button-container">
+								<a th:unless="${isEventoIniziato}" id="lookup-esperti" class="btn btn-primary evento-table-button" onclick="openLookupPersona('esperti','base')" data-toggle="modal" data-target=".modal-lookup-persona">
+										<span><i class="fa fa-search"></i></span>
+									</a>
+								<a th:unless="${isEventoIniziato}" id="add-esperti" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('esperti','base',false,undefined,true)" data-toggle="modal" data-target=".modal-add-persona">
+										<span><i class="fa fa-plus"></i></span>
+									</a>
+								<a th:if="${isEventoIniziato}" id="lookup-esperti" class="btn btn-primary disabled evento-table-button">
+									<span><i class="fa fa-search"></i></span>
+								</a>
+								<a th:if="${isEventoIniziato}" id="add-esperti" class="btn btn-success disabled evento-table-button">
+									<span><i class="fa fa-plus"></i></span>
+								</a>
+							</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:if="${#lists.size(eventoWrapper.esperti) > 0}"
+						th:attr="data-row-id=${__${status.index}__}"
+						th:each="persona, status : ${eventoWrapper.esperti}"
+						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'esperti['+__${status.index}__+']')} ? 'bad-row'">
+						<td th:text="${persona.anagrafica.cognome}"></td>
+						<td th:text="${persona.anagrafica.nome}"></td>
+						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
+						<td th:text="${persona.identificativoPersonaRuoloEventoTemp?.nome}"></td>
+						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}"></td>
+						<td>
+							<a th:unless="${isEventoIniziato}" onclick="modificaPersonaFrom('esperti',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a th:unless="${isEventoIniziato}" onclick="removePersonaFromWithContainer('espertiContainer','esperti',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+							<a th:if="${isEventoIniziato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a th:if="${isEventoIniziato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</th:block>
+		</th:block>
+	</th:block>
+
+	<th:block style="display:none">
+		<th:block th:fragment="coordinatori">
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
+					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')},
+					isFsc=${eventoWrapper.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FSC}">
+			<script th:inline="javascript" th:if="${isFsc}">
+			/*<![CDATA[*/
+				ruoliCoordinatori = [[${eventoWrapper.getListRuoloFSCEnumPerCoordinatori()}]];
+			/*]]>*/
+			</script>
+
+			<table id="coordinatori" class="table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.coordinatori')} ? 'bad-table'">
+				<thead>
+					 <tr>
+						<th th:text="#{label.cognome}">Cognome</th>
+						<th th:text="#{label.nome}">Nome</th>
+						<th th:text="#{label.cf}">CF</th>
+						<th th:text="#{label.identificativo_persona_evento}">Identificativo</th>
+						<th th:text="#{label.svolge_attivita_docenza}">Svolge attività di docenza</th>
+						<th style="padding-right: 8px;">
+							<div class="evento-button-container">
+								<a th:unless="${isEventoIniziato}" id="lookup-coordinatori" class="btn btn-primary evento-table-button" onclick="openLookupPersona('coordinatori','base')" data-toggle="modal" data-target=".modal-lookup-persona">
+										<span><i class="fa fa-search"></i></span>
+									</a>
+								<a th:unless="${isEventoIniziato}" id="add-coordinatori" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('coordinatori','base',false,undefined,true)" data-toggle="modal" data-target=".modal-add-persona">
+										<span><i class="fa fa-plus"></i></span>
+									</a>
+								<a th:if="${isEventoIniziato}" id="lookup-coordinatori" class="btn btn-primary disabled evento-table-button">
+									<span><i class="fa fa-search"></i></span>
+								</a>
+								<a th:if="${isEventoIniziato}" id="add-coordinatori" class="btn btn-success disabled evento-table-button">
+									<span><i class="fa fa-plus"></i></span>
+								</a>
+							</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:if="${#lists.size(eventoWrapper.coordinatori) > 0}"
+						th:attr="data-row-id=${__${status.index}__}"
+						th:each="persona, status : ${eventoWrapper.coordinatori}"
+						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'coordinatori['+__${status.index}__+']')} ? 'bad-row'">
+						<td th:text="${persona.anagrafica.cognome}"></td>
+						<td th:text="${persona.anagrafica.nome}"></td>
+						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
+						<td th:text="${persona.identificativoPersonaRuoloEventoTemp?.nome}"></td>
+						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}"></td>
+						<td>
+							<a th:unless="${isEventoIniziato}" onclick="modificaPersonaFrom('coordinatori',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a th:unless="${isEventoIniziato}" onclick="removePersonaFromWithContainer('coordinatoriContainer','coordinatori',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+							<a th:if="${isEventoIniziato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a th:if="${isEventoIniziato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</th:block>
+		</th:block>
+	</th:block>
+
+	<th:block style="display:none">
+		<th:block th:fragment="investigatori">
+			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
+					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
+					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
+					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
+			<table id="investigatori" class="table no-order table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
+				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.investigatori')} ? 'bad-table'">
+				<thead>
+					 <tr>
+						<th th:text="#{label.cognome}">Cognome</th>
+						<th th:text="#{label.nome}">Nome</th>
+						<th th:text="#{label.cf}">CF</th>
+						<th th:text="#{label.qualifica}">Qualifica</th>
+						<th style="padding-right: 8px;">
+							<div class="evento-button-container">
+								<a th:unless="${isEventoIniziato}" id="lookup-investigatori" class="btn btn-primary evento-table-button" onclick="openLookupPersona('investigatori','base')" data-toggle="modal" data-target=".modal-lookup-persona">
+										<span><i class="fa fa-search"></i></span>
+									</a>
+								<a th:unless="${isEventoIniziato}" id="add-investigatori" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('investigatori','base',false,undefined,true)" data-toggle="modal" data-target=".modal-add-persona">
+										<span><i class="fa fa-plus"></i></span>
+									</a>
+								<a th:if="${isEventoIniziato}" id="lookup-investigatori" class="btn btn-primary disabled evento-table-button">
+									<span><i class="fa fa-search"></i></span>
+								</a>
+								<a th:if="${isEventoIniziato}" id="add-investigatori" class="btn btn-success disabled evento-table-button">
+									<span><i class="fa fa-plus"></i></span>
+								</a>
+							</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:if="${#lists.size(eventoWrapper.investigatori) > 0}"
+						th:attr="data-row-id=${__${status.index}__}"
+						th:each="persona, status : ${eventoWrapper.investigatori}"
+						th:class="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'investigatori['+__${status.index}__+']')} ? 'bad-row'">
+						<td th:text="${persona.anagrafica.cognome}"></td>
+						<td th:text="${persona.anagrafica.nome}"></td>
+						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
+						<td th:text="${persona.qualifica}"></td>
+						<td>
+							<a th:unless="${isEventoIniziato}" onclick="modificaPersonaFrom('investigatori',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a th:unless="${isEventoIniziato}" onclick="removePersonaFromWithContainer('investigatoriContainer','investigatori',this)" class="btn btn-danger btn-table single" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+							<a th:if="${isEventoIniziato}" class="btn btn-warning btn-table single disabled" th:text="#{label.modifica}">
+								<span><i class="fa fa-pencil"></i></span>
+							</a>
+							<a th:if="${isEventoIniziato}" class="btn btn-danger btn-table single disabled" th:text="#{label.elimina}">
+								<span><i class="fa fa-trash"></i></span>
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</th:block>
+		</th:block>
+	</th:block>
+	
 </body>
 </html>

@@ -10,6 +10,7 @@ import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
+import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.ModificaOrarioAttivitaWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
@@ -89,4 +90,6 @@ public interface EventoService {
 	public void salvaQuietanzaPagamento(File quietanzaPagamento, Long eventoId) throws Exception;
 	public Pagamento getPagamentoForQuietanza(Evento evento) throws Exception;
 	public Long getFileQuietanzaId(Long eventoId);
+
+	public EventoVersioneEnum versioneEvento(Evento evento);
 }

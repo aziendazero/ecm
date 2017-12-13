@@ -538,7 +538,7 @@
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabili')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.responsabili')}__}"></div>
 									<div class="item form-group" style="clear:both; padding:2px;"></div>
 									<div class="item form-group" style="clear:both">
-										<div class="col-xs-offset-1 col-xs-10">
+										<div id="responsabiliScientificiContainer" class="col-xs-offset-1 col-xs-10">
 											<th:block th:include="evento/eventoEdit :: responsabiliScientifici" />
 										</div>
 									</div>
@@ -557,7 +557,7 @@
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.docenti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.docenti')}__}"></div>
 									<div class="item form-group" style="clear:both; padding:2px;"></div>
 									<div class="item form-group" style="clear:both">
-										<div class="col-xs-offset-1 col-xs-10">
+										<div id="docentiContainer" class="col-xs-offset-1 col-xs-10">
 											<th:block th:include="evento/eventoEdit :: docenti" />
 										</div>
 									</div>
@@ -842,7 +842,7 @@
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabileSegreteria')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.responsabileSegreteria')}__}"></div>
 									<div class="item form-group" style="clear:both; padding:2px;"></div>
 									<div class="item form-group" style="clear:both">
-										<div class="col-xs-offset-1 col-xs-10">
+										<div id="responsabileSegreteriaContainer" class="col-xs-offset-1 col-xs-10">
 											<th:block th:include="evento/eventoEdit :: responsabileSegreteria" />
 										</div>
 									</div>
