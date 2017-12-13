@@ -61,6 +61,7 @@ import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaFADEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.utils.Utils;
@@ -220,9 +221,16 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValore("label.url", eventoFAD.getUrl(), tableFields);
 
 		addCellLabelCampoValore("label.evento_sponsorizzato_radio", evento.getEventoSponsorizzato(), tableFields);
+		if(evento.getEventoSponsorizzato() && (eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE 
+				|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE
+				|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_CONTESTO_SOCIALE
+				|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_SI_ONLINE)) {
+			addCellLabelCampoValore("label.empty", messageSource.getMessage("label.info_sponsor_evento", null, Locale.getDefault()), tableFields);
+		}
 		if(evento.getEventoSponsorizzato() != null && evento.getEventoSponsorizzato())
 			addCellLabelCampoValoreSponsors("label.sponsors", evento.getSponsors(), tableFields);
-		if(evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA) {
+		if(evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA && (eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE 
+																								|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE)) {
 			//<!-- RADIO SPONSOR PRIMA INFANZIA -->
 			addCellLabelCampoValore("label.evento_sponsorizzato_infanzia_radio", evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(), tableFields);
 			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null) {
