@@ -540,6 +540,16 @@
 							<div class="value danger" th:unless="${eventoWrapperShow.evento.eventoSponsorizzato != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
+					<!-- CHECKBOX DATA-->
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoSponsorizzato != null and eventoWrapperShow.evento.eventoSponsorizzato and eventoWrapperShow.evento.letteInfoAllegatoSponsor != null and (eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_NO_ONLINE or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_SI_ONLINE or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).EVENTI_SEMINARIALI_IN_RETE or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_CONTESTO_SOCIALE)}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show"> </span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:text="${eventoWrapperShow.evento.letteInfoAllegatoSponsor} ? #{label.info_sponsor_evento} : ' '"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.letteInfoAllegatoSponsor != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
 					<!-- SPONSOR INFO -->
 					<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoSponsorizzato == true}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -572,7 +582,7 @@
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
-					<th:block th:if="${eventoWrapperShow.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALIMENTAZIONE_PRIMA_INFANZIA and eventoWrapperShow.evento.eventoSponsorizzato == true}">
+					<th:block th:if="${eventoWrapperShow.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALIMENTAZIONE_PRIMA_INFANZIA and eventoWrapperShow.evento.eventoSponsorizzato == true and (eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).EVENTI_SEMINARIALI_IN_RETE or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_NO_ONLINE)}">
 						<!-- RADIO SPONSOR PRIMA INFANZIA -->
 						<div class="item form-group">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
