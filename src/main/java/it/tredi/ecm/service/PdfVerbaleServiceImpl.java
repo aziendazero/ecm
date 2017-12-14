@@ -452,7 +452,7 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
         	Paragraph parFirmaDelegato = new Paragraph();
         	parFirmaDelegato.setAlignment(Element.ALIGN_LEFT);
         	parFirmaDelegato.setFont(fontValoreCampo);
-            String[] valuesFirmaDelegato = {messageSource.getMessage("label.delegato_legale_rappresentante_del_provider", null, Locale.getDefault()), verbale.getDelegato().getNome() + verbale.getDelegato().getCognome()};
+            String[] valuesFirmaDelegato = {messageSource.getMessage("label.delegato_legale_rappresentante_del_provider", null, Locale.getDefault()), verbale.getDelegato().getFullName()};
             parFirmaDelegato.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaDelegato, Locale.getDefault()));
             document.add(parFirmaDelegato);
         }

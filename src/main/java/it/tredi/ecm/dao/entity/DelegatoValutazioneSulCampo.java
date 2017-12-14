@@ -18,5 +18,9 @@ public class DelegatoValutazioneSulCampo {
 
 	@OneToOne
 	private File delega;
+	
+	public String getFullName() {
+		return this.nome + " " + this.cognome;
+	}
 
 }
