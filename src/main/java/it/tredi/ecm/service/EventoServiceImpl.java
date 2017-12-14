@@ -193,7 +193,7 @@ public class EventoServiceImpl implements EventoService {
 				//bisgna gestire tutti i cascade corretti -> eventoPianoFormativo è presente in più piani formativi e nell'evento che lo ha attuato
 				//se annullo un evento che è stato attuato da piano formativo...rimuovo il flag in modo tale da poter rieditare l'evento
 				//eventoPianoFormativo.setAttuato(false);
-			}else{
+			}else if(evento.getStato() == EventoStatoEnum.VALIDATO){
 				LocalDate dataFine = evento.getDataFine();
 				if(dataFine != null){
 					int annoPianoFormativo = dataFine.getYear();
