@@ -36,8 +36,9 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	@EntityGraph(value = "graph.evento.forRiedizione", type = EntityGraphType.FETCH)
 	public Evento findOneForRiedizione(@Param("id") Long id);
 
-	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalse(Long providerId, LocalDate start, LocalDate end);
-	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(Long providerId, LocalDate now);
+	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalseAndStatoNot(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum cancellato);
+	public Set<Evento> findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStatoNot(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum cancellato);
+	public Set<Evento> findAllByProviderIdAndDataScadenzaInvioRendicontazioneBefore(Long providerId, LocalDate now);
 	public Set<Evento> findAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
 	public Integer countAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
 

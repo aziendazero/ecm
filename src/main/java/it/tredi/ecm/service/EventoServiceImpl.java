@@ -2028,12 +2028,26 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalse(providerId, LocalDate.now(), LocalDate.now().plusDays(30));
+		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalseAndStatoNot(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.CANCELLATO);
 	}
-
+	
 	@Override
 	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
 		Set<Evento> listaEventi = getEventiForProviderIdInScadenzaDiPagamento(providerId);
+		if(listaEventi != null)
+			return listaEventi.size();
+		return 0;
+	}
+	
+	/* Vaschetta provider */
+	@Override
+	public Set<Evento> getEventiForProviderIdInScadenzaDiRendicontazione(Long providerId) {
+		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStatoNot(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.CANCELLATO);
+	}
+
+	@Override
+	public int countEventiForProviderIdInScadenzaDiRendicontazione(Long providerId) {
+		Set<Evento> listaEventi = getEventiForProviderIdInScadenzaDiRendicontazione(providerId);
 		if(listaEventi != null)
 			return listaEventi.size();
 		return 0;
@@ -2042,7 +2056,7 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBeforeAndPagatoFalse(providerId, LocalDate.now());
+		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBefore(providerId, LocalDate.now());
 	}
 
 	@Override

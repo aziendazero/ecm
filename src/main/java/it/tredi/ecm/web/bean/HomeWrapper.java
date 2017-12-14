@@ -19,7 +19,8 @@ public class HomeWrapper {
 	//Provider
 	private Boolean isProvider;
 	private Long providerId;
-	private Integer eventiDaPagare;
+	private Integer eventiInScadenzaPagamento;
+	private Integer eventiInScadenzaRendicontazione;
 	private Integer eventiPagamentoScaduto;
 	private Integer messaggi;
 	private Integer accreditamentiDaIntegrare;

@@ -1711,6 +1711,8 @@ public class EventoController {
 
 				case BOZZA : listaEventi = eventoService.getEventiByProviderIdAndStato(currentUser.getAccount().getProvider().getId(), EventoStatoEnum.BOZZA);
 								break;
+				case SCADENZA_RENDICONTAZIONE : listaEventi = eventoService.getEventiForProviderIdInScadenzaDiRendicontazione(currentUser.getAccount().getProvider().getId());
+												break;
 
 				default: break;
 			}

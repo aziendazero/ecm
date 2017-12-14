@@ -54,6 +54,8 @@ public interface EventoService {
 
 	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId);
 	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId);
+	public Set<Evento> getEventiForProviderIdInScadenzaDiRendicontazione(Long providerId);
+	public int countEventiForProviderIdInScadenzaDiRendicontazione(Long providerId);
 	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId);
 	public int countEventiForProviderIdPagamentoScaduti(Long providerId);
 
