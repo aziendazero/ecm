@@ -80,7 +80,8 @@ public class LoginController {
 				case PROVIDER_VISUALIZZATORE:
 					wrapper.setIsProvider(true);
 					wrapper.setProviderId(providerService.getProviderIdByAccountId(currentUser.getAccount().getId()));
-					wrapper.setEventiDaPagare(eventoService.countEventiForProviderIdInScadenzaDiPagamento(currentUser.getAccount().getProvider().getId()));
+					wrapper.setEventiInScadenzaPagamento(eventoService.countEventiForProviderIdInScadenzaDiPagamento(currentUser.getAccount().getProvider().getId()));
+					wrapper.setEventiInScadenzaRendicontazione(eventoService.countEventiForProviderIdInScadenzaDiRendicontazione(currentUser.getAccount().getProvider().getId()));
 					wrapper.setEventiPagamentoScaduto(eventoService.countEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId()));
 					wrapper.setMessaggi(9);
 					wrapper.setAccreditamentiDaIntegrare(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.INTEGRAZIONE, wrapper.getProviderId()));
