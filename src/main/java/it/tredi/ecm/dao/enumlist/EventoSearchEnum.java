@@ -10,7 +10,9 @@ public enum EventoSearchEnum {
 	CREDITI_NON_CONFERMATI(4, "Eventi con crediti non confermati"),
 	ALIMENTAZIONE_PRIMA_INFANZIA(5, "Eventi con contenuti di alimentazione di prima infanzia"),
 	MEDICINE_NON_CONVENZIONALI(6, "Eventi con contenuti di medicine non convenzionali"),
-	SCADENZA_RENDICONTAZIONE(7, "Eventi in scadenza per Rendicontazione");
+	SCADENZA_RENDICONTAZIONE(7, "Eventi in scadenza per Rendicontazione"),
+	NON_PAGATI(8, "Eventi in scadenza per Rendicontazione"),
+	NON_REDICONTATI(9, "Eventi in scadenza per Rendicontazione");
 
 	private int id;
 	private String nome;

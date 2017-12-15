@@ -22,6 +22,7 @@ public class HomeWrapper {
 	private Integer eventiInScadenzaPagamento;
 	private Integer eventiInScadenzaRendicontazione;
 	private Integer eventiPagamentoScaduto;
+	private Integer eventiRendicontazioneScaduto;
 	private Integer messaggi;
 	private Integer accreditamentiDaIntegrare;
 	private Integer accreditamentiInPreavvisoRigetto;

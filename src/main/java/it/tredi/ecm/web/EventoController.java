@@ -1706,9 +1706,10 @@ public class EventoController {
 				case SCADENZA_PAGAMENTO : 	listaEventi = eventoService.getEventiForProviderIdInScadenzaDiPagamento(currentUser.getAccount().getProvider().getId());
 											break;
 
-				case NON_RAPPORTATI : listaEventi = eventoService.getEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId());
+				case NON_PAGATI : listaEventi = eventoService.getEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId());
 										break;
-
+				case NON_REDICONTATI : listaEventi = eventoService.getEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId());
+										break;
 				case BOZZA : listaEventi = eventoService.getEventiByProviderIdAndStato(currentUser.getAccount().getProvider().getId(), EventoStatoEnum.BOZZA);
 								break;
 				case SCADENZA_RENDICONTAZIONE : listaEventi = eventoService.getEventiForProviderIdInScadenzaDiRendicontazione(currentUser.getAccount().getProvider().getId());

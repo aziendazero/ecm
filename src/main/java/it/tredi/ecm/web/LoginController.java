@@ -83,6 +83,7 @@ public class LoginController {
 					wrapper.setEventiInScadenzaPagamento(eventoService.countEventiForProviderIdInScadenzaDiPagamento(currentUser.getAccount().getProvider().getId()));
 					wrapper.setEventiInScadenzaRendicontazione(eventoService.countEventiForProviderIdInScadenzaDiRendicontazione(currentUser.getAccount().getProvider().getId()));
 					wrapper.setEventiPagamentoScaduto(eventoService.countEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId()));
+					wrapper.setEventiRendicontazioneScaduto(eventoService.countEventiForProviderIdPagamentoScaduti(currentUser.getAccount().getProvider().getId()));
 					wrapper.setMessaggi(9);
 					wrapper.setAccreditamentiDaIntegrare(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.INTEGRAZIONE, wrapper.getProviderId()));
 					wrapper.setAccreditamentiInPreavvisoRigetto(accreditamentoService.countAllAccreditamentiByStatoAndProviderId(AccreditamentoStatoEnum.PREAVVISO_RIGETTO, wrapper.getProviderId()));
