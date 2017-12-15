@@ -2056,7 +2056,7 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdScadutiENonPagati(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndPagatoFalseAndDataScadenzaPagamentoBefore(providerId, LocalDate.now());
+		return eventoRepository.findAllByProviderIdAndPagatoFalseAndDataScadenzaPagamentoBeforeAndStatoNot(providerId, LocalDate.now(), EventoStatoEnum.CANCELLATO);
 	}
 
 	@Override

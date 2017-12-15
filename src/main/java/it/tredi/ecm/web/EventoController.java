@@ -1708,7 +1708,7 @@ public class EventoController {
 
 				case NON_PAGATI : listaEventi = eventoService.getEventiForProviderIdScadutiENonPagati(currentUser.getAccount().getProvider().getId());
 										break;
-				case NON_REDICONTATI : listaEventi = eventoService.getEventiForProviderIdScadutiENonRendicontati(currentUser.getAccount().getProvider().getId());
+				case NON_RENDICONTATI : listaEventi = eventoService.getEventiForProviderIdScadutiENonRendicontati(currentUser.getAccount().getProvider().getId());
 										break;
 				case BOZZA : listaEventi = eventoService.getEventiByProviderIdAndStato(currentUser.getAccount().getProvider().getId(), EventoStatoEnum.BOZZA);
 								break;

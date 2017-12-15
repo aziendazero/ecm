@@ -12,7 +12,7 @@ public enum EventoSearchEnum {
 	MEDICINE_NON_CONVENZIONALI(6, "Eventi con contenuti di medicine non convenzionali"),
 	SCADENZA_RENDICONTAZIONE(7, "Eventi in scadenza per Rendicontazione"),
 	NON_PAGATI(8, "Eventi in scadenza per Rendicontazione"),
-	NON_REDICONTATI(9, "Eventi in scadenza per Rendicontazione");
+	NON_RENDICONTATI(9, "Eventi in scadenza per Rendicontazione");
 
 	private int id;
 	private String nome;
