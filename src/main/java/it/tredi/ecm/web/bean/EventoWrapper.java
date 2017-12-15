@@ -58,6 +58,7 @@ public class EventoWrapper {
 	private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
 	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
+	/* FSC */
 	private List<PersonaEvento> esperti = new ArrayList<PersonaEvento>();
 	private List<PersonaEvento> coordinatori = new ArrayList<PersonaEvento>();
 	private List<PersonaEvento> investigatori = new ArrayList<PersonaEvento>();
@@ -88,6 +89,8 @@ public class EventoWrapper {
 
 	//gestire l'aggiunta di una PersonaEvento
 	private PersonaEvento tempPersonaEvento = new PersonaEvento();
+	private List<PersonaEvento> personeEventoModificate = new ArrayList<PersonaEvento>();
+
 
 	private Sponsor tempSponsorEvento = new Sponsor();
 	private Partner tempPartnerEvento = new Partner();

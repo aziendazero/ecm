@@ -889,39 +889,14 @@ public class EventoController {
 		evento.setProceduraFormativa(proceduraFormativa);
 		evento.setStato(EventoStatoEnum.BOZZA);
 		eventoWrapper.setEvento(evento);
-		eventoWrapper.initProgrammi();
+		eventoWrapper.initProgrammi();		
 //		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
 	}
 
 	private EventoWrapper prepareEventoWrapperEdit(Evento evento, boolean reloadWrapperFromDB) throws Exception {
-		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
-		if(evento.getResponsabili() != null) {
-			//setto l'IdentificativoPersonaRuoloEvento su tutti i primi 3 responsabili scientifici
-			//faccio questo per i dati salvati prima dell'aggiunta del campo
-			personaEventoService.setIdentificativoPersonaRuoloEvento(evento.getResponsabili());
-			for (PersonaEvento pEv : evento.getResponsabili())
-				pEv.setIdentificativoPersonaRuoloEventoTemp(pEv.getIdentificativoPersonaRuoloEvento());
-		}
-
-		if(evento instanceof EventoFSC){
-			if(((EventoFSC) evento).getEsperti() != null) {
-				//setto l'IdentificativoPersonaRuoloEvento su tutti i primi 3 responsabili scientifici
-				//faccio questo per i dati salvati prima dell'aggiunta del campo
-				personaEventoService.setIdentificativoPersonaRuoloEvento(((EventoFSC) evento).getEsperti());
-				for (PersonaEvento pEv : ((EventoFSC) evento).getEsperti())
-					pEv.setIdentificativoPersonaRuoloEventoTemp(pEv.getIdentificativoPersonaRuoloEvento());
-			}
-			if(((EventoFSC) evento).getCoordinatori() != null) {
-				//setto l'IdentificativoPersonaRuoloEvento su tutti i primi 3 responsabili scientifici
-				//faccio questo per i dati salvati prima dell'aggiunta del campo
-				personaEventoService.setIdentificativoPersonaRuoloEvento(((EventoFSC) evento).getCoordinatori());
-				for (PersonaEvento pEv : ((EventoFSC) evento).getCoordinatori())
-					pEv.setIdentificativoPersonaRuoloEventoTemp(pEv.getIdentificativoPersonaRuoloEvento());
-			}
-		}
-		
+		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));		
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
 		eventoWrapper.initProgrammi();
@@ -1193,14 +1168,28 @@ public class EventoController {
 				}
 			}else{
 				//MODIFICA
-				int index = Integer.parseInt(modificaElemento);
-				if(target.equalsIgnoreCase("responsabiliScientifici")){
-					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-					eventoWrapper.getResponsabiliScientifici().set(index, eventoWrapper.getTempPersonaEvento());
-				}else if(target.equalsIgnoreCase("docenti")){
-					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-					eventoWrapper.getDocenti().set(index, eventoWrapper.getTempPersonaEvento());
-				}
+				//15/12/2017 in modifica salvare il record crea un problema di validazione in quanto l'utente potrebbe 
+				//uscire dalla modifca dell'evento senza salvare l'evento stesso ma ritrovandosi le modifiche 
+				//alle personeEvento delle liste docenti, responsabili scientifici, esperti, etc. gia' salvate
+				//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
+//				int index = Integer.parseInt(modificaElemento);
+//				if(target.equalsIgnoreCase("responsabiliScientifici")){
+//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+//					eventoWrapper.getResponsabiliScientifici().set(index, eventoWrapper.getTempPersonaEvento());
+//				}else if(target.equalsIgnoreCase("docenti")){
+//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+//					eventoWrapper.getDocenti().set(index, eventoWrapper.getTempPersonaEvento());
+//				}else if(target.equalsIgnoreCase("esperti")){
+//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+//					eventoWrapper.getEsperti().set(index, eventoWrapper.getTempPersonaEvento());
+//				}else if(target.equalsIgnoreCase("coordinatori")){
+//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+//					eventoWrapper.getCoordinatori().set(index, eventoWrapper.getTempPersonaEvento());
+//				}else if(target.equalsIgnoreCase("investigatori")){
+//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+//					eventoWrapper.getInvestigatori().set(index, eventoWrapper.getTempPersonaEvento());
+//				}
+				eventoWrapper.getPersoneEventoModificate().add(eventoWrapper.getTempPersonaEvento());
 			}
 			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
 			return EDIT + " :: " + target;
@@ -1670,7 +1659,7 @@ public class EventoController {
 				eventoWrapper.setCv(null);
 				return EDIT + " :: #addPersonaTo";
 			}else if(target.equalsIgnoreCase("coordinatori")){
-				PersonaEvento p = eventoWrapper.getEsperti().get(modificaElemento.intValue());
+				PersonaEvento p = eventoWrapper.getCoordinatori().get(modificaElemento.intValue());
 				eventoWrapper.setTempPersonaEvento(p);
 				eventoWrapper.setCv(null);
 				return EDIT + " :: #addPersonaTo";

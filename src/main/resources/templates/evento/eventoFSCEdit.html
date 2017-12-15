@@ -784,7 +784,6 @@
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="responsabili">
 										<span th:text="#{label.responsabili_scientifici_esperti_coordinatori}">Responsabili scientifici / Esperti / Coordinatori</span>
-										<span class="required">*</span>
 									</label>
 								</div>
 
@@ -795,7 +794,6 @@
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="responsabili">
 										<span th:text="#{label.responsabili_scientifici_esperti_coordinatori_investigatori}">Responsabili scientifici / Esperti / Coordinatori / Investigatori</span>
-										<span class="required">*</span>
 									</label>
 								</div>
 
@@ -826,7 +824,6 @@
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="esperti">
 										<span th:text="#{label.esperti}">Esperti</span>
-										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"></div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.esperti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.esperti')}__}"></div>
@@ -845,7 +842,6 @@
 									</label>
 									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="coordinatori">
 										<span th:text="#{label.coordinatori}">Coordinatori</span>
-										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"></div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.coordinatori')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.coordinatori')}__}"></div>

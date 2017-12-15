@@ -156,19 +156,6 @@ public class EventoServiceImpl implements EventoService {
 		Evento eventoDB = null;
 		Map<String, Object> diffMap = new HashMap<String, Object>();
 		
-		if(evento instanceof EventoFSC) {
-			if(versioneEvento(evento) == EventoVersioneEnum.UNO_PRIMA_2018) {
-				//cancello eventuali esperti e coordinatori inseriti
-				if(((EventoFSC) evento).getEsperti() != null)
-					((EventoFSC) evento).getEsperti().clear();
-				if(((EventoFSC) evento).getCoordinatori() != null)
-					((EventoFSC) evento).getCoordinatori().clear();
-				//cancello eventuali investigatori
-				if(((EventoFSC) evento).getInvestigatori() != null)
-					((EventoFSC) evento).getInvestigatori().clear();				
-			}
-		}
-		
 		if(evento.isNew()) {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
 			evento.handleDateScadenza();
@@ -734,6 +721,24 @@ public class EventoServiceImpl implements EventoService {
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) throws Exception{
 		Evento evento = eventoWrapper.getEvento();
 
+		if(evento instanceof EventoFSC) {
+			if(versioneEvento(evento) == EventoVersioneEnum.UNO_PRIMA_2018) {
+				//cancello eventuali esperti coordinatori e investigatori inseriti
+				if(eventoWrapper.getEsperti() != null)
+					eventoWrapper.getEsperti().clear();
+				if(eventoWrapper.getCoordinatori() != null)
+					eventoWrapper.getCoordinatori().clear();
+				if(eventoWrapper.getInvestigatori() != null)
+					eventoWrapper.getInvestigatori().clear();
+			} else {
+				//cancello investigatori inseriti se la TipologiaEventoFSC non è ATTIVITA_DI_RICERCA
+				if(((EventoFSC) evento).getTipologiaEventoFSC() != TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA) {
+					if(eventoWrapper.getInvestigatori() != null)
+						eventoWrapper.getInvestigatori().clear();
+				}
+			}
+		}
+		
 		calculateAutoCompilingData(eventoWrapper);
 
 		if(evento instanceof EventoRES){
@@ -1059,6 +1064,30 @@ public class EventoServiceImpl implements EventoService {
 				eventoWrapper.setDocumentoVerificaRicaduteFormative(((EventoRES) evento).getDocumentoVerificaRicaduteFormative());
 			}
 		}else if(evento instanceof EventoFSC){
+			if(evento.getResponsabili() != null) {
+				//setto l'IdentificativoPersonaRuoloEvento su tutti i primi 3 responsabili scientifici
+				//faccio questo per i dati salvati prima dell'aggiunta del campo
+				personaEventoService.setIdentificativoPersonaRuoloEvento(evento.getResponsabili());
+				for (PersonaEvento pEv : evento.getResponsabili())
+					pEv.setIdentificativoPersonaRuoloEventoTemp(pEv.getIdentificativoPersonaRuoloEvento());
+			}
+
+			if(((EventoFSC) evento).getEsperti() != null) {
+				//setto l'IdentificativoPersonaRuoloEvento su tutti i primi 3 responsabili scientifici
+				//faccio questo per i dati salvati prima dell'aggiunta del campo
+				personaEventoService.setIdentificativoPersonaRuoloEvento(((EventoFSC) evento).getEsperti());
+				for (PersonaEvento pEv : ((EventoFSC) evento).getEsperti())
+					pEv.setIdentificativoPersonaRuoloEventoTemp(pEv.getIdentificativoPersonaRuoloEvento());
+			}
+			if(((EventoFSC) evento).getCoordinatori() != null) {
+				//setto l'IdentificativoPersonaRuoloEvento su tutti i primi 3 responsabili scientifici
+				//faccio questo per i dati salvati prima dell'aggiunta del campo
+				personaEventoService.setIdentificativoPersonaRuoloEvento(((EventoFSC) evento).getCoordinatori());
+				for (PersonaEvento pEv : ((EventoFSC) evento).getCoordinatori())
+					pEv.setIdentificativoPersonaRuoloEventoTemp(pEv.getIdentificativoPersonaRuoloEvento());
+			}
+
+			
 			//Programma
 			eventoWrapper.setProgrammaEventoFSC(((EventoFSC) evento).getFasiAzioniRuoli());
 
@@ -1646,50 +1675,6 @@ public class EventoServiceImpl implements EventoService {
 			}
 			*/
 		}else if(evento instanceof EventoFSC){
-			//controllo che i ruoli delle azioni siano validi in quanto potrebbero essere stati inseriti correttamente
-			//ma poi potrebbero essere stati modificati i responsabili scientifici o la data inizio passando da un evento della versione 2 alla versione 1 
-			//rendendo alcuni o tutti i ruoli "Responsabile scientifico X" (X = A o B o C) non piu' accettabili
-			EventoVersioneEnum versione = versioneEvento(evento);
-			for (FaseAzioniRuoliEventoFSCTypeA faseAzione : eventoWrapper.getProgrammaEventoFSC()) {
-				for(AzioneRuoliEventoFSC azioneRuolo : faseAzione.getAzioniRuoli()) {
-					for(RuoloOreFSC ruoloOre : azioneRuolo.getRuoli()) {
-						if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.RESPONSABILE_SCIENTIFICO) {
-							//potrebbe non essere valido
-							if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
-								// vengono settati tutti a null perche' nella versione 1 non esistevano 
-								ruoloOre.setRuolo(null);
-							} else {
-								if(!eventoWrapper.getListRuoloFSCEnumPerResponsabiliScientifici().contains(ruoloOre.getRuolo()))
-									ruoloOre.setRuolo(null);
-							}
-						} else if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE_X) {
-							//potrebbe non essere valido
-							if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
-								// vengono settati tutti a null perche' nella versione 1 non esistevano 
-								ruoloOre.setRuolo(null);
-							} else {
-								if(!eventoWrapper.getListRuoloFSCEnumPerCoordinatori().contains(ruoloOre.getRuolo()))
-									ruoloOre.setRuolo(null);
-							}
-						} else if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.ESPERTO) {
-							//potrebbe non essere valido
-							if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
-								//vengono accettati solo quelli validi per la tipologia corrente
-								if(((EventoFSC) evento).getTipologiaEventoFSC() == null) {
-									ruoloOre.setRuolo(null);
-								} else {
-									if(!((EventoFSC) evento).getTipologiaEventoFSC().getRuoliCoinvolti().contains(ruoloOre.getRuolo()))
-										ruoloOre.setRuolo(null);
-								}
-							} else {
-								if(!eventoWrapper.getListRuoloFSCEnumPerEsperti().contains(ruoloOre.getRuolo()))
-									ruoloOre.setRuolo(null);
-							}
-						}
-					}
-				}
-			}
-			
 			if(eventoWrapper.getProgrammaEventoFSC() != null){
 				((EventoFSC)evento).setFasiAzioniRuoli(eventoWrapper.getProgrammaEventoFSC());
 				for(FaseAzioniRuoliEventoFSCTypeA fase : ((EventoFSC)evento).getFasiAzioniRuoli()){
@@ -2024,6 +2009,33 @@ public class EventoServiceImpl implements EventoService {
 			List<RiepilogoRuoliFSC> riepilogoRuoli = new ArrayList<RiepilogoRuoliFSC>();
 			riepilogoRuoli.addAll(Arrays.asList(((EventoFSC) riedizione).getRiepilogoRuoli().toArray(new RiepilogoRuoliFSC[((EventoFSC) riedizione).getRiepilogoRuoli().size()])));
 			((EventoFSC) riedizione).setRiepilogoRuoli(riepilogoRuoli);
+			
+			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio esperti"));
+			for(PersonaEvento r : ((EventoFSC) riedizione).getEsperti()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione Esperto: " + r.getId()));
+				r.setId(null);
+				r.getAnagrafica().setCv(fileService.copyFile(r.getAnagrafica().getCv()));
+				personaEventoRepository.save(r);
+				LOGGER.debug(Utils.getLogMessage("Esperto clonato salvato: " + r.getId()));
+			}
+
+			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio coordinatori"));
+			for(PersonaEvento r : ((EventoFSC) riedizione).getCoordinatori()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione Coordinatore: " + r.getId()));
+				r.setId(null);
+				r.getAnagrafica().setCv(fileService.copyFile(r.getAnagrafica().getCv()));
+				personaEventoRepository.save(r);
+				LOGGER.debug(Utils.getLogMessage("Coordinatore clonato salvato: " + r.getId()));
+			}
+			
+			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio investigatori"));
+			for(PersonaEvento r : ((EventoFSC) riedizione).getInvestigatori()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione Investigatore: " + r.getId()));
+				r.setId(null);
+				r.getAnagrafica().setCv(fileService.copyFile(r.getAnagrafica().getCv()));
+				personaEventoRepository.save(r);
+				LOGGER.debug(Utils.getLogMessage("Investigatore clonato salvato: " + r.getId()));
+			}
 		}
 
 		//parte in comune
@@ -2739,5 +2751,53 @@ public class EventoServiceImpl implements EventoService {
 
 		LOGGER.info("Pagamento o file di Quietanza NON TROVATO per evento: " + eventoId);
 		return null;
+	}
+
+	private List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(List<PersonaEvento> personeEvento) {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(personeEvento != null) {
+			for(PersonaEvento pEv : personeEvento) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCResponsabileSCientifico());
+			}
+		}
+		return toRet;
+	}
+	
+	@Override
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(EventoFSC evento) {
+		return getListRuoloFSCEnumPerResponsabiliScientifici(evento.getResponsabili());
+	}
+
+	private List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti(List<PersonaEvento> personeEvento) {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(personeEvento != null) {
+			for(PersonaEvento pEv : personeEvento) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCEsperto());
+			}
+		}
+		return toRet;
+	}
+
+	@Override
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti(EventoFSC evento) {
+		return getListRuoloFSCEnumPerEsperti(evento.getEsperti());
+	}
+
+	private List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(List<PersonaEvento> personeEvento) {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(personeEvento != null) {
+			for(PersonaEvento pEv : personeEvento) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCCoordinatore());
+			}
+		}
+		return toRet;
+	}
+
+	@Override
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento) {
+		return getListRuoloFSCEnumPerCoordinatori(evento.getCoordinatori());
 	}
 }

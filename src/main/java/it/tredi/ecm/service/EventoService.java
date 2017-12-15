@@ -5,10 +5,12 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Pagamento;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -92,4 +94,7 @@ public interface EventoService {
 	public Long getFileQuietanzaId(Long eventoId);
 
 	public EventoVersioneEnum versioneEvento(Evento evento);
+	public 	List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(EventoFSC evento);
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti(EventoFSC evento);
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento);
 }

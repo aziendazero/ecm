@@ -46,12 +46,14 @@ import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.validator.bean.ValidateEventoFadInfo;
 import it.tredi.ecm.web.validator.bean.ValidateEventoResInfo;
+import it.tredi.ecm.web.validator.bean.ValidateFasiAzioniRuoliFSCInfo;
 
 @Component
 public class EventoValidatorVersioneUno {
@@ -61,6 +63,7 @@ public class EventoValidatorVersioneUno {
 	@Autowired private FileValidator fileValidator;
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
+	@Autowired private EventoValidator eventoValidator;
 
 	//Rimosso perche' il validatore e' un singleton e queste variabili vengono condivise da piu' tread
 //	private Set<String> risultatiAttesiUtilizzati;
@@ -890,6 +893,10 @@ public class EventoValidatorVersioneUno {
 			int counter = 0;
 			boolean atLeastOnePartecipante = false;
 			boolean atLeastOneTutor = false;
+			EventoVersioneEnum versione = eventoService.versioneEvento(evento);
+			List<RuoloFSCEnum> listRuoloFSCEnumPerResponsabiliScientifici = eventoService.getListRuoloFSCEnumPerResponsabiliScientifici(evento);
+			List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatori = eventoService.getListRuoloFSCEnumPerCoordinatori(evento);
+			List<RuoloFSCEnum> listRuoloFSCEnumPerEsperti = eventoService.getListRuoloFSCEnumPerEsperti(evento);
 			//gestione particolare tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO
 			//eseguo i controlli solo alle fasiDaInserire specificate da fasiDaInserire
 			if(evento.getTipologiaEventoFSC() != null
@@ -898,10 +905,11 @@ public class EventoValidatorVersioneUno {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
 					//validazione solo se la fase è abilitata
 					if(evento.getFasiDaInserire().getFasiAbilitate().contains(far.getFaseDiLavoro())) {
-						boolean[] validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
-						if(validationResults[0])
+						//boolean[] validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
+						ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versione, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
+						if(validationResults.isAtLeastOnePartecipante())
 							atLeastOnePartecipante = true;
-						if(validationResults[1])
+						if(validationResults.isAtLeastOneTutor())
 							atLeastOneTutor = true;
 					}
 					counter++;
@@ -910,10 +918,11 @@ public class EventoValidatorVersioneUno {
 			//gestione di default
 			else {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
-					boolean[] validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
-					if(validationResults[0])
+					//boolean[] validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
+					ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versione, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
+					if(validationResults.isAtLeastOnePartecipante())
 						atLeastOnePartecipante = true;
-					if(validationResults[1])
+					if(validationResults.isAtLeastOneTutor())
 						atLeastOneTutor = true;
 					counter++;
 				}
@@ -1390,7 +1399,11 @@ public class EventoValidatorVersioneUno {
 
 	//validate FasiAzioniRuoliFSC
 	//ritorna se ha trovato almeno 1 partecipante e almeno 1 tutor per fase
-	private boolean[] validateFasiAzioniRuoliFSC(FaseAzioniRuoliEventoFSCTypeA faseAzioniRuoli, Errors errors, String prefix, TipologiaEventoFSCEnum tipologiaEvento) {
+	private ValidateFasiAzioniRuoliFSCInfo validateFasiAzioniRuoliFSC(FaseAzioniRuoliEventoFSCTypeA faseAzioniRuoli, Errors errors, String prefix, TipologiaEventoFSCEnum tipologiaEvento,
+			EventoVersioneEnum versione, List<RuoloFSCEnum> listRuoloFSCEnumPerResponsabiliScientifici, 
+			List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatori, List<RuoloFSCEnum> listRuoloFSCEnumPerEsperti) {
+
+		ValidateFasiAzioniRuoliFSCInfo validateFasiAzioniRuoliFSCInfo = new ValidateFasiAzioniRuoliFSCInfo();
 
 		//fase di lavoro (gratis, non viene inserita dall'utente, ma generata
 		//automaticamente dal sistema
@@ -1398,7 +1411,8 @@ public class EventoValidatorVersioneUno {
 		//azioniRuoli (almeno 1 azione per fase)
 		if(faseAzioniRuoli.getAzioniRuoli() == null || faseAzioniRuoli.getAzioniRuoli().isEmpty()) {
 			errors.rejectValue(prefix + "azioniRuoli", "error.empty");
-			return new boolean[] {false, false};
+			//return new boolean[] {false, false};
+			return validateFasiAzioniRuoliFSCInfo;			
 		}
 		else {
 			int counter = 0;
@@ -1426,9 +1440,19 @@ public class EventoValidatorVersioneUno {
 						}
 					}
 				}
+				
+				//versione 2 controllo che i ruoli delle azioni siano validi in quanto potrebbero essere stati inseriti correttamente
+				//ma poi potrebbero essere stati modificati i responsabili scientifici o la data inizio passando da un evento della versione 2 alla versione 1 
+				//rendendo alcuni o tutti i ruoli "Responsabile scientifico X" (X = A o B o C) non piu' accettabili
+				for(RuoloOreFSC ruoloOre : aref.getRuoli()) {
+					eventoValidator.validateRuoloDinamicoDaSezione1(validateFasiAzioniRuoliFSCInfo, ruoloOre, tipologiaEvento, versione, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
+				}
 
 				//hasErrors
-				if(validationResults[0] || validationResults[3]) {
+				if(validationResults[0] || validationResults[3] || validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScentifico()
+						|| validateFasiAzioniRuoliFSCInfo.isInvalidCoordinatore()
+						|| validateFasiAzioniRuoliFSCInfo.isInvalidEsperto()) {
+					//Evidenzio la riga della AzioneRuoliEventoFSC
 					errors.rejectValue(prefix + "azioniRuoli["+counter+"]", "");
 					if(validationResults[0])
 						atLeastOneErrorAzione = true;
@@ -1462,7 +1486,19 @@ public class EventoValidatorVersioneUno {
 			else if(errorePartecipanteAudit) {
 				errors.rejectValue(prefix + "azioniRuoli", "error.partecipanti_AUDIT_ore");
 			}
-			return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
+
+			//mostro i messaggi di non validita' dei ruoli dinamici non piu' presenti in sezione 1
+			if(validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScentifico())
+				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_responsabile_scientifico_x_non_valido");
+			if(validateFasiAzioniRuoliFSCInfo.isInvalidCoordinatore())
+				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_coordinatore_x_non_valido");
+			if(validateFasiAzioniRuoliFSCInfo.isInvalidEsperto())
+				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_esperto_x_non_valido");
+			
+			//return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
+			validateFasiAzioniRuoliFSCInfo.setAtLeastOnePartecipante(atLeastOnePartecipante);
+			validateFasiAzioniRuoliFSCInfo.setAtLeastOneTutor(atLeastOneTutor);
+			return validateFasiAzioniRuoliFSCInfo;
 		}
 	}
 
