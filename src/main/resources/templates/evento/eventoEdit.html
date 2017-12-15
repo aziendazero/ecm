@@ -172,7 +172,7 @@
 									<span class="required">*</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<select
+									<select id="personaevento-ruolo"
 										class="selectpicker required selectRuolo"
 										th:field="${eventoWrapper.tempPersonaEvento.ruolo}"
 										data-width="100%" data-style="btn-primary"
@@ -183,7 +183,7 @@
 											th:each="ruolo, row: ${T(it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum).values()}"
 											th:value="${ruolo}"
 											th:text="${ruolo.nome}"
-											th:unless="${ruolo == T(it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum).RELATORE and eventoWrapper.evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
+											th:unless="${(ruolo == T(it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum).RELATORE or ruolo == T(it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum).MODERATORE) and eventoWrapper.evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
 										</option>
 									</select>
 								</div>
@@ -1080,6 +1080,9 @@
 							$("#container-titolare").hide();
 						}else if(target == 'docenti'){
 							$("#container-qualifica").hide();
+							//per EventoRES devo sistemare la select di inserimento del ruolo che cambia da versione 1 a 2
+							updatePersonaEventoRuoliDisponibili();
+							
 							$("#container-ruolo").show();
 							$("#container-titolare").show();
 						}else if(target == 'investigatori'){
@@ -1110,7 +1113,27 @@
 					}
 				}
 			}
+			
+			function updatePersonaEventoRuoliDisponibili() {
+				if(isRes()){
+					console.log('updatePersonaEventoRuoliDisponibili: EvenoRES');
+					var selectId = '#personaevento-ruolo';
+					var versione = getVersione();
 
+					$(selectId).selectpicker('val','');
+					$(selectId).prop('disabled',false);
+
+					$.each($(selectId + " option"), function() {
+						if(versione === 2 || ($(this).attr("value") != 'MODERATORE')) {
+							$(this).show();
+						} else {
+							$(this).hide();
+						}
+					});
+					$(selectId).selectpicker('refresh');
+				}
+			}
+			
 			//chiude la modale di inserimento di una persona svuotandone i contenuti
 			function closeModaleAddPersona(){
 				console.log('closeModaleAddPersona')
@@ -1322,6 +1345,8 @@
 				}else if(target == 'esperti'){
 					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
 				}else if(target == 'coordinatori'){
+					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
+				}else if(target == 'investigatori'){
 					sendAjaxModificaPersonaTo(target,'base',false,modificaElemento);
 				}
 			}

@@ -805,7 +805,8 @@
 												<span>20</span>
 											</label>
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="docenti-relatori-tutor">
-												<span th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
+												<span id="docreltut" th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
+												<span id="docreltutmod" th:text="#{label.docenti_relatori_tutor_moderatore}">Docenti/Relatori/Tutor/Moderatore</span>
 												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"></div>
@@ -1590,6 +1591,11 @@
 						deselectAllText : 'Deseleziona tutti',
 						countSelectedText : '{0} selezionate'
 					});
+					
+					$('#dataInizio').on("apply.daterangepicker change", function() {
+						setDocRelTutMod();
+					});
+					$('#dataInizio').on('change', setDocRelTutMod);
 
 				    $("#addAttivitaRES-metodolgieDidattiche").prop('disabled',true);
 
@@ -1621,6 +1627,7 @@
 				});
 
 				function initAll(){
+					setDocRelTutMod();
 
 					$("#add-attivitaRES-modal").draggable({
 					    handle: ".modal-content"
@@ -2356,6 +2363,18 @@
 						default: 	break;
 					}
 				}
+				
+				function setDocRelTutMod() {
+					var versione = getVersione();
+					if (versione === 2) {
+						$("#docreltut").hide();
+						$("#docreltutmod").show();
+					} else {
+						$("#docreltutmod").hide();
+						$("#docreltut").show();
+					}
+				}
+				
 			/*]]>*/
 			</script>
 		</div>

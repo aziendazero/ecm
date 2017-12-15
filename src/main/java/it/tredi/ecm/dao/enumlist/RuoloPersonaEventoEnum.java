@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum RuoloPersonaEventoEnum {
 	DOCENTE(1,"Docente"),
 	RELATORE(2,"Relatore"),
-	TUTOR(3,"Tutor");
+	TUTOR(3,"Tutor"),
+	MODERATORE(4,"Moderatore");
 	
 	private int id;
 	private String nome;
