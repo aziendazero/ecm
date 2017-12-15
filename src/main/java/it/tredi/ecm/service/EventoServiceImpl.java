@@ -2042,7 +2042,7 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiRendicontazione(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStatoNot(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.CANCELLATO);
+		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStato(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.VALIDATO);
 	}
 
 	@Override
@@ -2055,13 +2055,26 @@ public class EventoServiceImpl implements EventoService {
 
 	/* Vaschetta provider */
 	@Override
-	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBefore(providerId, LocalDate.now());
+	public Set<Evento> getEventiForProviderIdScadutiENonPagati(Long providerId) {
+		return eventoRepository.findAllByProviderIdAndPagatoFalseAndDataScadenzaPagamentoBefore(providerId, LocalDate.now());
 	}
 
 	@Override
-	public int countEventiForProviderIdPagamentoScaduti(Long providerId) {
-		Set<Evento> listaEventi = getEventiForProviderIdPagamentoScaduti(providerId);
+	public int countEventiForProviderIdScadutiENonPagati(Long providerId) {
+		Set<Evento> listaEventi = getEventiForProviderIdScadutiENonPagati(providerId);
+		if(listaEventi != null)
+			return listaEventi.size();
+		return 0;
+	}
+	
+	@Override
+	public Set<Evento> getEventiForProviderIdScadutiENonRendicontati(Long providerId) {
+		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBeforeAndStato(providerId, LocalDate.now(), EventoStatoEnum.VALIDATO);
+	}
+
+	@Override
+	public int countEventiForProviderIdScadutiENonRendicontati(Long providerId) {
+		Set<Evento> listaEventi = getEventiForProviderIdScadutiENonRendicontati(providerId);
 		if(listaEventi != null)
 			return listaEventi.size();
 		return 0;
@@ -2656,4 +2669,5 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.info("Pagamento o file di Quietanza NON TROVATO per evento: " + eventoId);
 		return null;
 	}
+
 }

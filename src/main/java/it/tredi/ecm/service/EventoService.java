@@ -56,8 +56,10 @@ public interface EventoService {
 	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId);
 	public Set<Evento> getEventiForProviderIdInScadenzaDiRendicontazione(Long providerId);
 	public int countEventiForProviderIdInScadenzaDiRendicontazione(Long providerId);
-	public Set<Evento> getEventiForProviderIdPagamentoScaduti(Long providerId);
-	public int countEventiForProviderIdPagamentoScaduti(Long providerId);
+	public Set<Evento> getEventiForProviderIdScadutiENonPagati(Long providerId);
+	public int countEventiForProviderIdScadutiENonPagati(Long providerId);
+	public Set<Evento> getEventiForProviderIdScadutiENonRendicontati(Long providerId);
+	public int countEventiForProviderIdScadutiENonRendicontati(Long providerId);
 
 	public List<Evento> cerca(RicercaEventoWrapper wrapper);
 
