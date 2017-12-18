@@ -2,8 +2,6 @@ package it.tredi.ecm.cogeaps;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +12,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.tredi.ecm.dao.entity.Evento;
 
@@ -26,6 +26,7 @@ public class XmlReportBuilder {
 
 //TODO - fare gestione errori più evoluta
 
+	public static final Logger LOGGER = LoggerFactory.getLogger(XmlReportBuilder.class);
 	public final static String CSV_REPORT_ENCODING = "CP1252";
 	private final static String []CSV_FIELDS_LABEL = {"cod_fisc", "nome", "cognome", "ruolo", "lib_dip", "cred_acq", "data_acq", "part_reclutato", "sponsor", "cod_prof.disciplina"};
 	private final static String []CSV_FIELDS_XML = {"cod_fisc", "nome", "cognome", "ruolo", "lib_dip", "cred_acq", "data_acq", "part_reclutato", "sponsor", "cod_prof.disciplina"};
@@ -54,16 +55,18 @@ public class XmlReportBuilder {
 
 		//parsing CSV e dati partecipanti
 		Iterable<CSVRecord> records = CSVFormat.EXCEL.withDelimiter(';').withFirstRecordAsHeader().parse(new StringReader(new String(csv, CSV_REPORT_ENCODING)));
+		int row = 1;
 		for (CSVRecord record : records) {
-		    Map<String, String> map = buildRowMapFromCSVRow(record, CSV_FIELDS_LABEL, CSV_FIELDS_XML);
+		    Map<String, String> map = buildRowMapFromCSVRow(row, record, CSV_FIELDS_LABEL, CSV_FIELDS_XML);
 		    Element partecipanteEl = DocumentHelper.createElement("partecipante");
 		    eventoEl.add(partecipanteEl);
 		    handlePartecipanteEl(partecipanteEl, map, CSV_FIELDS_XML);
+		    row++;
 		}
 		return xmlDoc;
 	}
 
-	private static Map<String, String> buildRowMapFromCSVRow(CSVRecord record, String []label_fields_arr, String []xml_fields_arr) {
+	private static Map<String, String> buildRowMapFromCSVRow(int row, CSVRecord record, String []label_fields_arr, String []xml_fields_arr) {
 		Map<String, String> map = new HashMap<>();
 		for (int i=0; i<label_fields_arr.length; i++) {
 			String key =  label_fields_arr[i];
@@ -73,7 +76,12 @@ public class XmlReportBuilder {
 				value = record.get(key);
 			}
 			catch (Exception e) {
-				value = record.get(i);
+				try {
+					value = record.get(i);
+				} catch (Exception ex) {
+					LOGGER.error("Errore caricando la riga numero " + row + " da csv: impossibile caricare il campo - key: " + key + "; numero colonna: " + (i + 1) + "; colonne presenti: " + record.size() + "; colonne attese: " + label_fields_arr.length);
+					throw ex;
+				}
 			}
 			map.put(xml_key, value);
 		}
