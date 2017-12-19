@@ -889,7 +889,7 @@ public class EventoController {
 		evento.setProceduraFormativa(proceduraFormativa);
 		evento.setStato(EventoStatoEnum.BOZZA);
 		eventoWrapper.setEvento(evento);
-		eventoWrapper.initProgrammi();		
+		eventoWrapper.initProgrammi();
 //		eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperNew(" + proceduraFormativa + ") - exiting"));
 		return eventoWrapper;
@@ -1124,9 +1124,12 @@ public class EventoController {
 				}
 
 				PersonaEvento p = SerializationUtils.clone(eventoWrapper.getTempPersonaEvento());
+				//TODO sono obbligato a salvare i docenti perchè altrimenti non riesco a fare il binding in AddAttivitaRES (select si basa su id della entity)
+				//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
+				//applico la regola a tutte le liste di PersoneEvento per avere la stessa gestione anche se non sarebbe neccessario
+				
+				eventoWrapper.getPersoneEventoInserite().add(p);
 				if(target.equalsIgnoreCase("responsabiliScientifici")){
-					//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in in AddAttivitaRES (select si basa su id della entity)
-					//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
 					File cvAnagrafica = p.getAnagrafica().getCv();
 					if(cvAnagrafica != null) {
 						cvAnagrafica.getData();
@@ -1139,20 +1142,14 @@ public class EventoController {
 					
 					personaEventoService.setIdentificativoPersonaRuoloEventoTemp(eventoWrapper.getResponsabiliScientifici());
 				}else if(target.equalsIgnoreCase("esperti")){
-					//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in AddAttivitaRES (select si basa su id della entity)
-					//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
 					personaEventoRepository.save(p);
 					eventoWrapper.getEsperti().add(p);
 					personaEventoService.setIdentificativoPersonaRuoloEventoTemp(eventoWrapper.getEsperti());
 				}else if(target.equalsIgnoreCase("coordinatori")){
-					//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in AddAttivitaRES (select si basa su id della entity)
-					//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
 					personaEventoRepository.save(p);
 					eventoWrapper.getCoordinatori().add(p);
 					personaEventoService.setIdentificativoPersonaRuoloEventoTemp(eventoWrapper.getCoordinatori());
 				}else if(target.equalsIgnoreCase("investigatori")){
-					//TODO sono obbligato a salvarlo perchè altrimenti non riesco a fare il binding in AddAttivitaRES (select si basa su id della entity)
-					//questo comporta anche che prima di salvare l'evento devo fare il reload della persona altrimenti hibernate mi da detached object e non mi fa salvare
 					personaEventoRepository.save(p);
 					eventoWrapper.getInvestigatori().add(p);
 				}else if(target.equalsIgnoreCase("docenti")){
@@ -1172,24 +1169,33 @@ public class EventoController {
 				//uscire dalla modifca dell'evento senza salvare l'evento stesso ma ritrovandosi le modifiche 
 				//alle personeEvento delle liste docenti, responsabili scientifici, esperti, etc. gia' salvate
 				//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
-//				int index = Integer.parseInt(modificaElemento);
-//				if(target.equalsIgnoreCase("responsabiliScientifici")){
-//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-//					eventoWrapper.getResponsabiliScientifici().set(index, eventoWrapper.getTempPersonaEvento());
-//				}else if(target.equalsIgnoreCase("docenti")){
-//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-//					eventoWrapper.getDocenti().set(index, eventoWrapper.getTempPersonaEvento());
-//				}else if(target.equalsIgnoreCase("esperti")){
-//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-//					eventoWrapper.getEsperti().set(index, eventoWrapper.getTempPersonaEvento());
-//				}else if(target.equalsIgnoreCase("coordinatori")){
-//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-//					eventoWrapper.getCoordinatori().set(index, eventoWrapper.getTempPersonaEvento());
-//				}else if(target.equalsIgnoreCase("investigatori")){
-//					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-//					eventoWrapper.getInvestigatori().set(index, eventoWrapper.getTempPersonaEvento());
-//				}
-				eventoWrapper.getPersoneEventoModificate().add(eventoWrapper.getTempPersonaEvento());
+				int index = Integer.parseInt(modificaElemento);
+				//se la modifica avviene su una PersonEvento inserita durante la modifica all'evento salviamo l'entity su db
+				//in quanto non risultera' presente nell'evento a meno che lo stesso nono venga salvato
+				if(eventoWrapper.getPersoneEventoInserite().contains(eventoWrapper.getTempPersonaEvento())) {
+					//modifica di una personaEvento inserita
+					if(target.equalsIgnoreCase("responsabiliScientifici")){
+						personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
+						//eventoWrapper.getResponsabiliScientifici().set(index, eventoWrapper.getTempPersonaEvento());
+					}else if(target.equalsIgnoreCase("docenti")){
+						personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
+						//eventoWrapper.getDocenti().set(index, eventoWrapper.getTempPersonaEvento());
+					}else if(target.equalsIgnoreCase("esperti")){
+						personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
+						//eventoWrapper.getEsperti().set(index, eventoWrapper.getTempPersonaEvento());
+					}else if(target.equalsIgnoreCase("coordinatori")){
+						personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
+						//eventoWrapper.getCoordinatori().set(index, eventoWrapper.getTempPersonaEvento());
+					}else if(target.equalsIgnoreCase("investigatori")){
+						personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
+						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
+						//eventoWrapper.getInvestigatori().set(index, eventoWrapper.getTempPersonaEvento());
+					}
+				}
 			}
 			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
 			return EDIT + " :: " + target;
@@ -1288,27 +1294,27 @@ public class EventoController {
 	public String removePersonaFrom(@PathVariable("removePersonaFrom") String target, @PathVariable("rowIndex") String rowIndex,
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
-			int responsabileIndex;
+			int index;
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				responsabileIndex = Integer.valueOf(rowIndex).intValue();
-				eventoWrapper.getResponsabiliScientifici().remove(responsabileIndex);
+				index = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getResponsabiliScientifici().remove(index);
 				personaEventoService.setIdentificativoPersonaRuoloEventoTemp(eventoWrapper.getResponsabiliScientifici());
 			}else if(target.equalsIgnoreCase("docenti")){
-				responsabileIndex = Integer.valueOf(rowIndex).intValue();
-				eventoWrapper.getDocenti().remove(responsabileIndex);
+				index = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getDocenti().remove(index);
 			}else if(target.equalsIgnoreCase("responsabileSegreteria")){
 				eventoWrapper.getEvento().setResponsabileSegreteria(new PersonaFullEvento());
 			}else if(target.equalsIgnoreCase("esperti")){
-				responsabileIndex = Integer.valueOf(rowIndex).intValue();
-				eventoWrapper.getEsperti().remove(responsabileIndex);
+				index = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getEsperti().remove(index);
 				personaEventoService.setIdentificativoPersonaRuoloEventoTemp(eventoWrapper.getEsperti());
 			}else if(target.equalsIgnoreCase("coordinatori")){
-				responsabileIndex = Integer.valueOf(rowIndex).intValue();
-				eventoWrapper.getCoordinatori().remove(responsabileIndex);
+				index = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getCoordinatori().remove(index);
 				personaEventoService.setIdentificativoPersonaRuoloEventoTemp(eventoWrapper.getCoordinatori());
 			}else if(target.equalsIgnoreCase("investigatori")){
-				responsabileIndex = Integer.valueOf(rowIndex).intValue();
-				eventoWrapper.getInvestigatori().remove(responsabileIndex);
+				index = Integer.valueOf(rowIndex).intValue();
+				eventoWrapper.getInvestigatori().remove(index);
 			}
 			return EDIT + " :: " + target;
 		}catch (Exception ex){

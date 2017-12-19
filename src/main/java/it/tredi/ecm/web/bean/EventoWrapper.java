@@ -55,13 +55,13 @@ public class EventoWrapper {
 
 	private Map<Long, String> risultatiAttesiMapTemp = new LinkedHashMap<Long, String>();
 
-	private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
-	private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
+	//private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
+	//private List<PersonaEvento> docenti = new ArrayList<PersonaEvento>();
 
 	/* FSC */
-	private List<PersonaEvento> esperti = new ArrayList<PersonaEvento>();
-	private List<PersonaEvento> coordinatori = new ArrayList<PersonaEvento>();
-	private List<PersonaEvento> investigatori = new ArrayList<PersonaEvento>();
+//	private List<PersonaEvento> esperti = new ArrayList<PersonaEvento>();
+//	private List<PersonaEvento> coordinatori = new ArrayList<PersonaEvento>();
+//	private List<PersonaEvento> investigatori = new ArrayList<PersonaEvento>();
 
 	//liste edit
 	private Set<Obiettivo> obiettiviNazionali;
@@ -89,7 +89,9 @@ public class EventoWrapper {
 
 	//gestire l'aggiunta di una PersonaEvento
 	private PersonaEvento tempPersonaEvento = new PersonaEvento();
-	private List<PersonaEvento> personeEventoModificate = new ArrayList<PersonaEvento>();
+
+	//private List<PersonaEvento> personeEventoModificate = new ArrayList<PersonaEvento>();
+	private List<PersonaEvento> personeEventoInserite = new ArrayList<PersonaEvento>();
 
 
 	private Sponsor tempSponsorEvento = new Sponsor();
@@ -327,8 +329,8 @@ public class EventoWrapper {
 	
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici() {
 		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
-		if(this.responsabiliScientifici != null) {
-			for(PersonaEvento pEv : this.responsabiliScientifici) {
+		if(this.getResponsabiliScientifici() != null) {
+			for(PersonaEvento pEv : this.getResponsabiliScientifici()) {
 				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
 					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCResponsabileSCientifico());
 			}
@@ -338,8 +340,8 @@ public class EventoWrapper {
 
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti() {
 		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
-		if(this.esperti != null) {
-			for(PersonaEvento pEv : this.esperti) {
+		if(this.getEsperti() != null) {
+			for(PersonaEvento pEv : this.getEsperti()) {
 				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
 					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCEsperto());
 			}
@@ -349,12 +351,74 @@ public class EventoWrapper {
 
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori() {
 		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
-		if(this.coordinatori != null) {
-			for(PersonaEvento pEv : this.coordinatori) {
+		if(this.getCoordinatori() != null) {
+			for(PersonaEvento pEv : this.getCoordinatori()) {
 				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
 					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCCoordinatore());
 			}
 		}
 		return toRet;
 	}
+	
+	public List<PersonaEvento> getDocenti() {
+		if(evento != null) {
+			if(evento instanceof EventoRES)
+				return ((EventoRES)evento).getDocenti();
+			if(evento instanceof EventoFAD)
+				return ((EventoFAD)evento).getDocenti();
+		}
+		return null;
+	}
+
+//	private List<PersonaEvento> responsabiliScientifici = new ArrayList<PersonaEvento>();
+	public List<PersonaEvento> getResponsabiliScientifici() {
+		return evento.getResponsabili();
+	}
+
+//	private List<PersonaEvento> esperti = new ArrayList<PersonaEvento>();
+	public List<PersonaEvento> getEsperti() {
+		if(evento != null) {
+			if(evento instanceof EventoFSC)
+				return ((EventoFSC)evento).getEsperti();
+		}
+		return null;
+	}
+
+//	private List<PersonaEvento> coordinatori = new ArrayList<PersonaEvento>();
+	public List<PersonaEvento> getCoordinatori() {
+		if(evento != null) {
+			if(evento instanceof EventoFSC)
+				return ((EventoFSC)evento).getCoordinatori();
+		}
+		return null;
+	}
+
+//	private List<PersonaEvento> investigatori = new ArrayList<PersonaEvento>();
+	public List<PersonaEvento> getInvestigatori() {
+		if(evento != null) {
+			if(evento instanceof EventoFSC)
+				return ((EventoFSC)evento).getInvestigatori();
+		}
+		return null;
+	}
+	
+	
+//	public void addDocente(PersonaEvento personaEvento) {
+//		if(evento != null) {
+//			if(evento instanceof EventoRES)
+//				((EventoRES)evento).getDocenti().add(personaEvento);
+//			if(evento instanceof EventoFAD)
+//				((EventoFAD)evento).getDocenti().add(personaEvento);
+//		}
+//	}
+//	
+//	public void removeDocente(int index) {
+//		if(evento != null) {
+//			if(evento instanceof EventoRES)
+//				((EventoRES)evento).getDocenti().remove(index);
+//			if(evento instanceof EventoFAD)
+//				((EventoFAD)evento).getDocenti().remove(index);
+//		}
+//		//eventoWrapper.getDocenti().remove(responsabileIndex);
+//	}
 }

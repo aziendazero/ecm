@@ -76,7 +76,6 @@ import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
-import it.tredi.ecm.dao.enumlist.IdentificativoPersonaRuoloEvento;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
 import it.tredi.ecm.dao.enumlist.MotivazioneProrogaEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
@@ -649,6 +648,7 @@ public class EventoServiceImpl implements EventoService {
 				xml_b = XmlReportBuilder.buildXMLReportForCogeaps(rendiconto.getData(), evento);
 			}
 			catch (Exception e) {
+				LOGGER.error("Errore processando il file csv: " + fileName, e);
 				throw new EcmException("error.csv_to_xml_report_error", e.getMessage(), e);
 			}
 
@@ -757,15 +757,16 @@ public class EventoServiceImpl implements EventoService {
 			eventoRES.setRisultatiAttesi(risultatiAttesi);
 
 			//Docenti
-			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
-			List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
-			while(it.hasNext()){
-				PersonaEvento p = it.next();
-				p = personaEventoRepository.findOne(p.getId());
-				attachedList.add(p);
+			int pos = 0;
+			for(PersonaEvento pers : eventoRES.getDocenti()) {
+				//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+					eventoRES.getDocenti().set(pos, p);
+				}
+				pos++;
 			}
-			eventoRES.setDocenti(attachedList);
-
+			
 			//retrieveProgrammaAndAddJoin(eventoWrapper);
 
 			//Documento Verifica Ricadute Formative
@@ -775,58 +776,57 @@ public class EventoServiceImpl implements EventoService {
 				eventoRES.setDocumentoVerificaRicaduteFormative(null);
 			}
 		}else if(evento instanceof EventoFSC){
+			EventoFSC eventoFSC = (EventoFSC) evento;
 			retrieveProgrammaAndAddJoin(eventoWrapper);
 
 			if(eventoWrapper.getRiepilogoRuoliFSC() != null) {
-				((EventoFSC) evento).getRiepilogoRuoli().clear();
-				((EventoFSC) evento).getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());
+				eventoFSC.getRiepilogoRuoli().clear();
+				eventoFSC.getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());
 			}
 			
 			//Esperti
-			Iterator<PersonaEvento> itPersona = eventoWrapper.getEsperti().iterator();
-			List<PersonaEvento> attachedListPersona = new ArrayList<PersonaEvento>();
-			while(itPersona.hasNext()){
-				PersonaEvento p = itPersona.next();
-				IdentificativoPersonaRuoloEvento ident = p.getIdentificativoPersonaRuoloEventoTemp();
-				p = personaEventoRepository.findOne(p.getId());
-				p.setIdentificativoPersonaRuoloEvento(ident);
-				p.setIdentificativoPersonaRuoloEventoTemp(ident);
-				attachedListPersona.add(p);
+			int pos = 0;
+			for(PersonaEvento pers : eventoFSC.getEsperti()) {
+				//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+					eventoFSC.getEsperti().set(pos, p);
+				}
+				pos++;
 			}
-			((EventoFSC) evento).setEsperti(attachedListPersona);
-			
+
 			//Coordinatori
-			itPersona = eventoWrapper.getCoordinatori().iterator();
-			attachedListPersona = new ArrayList<PersonaEvento>();
-			while(itPersona.hasNext()){
-				PersonaEvento p = itPersona.next();
-				IdentificativoPersonaRuoloEvento ident = p.getIdentificativoPersonaRuoloEventoTemp();
-				p = personaEventoRepository.findOne(p.getId());
-				p.setIdentificativoPersonaRuoloEvento(ident);
-				p.setIdentificativoPersonaRuoloEventoTemp(ident);
-				attachedListPersona.add(p);
+			pos = 0;
+			for(PersonaEvento pers : eventoFSC.getCoordinatori()) {
+				//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+					eventoFSC.getCoordinatori().set(pos, p);
+				}
+				pos++;
 			}
-			((EventoFSC) evento).setCoordinatori(attachedListPersona);
 
 			//Investigatori
-			itPersona = eventoWrapper.getInvestigatori().iterator();
-			attachedListPersona = new ArrayList<PersonaEvento>();
-			while(itPersona.hasNext()){
-				PersonaEvento p = itPersona.next();
-				p = personaEventoRepository.findOne(p.getId());
-				attachedListPersona.add(p);
+			pos = 0;
+			for(PersonaEvento pers : eventoFSC.getInvestigatori()) {
+				//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+					eventoFSC.getInvestigatori().set(pos, p);
+				}
+				pos++;
 			}
-			((EventoFSC) evento).setInvestigatori(attachedListPersona);
 		}else if(evento instanceof EventoFAD){
+			EventoFAD eventoFAD = (EventoFAD)evento;
 			//Docenti
-			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
-			List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
-			while(it.hasNext()){
-				PersonaEvento p = it.next();
-				p = personaEventoRepository.findOne(p.getId());
-				attachedList.add(p);
+			int pos = 0;
+			for(PersonaEvento pers : eventoFAD.getDocenti()) {
+				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+					eventoFAD.getDocenti().set(pos, p);
+				}
+				pos++;
 			}
-			((EventoFAD)evento).setDocenti(attachedList);
 
 			//Risultati Attesi
 //			Set<String> risultatiAttesi = new HashSet<String>();
@@ -865,17 +865,15 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		//Responsabili
-		Iterator<PersonaEvento> itPersona = eventoWrapper.getResponsabiliScientifici().iterator();
-		List<PersonaEvento> attachedListPersona = new ArrayList<PersonaEvento>();
-		while(itPersona.hasNext()){
-			PersonaEvento p = itPersona.next();
-			IdentificativoPersonaRuoloEvento ident = p.getIdentificativoPersonaRuoloEventoTemp();
-			p = personaEventoRepository.findOne(p.getId());
-			p.setIdentificativoPersonaRuoloEvento(ident);
-			p.setIdentificativoPersonaRuoloEventoTemp(ident);
-			attachedListPersona.add(p);
+		int pos = 0;
+		for(PersonaEvento pers : evento.getResponsabili()) {
+			//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+			if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+				PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+				evento.getResponsabili().set(pos, p);
+			}
+			pos++;
 		}
-		evento.setResponsabili(attachedListPersona);
 
 		//Sponsor
 		List<Sponsor> attachedSetSponsor = eventoWrapper.getSponsors();
@@ -1057,7 +1055,7 @@ public class EventoServiceImpl implements EventoService {
 			eventoWrapper.setRisultatiAttesiMapTemp(risultatiAttesiTemp);
 
 			//Docenti
-			eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
+			//eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
 
 			//Documento Verifica Ricadute Formative
 			if (((EventoRES) evento).getDocumentoVerificaRicaduteFormative() != null) {
@@ -1099,15 +1097,15 @@ public class EventoServiceImpl implements EventoService {
 			for(RiepilogoRuoliFSC r : ((EventoFSC) evento).getRiepilogoRuoli())
 				eventoWrapper.getRiepilogoRuoliFSC().put(r.getRuolo(), r);
 
-			//esperti
-			eventoWrapper.setEsperti(((EventoFSC) evento).getEsperti());
-			//coordinatori
-			eventoWrapper.setCoordinatori(((EventoFSC) evento).getCoordinatori());
-			//investigatori
-			eventoWrapper.setInvestigatori(((EventoFSC) evento).getInvestigatori());
+//			//esperti
+//			eventoWrapper.setEsperti(((EventoFSC) evento).getEsperti());
+//			//coordinatori
+//			eventoWrapper.setCoordinatori(((EventoFSC) evento).getCoordinatori());
+//			//investigatori
+//			eventoWrapper.setInvestigatori(((EventoFSC) evento).getInvestigatori());
 		}else if(evento instanceof EventoFAD){
 			//Docenti
-			eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
+			//eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
 
 			//risultati attesi
 			Long key = 1L;
@@ -1132,8 +1130,8 @@ public class EventoServiceImpl implements EventoService {
 			eventoWrapper.setProgrammaEventoFAD(((EventoFAD) evento).getProgrammaFAD());
 		}
 
-		//responsabili scientifici
-		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
+//		//responsabili scientifici
+//		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
 
 		//sponsor
 		List<Sponsor> sponsors = new ArrayList<Sponsor>();
