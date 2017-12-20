@@ -77,6 +77,7 @@ import it.tredi.ecm.service.bean.CurrentUser;
 @ActiveProfiles("demo")
 @WithUserDetails("test1")
 @Rollback(false)
+@Ignore
 public class PdfTest {
 
 	@Autowired
