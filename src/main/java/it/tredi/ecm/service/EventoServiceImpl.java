@@ -1669,20 +1669,22 @@ public class EventoServiceImpl implements EventoService {
 		float crediti = 0.0f;
 		float durata = Utils.getRoundedHALFDOWNFloatValue(evento.getDurata());
 		
-		switch (evento.getTipologiaEventoFAD()) {
-		case APPRENDIMENTO_INDIVIDUALE_NO_ONLINE:
-			crediti = (int) durata * 1.0f;
-			break;
-		case APPRENDIMENTO_INDIVIDUALE_SI_ONLINE:
-		case APPRENDIMENTO_CONTESTO_SOCIALE:
-			if(evento.getSupportoSvoltoDaEsperto() != null && evento.getSupportoSvoltoDaEsperto())
-				crediti = (int) durata * 1.5f;
-			else
+		if(evento.getTipologiaEventoFAD() != null) {
+			switch (evento.getTipologiaEventoFAD()) {
+			case APPRENDIMENTO_INDIVIDUALE_NO_ONLINE:
 				crediti = (int) durata * 1.0f;
-			break;
-		case EVENTI_SEMINARIALI_IN_RETE:
-			crediti = (int) durata * 1.5f;
-			break;
+				break;
+			case APPRENDIMENTO_INDIVIDUALE_SI_ONLINE:
+			case APPRENDIMENTO_CONTESTO_SOCIALE:
+				if(evento.getSupportoSvoltoDaEsperto() != null && evento.getSupportoSvoltoDaEsperto())
+					crediti = (int) durata * 1.5f;
+				else
+					crediti = (int) durata * 1.0f;
+				break;
+			case EVENTI_SEMINARIALI_IN_RETE:
+				crediti = (int) durata * 1.5f;
+				break;
+			}
 		}
 
 		if(crediti > 50f)
