@@ -63,7 +63,7 @@
 										<td th:text="${quotaAnnuale.provider.id}"></td>
 										<td th:text="${quotaAnnuale.provider.denominazioneLegale}"></td>
 										<td th:text="${quotaAnnuale.pagamento.dataScadenzaPagamento}"></td>
-										<td th:text="${quotaAnnuale.pagamento.importo}"></td>
+										<td th:text="${#numbers.formatDecimal(quotaAnnuale.pagamento.importo, 0, 2,'POINT')}"></td>
 									</tr>
 								</tbody>
 							</table>
@@ -86,7 +86,7 @@
 									<td th:text="${quotaAnnuale.provider.id}"></td>
 									<td th:text="${quotaAnnuale.provider.denominazioneLegale}"></td>
 									<td th:text="${quotaAnnuale.pagamento.dataScadenzaPagamento}"></td>
-									<td th:text="${quotaAnnuale.pagamento.importo}"></td>
+									<td th:text="${#numbers.formatDecimal(quotaAnnuale.pagamento.importo,3,2,'POINT')}"></td>
 								</tr>
 							</tbody>
 						</table>

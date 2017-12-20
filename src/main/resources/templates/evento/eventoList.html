@@ -253,7 +253,7 @@
 									<td th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="${evento.provider.denominazioneLegale}"></td>
 									<td th:text="${evento.edizione}"></td>
 									<td th:text="${evento.proceduraFormativa.name()}"></td>
-									<td style="word-break: break-word" th:text="${evento.titolo}"></td>
+									<td th:text="${evento.titolo}"></td>
 
 									<td th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
 										<span></span>
@@ -339,11 +339,14 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : true,
-						 "columnDefs": [
+						"columnDefs": [
 					                     {"targets": colonne, "width": "1px"},
 					                     {"targets": confermati, "sClass": "center"},
 // 					                     { "type": 'date-eu', "targets": date},
 					                   ],
+						"aoColumnDefs": [
+						    { "sClass": "wordwrap-200", "aTargets": [ 4 ] }
+						  ],
 					})
 
 					$(".datatable-responsive-eventi-attuazione").DataTable({
