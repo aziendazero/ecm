@@ -171,7 +171,6 @@ public class Evento extends BaseEntity {
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
 
-	//@Enumerated(EnumType.STRING)
 	@Convert(converter = EventoVersioneEnumConverter.class)
 	EventoVersioneEnum versione;
 	
