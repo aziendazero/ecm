@@ -13,6 +13,7 @@
 	<th:block th:if="${__withIdEditabili__}" th:with="editabile=${mode == 'edit'},
 			valutabile=${mode == 'validate'},
 			showOnly=${mode == 'show'}">
+		<!-- in wrapper con idEditabili -->
 		<th:block th:with="idEcm=${fieldRuolo == null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(fieldKey) : T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm(fieldKey,fieldRuolo)},
 							idField=${fieldRuolo == null ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey) : T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField(fieldKey,fieldRuolo)}">
 			<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('__${wrapper}__.__${propertyName}__')} ? 'bad'">
@@ -112,6 +113,7 @@
 			showOnly=${mode == 'show'}">
 		<div th:id="__${propertyName}__-parent">
 
+		<!-- in wrapper senza idEditabili -->
 			<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.id}" />
 			<input type="hidden" th:field="${__${wrapper}__.__${propertyName}__.nomeFile}" />
 
@@ -133,12 +135,12 @@
 			</th:block>
 			<th:block th:if="${editabile and ( (!required and !__${wrapper}__.__${propertyName}__.new) or withFirma )}">
 				<div class="col-xs-2 btn-group">
-					<!-- pulsante per rimuovi file -->
-					<button th:onclick="|submitFirma('__${propertyName}__');|" type="button" th:if="${withFirma}" class="btn btn-primary pull-right">
+					<!-- pulsante per aggiungere firma -->
+ 					<button th:id="firma_+__${propertyName}__+_button" th:onclick="|submitFirma('__${propertyName}__');|" type="button" th:if="${withFirma}" class="btn btn-primary pull-right">
 							<i class="fa fa-pencil"></i>
 					</button>
-					<!-- pulsante per aggiungere firma -->
-					<button th:onclick="|rimuoviFile('__${propertyName}__')|" type="button" th:if="${!required and !__${wrapper}__.__${propertyName}__.new}" class="btn btn-danger pull-right">
+					<!-- pulsante per rimuovi file -->
+					<button th:id="elimina_+__${propertyName}__+_button" th:onclick="|rimuoviFile('__${propertyName}__')|" type="button" th:if="${!required and !__${wrapper}__.__${propertyName}__.new}" class="btn btn-danger pull-right">
 						<i class="fa fa-trash"></i>
 					</button>
 				</div>

@@ -33,26 +33,6 @@ public class PersonaEventoServiceImpl implements PersonaEventoService {
 	}
 
 	@Override
-	public IdentificativoPersonaRuoloEvento prossimoIdentificativoPersonaRuoloEventoTempNonUtilizzato(List<PersonaEvento> personeEvento) {
-		IdentificativoPersonaRuoloEvento toRet = null;
-		boolean nonUtilizzato = true;
-		if(personeEvento != null && !personeEvento.isEmpty()) {
-			for(IdentificativoPersonaRuoloEvento ident : IdentificativoPersonaRuoloEvento.getOrderedValues()) {
-				nonUtilizzato = true;
-				for(PersonaEvento pers : personeEvento) {
-					if(ident == pers.getIdentificativoPersonaRuoloEventoTemp())
-						nonUtilizzato = false;
-				}
-				if(nonUtilizzato) {
-					toRet = ident;
-					break;
-				}
-			}
-		}
-		return toRet;
-	}
-	
-	@Override
 	public IdentificativoPersonaRuoloEvento prossimoIdentificativoPersonaRuoloEventoNonUtilizzato(List<PersonaEvento> personeEvento) {
 		IdentificativoPersonaRuoloEvento toRet = null;
 		boolean nonUtilizzato = true;
@@ -68,18 +48,11 @@ public class PersonaEventoServiceImpl implements PersonaEventoService {
 					break;
 				}
 			}
+		} else {
+			if(IdentificativoPersonaRuoloEvento.getOrderedValues() != null && !IdentificativoPersonaRuoloEvento.getOrderedValues().isEmpty())
+				toRet = IdentificativoPersonaRuoloEvento.getOrderedValues().get(0);
 		}
 		return toRet;
-	}
-
-	@Override
-	public void setIdentificativoPersonaRuoloEventoTemp(List<PersonaEvento> personeEvento) {
-		for(PersonaEvento persEv : personeEvento) {
-			if(persEv.getIdentificativoPersonaRuoloEventoTemp() == null) {
-				persEv.setIdentificativoPersonaRuoloEventoTemp(prossimoIdentificativoPersonaRuoloEventoTempNonUtilizzato(personeEvento));
-				//personaEventoRepository.save(persEv);
-			}
-		}
 	}
 
 	@Override
@@ -87,7 +60,6 @@ public class PersonaEventoServiceImpl implements PersonaEventoService {
 		for(PersonaEvento persEv : personeEvento) {
 			if(persEv.getIdentificativoPersonaRuoloEvento() == null) {
 				persEv.setIdentificativoPersonaRuoloEvento(prossimoIdentificativoPersonaRuoloEventoNonUtilizzato(personeEvento));
-				//personaEventoRepository.save(persEv);
 			}
 		}
 	}

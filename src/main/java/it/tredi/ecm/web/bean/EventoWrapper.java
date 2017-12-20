@@ -331,8 +331,8 @@ public class EventoWrapper {
 		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
 		if(this.getResponsabiliScientifici() != null) {
 			for(PersonaEvento pEv : this.getResponsabiliScientifici()) {
-				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
-					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCResponsabileSCientifico());
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEvento() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEvento().getRuoloFSCResponsabileSCientifico());
 			}
 		}
 		return toRet;
@@ -342,8 +342,8 @@ public class EventoWrapper {
 		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
 		if(this.getEsperti() != null) {
 			for(PersonaEvento pEv : this.getEsperti()) {
-				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
-					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCEsperto());
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEvento() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEvento().getRuoloFSCEsperto());
 			}
 		}
 		return toRet;
@@ -353,8 +353,8 @@ public class EventoWrapper {
 		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
 		if(this.getCoordinatori() != null) {
 			for(PersonaEvento pEv : this.getCoordinatori()) {
-				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEventoTemp() != null)
-					toRet.add(pEv.getIdentificativoPersonaRuoloEventoTemp().getRuoloFSCCoordinatore());
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEvento() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEvento().getRuoloFSCCoordinatore());
 			}
 		}
 		return toRet;

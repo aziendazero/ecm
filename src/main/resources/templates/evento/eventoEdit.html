@@ -1100,14 +1100,26 @@
 						if(fromLookup) {
 							$('#anagraficaBase_codice_fiscale').prop("disabled", true);
 							$('#anagraficaBase_straniero').iCheck("disable");
-							$('#file_cv_button').prop("disabled", true);
-							$('#firma_cv').prop("disabled", true);
+							//abilito l'inserimento del cv se il cv è richiesto e la PersonaEvento selezionata non lo ha
+							console.log('id file: ' + $('#cv\\.id').val());
+							if($('#cv\\.id').val() != undefined && $('#cv\\.id').val() == '') {
+								console.log('file mancante abilito l\'inserimento');
+								$('#file_cv_button').prop("disabled", false);
+								$('#elimina_cv_button').prop("disabled", true);
+								$('#firma_cv_button').prop("disabled", false);
+							} else {
+								console.log('file presente disabilito la modifica');
+								$('#file_cv_button').prop("disabled", true);
+								$('#elimina_cv_button').prop("disabled", true);
+								$('#firma_cv_button').prop("disabled", true);
+							}
 						}
 						else {
 							$('#anagraficaBase_codice_fiscale').prop("disabled", false);
 							$('#anagraficaFull_straniero').iCheck("enable");
 							$('#file_cv_button').prop("disabled", false);
-							$('#firma_cv').prop("disabled", false);
+							$('#elimina_cv_button').prop("disabled", false);
+							$('#firma_cv_button').prop("disabled", false);
 						}
 
 					}
@@ -1411,8 +1423,8 @@
 				    	{data: 'anagrafica.cognome'},
 				    	{data: 'id'},
 				    	{render: function (data, type, full, meta) {
-				                    console.log('anagraficaType:' + anagraficaType);
-				                    console.log('meta:' + meta);
+				                    //console.log('anagraficaType:' + anagraficaType);
+				                    //console.log('meta:' + meta);
 				    				return '<button onclick="setLookupAnagraficaEvento(\''+ target + '\',\'' + anagraficaType + '\',' + full.id + ')" class="btn btn-primary">'+[[#{label.seleziona}]]+'</button>';
 		                 		}
 				    	}
@@ -1576,7 +1588,7 @@
 								<span th:unless="${#temporals.createToday().minusYears(1).isAfter(persona.anagrafica?.cv.dataCreazione)}" th:text="#{label.cv_aggiornato}" class="green"></span>
 							</th:block>
 						</td>
-						<td th:text="${persona.identificativoPersonaRuoloEventoTemp?.nome}" th:if="${isFsc}"></td>
+						<td th:text="${persona.identificativoPersonaRuoloEvento?.nome}" th:if="${isFsc}"></td>
 						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}" th:if="${isFsc}"></td>
 						<td>
 							<a th:unless="${isRiedizione or isEditSemiBloccato}" onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
@@ -2252,7 +2264,7 @@
 						<td th:text="${persona.anagrafica.cognome}"></td>
 						<td th:text="${persona.anagrafica.nome}"></td>
 						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
-						<td th:text="${persona.identificativoPersonaRuoloEventoTemp?.nome}"></td>
+						<td th:text="${persona.identificativoPersonaRuoloEvento?.nome}"></td>
 						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}"></td>
 						<td>
 							<a th:unless="${isEventoIniziato}" onclick="modificaPersonaFrom('esperti',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
@@ -2324,7 +2336,7 @@
 						<td th:text="${persona.anagrafica.cognome}"></td>
 						<td th:text="${persona.anagrafica.nome}"></td>
 						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
-						<td th:text="${persona.identificativoPersonaRuoloEventoTemp?.nome}"></td>
+						<td th:text="${persona.identificativoPersonaRuoloEvento?.nome}"></td>
 						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}"></td>
 						<td>
 							<a th:unless="${isEventoIniziato}" onclick="modificaPersonaFrom('coordinatori',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">

@@ -7,7 +7,6 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.javers.core.metamodel.annotation.TypeName;
@@ -45,9 +44,6 @@ public class PersonaEvento extends BaseEntityDefaultId implements Serializable{
 	@Enumerated(EnumType.STRING)
 	private IdentificativoPersonaRuoloEvento identificativoPersonaRuoloEvento;
 
-	@Transient
-	private IdentificativoPersonaRuoloEvento identificativoPersonaRuoloEventoTemp;
-	
 	public PersonaEvento(){}
 
 	public PersonaEvento(AnagraficaEvento anagrafica){

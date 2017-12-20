@@ -11,8 +11,6 @@ public interface PersonaEventoService {
 	Set<Long> getAllEventoIdByNomeAndCognomeDocente(String nome, String cognome);
 	
 	IdentificativoPersonaRuoloEvento prossimoIdentificativoPersonaRuoloEventoNonUtilizzato(List<PersonaEvento> personeEvento);
-	IdentificativoPersonaRuoloEvento prossimoIdentificativoPersonaRuoloEventoTempNonUtilizzato(List<PersonaEvento> personeEvento);
 	void setIdentificativoPersonaRuoloEvento(List<PersonaEvento> personeEvento);
-	void setIdentificativoPersonaRuoloEventoTemp(List<PersonaEvento> personeEvento);
 
 }
