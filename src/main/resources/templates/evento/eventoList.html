@@ -304,6 +304,14 @@
 								</tr>
 							</tbody>
 						</table>
+						
+						<table id = "test" class = "table table-striped table-bordered dt-responsive nowrap display" cellspacing="0" width="100%">
+							<thead>
+								<th>Codice</th>
+								<th>Titolo</th>
+								<th>Test</th>
+							</thead>
+						</table>
 
 					</div>
 				</div>
@@ -344,6 +352,28 @@
 					                     {"targets": confermati, "sClass": "center"},
 // 					                     { "type": 'date-eu', "targets": date},
 					                   ],
+						"aoColumnDefs": [
+						    { "sClass": "wordwrap-200", "aTargets": [ 4 ] }
+						  ],
+						  
+					});
+					
+					$("#test").DataTable({
+						"bFilter" : false,
+						"bInfo" : false,
+						"bPaginate" : true,
+						"bProcessing": true,
+				        "bServerSide": true,
+				        "sort": "position",
+				       
+						 ajax:{
+							  url: "/evento/springPaginationDataTables"
+						  },
+						  "columns": [
+					            { "data": "edizione" },
+					            { "data": "titolo" },
+					            { "data" : "link"}
+					        ]
 					})
 
 					$(".datatable-responsive-eventi-attuazione").DataTable({

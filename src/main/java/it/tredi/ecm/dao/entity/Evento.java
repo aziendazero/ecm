@@ -131,20 +131,24 @@ public class Evento extends BaseEntity {
 	@JsonView(JsonViewModel.EventoLookup.class)
 	private String prefix;
 	@DiffIgnore
-	@JsonView(JsonViewModel.EventoLookup.class)
+	@JsonView({JsonViewModel.EventoLookup.class, DataTableOutPut.View.class})
 	private int edizione = 1;
-	@JsonView(JsonViewModel.EventoLookup.class)
+	@JsonView({JsonViewModel.EventoLookup.class, DataTableOutPut.View.class})
 	public String getCodiceIdentificativo(){
 		if(edizione > 1)
 			return prefix + "-" + edizione;
 		else return prefix;
 	}
 
-	@JsonView(JsonViewModel.EventoLookup.class)
+	@JsonView({JsonViewModel.EventoLookup.class, DataTableOutPut.View.class})
 	@Enumerated(EnumType.STRING)
 	private ProceduraFormativa proceduraFormativa;
+	
+	@JsonView(DataTableOutPut.View.class)
+	@Transient
+	private String link = "";
 
-	@JsonView(JsonViewModel.EventoLookup.class)
+	@JsonView({JsonViewModel.EventoLookup.class, DataTableOutPut.View.class})
 	@Column(columnDefinition = "text")
 	private String titolo;
 
