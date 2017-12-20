@@ -715,6 +715,10 @@ public class EventoServiceImpl implements EventoService {
 	//evento rieditabile solo prima del 20/12 dell'anno corrente
 	@Override
 	public boolean canRieditEvento(Account account) {
+		if(ecmProperties.isDebugTestMode()) {
+			return canCreateEvento(account);
+		}
+		
 		return canCreateEvento(account)
 			&& (LocalDate.now().isAfter(LocalDate.of(LocalDate.now().getYear(), 1, 1))
 			&& LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), 12, 20)));
