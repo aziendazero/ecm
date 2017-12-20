@@ -384,31 +384,31 @@ public class EventoValidatorVersioneDue {
 		/* RADIO EVENTO PARTNER (campo obbligatorio)
 		 * radio
 		 * */
-		if(evento.getEventoAvvalePartner() == null)
+		if(evento.getEventoAvvalePartner() == null) {
 			errors.rejectValue(prefix + "eventoAvvalePartner", "error.empty");
-
-		/* PARTNERS (campo obbligatorio se eventoAvvalePartner == true)
-		 * campo complesso di tipo Partner ripetibile
-		 * almeno 1
-		 * */
-		if(evento.getEventoAvvalePartner() != null
-				&& evento.getEventoAvvalePartner() == true
-				&& (evento.getPartners() == null
-				|| evento.getPartners().isEmpty()))
-			errors.rejectValue(prefix + "partners", "error.empty");
-		else {
-			int counter = 0;
-			boolean atLeastOneErrorPartner = false;
-			for(Partner p : evento.getPartners()) {
-				boolean hasError = validatePartner(p, evento.getProvider().getId());
-				if(hasError) {
-					errors.rejectValue("partners["+counter+"]", "");
-					atLeastOneErrorPartner = true;
+		} else {
+			/* PARTNERS (campo obbligatorio se eventoAvvalePartner == true)
+			 * campo complesso di tipo Partner ripetibile
+			 * almeno 1
+			 * */
+			if(evento.getEventoAvvalePartner() == true) {
+				if((evento.getPartners() == null || evento.getPartners().isEmpty())) {
+					errors.rejectValue(prefix + "partners", "error.empty");
+				} else {
+					int counter = 0;
+					boolean atLeastOneErrorPartner = false;
+					for(Partner p : evento.getPartners()) {
+						boolean hasError = validatePartner(p, evento.getProvider().getId());
+						if(hasError) {
+							errors.rejectValue("partners["+counter+"]", "");
+							atLeastOneErrorPartner = true;
+						}
+						counter++;
+					}
+					if(atLeastOneErrorPartner)
+						errors.rejectValue(prefix + "partners", "error.campi_mancanti_partner");
 				}
-				counter++;
 			}
-			if(atLeastOneErrorPartner)
-				errors.rejectValue(prefix + "partners", "error.campi_mancanti_partner");
 		}
 
 		/* DICHIARAZIONE ASSENZA CONFLITTO DI INTERESSE (campo obbligatorio)
