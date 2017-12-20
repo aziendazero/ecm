@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
-import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 
 @Configuration
 @EntityScan(basePackages={"it.tredi.ecm.dao.entity","it.tredi.springdatautil"})
@@ -113,7 +113,7 @@ public class EcmAppConfiguration {
 	@Value("${conteggioGiorniAvanzatoBeforeDayMode}")
 	private boolean conteggioGiorniAvanzatoBeforeDayMode;
 
-	@Value("#{T(it.tredi.ecm.service.enumlist.EventoVersioneEnum).getByNumeroVersione(${evento.numeroversione.default})}")
+	@Value("#{T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).getByNumeroVersione(${evento.numeroversione.default})}")
 	private EventoVersioneEnum eventoVersioneDefault = EventoVersioneEnum.DUE_DAL_2018;
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.data.passaggio.versione.due}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
 	private LocalDate eventoDataPassaggioVersioneDue = LocalDate.of(2018, 1, 1);

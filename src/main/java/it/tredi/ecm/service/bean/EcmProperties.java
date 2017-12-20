@@ -2,7 +2,7 @@ package it.tredi.ecm.service.bean;
 
 import java.time.LocalDate;
 
-import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import lombok.Getter;
 import lombok.Setter;
 

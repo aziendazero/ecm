@@ -1,4 +1,4 @@
-package it.tredi.ecm.service.enumlist;
+package it.tredi.ecm.dao.enumlist;
 
 import lombok.Getter;
 

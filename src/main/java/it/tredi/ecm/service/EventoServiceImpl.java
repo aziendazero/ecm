@@ -75,6 +75,7 @@ import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
 import it.tredi.ecm.dao.enumlist.MotivazioneProrogaEnum;
@@ -97,7 +98,6 @@ import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.bean.EcmProperties;
-import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -1640,12 +1640,17 @@ public class EventoServiceImpl implements EventoService {
 	
 	public EventoVersioneEnum versioneEvento(Evento evento) {
 		EventoVersioneEnum versione = ecmProperties.getEventoVersioneDefault();
-		//se la data inizio dell'evento e' maggiore uguale al 2018 utilizzo il nuovo metodo di calcolo
-		if(evento.getDataInizio() != null) {
-			if(evento.getDataInizio().isAfter(ecmProperties.getEventoDataPassaggioVersioneDue()) || evento.getDataInizio().isEqual(ecmProperties.getEventoDataPassaggioVersioneDue())) {
-				versione = EventoVersioneEnum.DUE_DAL_2018;
-			} else {
-				versione = EventoVersioneEnum.UNO_PRIMA_2018;
+		//se l'evento ha gia' una versione impostata e salvata questa e' la versione
+		if(evento.getVersione() != null) {
+			versione = evento.getVersione();
+		} else {
+			//se la data inizio dell'evento e' maggiore uguale al 2018 utilizzo il nuovo metodo di calcolo
+			if(evento.getDataInizio() != null) {
+				if(evento.getDataInizio().isAfter(ecmProperties.getEventoDataPassaggioVersioneDue()) || evento.getDataInizio().isEqual(ecmProperties.getEventoDataPassaggioVersioneDue())) {
+					versione = EventoVersioneEnum.DUE_DAL_2018;
+				} else {
+					versione = EventoVersioneEnum.UNO_PRIMA_2018;
+				}
 			}
 		}
 		return versione;

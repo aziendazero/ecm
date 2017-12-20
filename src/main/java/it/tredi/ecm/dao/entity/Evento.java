@@ -9,10 +9,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.annotation.Generated;
-import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -36,21 +35,21 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.javers.core.metamodel.annotation.DiffIgnore;
-import org.javers.core.metamodel.annotation.ShallowReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
+
 import com.fasterxml.jackson.annotation.JsonView;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
+import it.tredi.ecm.config.EventoVersioneEnumConverter;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
-import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -172,6 +171,10 @@ public class Evento extends BaseEntity {
 	)
 	private Set<Disciplina> discipline = new HashSet<Disciplina>();
 
+	//@Enumerated(EnumType.STRING)
+	@Convert(converter = EventoVersioneEnumConverter.class)
+	EventoVersioneEnum versione;
+	
 	//Per Audit
 //	@Transient
 //	private Set<String> disciplineAudit = new HashSet<String>();

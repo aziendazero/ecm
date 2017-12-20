@@ -456,6 +456,10 @@ public class EventoController {
 				}
 				else {
 					evento.setStato(EventoStatoEnum.VALIDATO);
+					if(evento.getVersione() == null) {
+						//imposto la versione in modo che non venga piu' modificata
+						evento.setVersione(eventoService.versioneEvento(evento));
+					}
 					evento.setValidatorCheck(true);
 					eventoService.save(evento);
 					updateEventoList(evento.getId(), session, false, true);

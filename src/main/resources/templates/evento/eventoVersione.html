@@ -10,9 +10,10 @@
 		<script th:inline="javascript">
 		/*<![CDATA[*/
 				var eventoType = [[${eventoWrapper.evento.getClass().getSimpleName()}]];
-				//alert(eventoType);
+				var eventoVersione = [[${eventoWrapper.evento.getVersione()?.getNumeroVersione()}]];
 		
-				var eventoVersionDefault = [[@{|${@ecmProperties.getEventoVersioneDefault().getNumeroVersione()}|}]];
+				//var eventoVersionDefault = [[@{|${@ecmProperties.getEventoVersioneDefault().getNumeroVersione()}|}]];
+				var eventoVersionDefault = [[${@ecmProperties.getEventoVersioneDefault().getNumeroVersione()}]];
 				var eventoDataPassaggioVersioneDue = new Date([[@{${@ecmProperties.getEventoDataPassaggioVersioneDue().getYear()}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneDue().getMonthValue() - 1}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneDue().getDayOfMonth()}}]], 0, 0, 0, 0);
 				
 				function getEventoDataInizio() {
@@ -41,20 +42,23 @@
 				}
 
 				function getVersione() {
-					//converto la versione in int
-					var versione = parseInt(eventoVersionDefault);
+					var versione = eventoVersionDefault;
 					//se la data inizio dell'evento e' maggiore uguale al 2018 utilizzo il nuovo metodo di calcolo
-					var eventoDataInizio = getEventoDataInizio();
-					if(eventoDataInizio != null) {
-						//console.log('eventoDataInizio: ' + eventoDataInizio + '\neventoDataPassaggioVersioneDue: ' + eventoDataPassaggioVersioneDue);
-						//console.log(eventoDataInizio.getTime() + ' - ' + eventoDataPassaggioVersioneDue.getTime());
-						if(eventoDataInizio.getTime() >= eventoDataPassaggioVersioneDue.getTime() ) {
-							versione = 2;
-						} else {
-							versione = 1;
-						}
+					if(eventoVersione === null) {
+						var eventoDataInizio = getEventoDataInizio();
+						if(eventoDataInizio != null) {
+							//console.log('eventoDataInizio: ' + eventoDataInizio + '\neventoDataPassaggioVersioneDue: ' + eventoDataPassaggioVersioneDue);
+							//console.log(eventoDataInizio.getTime() + ' - ' + eventoDataPassaggioVersioneDue.getTime());
+							if(eventoDataInizio.getTime() >= eventoDataPassaggioVersioneDue.getTime() ) {
+								versione = 2;
+							} else {
+								versione = 1;
+							}
+						}						
+					} else {
+						versione = eventoVersione;
 					}
-					//console.log('versione Evento: ' + versione);
+					console.log('versione Evento: ' + versione);
 					return versione;
 				}
 		/*]]>*/
