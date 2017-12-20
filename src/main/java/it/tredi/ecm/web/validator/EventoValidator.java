@@ -270,30 +270,34 @@ public class EventoValidator {
 		/* RADIO EVENTO SPONSORIZZATO DA AZIENDE CHE TRATTANO ALIMENTI PRIMA INFANZIA
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA)
 		 * radio
-		 * dpranteda 20/11/2017 - logica cambiata #12422
-		 * (campo sempre obbligatorio, inoltre si può selezionare si SOLO se evento è sponsorizzato)
 		 * */
-		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
 			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
-		else if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-					&& (evento.getEventoSponsorizzato() == null || evento.getEventoSponsorizzato() == false)
-				)
-			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.evento_deve_essere_sponsorizzato");
-		
+
 		/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
 		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
 		 * file allegato
-		 * dpranteda 20/11/2017 - logica cambiata #12422
-		 * (eliminata dipendenza da contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA)
 		 * */
-		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
 				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
 			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
 		}
 
-		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true
+				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
 				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
 		{
@@ -305,10 +309,10 @@ public class EventoValidator {
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
 		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == false)
 		 * file allegato
-		 * dpranteda 20/11/2017 - logica cambiata #12422
-		 * (eliminata dipendenza da contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA)
 		 * */
-		if(evento.getEventoSponsorizzato() != null
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
 				&& evento.getEventoSponsorizzato() == true
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
@@ -316,7 +320,9 @@ public class EventoValidator {
 			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
 		}
 
-		if(evento.getEventoSponsorizzato() != null
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
+				&& evento.getEventoSponsorizzato() != null
 				&& evento.getEventoSponsorizzato() == true
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
