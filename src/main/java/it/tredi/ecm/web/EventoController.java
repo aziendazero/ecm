@@ -194,7 +194,7 @@ public class EventoController {
 		try {
 
 			if(model.asMap().get("eventoList") == null)
-				model.addAttribute("eventoList", eventoService.getAllEventi(0));
+				model.addAttribute("eventoList", eventoService.getAllEventi(0, 0, "asc", 10)); //TODO modify after building new function
 
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 
@@ -216,7 +216,7 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
 
-			model.addAttribute("eventoList", eventoService.getAllEventi(0));
+			model.addAttribute("eventoList", eventoService.getAllEventi(0, 0, "asc", 10)); //TODO modify after building new function
 
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 
@@ -234,7 +234,7 @@ public class EventoController {
 	
 	@JsonView(EventoListDataTableModel.View.class)
 	@RequestMapping(value = "/evento/springPaginationDataTables", method = RequestMethod.GET)
-    public @ResponseBody EventoListDataTableModel springPaginationDataTables(HttpServletRequest  request) throws IOException {
+    public @ResponseBody EventoListDataTableModel springPaginationDataTables(HttpServletRequest  request) throws Exception {
 	EventoListDataTableModel dataTable = new EventoListDataTableModel();
 	dataTable.setLength(10);
 	dataTable.setData(new HashSet());
@@ -243,13 +243,31 @@ public class EventoController {
     	if (null != request.getParameter("start"))
     		pageNumber = (Integer.valueOf(request.getParameter("start"))/10);	
     	
+    	Integer columnNumber = 0;
+    	if (null != request.getParameter("order[0][column]")) 
+    		columnNumber = Integer.valueOf(request.getParameter("order[0][column]"));
+    	else
+    		throw new Exception("Not the correct way to read json");
+    	
+    	String order = "";
+    	if (null != request.getParameter("order[0][dir]") && !request.getParameter("order[0][dir]").isEmpty()) 
+    		order = request.getParameter("order[0][dir]");
+    	 else
+    		throw new Exception("Not the correct way to read json");
+    	
+    	Integer numOfPages = 0;
+    	if (null != request.getParameter("length")) 
+    		numOfPages = Integer.valueOf(request.getParameter("length"));
+    	else
+    		throw new Exception("Not the correct way to read json");
+    	
     	//Fetch search parameter
     	String searchParameter = request.getParameter("sSearch");
     	
     	//Fetch Page display length
     	//Integer pageDisplayLength = Integer.valueOf(request.getParameter("iDisplayLength"));
     	Long provider = new Long("188");
-    	Page<Evento> eventi = eventoService.getAllEventi(pageNumber);
+    	Page<Evento> eventi = eventoService.getAllEventi(pageNumber, columnNumber, order, numOfPages);
     	for(Evento event : eventi) {
     		EventoListDataModel dh = new EventoListDataModel();
     		dh.setCodiceIdent("<a href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/show\">" + event.getCodiceIdentificativo() + "</a>");
