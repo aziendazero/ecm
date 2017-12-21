@@ -3,6 +3,8 @@ package it.tredi.ecm.service;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
@@ -21,7 +23,7 @@ public interface EventoService {
 	public void delete(Long id);
 
 	public void validaRendiconto(Long id, File rendiconto) throws Exception;
-	public List<Evento> getAllEventi();
+	public Page<Evento> getAllEventi(Integer pageNumber);
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
 	public boolean canCreateEvento(Account account);
 	public boolean canRieditEvento(Account account);

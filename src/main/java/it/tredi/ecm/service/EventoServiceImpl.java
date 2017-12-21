@@ -696,9 +696,10 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
-	public List<Evento> getAllEventi() {
+	public Page<Evento> getAllEventi(Integer pageNumber) {
 		LOGGER.debug("Recupero tutti gli eventi");
-		return eventoRepository.findAll(new Sort(Direction.DESC, "dataUltimaModifica"));
+		PageRequest request = new PageRequest(0, 10, new Sort(Direction.DESC, "dataUltimaModifica"));
+		return eventoRepository.findAll(request);
 	}
 
 	@Override

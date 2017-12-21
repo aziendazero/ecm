@@ -51,7 +51,6 @@ import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
 import it.tredi.ecm.dao.entity.AnagraficaFullEventoBase;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
-import it.tredi.ecm.dao.entity.DataTableOutPut;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
@@ -187,7 +186,7 @@ public class EventoController {
 		try {
 
 			if(model.asMap().get("eventoList") == null)
-				model.addAttribute("eventoList", eventoService.getAllEventi());
+				model.addAttribute("eventoList", eventoService.getAllEventi(0));
 
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 
@@ -209,7 +208,7 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
 
-			model.addAttribute("eventoList", new ArrayList<Evento>());
+			model.addAttribute("eventoList", eventoService.getAllEventi(0));
 
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 
@@ -224,41 +223,6 @@ public class EventoController {
 			return "";
 		}
 	}
-	
-	@JsonView(DataTableOutPut.View.class)
-	@RequestMapping(value = "/evento/springPaginationDataTables", method = RequestMethod.GET)
-    public @ResponseBody DataTableOutPut springPaginationDataTables(HttpServletRequest  request) throws IOException {
-	DataTableOutPut dataTable = new DataTableOutPut();
-	dataTable.setLength(10);
-    	//Fetch the page number from client
-    	Integer pageNumber = 0;
-    	if (null != request.getParameter("start"))
-    		pageNumber = (Integer.valueOf(request.getParameter("start"))/10)+1;	
-    	
-    	//Fetch search parameter
-    	String searchParameter = request.getParameter("sSearch");
-    	
-    	//Fetch Page display length
-    	//Integer pageDisplayLength = Integer.valueOf(request.getParameter("iDisplayLength"));
-    	Long provider = new Long("188");
-    	Set<Evento> eventi = eventoService.getAllEventiForProviderId(provider);
-    	dataTable.setRecordsTotal(eventi.size());
-    	dataTable.setRecordsFiltered(eventi.size());
-    	HashSet<Evento> test = new HashSet();
-    	int i = 0;
-    	for(Evento e : eventi) {
-    		if(10 * (pageNumber - 1) <= i && i < 10 * pageNumber) {
-    			if(e.canDoRendicontazione())
-    				e.setLink("<a class=\"btn btn-warning min-icon-width\" href=\"/provider/" + e.getProvider().getId() + "/evento/" + e.getId() + "/rendiconto\" title=\"#{label.rendiconto}\"><i class=\"fa fa-file-text\"></i></a>");
-    			test.add(e);
-    			i++;
-    		} else {
-    			break;
-    		}
-    	}
-    	dataTable.setData(test);
-		return dataTable;
-    }
 
 	@RequestMapping("/provider/evento/list")
 	public String getListEventiCurrentUserProvider(Model model, RedirectAttributes redirectAttrs, SessionStatus sessionStatus){
