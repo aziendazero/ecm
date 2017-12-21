@@ -658,7 +658,7 @@ public class EventoServiceImpl implements EventoService {
 
 			//xsd validation
 			try {
-				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), xml_b, Helper.getSchemaEvento_1_16_XSD());
+				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), xml_b, Helper.getSchemaEvento_1_16_XSD(), evento);
 			}
 			catch (Exception e) {
 				throw new EcmException("error.xml_validation", e.getMessage(), e);
@@ -686,7 +686,7 @@ public class EventoServiceImpl implements EventoService {
 
 			//xsd validation
 			try {
-				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), rendiconto.getData(), Helper.getSchemaEvento_1_16_XSD());
+				XmlReportValidator.validateXmlWithXsd(rendiconto.getNomeFile(), rendiconto.getData(), Helper.getSchemaEvento_1_16_XSD(), evento);
 			}
 			catch (Exception e) {
 				throw new EcmException("error.xml_validation", e.getMessage(), e);

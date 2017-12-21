@@ -26,13 +26,19 @@ import it.tredi.ecm.dao.entity.Professione;
 
 public class XmlReportValidator {
 
-	public static void validateXmlWithXsd(String fileName, byte []reportEventoXml, Schema schema) throws Exception {
+	public static void validateXmlWithXsd(String fileName, byte []reportEventoXml, Schema schema, Evento evento) throws Exception {
 		//estrazione xml
 		reportEventoXml = extractXml(fileName, reportEventoXml);
 
 	    Validator validator = schema.newValidator();
 	    Source source = new StreamSource(new StringReader(new String(reportEventoXml, Helper.XML_REPORT_ENCODING)));
 		validator.validate(source);
+		
+		//ora siamo sicuri di avere un XML
+		Document xmlDoc = DocumentHelper.parseText(new String(reportEventoXml, Helper.XML_REPORT_ENCODING));
+		Element eventoEl = xmlDoc.getRootElement().element("evento");
+		
+		validateProfessioniAndDiscipline(eventoEl, Helper.createCodProfessioneSetFromEvento(evento), Helper.createCodDisciplinaSetFromEvento(evento));
 	}
 
 	public static void validateEventoXmlWithDb(String fileName, byte []reportEventoXml, Evento evento) throws Exception {
