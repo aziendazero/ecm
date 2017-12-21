@@ -54,6 +54,8 @@ import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
 import it.tredi.ecm.dao.entity.AnagraficaFullEventoBase;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
+import it.tredi.ecm.dao.entity.EventoListDataModel;
+import it.tredi.ecm.dao.entity.EventoListDataTableModel;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
@@ -148,6 +150,9 @@ public class EventoController {
 	@Autowired private ScadenzeEventoValidator scadenzeEventoValidator;
 
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -226,6 +231,74 @@ public class EventoController {
 			return "";
 		}
 	}
+	
+	@JsonView(EventoListDataTableModel.View.class)
+	@RequestMapping(value = "/evento/springPaginationDataTables", method = RequestMethod.GET)
+    public @ResponseBody EventoListDataTableModel springPaginationDataTables(HttpServletRequest  request) throws IOException {
+	EventoListDataTableModel dataTable = new EventoListDataTableModel();
+	dataTable.setLength(10);
+	dataTable.setData(new HashSet());
+    	//Fetch the page number from client
+    	Integer pageNumber = 0;
+    	if (null != request.getParameter("start"))
+    		pageNumber = (Integer.valueOf(request.getParameter("start"))/10);	
+    	
+    	//Fetch search parameter
+    	String searchParameter = request.getParameter("sSearch");
+    	
+    	//Fetch Page display length
+    	//Integer pageDisplayLength = Integer.valueOf(request.getParameter("iDisplayLength"));
+    	Long provider = new Long("188");
+    	Page<Evento> eventi = eventoService.getAllEventi(pageNumber);
+    	for(Evento event : eventi) {
+    		EventoListDataModel dh = new EventoListDataModel();
+    		dh.setCodiceIdent("<a href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/show\">" + event.getCodiceIdentificativo() + "</a>");
+    		if(Utils.getAuthenticatedUser().isSegreteria())
+    			dh.setDenominazioneLeg(event.getProvider().getDenominazioneLegale());
+    		dh.setEdizione(event.getEdizione());
+    		dh.setTipo(event.getProceduraFormativa().toString());
+    		
+    		if (event.getProceduraFormativa() == ProceduraFormativa.FSC) {
+    			EventoFSC eventoFsc = (EventoFSC) event;
+    			if(eventoFsc.getSedeEvento() != null)
+    				dh.setSede(eventoFsc.getSedeEvento().getLuogo());
+    		}
+    		else if (event.getProceduraFormativa() == ProceduraFormativa.RES) {
+    			EventoRES eventoRes = (EventoRES) event;
+    			if(eventoRes.getSedeEvento() != null)
+    				dh.setSede(eventoRes.getSedeEvento().getLuogo());
+    		}
+    		
+    		dh.setTitolo(event.getTitolo());
+    		if(event.getDataInizio() != null)
+    			dh.setDataInizio(event.getDataInizio().toString());
+    		if(event.getDataFine() != null)
+    			dh.setDataFine(event.getDataFine().toString());
+ 
+    		String statoBuild = "<div>" + event.getStato().getNome() + "</div>";
+    		
+    		if(event.getPagato() && !event.isCancellato())
+    			statoBuild += "<div ><span class=\"label-pagato\">" + messageSource.getMessage("label.pagato", null, LocaleContextHolder.getLocale()) + "</span></div>";
+    		else if (event.isCancellato())
+    			statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.cancellato", null, LocaleContextHolder.getLocale()) + "</span></div>";
+    		else if (!event.getPagato() && !event.isCancellato()) {
+    			if(event.getPagInCorso())
+    				statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.pagInCorso", null, LocaleContextHolder.getLocale()) + "</span></div>";
+    			else
+    				statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.da_pagare", null, LocaleContextHolder.getLocale()) + "</span></div>";
+    		}
+    		dh.setStato(statoBuild);
+    		//dh.setNumPart(event.getNumeroPartecipanti());
+    		dh.setDurata(event.getDurata());
+    		if(event.getDataScadenzaInvioRendicontazione() != null)
+    			dh.setDataScadenzaRediconto(event.getDataScadenzaInvioRendicontazione().toString());
+    		//dh.setCreditiConfermati(event.getCrediti());
+    		dataTable.getData().add(dh);
+    	}
+    	dataTable.setRecordsTotal(eventi.getTotalElements());
+    	dataTable.setRecordsFiltered(eventi.getTotalElements());
+	return dataTable;
+    }
 
 	@RequestMapping("/provider/evento/list")
 	public String getListEventiCurrentUserProvider(Model model, RedirectAttributes redirectAttrs, SessionStatus sessionStatus){
