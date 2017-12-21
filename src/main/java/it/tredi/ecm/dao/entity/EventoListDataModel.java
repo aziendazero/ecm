@@ -33,28 +33,25 @@ public class EventoListDataModel {
 	@JsonView(EventoListDataTableModel.View.class)
 	private String sede = "";
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")
 	@JsonView(EventoListDataTableModel.View.class)
 	private String dataInizio = "";
 	
 	@JsonView(EventoListDataTableModel.View.class)
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")
 	private String dataFine = "";
 	
 	@JsonView(EventoListDataTableModel.View.class)
 	private String stato = "";
 	
 	@JsonView(EventoListDataTableModel.View.class)
-	private int numPart;
+	private String numPart;
 
 	@JsonView(EventoListDataTableModel.View.class)
-	private float durata;
+	private String durata;
 	
 	@JsonView(EventoListDataTableModel.View.class)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private String dataScadenzaRediconto = "";
 	
 	@JsonView(EventoListDataTableModel.View.class)
-	private float creditiConfermati;
+	private String creditiConfermati;
 	
 }

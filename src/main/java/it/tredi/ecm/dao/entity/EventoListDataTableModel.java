@@ -18,7 +18,7 @@ public class EventoListDataTableModel {
 	  private int draw;
 	  
 	  @JsonView(View.class)
-	  private int length = 5;
+	  private int length;
 
 	  /**
 	   * Total records, before filtering (i.e. the total number of records in the database)

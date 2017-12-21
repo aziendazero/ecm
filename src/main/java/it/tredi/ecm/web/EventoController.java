@@ -3,6 +3,7 @@ package it.tredi.ecm.web;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -232,11 +234,127 @@ public class EventoController {
 		}
 	}
 	
+	
+	//Builds an EventoListDataModel from an event required by DataTable for displaying the information
+	//Throws Exception from event.getAuditEntityType()
+	private EventoListDataModel buildEventiDataModel(Evento event) throws NoSuchMessageException, Exception {
+		EventoListDataModel dataModel = new EventoListDataModel();
+		//DateFormatter
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		dataModel.setCodiceIdent("<a href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/show\">" + event.getCodiceIdentificativo() + "</a>");
+		if(Utils.getAuthenticatedUser().isSegreteria())
+			dataModel.setDenominazioneLeg(event.getProvider().getDenominazioneLegale());
+		dataModel.setEdizione(event.getEdizione());
+		dataModel.setTipo(event.getProceduraFormativa().toString());
+		
+		if (event.getProceduraFormativa() == ProceduraFormativa.FSC) {
+			EventoFSC eventoFsc = (EventoFSC) event;
+			if(eventoFsc.getSedeEvento() != null)
+				dataModel.setSede(eventoFsc.getSedeEvento().getLuogo());
+		}
+		else if (event.getProceduraFormativa() == ProceduraFormativa.RES) {
+			EventoRES eventoRes = (EventoRES) event;
+			if(eventoRes.getSedeEvento() != null)
+				dataModel.setSede(eventoRes.getSedeEvento().getLuogo());
+		}
+		
+		dataModel.setTitolo(event.getTitolo());
+		if(event.getDataInizio() != null)
+			dataModel.setDataInizio(event.getDataInizio().format(formatter));
+		if(event.getDataFine() != null)
+			dataModel.setDataFine(event.getDataFine().format(formatter));
+
+		String statoBuild = "<div>" + event.getStato().getNome() + "</div>";
+		
+		if(event.getPagato() != null && event.getPagato() && !event.isCancellato())
+			statoBuild += "<div ><span class=\"label-pagato\">" + messageSource.getMessage("label.pagato", null, LocaleContextHolder.getLocale()) + "</span></div>";
+		else if (event.isCancellato())
+			statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.cancellato", null, LocaleContextHolder.getLocale()) + "</span></div>";
+		else if (event.getPagato() == null || (!event.getPagato() && !event.isCancellato())) {
+			if(event.getPagInCorso() != null && event.getPagInCorso())
+				statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.pagInCorso", null, LocaleContextHolder.getLocale()) + "</span></div>";
+			else
+				statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.da_pagare", null, LocaleContextHolder.getLocale()) + "</span></div>";
+		}
+		dataModel.setStato(statoBuild);
+		dataModel.setNumPart(event.getNumeroPartecipanti() != null ? event.getNumeroPartecipanti().toString() : "");
+		dataModel.setDurata(Utils.formatOrario(event.getDurata() != null ? event.getDurata() : 0));
+		if(event.getDataScadenzaInvioRendicontazione() != null)
+			dataModel.setDataScadenzaRediconto(event.getDataScadenzaInvioRendicontazione().format(formatter));
+		
+		if(event.getConfermatiCrediti() != null) {
+			if(event.getConfermatiCrediti())
+				dataModel.setCreditiConfermati("<div><i class=\"fa table-icon fa-check green\" title=\"" + messageSource.getMessage("label.sì", null, LocaleContextHolder.getLocale()) + "\"></i></div>");
+			else
+				dataModel.setCreditiConfermati("<div><i class=\"fa table-icon fa-remove red\" title=\"" + messageSource.getMessage("label.no", null, LocaleContextHolder.getLocale()) + "\"></i></div>");
+		}
+		else {
+			dataModel.setCreditiConfermati("<div><i class=\"fa table-icon fa-question grey\" title=\"" + messageSource.getMessage("label.non_specificato", null, LocaleContextHolder.getLocale()) + "\"></i></div>");
+		}
+		
+		
+		//Build the Azioni Buttons
+		String buttons = "";
+		if(Utils.getAuthenticatedUser().isSegreteria() || Utils.getAuthenticatedUser().isProvider()) {
+			if(event.canEdit() || Utils.getAuthenticatedUser().isSegreteria()) {
+				buttons += "	<a class=\"btn btn-primary min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/edit\" title=\""
+								+ messageSource.getMessage("label.modifica", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-pencil\"></i></a>"; 
+			}
+			
+			if(Utils.getAuthenticatedUser().isSegreteria() && event.canSegreteriaShiftData()) {
+				buttons+= "<button type=\"button\" class=\"btn btn-primary min-icon-width\" onclick=\"openModalScadenze(" + event.getId() +
+						", '" + event.getDataScadenzaPagamento() + "', '" + event.getDataScadenzaInvioRendicontazione() + "')\" title=\"" + messageSource.getMessage("label.abilita", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-unlock-alt\"> </i></button>";
+			}
+			
+			if(event.canDoPagamento()) {
+				if((event.getProvider().getMyPay() != null && event.getProvider().getMyPay()) || (event.getProvider().getMyPay() == null && event.getProvider().isGruppoB())) {
+					buttons += "<a class=\"btn btn-success btn-min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + 
+									event.getId() + "/paga\" title=\"" + messageSource.getMessage("label.paga", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"></i></a>";
+				}
+				
+				if (event.getProvider().getMyPay() != null && !event.getProvider().getMyPay()) {
+					buttons += "<a class=\"btn btn-success btn-min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + 
+															event.getId() + "/quietanzaPage\" title=\"" + messageSource.getMessage("label.allega_quietanza", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"></i></a>";
+				}
+			}
+			
+			if (event.getPagato() && event.getPagatoQuietanza()) {
+				buttons += "<a class=\"btn btn-success btn-min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + 
+														event.getId() + "/quietanzaPagamento/show\"  title=\"" + messageSource.getMessage("label.visualizza_quietanza", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"> </i></a>";
+			}
+			
+			if (Utils.getAuthenticatedUser().isSegreteria()) {
+				buttons += "<a class=\"btn btn-primary min-icon-width\" href=\"/audit/entity/" + event.getAuditEntityType() + "/entityId/" + event.getId() + 
+										"\" th:title=\"" + messageSource.getMessage("label.registro_operazioni", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-book\"></i></a>";
+			}
+			
+			if (event.canDoRendicontazione()) {
+				buttons += "<a class=\"btn btn-warning min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/rendiconto\" title=\"" +
+																messageSource.getMessage("label.rendiconto", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file-text\"></i></a>";
+			}
+			
+			if (event.canDoUploadSponsor()) {
+				buttons += "<a class=\"btn btn-primary min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/allegaContrattiSponsor\" title=\"" +
+														messageSource.getMessage("label.allega_contratti_sponsor", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file\"></i></a>";
+			}
+			
+			if (event.canEdit()) {
+				buttons += "<button class=\"btn btn-danger min-icon-width\" onclick=\"confirmDeleteEventoModal('" + event.getProvider().getId() + "','" +
+														event.getId() + "','" + event.getProceduraFormativa() + "','" + event.getCodiceIdentificativo() + "','" + event.getStato() + "')\" title=\"" +
+														(event.getStato() == EventoStatoEnum.BOZZA ? messageSource.getMessage("label.elimina", null, LocaleContextHolder.getLocale()) : messageSource.getMessage("label.annulla", null, LocaleContextHolder.getLocale())) + "\"><i class=\"fa fa-trash\"></i></button>";
+			}
+		}
+		dataModel.setLinks(buttons);
+		
+		return dataModel;
+	}
+	
 	@JsonView(EventoListDataTableModel.View.class)
 	@RequestMapping(value = "/evento/springPaginationDataTables", method = RequestMethod.GET)
     public @ResponseBody EventoListDataTableModel springPaginationDataTables(HttpServletRequest  request) throws Exception {
 	EventoListDataTableModel dataTable = new EventoListDataTableModel();
-	dataTable.setLength(10);
+
+	
 	dataTable.setData(new HashSet());
     	//Fetch the page number from client
     	Integer pageNumber = 0;
@@ -261,57 +379,10 @@ public class EventoController {
     	else
     		throw new Exception("Not the correct way to read json");
     	
-    	//Fetch search parameter
-    	String searchParameter = request.getParameter("sSearch");
-    	
-    	//Fetch Page display length
-    	//Integer pageDisplayLength = Integer.valueOf(request.getParameter("iDisplayLength"));
-    	Long provider = new Long("188");
+
     	Page<Evento> eventi = eventoService.getAllEventi(pageNumber, columnNumber, order, numOfPages);
     	for(Evento event : eventi) {
-    		EventoListDataModel dh = new EventoListDataModel();
-    		dh.setCodiceIdent("<a href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/show\">" + event.getCodiceIdentificativo() + "</a>");
-    		if(Utils.getAuthenticatedUser().isSegreteria())
-    			dh.setDenominazioneLeg(event.getProvider().getDenominazioneLegale());
-    		dh.setEdizione(event.getEdizione());
-    		dh.setTipo(event.getProceduraFormativa().toString());
-    		
-    		if (event.getProceduraFormativa() == ProceduraFormativa.FSC) {
-    			EventoFSC eventoFsc = (EventoFSC) event;
-    			if(eventoFsc.getSedeEvento() != null)
-    				dh.setSede(eventoFsc.getSedeEvento().getLuogo());
-    		}
-    		else if (event.getProceduraFormativa() == ProceduraFormativa.RES) {
-    			EventoRES eventoRes = (EventoRES) event;
-    			if(eventoRes.getSedeEvento() != null)
-    				dh.setSede(eventoRes.getSedeEvento().getLuogo());
-    		}
-    		
-    		dh.setTitolo(event.getTitolo());
-    		if(event.getDataInizio() != null)
-    			dh.setDataInizio(event.getDataInizio().toString());
-    		if(event.getDataFine() != null)
-    			dh.setDataFine(event.getDataFine().toString());
- 
-    		String statoBuild = "<div>" + event.getStato().getNome() + "</div>";
-    		
-    		if(event.getPagato() && !event.isCancellato())
-    			statoBuild += "<div ><span class=\"label-pagato\">" + messageSource.getMessage("label.pagato", null, LocaleContextHolder.getLocale()) + "</span></div>";
-    		else if (event.isCancellato())
-    			statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.cancellato", null, LocaleContextHolder.getLocale()) + "</span></div>";
-    		else if (!event.getPagato() && !event.isCancellato()) {
-    			if(event.getPagInCorso())
-    				statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.pagInCorso", null, LocaleContextHolder.getLocale()) + "</span></div>";
-    			else
-    				statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.da_pagare", null, LocaleContextHolder.getLocale()) + "</span></div>";
-    		}
-    		dh.setStato(statoBuild);
-    		//dh.setNumPart(event.getNumeroPartecipanti());
-    		dh.setDurata(event.getDurata());
-    		if(event.getDataScadenzaInvioRendicontazione() != null)
-    			dh.setDataScadenzaRediconto(event.getDataScadenzaInvioRendicontazione().toString());
-    		//dh.setCreditiConfermati(event.getCrediti());
-    		dataTable.getData().add(dh);
+    		dataTable.getData().add(buildEventiDataModel(event));
     	}
     	dataTable.setRecordsTotal(eventi.getTotalElements());
     	dataTable.setRecordsFiltered(eventi.getTotalElements());

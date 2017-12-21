@@ -228,7 +228,7 @@
 							</h2>
 						</div>
 
-						<table th:unless="${#lists.isEmpty(eventoList)}" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<!-- <table th:unless="${#lists.isEmpty(eventoList)}" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
 									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
@@ -289,7 +289,7 @@
 										<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit() or #authentication.principal.isSegreteria()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
 										<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalScadenze(${evento.id}, '${evento.dataScadenzaPagamento}', '${evento.dataScadenzaInvioRendicontazione}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
 
-										<!-- TODO DISABILITATO PER LA PRODUZIONE -->
+										TODO DISABILITATO PER LA PRODUZIONE
 										<th:block th:if="${evento.canDoPagamento()}">
 											<a th:if="${evento.provider.myPay == true or (evento.provider.myPay == null and evento.provider.isGruppoB())}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>
 											<a th:if="${evento.provider.myPay == false}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/quietanzaPage|}" th:title="#{label.allega_quietanza}"><i class="fa fa-euro"></i></a>
@@ -303,9 +303,9 @@
 									</td>
 								</tr>
 							</tbody>
-						</table>
+						</table> -->
 						
-						<table id = "test" class = "table table-striped table-bordered dt-responsive nowrap display" cellspacing="0" width="100%">
+						<table class = "datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 									<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
@@ -354,7 +354,7 @@
 				$(document).ready(function() {
 
 			        $.fn.dataTable.moment('DD/MM/YYYY');
-					$(".datatable-responsive-eventi-provider").DataTable({
+					/* $(".datatable-responsive-eventi-provider").DataTable({
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : true,
@@ -367,9 +367,9 @@
 						    { "sClass": "wordwrap-200", "aTargets": [ 4 ] }
 						  ],
 						  
-					});
+					}); */
 					
-					$("#test").DataTable({
+					$(".datatable-responsive-eventi-provider").DataTable({
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : true,
@@ -392,8 +392,18 @@
 					            { "data": "numPart"},
 					            { "data": "durata"},
 					            { "data": "dataScadenzaRediconto"},
-					            { "data": "creditiConfermati"}
+					            { "data": "creditiConfermati"},
+					            { "data": "links"}
 					        ],
+					        "columnDefs": [
+			                     {"targets": colonne, "width": "1px"},
+			                     {"targets": confermati, "sClass": "center"},
+//			                     { "type": 'date-eu', "targets": date},
+			                   ],
+					        "aoColumnDefs": [
+					        		{ "sClass": "wordwrap-200", "aTargets": [ 4 ] },
+					        		{ "sClass": "text-full-length", "aTargets": [ 13 ] }
+					        	],
 					       
 					})
 
