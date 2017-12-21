@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-public class DataTableOutPut {
+public class EventoListDataTableModel {
 	 /**
 	   * The draw counter that this object is a response to - from the draw parameter sent as part of
 	   * the data request. Note that it is strongly recommended for security reasons that you cast this
@@ -39,7 +39,7 @@ public class DataTableOutPut {
 	   * ajaxDT option's dataSrc property.
 	   */
 	  @JsonView(View.class)
-	  private Set<Evento> data;
+	  private Set<EventoListDataModel> data;
 
 	  /**
 	   * Optional: If an error occurs during the running of the server-side processing script, you can

@@ -29,6 +29,8 @@ import org.hibernate.annotations.Where;
 import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.javers.core.metamodel.annotation.TypeName;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.RagioneSocialeEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -71,6 +73,7 @@ public class Provider extends BaseEntity{
 	Set<Account> accounts;
 
 	/*	INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE	*/
+	@JsonView(EventoListDataTableModel.View.class)
 	private String denominazioneLegale;
 	@Enumerated(EnumType.STRING)
 	private TipoOrganizzatore tipoOrganizzatore;

@@ -307,9 +307,20 @@
 						
 						<table id = "test" class = "table table-striped table-bordered dt-responsive nowrap display" cellspacing="0" width="100%">
 							<thead>
-								<th>Codice</th>
-								<th>Titolo</th>
-								<th>Test</th>
+								<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
+									<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
+									<th th:text="#{label.edizione_short}">label.edizione_short</th>
+									<th th:text="#{label.tipo}">label.tipo</th>
+									<th th:text="#{label.titolo}">label.titolo</th>
+									<th th:text="#{label.sede}">label.sede</th>
+									<th th:text="#{label.data_inizio}">label.date</th>
+									<th th:text="#{label.data_fine}">label.date</th>
+									<th th:text="#{label.stato}"></th>
+									<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
+									<th th:text="#{label.durata}">label.ore_corso</th>
+									<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
+									<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
+									<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 							</thead>
 						</table>
 
@@ -362,7 +373,6 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : true,
-						"bProcessing": true,
 				        "bServerSide": true,
 				        "sort": "position",
 				       
@@ -370,10 +380,21 @@
 							  url: "/evento/springPaginationDataTables"
 						  },
 						  "columns": [
+					            { "data": "codiceIdent"},
+					            { "data": "denominazioneLeg"},
 					            { "data": "edizione" },
-					            { "data": "titolo" },
-					            { "data" : "link"}
-					        ]
+					            { "data": "tipo"},
+					            { "data": "titolo"},
+					            { "data": "sede"},
+					            { "data": "dataInizio"},
+					            { "data": "dataFine"},
+					            { "data": "stato"},
+					            { "data": "numPart"},
+					            { "data": "durata"},
+					            { "data": "dataScadenzaRediconto"},
+					            { "data": "creditiConfermati"}
+					        ],
+					       
 					})
 
 					$(".datatable-responsive-eventi-attuazione").DataTable({
