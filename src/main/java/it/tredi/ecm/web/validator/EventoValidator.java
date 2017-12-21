@@ -162,7 +162,8 @@ public class EventoValidator {
 				//numero date da rispettare
 				checkDateInizioFine(evento, eventoDaDB, prefix, errors);
 			}
-			if(evento.isRiedizione()) {
+			/* escludere dal controllo le riedizioni FSC */
+			if(evento.isRiedizione() && !(evento instanceof EventoFSC)) {
 				if((evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear())
 						|| evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio()))
 					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida_anno_padre");
