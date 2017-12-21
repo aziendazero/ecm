@@ -72,8 +72,9 @@
 							</button>
 							<h4 id="container-titleNoPausa" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 							<h4 id="container-titlePausa" class="modal-title" th:text="#{label.inserisci_pausa}">Inserisci pausa</h4>
-							<h4 id="container-titleValutazioneApprendimento" class="modal-title" th:text="#{label.inserisci_valutazione_apprendimento}">Inserisci pausa</h4>
-							<h4 id="container-titleRegistrazionePartecipanti" class="modal-title" th:text="#{label.inserisci_registrazione_partecipanti}">Inserisci pausa</h4>
+							<h4 id="container-titleValutazioneApprendimento" class="modal-title" th:text="#{label.inserisci_valutazione_apprendimento}">Inserisci Valutazione apprendimento</h4>
+							<h4 id="container-titleRegistrazionePartecipanti" class="modal-title" th:text="#{label.inserisci_registrazione_partecipanti}">Inserisci Registrazione partecipanti</h4>
+							<h4 id="container-titleSalutiIntroduttivi" class="modal-title" th:text="#{label.inserisci_saluti_introduttivi}">Inserisci Saluti introduttivi</h4>
 						</div>
 						<div class="modal-body" id="container-attivitaRES">
 							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
@@ -1594,8 +1595,10 @@
 					
 					$('#dataInizio').on("apply.daterangepicker change", function() {
 						setDocRelTutMod();
+						setAttivitaSalutiIntroduttivi();
 					});
 					$('#dataInizio').on('change', setDocRelTutMod);
+					$('#dataInizio').on('change', setAttivitaSalutiIntroduttivi);
 
 				    $("#addAttivitaRES-metodolgieDidattiche").prop('disabled',true);
 
@@ -1628,6 +1631,7 @@
 
 				function initAll(){
 					setDocRelTutMod();
+					setAttivitaSalutiIntroduttivi();
 
 					$("#add-attivitaRES-modal").draggable({
 					    handle: ".modal-content"
@@ -2153,24 +2157,33 @@
 						$('#addAttivitaTo_indirizzo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.indirizzo").val(indirizzoVal);
 						$('#addAttivitaTo_luogo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.luogo").val(luogoVal);
 
-						if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO' || extraType == 'REGISTRAZIONE PARTECIPANTI'){
+						if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO' || extraType == 'REGISTRAZIONE PARTECIPANTI' || extraType == 'SALUTI INTRODUTTIVI'){
 							$("#container-titleNoPausa").hide();
 
 							if(extraType == 'PAUSA'){
 								$("#container-titlePausa").show();
 								$("#container-titleValutazioneApprendimento").hide();
 								$("#container-titleRegistrazionePartecipanti").hide();
+								$("#container-titleSalutiIntroduttivi").hide();
 							}
 							else if (extraType == 'VALUTAZIONE APPRENDIMENTO'){
 								$("#container-titleValutazioneApprendimento").show();
 								$("#container-titlePausa").hide();
 								$("#container-titleRegistrazionePartecipanti").hide();
+								$("#container-titleSalutiIntroduttivi").hide();
 							}
-							else {
+							else if (extraType == 'REGISTRAZIONE PARTECIPANTI'){
 								$("#container-titleRegistrazionePartecipanti").show();
 								$("#container-titlePausa").hide();
 								$("#container-titleValutazioneApprendimento").hide();
+								$("#container-titleSalutiIntroduttivi").hide();
+							} else {
+								$("#container-titleSalutiIntroduttivi").show();
+								$("#container-titleRegistrazionePartecipanti").hide();
+								$("#container-titlePausa").hide();
+								$("#container-titleValutazioneApprendimento").hide();
 							}
+
 							$("#container-argomento").hide();
 							$("#container-docente").hide();
 							$("#container-risultatoAtteso").hide();
@@ -2372,6 +2385,15 @@
 					} else {
 						$("#docreltutmod").hide();
 						$("#docreltut").show();
+					}
+				}
+
+				function setAttivitaSalutiIntroduttivi() {
+					var versione = getVersione();
+					if (versione === 2) {
+						$("#add-attivitaSalutiIntroduttivi").show();
+					} else {
+						$("#add-attivitaSalutiIntroduttivi").hide();
 					}
 				}
 				

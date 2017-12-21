@@ -1973,18 +1973,31 @@
 										<th th:text="#{label.ore_attivita}" class="no-sort">ORE ATTIVITA'</th>
 										<th class="no-sort">
 											<div class="evento-button-container">
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" 
+													th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-plus"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaPausa" class="btn btn-success evento-table-button" th:title="#{label.inserisci_pausa}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaPausa" class="btn btn-success evento-table-button" th:title="#{label.inserisci_pausa}" 
+													th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-pause-circle-o"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaValutazioneApprendimento" class="btn btn-success evento-table-button" th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaValutazioneApprendimento" class="btn btn-success evento-table-button" 
+													th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" 
+													data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-pencil"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success evento-table-button" th:title="#{label.inserisci_registrazione_partecipanti}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'REGISTRAZIONE PARTECIPANTI\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success evento-table-button" 
+													th:title="#{label.inserisci_registrazione_partecipanti}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'REGISTRAZIONE PARTECIPANTI\', undefined, true)'" 
+													data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-group"></i></span>
 												</a>
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaSalutiIntroduttivi" class="btn btn-success evento-table-button" 
+													th:title="#{label.inserisci_saluti_introduttivi}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'SALUTI INTRODUTTIVI\', undefined, true)'" 
+													data-toggle="modal" data-target=".modal-add-attivitaRES">
+													<span><i class="fa fa-newspaper-o"></i></span>
+												</a>
+
+
 												<a th:if="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivita" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_attivita}">
 													<span><i class="fa fa-plus"></i></span>
 												</a>
@@ -2000,6 +2013,9 @@
 <!-- 												<button type="button" th:unless="${isEditSemiBloccato}" onclick="selezionaTutteAttivita($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.seleziona_tutti}"> -->
 <!-- 													<span><i class="fa fa-list-ol"></i></span> -->
 <!-- 												</button> -->
+												<a th:if="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaSalutiIntroduttivi" class="btn btn-success disabled evento-table-button" th:title="#{label.inserisci_saluti_introduttivi}">
+													<span><i class="fa fa-newspaper-o"></i></span>
+												</a>
 												<button type="button" th:unless="${isEventoIniziato or isEditSemiBloccato}" onclick="openModaleSpostaOrario($(this).parents('.datatable-responsive-programmaRES'))" class="btn btn-success evento-table-button" th:title="#{label.sposta_orario_selezionati}">
 													<span><i class="fa fa-clock-o"></i></span>
 												</button>
