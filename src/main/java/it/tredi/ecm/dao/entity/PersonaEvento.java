@@ -7,6 +7,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.javers.core.metamodel.annotation.TypeName;
@@ -56,6 +57,46 @@ public class PersonaEvento extends BaseEntityDefaultId implements Serializable{
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore cast AnagraficaEventoBase"), ex);
 		}
+	}
+	
+	@Transient
+	public String getDescrizionePerAttivitaRES() {
+		String toRet = "";
+		if(this.anagrafica != null && this.anagrafica.getCognome() != null && !this.anagrafica.getCognome().isEmpty()) {
+			toRet = this.anagrafica.getCognome();
+		}
+		if(this.anagrafica != null && this.anagrafica.getCodiceFiscale() != null && !this.anagrafica.getCodiceFiscale().isEmpty()) {
+			if(toRet.isEmpty())
+				toRet = this.anagrafica.getCodiceFiscale();
+			else
+				toRet += " " + this.anagrafica.getCodiceFiscale();
+		}
+		if(this.ruolo != null) {
+			if(toRet.isEmpty())
+				toRet = this.getRuolo().getNomeCorto();
+			else
+				toRet += " " + this.getRuolo().getNomeCorto();
+		}
+		if(this.titolare != null) {
+			if(toRet.isEmpty())
+				toRet = getLetteraFromTitolare();
+			else
+				toRet += " " + getLetteraFromTitolare();
+		}
+		
+		return toRet;
+	}
+	
+	@Transient
+	private String getLetteraFromTitolare() {
+		if(titolare != null) {
+			if("titolare".equals(titolare)) {
+				return "T";
+			} else {
+				return "S";
+			}
+		}
+		return "";
 	}
 
 	@Override

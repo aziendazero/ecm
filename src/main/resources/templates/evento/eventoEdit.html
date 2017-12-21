@@ -2015,7 +2015,7 @@
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].orarioFine}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].argomento}"></td>
 										<td>
-											<div th:each="docente, row : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].docenti}" th:text="${docente.anagrafica?.cognome}"></div>
+											<div th:each="docente, row : ${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].docenti}" th:text="${docente.descrizionePerAttivitaRES + (row.count &lt; row.size ? ';' : '')}"></div>
 										</td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].risultatoAtteso}"></td>
 										<td th:text="${eventoWrapper.eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[__${data.key}__].programma.programma[__${status2.index}__].obiettivoFormativo?.nome}"></td>
