@@ -197,7 +197,7 @@ public class EventoController {
 		try {
 
 			if(model.asMap().get("eventoList") == null)
-				model.addAttribute("eventoList", eventoService.getAllEventi(0, 0, "asc", 10)); //TODO modify after building new function
+				model.addAttribute("eventoList", eventoService.getAllEventi());
 
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 
@@ -219,7 +219,7 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
 
-			model.addAttribute("eventoList", eventoService.getAllEventi(0, 0, "asc", 10)); //TODO modify after building new function
+			model.addAttribute("eventoList", eventoService.getAllEventi());
 
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 

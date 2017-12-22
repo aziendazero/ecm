@@ -23,6 +23,7 @@ public interface EventoService {
 	public void delete(Long id);
 
 	public void validaRendiconto(Long id, File rendiconto) throws Exception;
+	public List<Evento> getAllEventi();
 	public Page<Evento> getAllEventi(Integer pageNumber, Integer columnNumber, String order, Integer numOfPages);
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
 	public boolean canCreateEvento(Account account);

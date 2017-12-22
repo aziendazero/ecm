@@ -790,6 +790,12 @@ public class EventoServiceImpl implements EventoService {
 		}
 		return eventoRepository.findAll(request);
 	}
+	
+	@Override
+	public List<Evento> getAllEventi() {
+		LOGGER.debug("Recupero tutti gli eventi");
+		return eventoRepository.findAll();
+	}
 
 	@Override
 	public Set<Evento> getAllEventiForProviderId(Long providerId) {
