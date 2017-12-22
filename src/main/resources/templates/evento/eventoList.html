@@ -377,7 +377,7 @@
 				        "sort": "position",
 				       
 						 ajax:{
-							  url: "/evento/springPaginationDataTables"
+							  url: "/evento/eventoListPaginated"
 						  },
 						  "columns": [
 					            { "data": "codiceIdent"},
@@ -385,7 +385,7 @@
 					            { "data": "edizione" },
 					            { "data": "tipo"},
 					            { "data": "titolo"},
-					            { "data": "sede"},
+					            { "data": "sede", "orderable": false},
 					            { "data": "dataInizio"},
 					            { "data": "dataFine"},
 					            { "data": "stato"},
@@ -393,7 +393,7 @@
 					            { "data": "durata"},
 					            { "data": "dataScadenzaRediconto"},
 					            { "data": "creditiConfermati"},
-					            { "data": "links"}
+					            { "data": "links", "orderable": false}
 					        ],
 					        "columnDefs": [
 			                     {"targets": colonne, "width": "1px"},

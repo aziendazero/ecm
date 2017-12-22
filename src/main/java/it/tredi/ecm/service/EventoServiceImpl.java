@@ -702,16 +702,16 @@ public class EventoServiceImpl implements EventoService {
 		switch (columnNumber) {
 		case 0:
 			if(order.equals("asc"))
-				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "prefix", "edizione"));
 			else if(order.equals("desc"))
-				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataUltimaModifica"));
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "prefix", "edizione"));
 			break;
 		
 		case 1:
 			if(order.equals("asc"))
-				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "provider.denominazioneLegale"));
 			else if(order.equals("desc"))
-				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataUltimaModifica"));
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "provider.denominazioneLegale"));
 			break;
 			
 		case 2:
@@ -735,13 +735,6 @@ public class EventoServiceImpl implements EventoService {
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "titolo"));
 			break;
 			
-		case 5:
-			if(order.equals("asc"))
-				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
-			else if(order.equals("desc"))
-				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataUltimaModifica"));
-			break;
-			
 		case 6:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataInizio"));
@@ -758,9 +751,9 @@ public class EventoServiceImpl implements EventoService {
 			
 		case 8:
 			if(order.equals("asc"))
-				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "stato"));
 			else if(order.equals("desc"))
-				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataUltimaModifica"));
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "stato"));
 			break;
 			
 		case 9:

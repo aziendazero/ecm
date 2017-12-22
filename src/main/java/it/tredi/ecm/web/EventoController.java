@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -350,43 +351,53 @@ public class EventoController {
 	}
 	
 	@JsonView(EventoListDataTableModel.View.class)
-	@RequestMapping(value = "/evento/springPaginationDataTables", method = RequestMethod.GET)
-    public @ResponseBody EventoListDataTableModel springPaginationDataTables(HttpServletRequest  request) throws Exception {
-	EventoListDataTableModel dataTable = new EventoListDataTableModel();
+	@RequestMapping(value = "/evento/eventoListPaginated", method = RequestMethod.GET)
+    public @ResponseBody EventoListDataTableModel eventoListPaginated(HttpServletRequest  request, RedirectAttributes redirectAttrs) throws Exception {
+		EventoListDataTableModel dataTable = new EventoListDataTableModel();
+	try {
+		
+		
+		dataTable.setData(new ArrayList<EventoListDataModel>());
+			//Fetch the page number from client
+			Integer pageNumber = 0;
+			//Fetch number of rows from client
+			Integer numOfRows = 10;
+			
+			if (null != request.getParameter("length")) 
+				numOfRows = Integer.valueOf(request.getParameter("length"));
+			else
+				throw new Exception("Cannot get length parameter!");
+			
+			if (null != request.getParameter("start"))
+				pageNumber = (Integer.valueOf(request.getParameter("start"))/numOfRows);	
+			
+			Integer columnNumber = 0;
+			if (null != request.getParameter("order[0][column]")) 
+				columnNumber = Integer.valueOf(request.getParameter("order[0][column]"));
+			else
+				throw new Exception("Cannot get order[0][column] parameter!");
+			
+			String order = "";
+			if (null != request.getParameter("order[0][dir]") && !request.getParameter("order[0][dir]").isEmpty()) 
+				order = request.getParameter("order[0][dir]");
+			 else
+				throw new Exception("Cannot get order[0][dir] parameter!");
+
+			Page<Evento> eventi = eventoService.getAllEventi(pageNumber, columnNumber, order, numOfRows);
+			for(Evento event : eventi) {
+				dataTable.getData().add(buildEventiDataModel(event));
+			}
 
 	
-	dataTable.setData(new HashSet());
-    	//Fetch the page number from client
-    	Integer pageNumber = 0;
-    	if (null != request.getParameter("start"))
-    		pageNumber = (Integer.valueOf(request.getParameter("start"))/10);	
-    	
-    	Integer columnNumber = 0;
-    	if (null != request.getParameter("order[0][column]")) 
-    		columnNumber = Integer.valueOf(request.getParameter("order[0][column]"));
-    	else
-    		throw new Exception("Not the correct way to read json");
-    	
-    	String order = "";
-    	if (null != request.getParameter("order[0][dir]") && !request.getParameter("order[0][dir]").isEmpty()) 
-    		order = request.getParameter("order[0][dir]");
-    	 else
-    		throw new Exception("Not the correct way to read json");
-    	
-    	Integer numOfPages = 0;
-    	if (null != request.getParameter("length")) 
-    		numOfPages = Integer.valueOf(request.getParameter("length"));
-    	else
-    		throw new Exception("Not the correct way to read json");
-    	
-
-    	Page<Evento> eventi = eventoService.getAllEventi(pageNumber, columnNumber, order, numOfPages);
-    	for(Evento event : eventi) {
-    		dataTable.getData().add(buildEventiDataModel(event));
-    	}
-    	dataTable.setRecordsTotal(eventi.getTotalElements());
-    	dataTable.setRecordsFiltered(eventi.getTotalElements());
-	return dataTable;
+			dataTable.setRecordsTotal(eventi.getTotalElements());
+			dataTable.setRecordsFiltered(eventi.getTotalElements());
+		return dataTable;
+	} catch (Exception e) {
+			LOGGER.error(Utils.getLogMessage("GET /evento/list"),e);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			dataTable.setError("Session expired or an Error occured! Please refresh the page.");
+			return null;
+		}
     }
 
 	@RequestMapping("/provider/evento/list")

@@ -1,6 +1,6 @@
 package it.tredi.ecm.dao.entity;
 
-import java.util.Set;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -39,7 +39,7 @@ public class EventoListDataTableModel {
 	   * ajaxDT option's dataSrc property.
 	   */
 	  @JsonView(View.class)
-	  private Set<EventoListDataModel> data;
+	  private List<EventoListDataModel> data;
 
 	  /**
 	   * Optional: If an error occurs during the running of the server-side processing script, you can
