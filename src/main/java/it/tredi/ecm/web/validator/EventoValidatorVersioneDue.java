@@ -37,6 +37,7 @@ import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
+import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
@@ -600,6 +601,13 @@ public class EventoValidatorVersioneDue {
 				&& (evento.getTitoloConvegno() == null || evento.getTitoloConvegno().isEmpty()))
 			errors.rejectValue(prefix + "titoloConvegno", "error.empty");
 
+		/* NUMERO DEI PARTECIPANTI PER CORSO (campo obbligatorio se la tipologia è CORSO_AGGIORNAMENTO) */
+		if(evento.getTipologiaEventoRES() != null
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO 
+				&& evento.getNumeroPartecipantiPerCorso() == null) { 
+			errors.rejectValue(prefix + "numeroPartecipantiPerCorso", "error.empty");
+		}
+		
 		/* NUMERO DEI PARTECIPANTI (campo obbligatorio)
 		 * campo valore numerico
 		 * se la tipologia dell'evento è CONVEGNO_CONGRESSO -> minimo 200 partecipanti
@@ -608,6 +616,8 @@ public class EventoValidatorVersioneDue {
 		 * */
 		if(evento.getNumeroPartecipanti() == null)
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.empty");
+		else if(evento.getNumeroPartecipanti() <= 0)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.numero_positivo");
 		else if(evento.getTipologiaEventoRES() != null
 				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
 				&& evento.getNumeroPartecipanti() < ecmProperties.getNumeroMinimoPartecipantiConvegnoCongressoRES())
@@ -617,9 +627,15 @@ public class EventoValidatorVersioneDue {
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiWorkshopSeminarioRES())
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti100");
 		else if(evento.getTipologiaEventoRES() != null
-				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO
-				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiCorsoAggiornamentoRES())
-			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti200");
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO) {
+			if(evento.getNumeroPartecipantiPerCorso() != null) {
+				if(evento.getNumeroPartecipantiPerCorso() == NumeroPartecipantiPerCorsoEnum.CORSO_AGGIORNAMENTO_FINO_100_PARTECIPANTI && evento.getNumeroPartecipanti() > 100) {
+					errors.rejectValue(prefix + "numeroPartecipanti", "error.partecipanti_corso_aggiornamento_fino_100");
+				} else if (evento.getNumeroPartecipantiPerCorso() == NumeroPartecipantiPerCorsoEnum.CORSO_AGGIORNAMENTO_DA_101_A_200_PARTECIPANTI && (evento.getNumeroPartecipanti() < 101 || evento.getNumeroPartecipanti() > 200)) {
+					errors.rejectValue(prefix + "numeroPartecipanti", "error.partecipanti_corso_aggiornamento_da_101_fino_200");
+				}
+			}
+		}
 
 		/* DOCENTI/RELATORI/TUTOR (serie di campi obbligatori)
 		 * ripetibile complesso di classe PersonaEvento

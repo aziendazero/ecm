@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
@@ -20,9 +19,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 
-import org.javers.core.metamodel.annotation.ShallowReference;
 import org.javers.core.metamodel.annotation.TypeName;
 
+import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
@@ -90,6 +89,10 @@ public class EventoRES extends Evento{
 	@Embedded
 	private RiepilogoRES riepilogoRES = new RiepilogoRES();
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "numero_partecipanti_per_corso")
+	private NumeroPartecipantiPerCorsoEnum numeroPartecipantiPerCorso;
+	
 	//se mai un giorno ci venisse in mente di fare le cose come andrebbero fatte
 //	public List<LocalDate> getDateIntermedie() {
 //		List<LocalDate> dateIntermedie = new ArrayList<LocalDate>();

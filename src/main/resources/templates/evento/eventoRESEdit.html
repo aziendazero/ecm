@@ -765,6 +765,31 @@
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.titoloConvegno')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.titoloConvegno')}__}"></div>
 										</div>
 
+										<!-- NUMERO PARTECIPANTI PER CORSO (attivo se selezionato Corso di aggiornamento teorico e/o pratico (massimo 200 partecipanti)) -->
+										<div class="item form-group partecipanti-per_corso" style="display: none;" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipantiPerCorso')} ? 'bad'">
+											<div class="col-xs-1"></div>
+											<label class="control-label col-md-3 col-sm-3 col-xs-11">
+												<span th:text="#{label.numero_partecipanti_per_corso}"></span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<select id="numeroPartecipantiPerCorso"
+													class="selectpicker"
+													th:field="${eventoWrapper.evento.numeroPartecipantiPerCorso}"
+													data-width="100%" data-style="btn-primary"
+													data-actions-box="true" data-size="10"
+													data-hide-disabled="false"
+													title="Seleziona una tipologia..." th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}">
+													<option
+														th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum).values()}"
+														th:value="${tipologia}"
+														th:text="${tipologia.nome}">
+													</option>
+												</select>
+											</div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipantiPerCorso')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.numeroPartecipantiPerCorso')}__}"></div>
+										</div>
+
 										<!-- NUMERO PARTECIPANTI -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipanti')} ? 'bad'">
 											<label class="control-label col-xs-1">
@@ -1596,9 +1621,11 @@
 					$('#dataInizio').on("apply.daterangepicker change", function() {
 						setDocRelTutMod();
 						setAttivitaSalutiIntroduttivi();
+						mostraNascondiCampoNumeroPartecipantiPerCorso();
 					});
 					$('#dataInizio').on('change', setDocRelTutMod);
 					$('#dataInizio').on('change', setAttivitaSalutiIntroduttivi);
+					$('#dataInizio').on('change', mostraNascondiCampoNumeroPartecipantiPerCorso);
 
 				    $("#addAttivitaRES-metodolgieDidattiche").prop('disabled',true);
 
@@ -1936,6 +1963,11 @@
 							$(".radio-workshop").iCheck('enable');
 							$(".label-radio-workshop").removeClass("label-disabled");
 						}
+
+						$(".partecipanti-per_corso").slideUp("slow");
+						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+						$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+
 						$(".workshop-seminario").slideUp("slow");
 						$(".titolo-convegno").prop("disabled", true);
 						$("#brochure-obbligatoria").removeClass("hidden");
@@ -1950,6 +1982,11 @@
 						if($(".titolo-convegno").attr("data-editabile") === 'true') {
 							$(".titolo-convegno").prop("disabled", false);
 						}
+						
+						$(".partecipanti-per_corso").slideUp("slow");
+						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+						$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+						
 						$("#brochure-obbligatoria").removeClass("hidden");
 						abilitaModalitaVerificaApprendimento('esame');
 						$(".risultati-attesi-input").show();
@@ -1957,6 +1994,8 @@
 					case 'CORSO_AGGIORNAMENTO':
 						$(".convegno-congresso").slideUp("slow");
 						$(".workshop-seminario").slideUp("slow");
+						$(".partecipanti-per_corso").slideDown("slow");
+						
 						$(".radio-workshop").iCheck('disable');
 						$(".label-radio-workshop").addClass("label-disabled");
 						$(".titolo-convegno").prop("disabled", true);
@@ -1967,6 +2006,7 @@
 					default:
 						$(".convegno-congresso").slideUp("slow");
 						$(".workshop-seminario").slideUp("slow");
+						$(".partecipanti-per_corso").slideUp("slow");
 						$(".radio-workshop").iCheck('disable');
 						$(".label-radio-workshop").addClass("label-disabled");
 						$(".titolo-convegno").prop("disabled", true);
@@ -1975,8 +2015,43 @@
 						$(".risultati-attesi-input").show();
 						break;
 					}
+					mostraNascondiCampoNumeroPartecipantiPerCorso(value);
 				}
 
+				//funzione che calcola al doc ready o all'onchange della relativa select
+				//se mostrare o meno input aggiuntivi relativi alla tipologia dell'evento
+				function mostraNascondiCampoNumeroPartecipantiPerCorso(valueTipologiaEvento) {
+					if (typeof valueTipologiaEvento == 'undefined')
+						valueTipologiaEvento = $('#tipologia_evento').val();
+					var versione = getVersione();
+					if(versione === 2) {
+						switch (valueTipologiaEvento) {
+						case 'CONVEGNO_CONGRESSO':
+							$(".partecipanti-per_corso").slideUp("slow");
+							$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+							$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+							break;
+						case 'WORKSHOP_SEMINARIO':
+							$(".partecipanti-per_corso").slideUp("slow");
+							$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+							$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+							break;
+						case 'CORSO_AGGIORNAMENTO':
+							$(".partecipanti-per_corso").slideDown("slow");
+							break;
+						default:
+							$(".partecipanti-per_corso").slideUp("slow");
+							$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+							$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+							break;
+						}
+					} else {
+						$(".partecipanti-per_corso").slideUp("slow");
+						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+						$("#numeroPartecipantiPerCorso").selectpicker('refresh');						
+					}
+				}
+				
 				//funzione che calcola al doc ready o all'onchange della relativa select
 				//se mostrare o meno input aggiuntivi relativi alla lingua dell'evento
 				function mostraNascondiCampiLingua(value) {
