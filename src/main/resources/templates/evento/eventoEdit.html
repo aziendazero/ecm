@@ -537,6 +537,11 @@
 			});
 
 			$(document).ready(function() {
+				//modifica dataInizio
+				$('#dataInizio').on("apply.daterangepicker change", function() {
+					mostraNascondiRadioPrimaInfanzia();
+				});
+				$('#dataInizio').on('change', mostraNascondiRadioPrimaInfanzia);
 
 				$('.datatable-responsive-search-anagrafica-evento').DataTable({
 					"bInfo" : false,
@@ -781,11 +786,6 @@
 				//radio alimenti prima infanzia
 				mostraNascondiRadioPrimaInfanzia($(".contenuto:checked").val());
 
-				//allegati alimenti prima infanzia
-				if($(".contenuto:checked").val() == "ALIMENTAZIONE_PRIMA_INFANZIA") {
-					 mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia:checked").val())
-				}
-
 			}
 
 			function handleListenerEventsCampsCommon(){
@@ -827,27 +827,67 @@
 					$(".sponsor-si").slideUp("slow");
 					//TODO logica disable?
 				}
+				gestisciVisualizzazionePrimaInfanzia(value);
+			}
+
+			function gestisciVisualizzazionePrimaInfanzia(sponsorChecked) {
+				if (typeof sponsorChecked == 'undefined')
+					sponsorChecked = $(".sponsor:checked").val()
+				var versione = getVersione();
+				if(versione === 1) {
+					if(sponsorChecked == "true") {
+						$(".infanzia-sponsor-radio").slideDown("slow");
+						//TODO logica enable?
+					}
+					else {
+						$(".sponsor-si").slideUp("slow");
+						//TODO logica disable?
+					}					
+				} else { //versione = 2
+					if(sponsorChecked == "true") {
+						$(".sponsor-si").slideDown("slow");
+						//TODO logica enable?
+					}
+					else {
+						$(".sponsor-si").slideUp("slow");
+						//TODO logica disable?
+					}					
+				}
 			}
 
 			//funzioni show/hide in base alle scelte effettuate (lato client)
 			//radio alimenti infanzia show/hide
+			//continua a valere per la versione 1
 			function mostraNascondiRadioPrimaInfanzia(value) {
-				if(value == "ALIMENTAZIONE_PRIMA_INFANZIA") {
+				if (typeof value == 'undefined')
+					value = $(".contenuto:checked").val();
+				var versione = getVersione();
+				console.log('mostraNascondiRadioPrimaInfanzia - value: ' + value);
+				if(versione === 1) {
+					$(".numVers2").hide();
+					$(".numVers1").show();
+					if(value == "ALIMENTAZIONE_PRIMA_INFANZIA") {
+						$(".infanzia-sponsor-radio").slideDown("slow");
+						mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia").val());
+						//TODO logica enable?
+					}
+					else {
+						$(".infanzia-sponsor-radio").slideUp("slow");
+						$(".infanzia-sponsor-si").slideUp("slow");
+						$(".infanzia-sponsor-no").slideUp("slow");
+					}
+				} else {
+					$(".numVers1").hide();
+					$(".numVers2").show();
 					$(".infanzia-sponsor-radio").slideDown("slow");
 					mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia").val());
-					//TODO logica enable?
-				}
-				else {
-					$(".infanzia-sponsor-radio").slideUp("slow");
-					$(".infanzia-sponsor-si").slideUp("slow");
-					$(".infanzia-sponsor-no").slideUp("slow");
-					//TODO logica disable?
 				}
 			}
 
 			//funzioni show/hide in base alle scelte effettuate (lato client)
 			//autocertificazioni alimenti prima infanzia show/hide
 			function mostraNascondiAllegatiAutocertificazioniSponsor(value) {
+				console.log('mostraNascondiAllegatiAutocertificazioniSponsor - value: ' + value);
 				if(value == "true") {
 					$(".infanzia-sponsor-si").slideDown("slow");
 					$(".infanzia-sponsor-no").slideUp("fast");

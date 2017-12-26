@@ -34,7 +34,6 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
-import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
@@ -276,33 +275,25 @@ public class EventoValidatorVersioneDue {
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA)
 		 * radio
 		 * */
-		if(evento.getContenutiEvento() != null
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
-				&& evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
+		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
 			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
+		else if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+					&& (evento.getEventoSponsorizzato() == null || evento.getEventoSponsorizzato() == false)
+				)
+			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.evento_deve_essere_sponsorizzato");
 
 		/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
 		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
 		 * file allegato
 		 * */
-		if(evento.getContenutiEvento() != null
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
-				&& evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
 				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
 			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
 		}
 
-		if(evento.getContenutiEvento() != null
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
-				&& evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
 				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
 		{
@@ -315,9 +306,7 @@ public class EventoValidatorVersioneDue {
 		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == false)
 		 * file allegato
 		 * */
-		if(evento.getContenutiEvento() != null
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
-				&& evento.getEventoSponsorizzato() != null
+		if(evento.getEventoSponsorizzato() != null
 				&& evento.getEventoSponsorizzato() == true
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
@@ -325,9 +314,7 @@ public class EventoValidatorVersioneDue {
 			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
 		}
 
-		if(evento.getContenutiEvento() != null
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
-				&& evento.getEventoSponsorizzato() != null
+		if(evento.getEventoSponsorizzato() != null
 				&& evento.getEventoSponsorizzato() == true
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
