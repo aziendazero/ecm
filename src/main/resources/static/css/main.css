@@ -1511,7 +1511,6 @@ table.dataTable tbody tr.selected {
 	min-height: 150px;
 }
 
-.wordwrap-200{
-	max-width:200px !important;  
-	word-wrap:break-word !important;
+.wordwrap{
+	word-break: break-all;
 }

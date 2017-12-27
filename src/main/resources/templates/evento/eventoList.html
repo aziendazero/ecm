@@ -228,7 +228,7 @@
 							</h2>
 						</div>
 
-						<table th:unless="${#lists.isEmpty(eventoList)}" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<table th:unless="${#lists.isEmpty(eventoList)}" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" style="width:100% !important;">
 							<thead>
 								<tr>
 									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
@@ -345,7 +345,7 @@
 // 					                     { "type": 'date-eu', "targets": date},
 					                   ],
 						"aoColumnDefs": [
-						    { "sClass": "wordwrap-200", "aTargets": [ 4 ] }
+						    { "sClass": "wordwrap", "aTargets": [ 4 ] }
 						  ],
 					})
 
