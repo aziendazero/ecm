@@ -784,7 +784,7 @@
 			    mostraNascondiCampiPartner($(".partner:checked").val());
 
 				//radio alimenti prima infanzia
-				mostraNascondiRadioPrimaInfanzia($(".contenuto:checked").val());
+				mostraNascondiRadioPrimaInfanzia($(".contenuto:checked").val(), $(".sponsor:checked").val());
 
 			}
 
@@ -806,7 +806,7 @@
 				});
 
 				$(".contenuto").on("ifChecked", function() {
-					mostraNascondiRadioPrimaInfanzia($(this).val());
+					mostraNascondiRadioPrimaInfanzia($(this).val(), $(".sponsor:checked").val());
 				})
 
 				//gestione evento iCheck su radio riguardante le autocertificazioni alimenti prima infanzia
@@ -818,8 +818,8 @@
 
 			//funzioni show/hide in base alle scelte effettuate (lato client)
 			//sponsor show/hide
-			function mostraNascondiCampiSponsor(value) {
-				if(value == "true") {
+			function mostraNascondiCampiSponsor(sponsorChecked) {
+				if(sponsorChecked == "true") {
 					$(".sponsor-si").slideDown("slow");
 					//TODO logica enable?
 				}
@@ -827,48 +827,26 @@
 					$(".sponsor-si").slideUp("slow");
 					//TODO logica disable?
 				}
-				gestisciVisualizzazionePrimaInfanzia(value);
-			}
-
-			function gestisciVisualizzazionePrimaInfanzia(sponsorChecked) {
-				if (typeof sponsorChecked == 'undefined')
-					sponsorChecked = $(".sponsor:checked").val()
-				var versione = getVersione();
-				if(versione === 1) {
-					if(sponsorChecked == "true") {
-						$(".infanzia-sponsor-radio").slideDown("slow");
-						//TODO logica enable?
-					}
-					else {
-						$(".sponsor-si").slideUp("slow");
-						//TODO logica disable?
-					}					
-				} else { //versione = 2
-					if(sponsorChecked == "true") {
-						$(".sponsor-si").slideDown("slow");
-						//TODO logica enable?
-					}
-					else {
-						$(".sponsor-si").slideUp("slow");
-						//TODO logica disable?
-					}					
-				}
+				mostraNascondiRadioPrimaInfanzia($(".contenuto:checked").val(), sponsorChecked);
 			}
 
 			//funzioni show/hide in base alle scelte effettuate (lato client)
 			//radio alimenti infanzia show/hide
 			//continua a valere per la versione 1
-			function mostraNascondiRadioPrimaInfanzia(value) {
-				if (typeof value == 'undefined')
-					value = $(".contenuto:checked").val();
+			function mostraNascondiRadioPrimaInfanzia(contenutiEvento, sponsorChecked) {
+				//contenutiEvento > L'evento formativo prevedere i seguenti contenuti?
+				if (typeof contenutiEvento == 'undefined')
+					contenutiEvento = $(".contenuto:checked").val();
+				if (typeof sponsorChecked == 'undefined')
+					sponsorChecked = $(".sponsor:checked").val()
 				var versione = getVersione();
-				console.log('mostraNascondiRadioPrimaInfanzia - value: ' + value);
+				console.log('mostraNascondiRadioPrimaInfanzia - contenutiEvento: ' + contenutiEvento + '; sponsorChecked: ' + sponsorChecked);
 				if(versione === 1) {
 					$(".numVers2").hide();
 					$(".numVers1").show();
-					if(value == "ALIMENTAZIONE_PRIMA_INFANZIA") {
+					if(contenutiEvento == "ALIMENTAZIONE_PRIMA_INFANZIA" && sponsorChecked == "true") {
 						$(".infanzia-sponsor-radio").slideDown("slow");
-						mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia").val());
+						mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia:checked").val());
 						//TODO logica enable?
 					}
 					else {
@@ -876,11 +854,11 @@
 						$(".infanzia-sponsor-si").slideUp("slow");
 						$(".infanzia-sponsor-no").slideUp("slow");
 					}
-				} else {
+				} else {//versione 2
 					$(".numVers1").hide();
 					$(".numVers2").show();
 					$(".infanzia-sponsor-radio").slideDown("slow");
-					mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia").val());
+					mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia:checked").val());
 				}
 			}
 
