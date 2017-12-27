@@ -695,6 +695,7 @@ public class EventoServiceImpl implements EventoService {
 		save(evento);
 	}
 
+	//Get all events of events for segretaria.  ordering is based on column number
 	@Override
 	public Page<Evento> getAllEventi(Integer pageNumber, Integer columnNumber, String order, Integer numOfPages) {
 		LOGGER.debug("Recupero tutti gli eventi");
@@ -789,6 +790,97 @@ public class EventoServiceImpl implements EventoService {
 			break;
 		}
 		return eventoRepository.findAll(request);
+	}
+	
+	
+	//Get all events of events per provider id.  ordering is based on column number
+	@Override
+	public Page<Evento> getAllEventiForProviderId(Long providerId, Integer pageNumber, Integer columnNumber, String order, Integer numOfPages) {
+		LOGGER.debug("Recupero tutti gli eventi");
+		PageRequest request = null;
+		switch (columnNumber) {
+		case 0:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "prefix", "edizione"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "prefix", "edizione"));
+			break;
+			
+		case 1:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "edizione"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "edizione"));
+			break;
+			
+		case 2:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "proceduraFormativa"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "proceduraFormativa"));
+			break;
+			
+		case 3:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "titolo"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "titolo"));
+			break;
+			
+		case 5:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataInizio"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataInizio"));
+			break;
+			
+		case 6:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataFine"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataFine"));
+			break;
+			
+		case 7:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "stato"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "stato"));
+			break;
+			
+		case 8:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "numeroPartecipanti"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "numeroPartecipanti"));
+			break;
+			
+		case 9:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "durata"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "durata"));
+			break;
+			
+		case 10:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataScadenzaInvioRendicontazione"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataScadenzaInvioRendicontazione"));
+			break;
+			
+		case 11:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "confermatiCrediti"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "confermatiCrediti"));
+			break;
+			
+		default:
+			request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
+			break;
+		}
+		return eventoRepository.findAllByProviderId(providerId, request);
 	}
 	
 	@Override

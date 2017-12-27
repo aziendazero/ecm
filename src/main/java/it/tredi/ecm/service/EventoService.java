@@ -26,6 +26,7 @@ public interface EventoService {
 	public List<Evento> getAllEventi();
 	public Page<Evento> getAllEventi(Integer pageNumber, Integer columnNumber, String order, Integer numOfPages);
 	public Set<Evento> getAllEventiForProviderId(Long providerId);
+	public Page<Evento> getAllEventiForProviderId(Long providerId, Integer pageNumber, Integer columnNumber, String order, Integer numOfPages);
 	public boolean canCreateEvento(Account account);
 	public boolean canRieditEvento(Account account);
 	public void inviaRendicontoACogeaps(Long id) throws Exception;

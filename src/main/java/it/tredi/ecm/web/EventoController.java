@@ -219,13 +219,14 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
 
-			model.addAttribute("eventoList", eventoService.getAllEventi());
+			//model.addAttribute("eventoList", eventoService.getAllEventi());
 
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 
 			if(Utils.getAuthenticatedUser().isSegreteria())
 				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
-
+			//model attribute to tell if template should display full list of events using ajax
+			model.addAttribute("showAllList", true);
 			return goToEventoList(request, model);
 		}
 		catch (Exception ex) {
@@ -351,6 +352,7 @@ public class EventoController {
 	}
 	
 	@JsonView(EventoListDataTableModel.View.class)
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventi(principal)")
 	@RequestMapping(value = "/evento/eventoListPaginated", method = RequestMethod.GET)
     public @ResponseBody EventoListDataTableModel eventoListPaginated(HttpServletRequest  request, RedirectAttributes redirectAttrs) throws Exception {
 		EventoListDataTableModel dataTable = new EventoListDataTableModel();
@@ -383,7 +385,60 @@ public class EventoController {
 			 else
 				throw new Exception("Cannot get order[0][dir] parameter!");
 
-			Page<Evento> eventi = eventoService.getAllEventi(pageNumber, columnNumber, order, numOfRows);
+			Page<Evento> eventi =  eventoService.getAllEventi(pageNumber, columnNumber, order, numOfRows);
+
+			for(Evento event : eventi) {
+				dataTable.getData().add(buildEventiDataModel(event));
+			}
+
+	
+			dataTable.setRecordsTotal(eventi.getTotalElements());
+			dataTable.setRecordsFiltered(eventi.getTotalElements());
+		return dataTable;
+	} catch (Exception e) {
+			LOGGER.error(Utils.getLogMessage("GET /evento/list"),e);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			dataTable.setError("Session expired or an Error occured! Please refresh the page.");
+			return null;
+		}
+    }
+	
+	@JsonView(EventoListDataTableModel.View.class)
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventiProvider(principal, #providerId)")
+	@RequestMapping(value = "/provider/{providerId}/evento/eventoListPaginated", method = RequestMethod.GET)
+    public @ResponseBody EventoListDataTableModel eventoListPaginatedById(@PathVariable Long providerId, HttpServletRequest  request, RedirectAttributes redirectAttrs) throws Exception {
+		EventoListDataTableModel dataTable = new EventoListDataTableModel();
+	try {
+		
+		
+		dataTable.setData(new ArrayList<EventoListDataModel>());
+			//Fetch the page number from client
+			Integer pageNumber = 0;
+			//Fetch number of rows from client
+			Integer numOfRows = 10;
+			
+			if (null != request.getParameter("length")) 
+				numOfRows = Integer.valueOf(request.getParameter("length"));
+			else
+				throw new Exception("Cannot get length parameter!");
+			
+			if (null != request.getParameter("start"))
+				pageNumber = (Integer.valueOf(request.getParameter("start"))/numOfRows);	
+			
+			Integer columnNumber = 0;
+			if (null != request.getParameter("order[0][column]")) 
+				columnNumber = Integer.valueOf(request.getParameter("order[0][column]"));
+			else
+				throw new Exception("Cannot get order[0][column] parameter!");
+			
+			String order = "";
+			if (null != request.getParameter("order[0][dir]") && !request.getParameter("order[0][dir]").isEmpty()) 
+				order = request.getParameter("order[0][dir]");
+			 else
+				throw new Exception("Cannot get order[0][dir] parameter!");
+
+			Page<Evento> eventi = eventoService.getAllEventiForProviderId(providerId ,pageNumber, columnNumber, order, numOfRows);
+			
 			for(Evento event : eventi) {
 				dataTable.getData().add(buildEventiDataModel(event));
 			}
@@ -409,7 +464,8 @@ public class EventoController {
 				throw new Exception("Provider non registrato");
 			}else{
 				//svuota sessione eventoList per ricaricare tutto
-				redirectAttrs.addFlashAttribute("eventoList", null);
+				//Removed model Atrribute eventoList
+				//redirectAttrs.addFlashAttribute("eventoList", null);
 				Long providerId = currentProvider.getId();
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
 				return "redirect:/provider/"+providerId+"/evento/list";
@@ -429,8 +485,11 @@ public class EventoController {
 			HttpServletRequest request, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
 		try {
-			if(model.asMap().get("eventoList") == null || !Objects.equals(providerId, model.asMap().get("providerId")))
-				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
+			//Remove old database call for loading eventi, loading is done using lazy loading
+//			if(model.asMap().get("eventoList") == null || !Objects.equals(providerId, model.asMap().get("providerId")))
+//				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
+			//model attribute to tell if template should display full list of events using ajax
+			model.addAttribute("showAllList", true);
 			return goToList(model, providerId, request);
 		}
 		catch (AccreditamentoNotFoundException accreditamentoNotFoundEx) {

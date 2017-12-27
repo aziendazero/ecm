@@ -222,13 +222,13 @@
 					</div>
 					<div class="x_content">
 
-						<div th:if="${#lists.isEmpty(eventoList)}">
+						<!-- <div th:if="${#lists.isEmpty(eventoList)}">
 							<h2 class="col-xs-12 text-center">
 								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_evento_list}">Non ci sono eventi!</i>
 							</h2>
-						</div>
+						</div> -->
 
-						<!-- <table th:unless="${#lists.isEmpty(eventoList)}" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<table th:unless="${ #lists.isEmpty(eventoList) or (showAllList != null) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 								<tr>
 									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
@@ -289,7 +289,7 @@
 										<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit() or #authentication.principal.isSegreteria()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
 										<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalScadenze(${evento.id}, '${evento.dataScadenzaPagamento}', '${evento.dataScadenzaInvioRendicontazione}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
 
-										TODO DISABILITATO PER LA PRODUZIONE
+										<!-- TODO DISABILITATO PER LA PRODUZIONE -->
 										<th:block th:if="${evento.canDoPagamento()}">
 											<a th:if="${evento.provider.myPay == true or (evento.provider.myPay == null and evento.provider.isGruppoB())}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>
 											<a th:if="${evento.provider.myPay == false}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/quietanzaPage|}" th:title="#{label.allega_quietanza}"><i class="fa fa-euro"></i></a>
@@ -303,11 +303,11 @@
 									</td>
 								</tr>
 							</tbody>
-						</table> -->
+						</table>
 						
-						<table class = "datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<table th:if="${showAllList}" class = "datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
-								<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
+									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 									<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
 									<th th:text="#{label.edizione_short}">label.edizione_short</th>
 									<th th:text="#{label.tipo}">label.tipo</th>
@@ -322,8 +322,9 @@
 									<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
 									<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 							</thead>
+							<tbody>
+							</tbody>
 						</table>
-
 					</div>
 				</div>
 			</div>
@@ -333,15 +334,53 @@
 				var colonne = []
 				var confermati
 				var date = []
+				var dataColums = []
+				var azioni
+				var url
 				if([[${#authentication.principal.isSegreteria()}]]) {
 					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13]
 					confermati = 12
+					azioni = 13
 					date = [6,7,11]
+					url = "/evento/eventoListPaginated"
+					dataColumns = [
+				            { "data": "codiceIdent"},
+				            { "data": "denominazioneLeg"},
+				            { "data": "edizione" },
+				            { "data": "tipo"},
+				            { "data": "titolo"},
+				            { "data": "sede", "orderable": false},
+				            { "data": "dataInizio"},
+				            { "data": "dataFine"},
+				            { "data": "stato"},
+				            { "data": "numPart"},
+				            { "data": "durata"},
+				            { "data": "dataScadenzaRediconto"},
+				            { "data": "creditiConfermati"},
+				            { "data": "links", "orderable": false}
+			        		]
 				}
 				else if([[${#authentication.principal.isProvider()}]]){
 					colonne = [0,1,2,4,5,6,7,8,9,10,11,12]
 					confermati = 11
 					date = [5,6,10]
+					azioni = 12
+					url = "/provider/" + [[${providerId}]] + "/evento/eventoListPaginated"
+					dataColumns = [
+				            { "data": "codiceIdent"},
+				            { "data": "edizione" },
+				            { "data": "tipo"},
+				            { "data": "titolo"},
+				            { "data": "sede", "orderable": false},
+				            { "data": "dataInizio"},
+				            { "data": "dataFine"},
+				            { "data": "stato"},
+				            { "data": "numPart"},
+				            { "data": "durata"},
+				            { "data": "dataScadenzaRediconto"},
+				            { "data": "creditiConfermati"},
+				            { "data": "links", "orderable": false}
+			            ]
 				}
 				else {
 					colonne = [0,1,2,4,5,6,7,8,9,10,11]
@@ -354,60 +393,44 @@
 				$(document).ready(function() {
 
 			        $.fn.dataTable.moment('DD/MM/YYYY');
-					/* $(".datatable-responsive-eventi-provider").DataTable({
-						"bFilter" : false,
-						"bInfo" : false,
-						"bPaginate" : true,
-						 "columnDefs": [
-					                     {"targets": colonne, "width": "1px"},
-					                     {"targets": confermati, "sClass": "center"},
-// 					                     { "type": 'date-eu', "targets": date},
-					                   ],
-						"aoColumnDefs": [
-						    { "sClass": "wordwrap-200", "aTargets": [ 4 ] }
-						  ],
-						  
-					}); */
+			        if(![[${showAllList}]]){
+						 $(".datatable-responsive-eventi-provider").DataTable({
+							"bFilter" : false,
+							"bInfo" : false,
+							"bPaginate" : true,
+							 "columnDefs": [
+						                     {"targets": colonne, "width": "1px"},
+						                     {"targets": confermati, "sClass": "center"},
+	// 					                     { "type": 'date-eu', "targets": date},
+						                   ],
+							"aoColumnDefs": [
+							    { "sClass": "wordwrap-200", "aTargets": [ 4 ] }
+							  ],
+							  
+						}); 
+			        }
 					
-					$(".datatable-responsive-eventi-provider").DataTable({
-						"bFilter" : false,
-						"bInfo" : false,
-						"bPaginate" : true,
-				        "bServerSide": true,
-				        "sort": "position",
-				       
-						 ajax:{
-							  url: "/evento/eventoListPaginated"
-						  },
-						  "columns": [
-					            { "data": "codiceIdent"},
-					            { "data": "denominazioneLeg"},
-					            { "data": "edizione" },
-					            { "data": "tipo"},
-					            { "data": "titolo"},
-					            { "data": "sede", "orderable": false},
-					            { "data": "dataInizio"},
-					            { "data": "dataFine"},
-					            { "data": "stato"},
-					            { "data": "numPart"},
-					            { "data": "durata"},
-					            { "data": "dataScadenzaRediconto"},
-					            { "data": "creditiConfermati"},
-					            { "data": "links", "orderable": false}
-					        ],
-					        "columnDefs": [
-			                     {"targets": colonne, "width": "1px"},
-			                     {"targets": confermati, "sClass": "center"},
-//			                     { "type": 'date-eu', "targets": date},
-			                   ],
-					        "aoColumnDefs": [
-					        		{ "sClass": "wordwrap-200", "aTargets": [ 4 ] },
-					        		{ "sClass": "text-full-length", "aTargets": [ 13 ] }
-					        	],
-					       
-					})
-
-					$(".datatable-responsive-eventi-attuazione").DataTable({
+			        if([[${showAllList}]]){
+						$(".datatable-responsive-eventi-provider").DataTable({
+							"bFilter" : false,
+							"bInfo" : false,
+							"bPaginate" : true,
+					        "bServerSide": true,
+					        "sort": "position",
+							"ajax":{
+								  "url": url
+							  },
+							  "columns": dataColumns,
+						      "columnDefs": [
+				                     {"targets": colonne, "width": "1px"},
+				                     {"targets": confermati, "sClass": "center"},
+				                     {"targets": 4, "sClass": "wordwrap"},
+				                     {"targets": azioni, "sClass": "text-full-length"},
+				                     
+				                   ]
+						});
+			        }
+				 $(".datatable-responsive-eventi-attuazione").DataTable({
 						"bInfo" : false,
 						"bPaginate" : false,
 						scrollY: 300,
@@ -438,7 +461,7 @@
 
 					if([[${error}]]) {
 						$("#scelta-tipologia-modal").modal("show");
-					}
+					} 
 
 					$("input[name=proceduraFormativa]").each(function() {
 						$(this).on('ifToggled', function() {
