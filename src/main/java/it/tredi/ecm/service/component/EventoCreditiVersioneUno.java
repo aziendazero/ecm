@@ -207,7 +207,7 @@ public class EventoCreditiVersioneUno {
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE)
-					pairs.getValue().calcolaCrediti(tipologia,0f);
+					pairs.getValue().calcolaCreditiVersioneUno(tipologia,0f);
 			 }
 		}
 	}
@@ -222,7 +222,7 @@ public class EventoCreditiVersioneUno {
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() != RuoloFSCBaseEnum.PARTECIPANTE)
-					pairs.getValue().calcolaCrediti(tipologia,maxValue);
+					pairs.getValue().calcolaCreditiVersioneUno(tipologia,maxValue);
 			 }
 		}
 	}

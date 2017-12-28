@@ -50,6 +50,12 @@ public class EventoFSC extends Evento{
 	private Boolean sperimentazioneClinica;
 	private Boolean ottenutoComitatoEtico;
 
+	//Per calcolo crediti versione 2
+	//È prevista la redazione di un documento conclusivo quale ad es. linee guida, procedure, protocolli, indicazioni operative?
+	private Boolean previstaRedazioneDocumentoConclusivo;
+	//È presente un Tutor esperto esterno che validi le attività del gruppo?
+	private Boolean presenteTutorEspertoEsternoValidatoreAttivita;
+	
 	@Column(columnDefinition = "text")
 	private String descrizioneProgetto;
 
