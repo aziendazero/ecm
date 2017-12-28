@@ -217,11 +217,18 @@
 											<td>
 												<ul>
 													<li th:each="ruoloFSC, r : ${faseCorrente.azioniRuoli[__${status2.index}__].ruoli}">
-											 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.ruolo.nome} + ${ruoloFSC.tempoDedicato != null ? ' (' + ruoloFSC.tempoDedicato + 'h)' : ''}"></span>
+											 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.ruolo.nome}"></span>
 											 		</li>
 												</ul>
 											 </td>
-											<td th:text="${faseCorrente.azioniRuoli[__${status2.index}__].tempoDedicato}"></td>
+											 <td>
+												<ul>
+													<li th:each="ruoloFSC, r : ${faseCorrente.azioniRuoli[__${status2.index}__].ruoli}">
+											 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.tempoDedicato}"></span>
+											 		</li>
+												</ul>
+											 </td>
+											<!-- <td th:text="${faseCorrente.azioniRuoli[__${status2.index}__].tempoDedicato}"></td> -->
 										</tr>
 									</tbody>
 								</table>
