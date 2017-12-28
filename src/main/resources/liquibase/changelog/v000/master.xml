@@ -139,6 +139,7 @@
 	
 	<include file="20171227_001_eventofsc_aggiunta_campi_calcolo_crediti.xml" relativeToChangelogFile="true"/>
 
+    <include file="20171228_imposto_versione_eventi_esistenti.xml" relativeToChangelogFile="true"/>
 	
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
       Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali" 
