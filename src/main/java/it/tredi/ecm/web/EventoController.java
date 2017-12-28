@@ -3,12 +3,14 @@ package it.tredi.ecm.web;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,10 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,6 +57,8 @@ import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
 import it.tredi.ecm.dao.entity.AnagraficaFullEventoBase;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
+import it.tredi.ecm.dao.entity.EventoListDataModel;
+import it.tredi.ecm.dao.entity.EventoListDataTableModel;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
@@ -145,6 +153,9 @@ public class EventoController {
 	@Autowired private ScadenzeEventoValidator scadenzeEventoValidator;
 
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	private final String LIST = "evento/eventoList";
 	private final String EDIT = "evento/eventoEdit";
@@ -208,13 +219,14 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
 
-			model.addAttribute("eventoList", eventoService.getAllEventi());
+			//model.addAttribute("eventoList", eventoService.getAllEventi());
 
 			LOGGER.info(Utils.getLogMessage("VIEW: evento/eventoList"));
 
 			if(Utils.getAuthenticatedUser().isSegreteria())
 				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
-
+			//model attribute to tell if template should display full list of events using ajax
+			model.addAttribute("showAllList", true);
 			return goToEventoList(request, model);
 		}
 		catch (Exception ex) {
@@ -223,6 +235,225 @@ public class EventoController {
 			return "";
 		}
 	}
+	
+	
+	//Builds an EventoListDataModel from an event required by DataTable for displaying the information
+	//Throws Exception from event.getAuditEntityType()
+	private EventoListDataModel buildEventiDataModel(Evento event) throws NoSuchMessageException, Exception {
+		EventoListDataModel dataModel = new EventoListDataModel();
+		//DateFormatter
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		dataModel.setCodiceIdent("<a href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/show\">" + event.getCodiceIdentificativo() + "</a>");
+		if(Utils.getAuthenticatedUser().isSegreteria())
+			dataModel.setDenominazioneLeg(event.getProvider().getDenominazioneLegale());
+		dataModel.setEdizione(event.getEdizione());
+		dataModel.setTipo(event.getProceduraFormativa().toString());
+		
+		if (event.getProceduraFormativa() == ProceduraFormativa.FSC) {
+			EventoFSC eventoFsc = (EventoFSC) event;
+			if(eventoFsc.getSedeEvento() != null)
+				dataModel.setSede(eventoFsc.getSedeEvento().getLuogo());
+		}
+		else if (event.getProceduraFormativa() == ProceduraFormativa.RES) {
+			EventoRES eventoRes = (EventoRES) event;
+			if(eventoRes.getSedeEvento() != null)
+				dataModel.setSede(eventoRes.getSedeEvento().getLuogo());
+		}
+		
+		dataModel.setTitolo(event.getTitolo());
+		if(event.getDataInizio() != null)
+			dataModel.setDataInizio(event.getDataInizio().format(formatter));
+		if(event.getDataFine() != null)
+			dataModel.setDataFine(event.getDataFine().format(formatter));
+
+		String statoBuild = "<div>" + event.getStato().getNome() + "</div>";
+		
+		if(event.getPagato() != null && event.getPagato() && !event.isCancellato())
+			statoBuild += "<div ><span class=\"label-pagato\">" + messageSource.getMessage("label.pagato", null, LocaleContextHolder.getLocale()) + "</span></div>";
+		else if (event.isCancellato())
+			statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.cancellato", null, LocaleContextHolder.getLocale()) + "</span></div>";
+		else if (event.getPagato() == null || (!event.getPagato() && !event.isCancellato())) {
+			if(event.getPagInCorso() != null && event.getPagInCorso())
+				statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.pagInCorso", null, LocaleContextHolder.getLocale()) + "</span></div>";
+			else
+				statoBuild += "<div><span class=\"label-non-pagato\">" + messageSource.getMessage("label.da_pagare", null, LocaleContextHolder.getLocale()) + "</span></div>";
+		}
+		dataModel.setStato(statoBuild);
+		dataModel.setNumPart(event.getNumeroPartecipanti() != null ? event.getNumeroPartecipanti().toString() : "");
+		dataModel.setDurata(Utils.formatOrario(event.getDurata() != null ? event.getDurata() : 0));
+		if(event.getDataScadenzaInvioRendicontazione() != null)
+			dataModel.setDataScadenzaRediconto(event.getDataScadenzaInvioRendicontazione().format(formatter));
+		
+		if(event.getConfermatiCrediti() != null) {
+			if(event.getConfermatiCrediti())
+				dataModel.setCreditiConfermati("<div><i class=\"fa table-icon fa-check green\" title=\"" + messageSource.getMessage("label.sì", null, LocaleContextHolder.getLocale()) + "\"></i></div>");
+			else
+				dataModel.setCreditiConfermati("<div><i class=\"fa table-icon fa-remove red\" title=\"" + messageSource.getMessage("label.no", null, LocaleContextHolder.getLocale()) + "\"></i></div>");
+		}
+		else {
+			dataModel.setCreditiConfermati("<div><i class=\"fa table-icon fa-question grey\" title=\"" + messageSource.getMessage("label.non_specificato", null, LocaleContextHolder.getLocale()) + "\"></i></div>");
+		}
+		
+		
+		//Build the Azioni Buttons
+		String buttons = "";
+		if(Utils.getAuthenticatedUser().isSegreteria() || Utils.getAuthenticatedUser().isProvider()) {
+			if(event.canEdit() || Utils.getAuthenticatedUser().isSegreteria()) {
+				buttons += "	<a class=\"btn btn-primary min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/edit\" title=\""
+								+ messageSource.getMessage("label.modifica", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-pencil\"></i></a>"; 
+			}
+			
+			if(Utils.getAuthenticatedUser().isSegreteria() && event.canSegreteriaShiftData()) {
+				buttons+= "<button type=\"button\" class=\"btn btn-primary min-icon-width\" onclick=\"openModalScadenze(" + event.getId() +
+						", '" + event.getDataScadenzaPagamento() + "', '" + event.getDataScadenzaInvioRendicontazione() + "')\" title=\"" + messageSource.getMessage("label.abilita", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-unlock-alt\"> </i></button>";
+			}
+			
+			if(event.canDoPagamento()) {
+				if((event.getProvider().getMyPay() != null && event.getProvider().getMyPay()) || (event.getProvider().getMyPay() == null && event.getProvider().isGruppoB())) {
+					buttons += "<a class=\"btn btn-success btn-min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + 
+									event.getId() + "/paga\" title=\"" + messageSource.getMessage("label.paga", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"></i></a>";
+				}
+				
+				if (event.getProvider().getMyPay() != null && !event.getProvider().getMyPay()) {
+					buttons += "<a class=\"btn btn-success btn-min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + 
+															event.getId() + "/quietanzaPage\" title=\"" + messageSource.getMessage("label.allega_quietanza", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"></i></a>";
+				}
+			}
+			
+			if (event.getPagato() && event.getPagatoQuietanza()) {
+				buttons += "<a class=\"btn btn-success btn-min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + 
+														event.getId() + "/quietanzaPagamento/show\"  title=\"" + messageSource.getMessage("label.visualizza_quietanza", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"> </i></a>";
+			}
+			
+			if (Utils.getAuthenticatedUser().isSegreteria()) {
+				buttons += "<a class=\"btn btn-primary min-icon-width\" href=\"/audit/entity/" + event.getAuditEntityType() + "/entityId/" + event.getId() + 
+										"\" th:title=\"" + messageSource.getMessage("label.registro_operazioni", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-book\"></i></a>";
+			}
+			
+			if (event.canDoRendicontazione()) {
+				buttons += "<a class=\"btn btn-warning min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/rendiconto\" title=\"" +
+																messageSource.getMessage("label.rendiconto", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file-text\"></i></a>";
+			}
+			
+			if (event.canDoUploadSponsor()) {
+				buttons += "<a class=\"btn btn-primary min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/allegaContrattiSponsor\" title=\"" +
+														messageSource.getMessage("label.allega_contratti_sponsor", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file\"></i></a>";
+			}
+			
+			if (event.canEdit()) {
+				buttons += "<button class=\"btn btn-danger min-icon-width\" onclick=\"confirmDeleteEventoModal('" + event.getProvider().getId() + "','" +
+														event.getId() + "','" + event.getProceduraFormativa() + "','" + event.getCodiceIdentificativo() + "','" + event.getStato() + "')\" title=\"" +
+														(event.getStato() == EventoStatoEnum.BOZZA ? messageSource.getMessage("label.elimina", null, LocaleContextHolder.getLocale()) : messageSource.getMessage("label.annulla", null, LocaleContextHolder.getLocale())) + "\"><i class=\"fa fa-trash\"></i></button>";
+			}
+		}
+		dataModel.setLinks(buttons);
+		
+		return dataModel;
+	}
+	
+	@JsonView(EventoListDataTableModel.View.class)
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventi(principal)")
+	@RequestMapping(value = "/evento/eventoListPaginated", method = RequestMethod.GET)
+    public @ResponseBody EventoListDataTableModel eventoListPaginated(HttpServletRequest  request, RedirectAttributes redirectAttrs) throws Exception {
+		EventoListDataTableModel dataTable = new EventoListDataTableModel();
+	try {
+		
+		
+		dataTable.setData(new ArrayList<EventoListDataModel>());
+			//Fetch the page number from client
+			Integer pageNumber = 0;
+			//Fetch number of rows from client
+			Integer numOfRows = 10;
+			
+			if (null != request.getParameter("length")) 
+				numOfRows = Integer.valueOf(request.getParameter("length"));
+			else
+				throw new Exception("Cannot get length parameter!");
+			
+			if (null != request.getParameter("start"))
+				pageNumber = (Integer.valueOf(request.getParameter("start"))/numOfRows);	
+			
+			Integer columnNumber = 0;
+			if (null != request.getParameter("order[0][column]")) 
+				columnNumber = Integer.valueOf(request.getParameter("order[0][column]"));
+			else
+				throw new Exception("Cannot get order[0][column] parameter!");
+			
+			String order = "";
+			if (null != request.getParameter("order[0][dir]") && !request.getParameter("order[0][dir]").isEmpty()) 
+				order = request.getParameter("order[0][dir]");
+			 else
+				throw new Exception("Cannot get order[0][dir] parameter!");
+
+			Page<Evento> eventi =  eventoService.getAllEventi(pageNumber, columnNumber, order, numOfRows);
+
+			for(Evento event : eventi) {
+				dataTable.getData().add(buildEventiDataModel(event));
+			}
+
+	
+			dataTable.setRecordsTotal(eventi.getTotalElements());
+			dataTable.setRecordsFiltered(eventi.getTotalElements());
+		return dataTable;
+	} catch (Exception e) {
+			LOGGER.error(Utils.getLogMessage("GET /evento/list"),e);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			dataTable.setError("Session expired or an Error occured! Please refresh the page.");
+			return null;
+		}
+    }
+	
+	@JsonView(EventoListDataTableModel.View.class)
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventiProvider(principal, #providerId)")
+	@RequestMapping(value = "/provider/{providerId}/evento/eventoListPaginated", method = RequestMethod.GET)
+    public @ResponseBody EventoListDataTableModel eventoListPaginatedById(@PathVariable Long providerId, HttpServletRequest  request, RedirectAttributes redirectAttrs) throws Exception {
+		EventoListDataTableModel dataTable = new EventoListDataTableModel();
+	try {
+		
+		
+		dataTable.setData(new ArrayList<EventoListDataModel>());
+			//Fetch the page number from client
+			Integer pageNumber = 0;
+			//Fetch number of rows from client
+			Integer numOfRows = 10;
+			
+			if (null != request.getParameter("length")) 
+				numOfRows = Integer.valueOf(request.getParameter("length"));
+			else
+				throw new Exception("Cannot get length parameter!");
+			
+			if (null != request.getParameter("start"))
+				pageNumber = (Integer.valueOf(request.getParameter("start"))/numOfRows);	
+			
+			Integer columnNumber = 0;
+			if (null != request.getParameter("order[0][column]")) 
+				columnNumber = Integer.valueOf(request.getParameter("order[0][column]"));
+			else
+				throw new Exception("Cannot get order[0][column] parameter!");
+			
+			String order = "";
+			if (null != request.getParameter("order[0][dir]") && !request.getParameter("order[0][dir]").isEmpty()) 
+				order = request.getParameter("order[0][dir]");
+			 else
+				throw new Exception("Cannot get order[0][dir] parameter!");
+
+			Page<Evento> eventi = eventoService.getAllEventiForProviderId(providerId ,pageNumber, columnNumber, order, numOfRows);
+			
+			for(Evento event : eventi) {
+				dataTable.getData().add(buildEventiDataModel(event));
+			}
+
+	
+			dataTable.setRecordsTotal(eventi.getTotalElements());
+			dataTable.setRecordsFiltered(eventi.getTotalElements());
+		return dataTable;
+	} catch (Exception e) {
+			LOGGER.error(Utils.getLogMessage("GET /evento/list"),e);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			dataTable.setError("Session expired or an Error occured! Please refresh the page.");
+			return null;
+		}
+    }
 
 	@RequestMapping("/provider/evento/list")
 	public String getListEventiCurrentUserProvider(Model model, RedirectAttributes redirectAttrs, SessionStatus sessionStatus){
@@ -233,7 +464,8 @@ public class EventoController {
 				throw new Exception("Provider non registrato");
 			}else{
 				//svuota sessione eventoList per ricaricare tutto
-				redirectAttrs.addFlashAttribute("eventoList", null);
+				//Removed model Atrribute eventoList
+				//redirectAttrs.addFlashAttribute("eventoList", null);
 				Long providerId = currentProvider.getId();
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
 				return "redirect:/provider/"+providerId+"/evento/list";
@@ -253,8 +485,11 @@ public class EventoController {
 			HttpServletRequest request, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
 		try {
-			if(model.asMap().get("eventoList") == null || !Objects.equals(providerId, model.asMap().get("providerId")))
-				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
+			//Remove old database call for loading eventi, loading is done using lazy loading
+//			if(model.asMap().get("eventoList") == null || !Objects.equals(providerId, model.asMap().get("providerId")))
+//				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
+			//model attribute to tell if template should display full list of events using ajax
+			model.addAttribute("showAllList", true);
 			return goToList(model, providerId, request);
 		}
 		catch (AccreditamentoNotFoundException accreditamentoNotFoundEx) {

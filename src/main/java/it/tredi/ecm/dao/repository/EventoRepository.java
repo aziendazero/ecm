@@ -21,6 +21,7 @@ import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 @JaversSpringDataAuditable
 public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Set<Evento> findAllByProviderId(Long providerId);
+	public Page<Evento> findAllByProviderId(Long providerId, Pageable pageable);
 	public Set<Evento> findAllByProviderIdOrderByDataUltimaModificaDesc(Long providerId);
 
 	public Set<Evento> findAllByProviderIdAndStatoNotAndDataInizioBefore(Long providerId, EventoStatoEnum stato, LocalDate now);

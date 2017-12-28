@@ -14,4 +14,6 @@ public class JsonViewModel {
 		public static class Valutazione{}
 
 		public static class EventoLookup{}
+		
+		public static class EventoByProvider{}
 }
