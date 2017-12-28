@@ -1491,7 +1491,11 @@ public class EventoServiceImpl implements EventoService {
 		procedureFormative.addAll(accreditamento.getDatiAccreditamento().getProcedureFormative());
 		procedureFormative.remove(ProceduraFormativa.FAD);
 
-		return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1));
+		if(ecmProperties.getEventoVersioniRieditabili() != null && !ecmProperties.getEventoVersioniRieditabili().isEmpty()) {
+			return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfterAndVersioneIn(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1), ecmProperties.getEventoVersioniRieditabili());			
+		} else {
+			return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1));
+		}
 	}
 
 	//trovo ultima edizione di un evento con il determinato prefix

@@ -1,6 +1,7 @@
 package it.tredi.ecm.service.bean;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import lombok.Getter;
@@ -59,6 +60,7 @@ public class EcmProperties {
 	private boolean conteggioGiorniAvanzatoBeforeDayMode;
 	private EventoVersioneEnum eventoVersioneDefault;
 	private LocalDate eventoDataPassaggioVersioneDue;
+	private Set<EventoVersioneEnum> eventoVersioniRieditabili;
 	
 	private LocalDate eventoFadDataFineMaxTriennio;
 	private LocalDate eventoFscDataFineMaxTriennio;

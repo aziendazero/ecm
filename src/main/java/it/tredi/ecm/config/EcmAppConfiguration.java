@@ -1,6 +1,9 @@
 package it.tredi.ecm.config;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -118,6 +121,9 @@ public class EcmAppConfiguration {
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.data.passaggio.versione.due}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
 	private LocalDate eventoDataPassaggioVersioneDue = LocalDate.of(2018, 1, 1);
 
+	@Value("#{T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).getSetByNumeroVersioni('${evento.versioni.rieditabili}'.split(','))}")
+	private Set<EventoVersioneEnum> eventoVersioniRieditabili = new HashSet<EventoVersioneEnum>(Arrays.asList(EventoVersioneEnum.DUE_DAL_2018));
+	
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.fad.data.fine.max.triennio}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
 	private LocalDate eventoFadDataFineMaxTriennio = LocalDate.of(2019, 12, 31);
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.fsc.data.fine.max.triennio}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
@@ -181,6 +187,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setConteggioGiorniAvanzatoBeforeDayMode(conteggioGiorniAvanzatoBeforeDayMode);
 		ecmProperties.setEventoVersioneDefault(eventoVersioneDefault);
 		ecmProperties.setEventoDataPassaggioVersioneDue(eventoDataPassaggioVersioneDue);
+		ecmProperties.setEventoVersioniRieditabili(eventoVersioniRieditabili);
 		ecmProperties.setEventoFadDataFineMaxTriennio(eventoFadDataFineMaxTriennio);
 		ecmProperties.setEventoFscDataFineMaxTriennio(eventoFscDataFineMaxTriennio);
 		

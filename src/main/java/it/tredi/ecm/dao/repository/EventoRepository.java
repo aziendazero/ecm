@@ -7,15 +7,16 @@ import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.repository.query.Param;
 
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 
 @JaversSpringDataAuditable
@@ -53,6 +54,9 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
 	//MEV RIEDIZIONI 04/2017
 	public Set<Evento> findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(Long providerId, EventoStatoEnum bozza, EventoStatoEnum cancellato, Set<ProceduraFormativa> procedureFormative, LocalDate fineAnnoScorso);
+
+	//RIEDIZIONI CON VERSIONE EVENTO
+	public Set<Evento> findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfterAndVersioneIn(Long providerId, EventoStatoEnum bozza, EventoStatoEnum cancellato, Set<ProceduraFormativa> procedureFormative, LocalDate fineAnnoScorso, Set<EventoVersioneEnum> versione);
 
 	@Query("SELECT COUNT (e) FROM Evento e WHERE e.eventoPadre.id = :id AND e.stato <> 'CANCELLATO'")
 	public int countRiedizioniOfEventoId(@Param("id") Long id);
