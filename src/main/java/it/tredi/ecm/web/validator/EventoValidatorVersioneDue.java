@@ -894,6 +894,12 @@ public class EventoValidatorVersioneDue {
 				errors.rejectValue(prefix + "investigatori", "error.empty");
 		}
 
+		//È prevista la redazione di un documento conclusivo quale ad es. linee guida, procedure, protocolli, indicazioni operative?
+		if(evento.getPrevistaRedazioneDocumentoConclusivo() == null)
+			errors.rejectValue(prefix + "previstaRedazioneDocumentoConclusivo", "error.empty");
+		//È presente un Tutor esperto esterno che validi le attività del gruppo?
+		if(evento.getPresenteTutorEspertoEsternoValidatoreAttivita() == null)
+			errors.rejectValue(prefix + "presenteTutorEspertoEsternoValidatoreAttivita", "error.empty");
 		
 		/* DESCRIZIONE DEL PROGETTO E RILEVANZA FORMATIVA (campo obbligatorio)
 		 * campo testuale
@@ -1725,15 +1731,15 @@ public class EventoValidatorVersioneDue {
 
 				//tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO
 				// - massimo 25 partecipanti per ruolo
-				// - impegno complessivo minimo 8 ore totali per tutti i ruoli tranne ruolo COORDINATORE
+				// - impegno complessivo minimo 8 ore totali per ruolo PARTECIPANTE
 				// - massimo un coordinatore
 				case GRUPPI_DI_MIGLIORAMENTO:
 
 					if(riepilogoRuoli.getNumeroPartecipanti() > 25)
 						return true;
-					if(riepilogoRuoli.getTempoDedicato() < 8f
-							&& riepilogoRuoli.getRuolo() != null
-							&& riepilogoRuoli.getRuolo().getRuoloBase() != RuoloFSCBaseEnum.COORDINATORE)
+					if(riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE
+							&& riepilogoRuoli.getTempoDedicato() < 8f)
 						return true;
 					if(riepilogoRuoli.getRuolo() != null
 							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
@@ -1799,7 +1805,7 @@ public class EventoValidatorVersioneDue {
 			}
 		}
 		//Specifici Versione 2
-		//per "Responsabile scientifico A B C", "Coordinatore A B C", per "Espserto A B C" deve essere inserito solo 1 partecipante
+		//per "Responsabile scientifico A B C", "Coordinatore A B C", per "Esperto A B C" deve essere inserito solo 1 partecipante
 		if(riepilogoRuoli.getRuolo() != null
 				&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.RESPONSABILE_SCIENTIFICO
 				&& riepilogoRuoli.getNumeroPartecipanti() > 1)

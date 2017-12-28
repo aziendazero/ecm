@@ -1232,7 +1232,7 @@
 									</div>
 								</div>
 
-								<div class="divider-dashed"></div>
+								<div class="divider-dashed numVers2"></div>
 								
 								<!-- SEZIONE PORTATA FUORI CON NUMERAZIONE PROPRIA -->
 								<div class="no-padding infanzia-sponsor-radio item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia')} ? 'bad'">
@@ -1455,7 +1455,7 @@
 								<!-- PROCEDURA VERIFICA QUALITÀ -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.proceduraVerificaQualitaPercepita')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span class="numVers1">35</span><span class="numVers2">34</span>
+										<span class="numVers1">33</span><span class="numVers2">34</span>
 									</label>
 									<div class="control-label col-md-3 col-sm-3 col-xs-11">
 									</div>
@@ -1473,10 +1473,60 @@
 
 								<div class="divider-dashed"></div>
 
+								<div class="item form-group" id="redazdoc_block" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.previstaRedazioneDocumentoConclusivo')} ? 'bad'">
+									<label class="control-label col-xs-1">
+										<span>35</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.prevista_redazione_documento_conclusivo}">È prevista la redazione di un documento conclusivo quale ad es. linee guida, procedure, protocolli, indicazioni operative?</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="radio">
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="radio" class="flat redazdoc" th:field="${eventoWrapper.evento.previstaRedazioneDocumentoConclusivo}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+												<span th:text="#{label.sì}">Sì</span>
+											</label>
+										</div>
+										<div class="radio">
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="radio" class="flat redazdoc" th:field="${eventoWrapper.evento.previstaRedazioneDocumentoConclusivo}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+												<span th:text="#{label.no}">No</span>
+											</label>
+										</div>
+									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.previstaRedazioneDocumentoConclusivo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.previstaRedazioneDocumentoConclusivo')}__}"></div>
+								</div>
+
+								<div class="item form-group" id="prestutesp_block" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.presenteTutorEspertoEsternoValidatoreAttivita')} ? 'bad'">
+									<label class="control-label col-xs-1">
+										<span>36</span>
+									</label>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<span th:text="#{label.presente_tutor_esperto_esterno_validatore}">È presente un Tutor esperto esterno che validi le attività del gruppo?</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+										<div class="radio">
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="radio" class="flat prestutesp" th:field="${eventoWrapper.evento.presenteTutorEspertoEsternoValidatoreAttivita}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+												<span th:text="#{label.sì}">Sì</span>
+											</label>
+										</div>
+										<div class="radio">
+												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
+													<input type="radio" class="flat prestutesp" th:field="${eventoWrapper.evento.presenteTutorEspertoEsternoValidatoreAttivita}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+												<span th:text="#{label.no}">No</span>
+											</label>
+										</div>
+									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.presenteTutorEspertoEsternoValidatoreAttivita')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.presenteTutorEspertoEsternoValidatoreAttivita')}__}"></div>
+								</div>
+
 								<!-- AUTORIZZAZIONE -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.autorizzazionePrivacy')} ? 'bad'">
 									<label class="control-label col-xs-1">
-										<span class="numVers1">36</span><span class="numVers2">35</span>
+										<span class="numVers1">34</span><span class="numVers2">37</span>
 									</label>
 									<div class="control-label col-md-3 col-sm-3 col-xs-11">
 									</div>
@@ -1491,6 +1541,8 @@
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.autorizzazionePrivacy')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.autorizzazionePrivacy')}__}"></div>
 								</div>
+
+
 
 								</th:block>
 							</div>
@@ -1573,16 +1625,19 @@
 						setEvResTipologiaSperimentazione();
 						reInitDataTableById('responsabiliScientifici');
 						setEspertiCoordinatori();
+						mostraFlagCalcoloCrediti();
 					});
 					$('#dataInizio').on('change', setEvResTipologiaSperimentazione);
 					$('#dataInizio').on('change', reInitDataTableById('responsabiliScientifici'));
 					$('#dataInizio').on('change', setEspertiCoordinatori);
+					$('#dataInizio').on('change', mostraFlagCalcoloCrediti);
 
 					//non funziona
 					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
 					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
 
 					setEspertiCoordinatori();
+					mostraFlagCalcoloCrediti();
 					setEvResTipologiaGruppo();
 					setEvResSperimentazioneClinica();
 					setEvResOttenutoComitatoEtico();
@@ -1591,6 +1646,12 @@
 					$(".fasiDaInserire").on("ifChecked", function(){
 						reloadSection('tab2');
 					});
+
+					$(".redazdoc, .prestutesp").on("ifChecked", function(){
+						console.log('reload tab3');
+						reloadSection('tab3');
+					});
+					
 					updateRuoliCoinvolti();
 
 					abilitaDisabilitaCreditiInseritiUtente($(".crediti-conferma").iCheck('update')[0].checked);
@@ -1668,6 +1729,17 @@
 					}
 				}
 
+				function mostraFlagCalcoloCrediti() {
+					var versione = getVersione();
+					if (versione === 2) {
+						$("#redazdoc_block").show();
+						$("#prestutesp_block").show();
+					} else {
+						$("#redazdoc_block").hide();
+						$("#prestutesp_block").hide();
+					}
+				}
+				
 				function setEvResTipologiaSperimentazione() {
 					//console.log($('#tipologiaEventoId').val());
 					var val = $('#tipologiaEventoId').selectpicker('val');
