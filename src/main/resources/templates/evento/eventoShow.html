@@ -151,7 +151,8 @@
 										<td th:text="${attivita.orarioFine}"></td>
 										<td th:text="${attivita.argomento}"></td>
 										<td>
-											<div th:text="${docente.anagrafica?.cognome}" th:each="docente, row : ${attivita.docenti}"></div>
+											<div th:if="${eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).UNO_PRIMA_2018}" th:text="${docente.anagrafica?.cognome}" th:each="docente, row : ${attivita.docenti}"></div>
+											<div th:if="${eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018}" th:text="${docente.descrizionePerAttivitaRES}" th:each="docente, row : ${attivita.docenti}"></div>
 										</td>
 										<td th:text="${attivita.risultatoAtteso}"></td>
 										<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
