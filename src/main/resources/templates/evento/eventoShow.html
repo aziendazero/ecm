@@ -151,7 +151,8 @@
 										<td th:text="${attivita.orarioFine}"></td>
 										<td th:text="${attivita.argomento}"></td>
 										<td>
-											<div th:text="${docente.anagrafica?.cognome}" th:each="docente, row : ${attivita.docenti}"></div>
+											<div th:if="${eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).UNO_PRIMA_2018}" th:text="${docente.anagrafica?.cognome}" th:each="docente, row : ${attivita.docenti}"></div>
+											<div th:if="${eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018}" th:text="${docente.descrizionePerAttivitaRES}" th:each="docente, row : ${attivita.docenti}"></div>
 										</td>
 										<td th:text="${attivita.risultatoAtteso}"></td>
 										<td th:text="${attivita.obiettivoFormativo?.nome}"></td>
@@ -217,11 +218,18 @@
 											<td>
 												<ul>
 													<li th:each="ruoloFSC, r : ${faseCorrente.azioniRuoli[__${status2.index}__].ruoli}">
-											 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.ruolo.nome} + ${ruoloFSC.tempoDedicato != null ? ' (' + ruoloFSC.tempoDedicato + 'h)' : ''}"></span>
+											 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.ruolo.nome}"></span>
 											 		</li>
 												</ul>
 											 </td>
-											<td th:text="${faseCorrente.azioniRuoli[__${status2.index}__].tempoDedicato}"></td>
+											 <td>
+												<ul>
+													<li th:each="ruoloFSC, r : ${faseCorrente.azioniRuoli[__${status2.index}__].ruoli}">
+											 			<span th:if="${ruoloFSC.ruolo != null}" th:text="${ruoloFSC.tempoDedicato}"></span>
+											 		</li>
+												</ul>
+											 </td>
+											<!-- <td th:text="${faseCorrente.azioniRuoli[__${status2.index}__].tempoDedicato}"></td> -->
 										</tr>
 									</tbody>
 								</table>
