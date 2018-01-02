@@ -54,6 +54,7 @@ import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.FaseDiLavoroFSCEnum;
 import it.tredi.ecm.dao.enumlist.INomeEnum;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
@@ -189,9 +190,9 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValoreDiscipline("label.professioni_discipline", evento.getDiscipline(), tableFields);
 		addCellLabelCampoValore("label.numero_partecipanti", evento.getNumeroPartecipanti(), tableFields);
 		addCellLabelCampoValore("label.tipologia_evento", eventoFAD.getTipologiaEventoFAD(), tableFields);
-		addCellLabelCampoValorePersone("label.responsabili_scientifici", evento.getResponsabili(), tableFields, true, false, false);
+		addCellLabelCampoValorePersone("label.responsabili_scientifici", evento.getResponsabili(), tableFields, true, false, false, null);
 		//<!-- DOCENTI/RELATORI/TUTOR -->
-		addCellLabelCampoValorePersone("label.docente_tutor", eventoFAD.getDocenti(), tableFields, false, true, true);
+		addCellLabelCampoValorePersone("label.docente_tutor", eventoFAD.getDocenti(), tableFields, false, true, true, null);
 		//<!-- BLOCCO PROGRAMMA ATTIVITÀ FORMATIVA -->
 		addCellLabelSeparator("label.programma_attività_formativa", tableFields);
 		addCellLabelCampoValore("label.razionale", eventoFAD.getRazionale(), tableFields);
@@ -284,9 +285,28 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValore("label.data_fine", evento.getDataFine(), tableFields);
 		addCellLabelCampoValore("label.obiettivo_strategico_nazionale", evento.getObiettivoNazionale() == null ? null : evento.getObiettivoNazionale().getNome(), tableFields);
 		addCellLabelCampoValore("label.obiettivo_strategico_regionale", evento.getObiettivoRegionale() == null ? null : evento.getObiettivoRegionale().getNome(), tableFields);
+		
 		addCellLabelCampoValore("label.tipologia_evento", eventoFSC.getTipologiaEventoFSC(), tableFields);
+		
+		if(evento.getVersione() != null && eventoFSC.getTipologiaSperimentazione() != null && evento.getVersione().equals(EventoVersioneEnum.DUE_DAL_2018) && TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA.equals(eventoFSC.getTipologiaEventoFSC()))
+			addCellLabelCampoValore("label.eventofsc_tipologiaSperimentazione", eventoFSC.getTipologiaSperimentazione().getNome(), tableFields);
+			
+		if(eventoFSC.getSperimentazioneClinica() != null)
+			addCellLabelCampoValore("label.eventofsc_sperimentazioneClinica", eventoFSC.getSperimentazioneClinica(), tableFields);
+		if(eventoFSC.getSperimentazioneClinica() != null && eventoFSC.getSperimentazioneClinica())
+			addCellCampoValore("", messageSource.getMessage("label.eventofsc_ottenutoComitatoEtico_no_question_mark", null, Locale.getDefault()), tableFields);
+		
+		if(eventoFSC.getTipologiaGruppo() != null)
+			addCellLabelCampoValore("label.eventofsc_tipologiaGruppo", eventoFSC.getTipologiaGruppo().getNome(), tableFields);
 		addCellLabelCampoValoreDiscipline("label.professioni_discipline", evento.getDiscipline(), tableFields);
-		addCellLabelCampoValorePersone("label.responsabili_scientifici", evento.getResponsabili(), tableFields, true, false, false);
+		addCellLabelCampoValorePersone("label.responsabili_scientifici", evento.getResponsabili(), tableFields, true, false, false, eventoFSC.getVersione());
+		
+		if(evento.getVersione() != null && evento.getVersione().equals(EventoVersioneEnum.DUE_DAL_2018))
+			addCellLabelCampoValorePersoneEsperti("label.esperti", eventoFSC.getEsperti(), tableFields);
+		
+		if(evento.getVersione() != null && evento.getVersione().equals(EventoVersioneEnum.DUE_DAL_2018))
+			addCellLabelCampoValorePersoneInvestigatori("label.investigatori", eventoFSC.getInvestigatori(), tableFields);
+		
 		addCellLabelCampoValore("label.descrizione_del_progetto", eventoFSC.getDescrizioneProgetto(), tableFields);
 		addCellLabelSeparator("label.fasi_azioni_ruoli", tableFields);
 		tableFields = addTableFieldsToDocumentAndGetNewTableField(tableFields, document);
@@ -305,9 +325,27 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValore("label.responsabile_segreteria_organizzativa", evento.getResponsabileSegreteria(), tableFields);
 		addCellLabelCampoValoreValuta("label.quota_partecipazione", evento.getQuotaPartecipazione(), tableFields);
 		addCellLabelCampoValore("label.evento_sponsorizzato_radio", evento.getEventoSponsorizzato(), tableFields);
-		if(evento.getEventoSponsorizzato() != null && evento.getEventoSponsorizzato())
+		if(evento.getEventoSponsorizzato() != null && evento.getEventoSponsorizzato()) {
+			
+			if(eventoFSC.getTipologiaEventoFSC() != null 
+					&& (eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO) 
+						|| eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE)
+						|| eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA)
+						|| eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO)
+						|| eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO))) {
+				
+				addCellCampoValore("", messageSource.getMessage("label.info_sponsor_evento", null, Locale.getDefault()), tableFields);
+			}
+			
 			addCellLabelCampoValoreSponsors("label.sponsors", evento.getSponsors(), tableFields);
-		if(evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA) {
+		}
+		if(evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA 
+				&& (eventoFSC.getTipologiaEventoFSC() != null
+					&& eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO) 
+					|| eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.AUDIT_CLINICO_ASSISTENZIALE)
+					|| eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA)
+					|| eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO)
+					|| eventoFSC.getTipologiaEventoFSC().equals(TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO))) {
 			//<!-- RADIO SPONSOR PRIMA INFANZIA -->
 			addCellLabelCampoValore("label.evento_sponsorizzato_infanzia_radio", evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(), tableFields);
 			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null) {
@@ -375,9 +413,9 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		}
 
 		addCellLabelCampoValore("label.numero_partecipanti", evento.getNumeroPartecipanti(), tableFields);
-		addCellLabelCampoValorePersone("label.responsabili_scientifici", evento.getResponsabili(), tableFields, true, false, false);
+		addCellLabelCampoValorePersone("label.responsabili_scientifici", evento.getResponsabili(), tableFields, true, false, false, null);
 		//<!-- DOCENTI/RELATORI/TUTOR -->
-		addCellLabelCampoValorePersone("label.docenti_relatori_tutor", eventoRES.getDocenti(), tableFields, false, true, true);
+		addCellLabelCampoValorePersone("label.docenti_relatori_tutor", eventoRES.getDocenti(), tableFields, false, true, true, null);
 		//<!-- BLOCCO PROGRAMMA ATTIVITÀ FORMATIVA -->
 		addCellLabelSeparator("label.programma_attività_formativa", tableFields);
 		//<!-- RAZIONALE -->
@@ -385,7 +423,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		//<!-- RISULTATI ATTESI -->
 		addCellLabelCampoValoriString("label.risultati_attesi", eventoRES.getRisultatiAttesi(), tableFields);
 		//EventoRES programma
-		tableFields = addTableProgrammaRES(document, tableFields, eventoRES.getProgramma());
+		tableFields = addTableProgrammaRES(document, tableFields, eventoRES.getProgramma(), evento.getVersione());
 		addCellLabelCampoValore("label.brochure_evento", evento.getBrochureEvento(), tableFields);
 		addCellLabelCampoValore("label.verifica_apprendimento_partecipanti", eventoRES.getVerificaApprendimento(), tableFields);
 		addCellLabelCampoValore("label.durata", Utils.formatOrario(evento.getDurata()), tableFields);
@@ -468,7 +506,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		return tableFields;
 	}
 
-	private PdfPTable addTableProgrammaRES(Document document, PdfPTable tableFields, List<ProgrammaGiornalieroRES> programma) throws DocumentException {
+	private PdfPTable addTableProgrammaRES(Document document, PdfPTable tableFields, List<ProgrammaGiornalieroRES> programma, EventoVersioneEnum versione) throws DocumentException {
 		//Creo le tabelle solo se ci sono dati
 		PdfPTable newTableFields = tableFields;
 		if(programma != null && programma.size() > 0) {
@@ -533,14 +571,27 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 //						else
 //							addCellSubTable("", tableDettaglioAttivita);
 
-						if(dettAtt.getDocenti() != null) {
-							for(PersonaEvento docente : dettAtt.getDocenti()) {
-								if(docente.getAnagrafica() != null && docente.getAnagrafica().getCognome() != null && !docente.getAnagrafica().getCognome().isEmpty()) {
-									if(writeDocenti)
-										docenti += "\n";
-									docenti += docente.getAnagrafica().getCognome();
-									writeDocenti = true;
+						if(versione == null || !versione.equals(EventoVersioneEnum.DUE_DAL_2018)) {
+							if(dettAtt.getDocenti() != null) {
+								for(PersonaEvento docente : dettAtt.getDocenti()) {
+									if(docente.getAnagrafica() != null && docente.getAnagrafica().getCognome() != null && !docente.getAnagrafica().getCognome().isEmpty()) {
+										if(writeDocenti)
+											docenti += "\n";
+										docenti += docente.getAnagrafica().getCognome();
+										writeDocenti = true;
+									}
 								}
+							}
+						} else {
+								if(dettAtt.getDocenti() != null) {
+									for(PersonaEvento docente : dettAtt.getDocenti()) {
+										if( docente.getDescrizionePerAttivitaRES() != null && !docente.getDescrizionePerAttivitaRES().isEmpty()) {
+											if(writeDocenti)
+												docenti += "\n";
+											docenti += docente.getDescrizionePerAttivitaRES();
+											writeDocenti = true;
+										}
+									}
 							}
 						}
 						addCellSubTable(docenti, tableDettaglioAttivita);
@@ -692,10 +743,22 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 						}
 						addCellSubTable(tempString, subTable);
 						//ore_attivita
-						if(azRu.getTempoDedicato() != null)
-							addCellSubTable(floatFormatter.print(azRu.getTempoDedicato(), Locale.getDefault()), subTable);
-						else
-							addCellSubTable("", subTable);
+//						if(azRu.getTempoDedicato() != null)
+//							addCellSubTable(floatFormatter.print(azRu.getTempoDedicato(), Locale.getDefault()), subTable);
+//						else
+//							addCellSubTable("", subTable);
+						tempString = "";
+						write = false;
+						for(RuoloOreFSC ruOre : azRu.getRuoli()) {
+							ruoloOreFSCVal = getOre(ruOre);
+							if(ruoloOreFSCVal != null) {
+								if(write)
+									tempString += "\n";
+								tempString += ruoloOreFSCVal;
+								write = true;
+							}
+						}
+						addCellSubTable(tempString, subTable);
 					}
 				}
 			}
@@ -707,8 +770,16 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		String toRet = null;
 		if(obj.getRuolo() != null){
 			toRet = obj.getRuolo().getNome();
-			if(obj.getTempoDedicato() != null)
-				toRet += " (" + floatFormatter.print(obj.getTempoDedicato(), Locale.getDefault()) + "h)";
+//			if(obj.getTempoDedicato() != null)
+//				toRet += " (" + floatFormatter.print(obj.getTempoDedicato(), Locale.getDefault()) + "h)";
+		}
+		return toRet;
+	}
+	
+	private String getOre(RuoloOreFSC obj) {
+		String toRet = null;
+		if(obj.getTempoDedicato() != null) {
+				toRet = floatFormatter.print(obj.getTempoDedicato(), Locale.getDefault()) + "h";
 		}
 		return toRet;
 	}
@@ -941,10 +1012,15 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 	}
 
 	private void addCellLabelCampoValorePersone(String labelCampo, List<PersonaEvento> persone, PdfPTable table
-			, boolean mostraQualifica, boolean mostraRuolo, boolean mostraTitolareSostituto) throws Exception  {
+			, boolean mostraQualifica, boolean mostraRuolo, boolean mostraTitolareSostituto, EventoVersioneEnum versione) throws Exception  {
 		PdfPTable tablePers = null;
 		if(persone != null && persone.size() > 0) {
-			int numCols = 4;
+			
+			int numCols;
+			if(versione != null && versione.equals(EventoVersioneEnum.DUE_DAL_2018))
+				numCols = 6;
+			else
+				numCols = 4;
 			if(mostraQualifica)
 				numCols++;
 			if(mostraRuolo)
@@ -979,6 +1055,11 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 			if(mostraTitolareSostituto)
 				addCellIntestaSubTableByString(messageSource.getMessage("label.titolare", null, Locale.getDefault()) + "/" + messageSource.getMessage("label.sostituto", null, Locale.getDefault()), tablePers);
 			addCellIntestaSubTableByLabel("label.cv", tablePers);
+			
+			if(versione != null && versione.equals(EventoVersioneEnum.DUE_DAL_2018)) {
+				addCellIntestaSubTableByLabel("label.identificativo_persona_evento", tablePers);
+				addCellIntestaSubTableByLabel("label.svolge_attivita_docenza", tablePers);
+			}
 			for(PersonaEvento pers : persone) {
 				addCellSubTable(pers.getAnagrafica().getCognome(), tablePers);
 				addCellSubTable(pers.getAnagrafica().getNome(), tablePers);
@@ -1002,12 +1083,115 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 				} else {
 					addCellSubTable(pers.getAnagrafica().getCv().getNomeFile(), tablePers);
 				}
+				
+				if(versione != null && versione.equals(EventoVersioneEnum.DUE_DAL_2018)) {
+					if(pers.getIdentificativoPersonaRuoloEvento() != null)
+						addCellSubTable(pers.getIdentificativoPersonaRuoloEvento().getNome(), tablePers);
+					else
+						addCellSubTable("", tablePers);
+					
+					String label = null;
+					if(pers.isSvolgeAttivitaDiDocenza())
+						label = messageSource.getMessage("label.sì", null, Locale.getDefault());
+					else
+						label = messageSource.getMessage("label.no", null, Locale.getDefault());
+					addCellSubTable(label, tablePers);
+				}
 			}
 
 		}
 		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), tablePers, table, true);
 	}
 
+	private void addCellLabelCampoValorePersoneEsperti(String labelCampo, List<PersonaEvento> persone, PdfPTable table) throws Exception  {
+		PdfPTable tablePers = null;
+		if(persone != null && persone.size() > 0) {
+		
+			int numCols = 5;
+
+			tablePers = new PdfPTable(numCols);
+			tablePers.setWidthPercentage(100);
+			if(numCols==4)
+				tablePers.setWidths(new float[]{1, 1, 1.2F, 1});
+			else if(numCols==5)
+				tablePers.setWidths(new float[]{1, 1, 1.4F, 1, 1});
+			else if(numCols==6)
+				tablePers.setWidths(new float[]{1, 1, 1.5F, 1, 1, 1});
+			else if(numCols==7)
+				tablePers.setWidths(new float[]{1, 1, 1.6F, 1, 1, 1, 1});
+			else
+				throw new Exception("Numero di colonne non gestito in addCellLabelCampoValorePersone numCols: " + numCols);
+
+			//tableDisc.setWidths(new float[]{1});
+			tablePers.setSpacingBefore(0);
+			tablePers.setSpacingAfter(0);
+
+			addCellIntestaSubTableByLabel("label.cognome", tablePers);
+			addCellIntestaSubTableByLabel("label.nome", tablePers);
+			addCellIntestaSubTableByLabel("label.cf", tablePers);
+			addCellIntestaSubTableByLabel("label.identificativo_persona_evento", tablePers);
+			addCellIntestaSubTableByLabel("label.svolge_attivita_docenza", tablePers);
+			for(PersonaEvento pers : persone) {
+				addCellSubTable(pers.getAnagrafica().getCognome(), tablePers);
+				addCellSubTable(pers.getAnagrafica().getNome(), tablePers);
+				addCellSubTable(pers.getAnagrafica().getCodiceFiscale(), tablePers);
+				
+				if(pers.getIdentificativoPersonaRuoloEvento() != null)
+					addCellSubTable(pers.getIdentificativoPersonaRuoloEvento().getNome(), tablePers);
+				else
+					addCellSubTable("", tablePers);
+				
+				String label = null;
+				if(pers.isSvolgeAttivitaDiDocenza())
+					label = messageSource.getMessage("label.sì", null, Locale.getDefault());
+				else
+					label = messageSource.getMessage("label.no", null, Locale.getDefault());
+				addCellSubTable(label, tablePers);
+			}
+
+		}
+		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), tablePers, table, true);
+	}
+	
+	private void addCellLabelCampoValorePersoneInvestigatori(String labelCampo, List<PersonaEvento> persone, PdfPTable table) throws Exception  {
+		PdfPTable tablePers = null;
+		if(persone != null && persone.size() > 0) {
+		
+			int numCols = 4;
+
+			tablePers = new PdfPTable(numCols);
+			tablePers.setWidthPercentage(100);
+			if(numCols==4)
+				tablePers.setWidths(new float[]{1, 1, 1.2F, 1});
+			else if(numCols==5)
+				tablePers.setWidths(new float[]{1, 1, 1.4F, 1, 1});
+			else if(numCols==6)
+				tablePers.setWidths(new float[]{1, 1, 1.5F, 1, 1, 1});
+			else if(numCols==7)
+				tablePers.setWidths(new float[]{1, 1, 1.6F, 1, 1, 1, 1});
+			else
+				throw new Exception("Numero di colonne non gestito in addCellLabelCampoValorePersone numCols: " + numCols);
+
+			//tableDisc.setWidths(new float[]{1});
+			tablePers.setSpacingBefore(0);
+			tablePers.setSpacingAfter(0);
+
+
+			addCellIntestaSubTableByLabel("label.cognome", tablePers);
+			addCellIntestaSubTableByLabel("label.nome", tablePers);
+			addCellIntestaSubTableByLabel("label.cf", tablePers);
+			addCellIntestaSubTableByLabel("label.qualifica", tablePers);
+			for(PersonaEvento pers : persone) {
+				addCellSubTable(pers.getAnagrafica().getCognome(), tablePers);
+				addCellSubTable(pers.getAnagrafica().getNome(), tablePers);
+				addCellSubTable(pers.getAnagrafica().getCodiceFiscale(), tablePers);
+				addCellSubTable(pers.getQualifica(), tablePers);
+			}
+
+		}
+		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), tablePers, table, true);
+	}
+	
 	private String getLabelNessunCv() {
 		return messageSource.getMessage("label.nessun_cv", null, Locale.getDefault());
 	}
@@ -1261,7 +1445,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		}
 		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
 	}
-
+	
 	private void addCellLabelCampoValore(String labelCampo, String valoreCampo, PdfPTable table) {
 		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
 	}

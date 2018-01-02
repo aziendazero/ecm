@@ -48,7 +48,15 @@ public enum RuoloFSCEnum {
 	
 	COORDINATORE_GRUPPI_A(5,"Coordinatore di gruppi di lavoro, di studio o miglioramento in qualità A", RuoloFSCBaseEnum.COORDINATORE),
 	COORDINATORE_GRUPPI_B(5,"Coordinatore di gruppi di lavoro, di studio o miglioramento in qualità B", RuoloFSCBaseEnum.COORDINATORE),
-	COORDINATORE_GRUPPI_C(5,"Coordinatore di gruppi di lavoro, di studio o miglioramento in qualità C", RuoloFSCBaseEnum.COORDINATORE);
+	COORDINATORE_GRUPPI_C(5,"Coordinatore di gruppi di lavoro, di studio o miglioramento in qualità C", RuoloFSCBaseEnum.COORDINATORE),
+	
+	RESPONSABILE_SCIENTIFICO_A(15,"Responsabile scientifico A", RuoloFSCBaseEnum.RESPONSABILE_SCIENTIFICO),
+	RESPONSABILE_SCIENTIFICO_B(16,"Responsabile scientifico B", RuoloFSCBaseEnum.RESPONSABILE_SCIENTIFICO),
+	RESPONSABILE_SCIENTIFICO_C(17,"Responsabile scientifico C", RuoloFSCBaseEnum.RESPONSABILE_SCIENTIFICO),
+	
+	COORDINATORE_A(18,"Coordinatore A", RuoloFSCBaseEnum.COORDINATORE_X),
+	COORDINATORE_B(19,"Coordinatore B", RuoloFSCBaseEnum.COORDINATORE_X),
+	COORDINATORE_C(20,"Coordinatore C", RuoloFSCBaseEnum.COORDINATORE_X);
 	
 	private int id;
 	private String nome;

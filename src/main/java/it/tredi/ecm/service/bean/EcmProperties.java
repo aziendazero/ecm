@@ -1,8 +1,9 @@
 package it.tredi.ecm.service.bean;
 
 import java.time.LocalDate;
+import java.util.Set;
 
-import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,6 +26,10 @@ public class EcmProperties {
 	private int giorniMinEventoRiedizione;
 	private int numeroMassimoResponsabiliEvento;
 	private int giorniMaxEventoFSC;
+
+	private int giorniMaxEventoFscVersione2;
+	private int giorniMaxEventoFscVersione2AttivitaDiRicerca;
+	
 	private long giorniMaxEventoFAD;
 	private int numeroMinimoPartecipantiConvegnoCongressoRES;
 	private int numeroMassimoPartecipantiWorkshopSeminarioRES;
@@ -55,5 +60,11 @@ public class EcmProperties {
 	private boolean conteggioGiorniAvanzatoBeforeDayMode;
 	private EventoVersioneEnum eventoVersioneDefault;
 	private LocalDate eventoDataPassaggioVersioneDue;
-
+	private Set<EventoVersioneEnum> eventoVersioniRieditabili;
+	
+	private LocalDate eventoFadDataFineMaxTriennio;
+	private LocalDate eventoFscDataFineMaxTriennio;
+	
+	private int numeroMassimoEspertiEvento;
+	private int numeroMassimoCoordinatoriEvento;
 }

@@ -1,7 +1,9 @@
 package it.tredi.ecm.config;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -9,8 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
-import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
 
 @Configuration
 @EntityScan(basePackages={"it.tredi.ecm.dao.entity","it.tredi.springdatautil"})
@@ -48,6 +50,13 @@ public class EcmAppConfiguration {
 	private int numeroMassimoResponsabiliEvento = 3;
 	@Value("${giorni.max.evento.fsc}")
 	private int giorniMaxEventoFSC = 730;
+
+	@Value("${giorni.max.evento.fsc.versione2}")
+	private int giorniMaxEventoFscVersione2 = 365;
+	@Value("${giorni.max.evento.fsc.versione2.attivitaDiRicerca}")
+	private int giorniMaxEventoFscVersione2AttivitaDiRicerca = 730;
+	
+	
 	@Value("${giorni.max.evento.fad}")
 	private int giorniMaxEventoFAD = 365;
 	@Value("${numero.minimo.partecipanti.convegno.congresso.res}")
@@ -107,11 +116,24 @@ public class EcmAppConfiguration {
 	@Value("${conteggioGiorniAvanzatoBeforeDayMode}")
 	private boolean conteggioGiorniAvanzatoBeforeDayMode;
 
-	@Value("#{T(it.tredi.ecm.service.enumlist.EventoVersioneEnum).getByNumeroVersione(${evento.numeroversione.default})}")
+	@Value("#{T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).getByNumeroVersione(${evento.numeroversione.default})}")
 	private EventoVersioneEnum eventoVersioneDefault = EventoVersioneEnum.DUE_DAL_2018;
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.data.passaggio.versione.due}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
 	private LocalDate eventoDataPassaggioVersioneDue = LocalDate.of(2018, 1, 1);
 
+	@Value("#{T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).getSetByNumeroVersioni('${evento.versioni.rieditabili}'.split(','))}")
+	private Set<EventoVersioneEnum> eventoVersioniRieditabili = new HashSet<EventoVersioneEnum>(Arrays.asList(EventoVersioneEnum.DUE_DAL_2018));
+	
+	@Value("#{T(java.time.LocalDate).parse(\"${evento.fad.data.fine.max.triennio}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
+	private LocalDate eventoFadDataFineMaxTriennio = LocalDate.of(2019, 12, 31);
+	@Value("#{T(java.time.LocalDate).parse(\"${evento.fsc.data.fine.max.triennio}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
+	private LocalDate eventoFscDataFineMaxTriennio = LocalDate.of(2019, 12, 31);
+
+	@Value("${numero.massimo.esperti.evento}")
+	private int numeroMassimoEspertiEvento = 3;
+	@Value("${numero.massimo.coordinatori.evento}")
+	private int numeroMassimoCoordinatoriEvento = 3;
+	
 	@Bean
 	public EcmProperties ecmProperties(){
 		EcmProperties ecmProperties = new EcmProperties();
@@ -131,6 +153,8 @@ public class EcmAppConfiguration {
 		ecmProperties.setGiorniMinEventoRiedizione(giorniMinEventoRiedizione);
 		ecmProperties.setNumeroMassimoResponsabiliEvento(numeroMassimoResponsabiliEvento);
 		ecmProperties.setGiorniMaxEventoFSC(giorniMaxEventoFSC);
+		ecmProperties.setGiorniMaxEventoFscVersione2(giorniMaxEventoFscVersione2);
+		ecmProperties.setGiorniMaxEventoFscVersione2AttivitaDiRicerca(giorniMaxEventoFscVersione2AttivitaDiRicerca);
 		ecmProperties.setGiorniMaxEventoFAD(giorniMaxEventoFAD);
 		ecmProperties.setNumeroMinimoPartecipantiConvegnoCongressoRES(numeroMinimoPartecipantiConvegnoCongressoRES);
 		ecmProperties.setNumeroMassimoPartecipantiWorkshopSeminarioRES(numeroMassimoPartecipantiWorkshopSeminarioRES);
@@ -163,6 +187,12 @@ public class EcmAppConfiguration {
 		ecmProperties.setConteggioGiorniAvanzatoBeforeDayMode(conteggioGiorniAvanzatoBeforeDayMode);
 		ecmProperties.setEventoVersioneDefault(eventoVersioneDefault);
 		ecmProperties.setEventoDataPassaggioVersioneDue(eventoDataPassaggioVersioneDue);
+		ecmProperties.setEventoVersioniRieditabili(eventoVersioniRieditabili);
+		ecmProperties.setEventoFadDataFineMaxTriennio(eventoFadDataFineMaxTriennio);
+		ecmProperties.setEventoFscDataFineMaxTriennio(eventoFscDataFineMaxTriennio);
+		
+		ecmProperties.setNumeroMassimoEspertiEvento(numeroMassimoEspertiEvento);
+		ecmProperties.setNumeroMassimoCoordinatoriEvento(numeroMassimoCoordinatoriEvento);
 		return ecmProperties;
 	}
 
