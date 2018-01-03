@@ -398,8 +398,8 @@ public class EventoController {
 	} catch (Exception e) {
 			LOGGER.error(Utils.getLogMessage("GET /evento/list"),e);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			dataTable.setError("Session expired or an Error occured! Please refresh the page.");
-			return null;
+			dataTable.setError("Session expired or an Error occured! Please refresh the page. \n" + e.getMessage());
+			return dataTable;
 		}
     }
 	
@@ -450,8 +450,8 @@ public class EventoController {
 	} catch (Exception e) {
 			LOGGER.error(Utils.getLogMessage("GET /evento/list"),e);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			dataTable.setError("Session expired or an Error occured! Please refresh the page.");
-			return null;
+			dataTable.setError("Session expired or an Error occured! Please refresh the page. \n" + e.getMessage());
+			return dataTable;
 		}
     }
 
