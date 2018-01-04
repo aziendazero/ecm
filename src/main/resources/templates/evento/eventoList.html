@@ -344,7 +344,8 @@
 					azioni = 13
 					titolo = 4
 					date = [6,7,11]
-					url = "/evento/eventoListPaginated"
+					url = [[@{|/evento/eventoListPaginated/|}]];
+					
 					dataColumns = [
 				            { "data": "codiceIdent", "sWidth" : "10%"},
 				            { "data": "denominazioneLeg"},
@@ -368,7 +369,7 @@
 					date = [5,6,10]
 					azioni = 12
 					titolo = 3
-					url = "/provider/" + [[${providerId}]] + "/evento/eventoListPaginated"
+					url = [[@{|/provider/${providerId}/evento/eventoListPaginated/|}]];
 					dataColumns = [
 				            { "data": "codiceIdent"},
 				            { "data": "edizione" },
@@ -424,14 +425,22 @@
 							"ajax":{
 								  "url": url
 							  },
-							  "columns": dataColumns,
-						      "columnDefs": [
-				                     {"targets": colonne, "width": "1px"},
-				                     {"targets": confermati, "sClass": "center"},
-				                     {"targets": titolo, "sClass": "wordwrap"},
-				                     {"targets": azioni, "sClass": "text-full-length"},
-				                     
-				                   ]
+						  "columns": dataColumns,
+					      "columnDefs": [
+			                     {"targets": colonne, "width": "1px"},
+			                     {"targets": confermati, "sClass": "center"},
+			                     {"targets": titolo, "sClass": "wordwrap"},
+			                     {"targets": azioni, "sClass": "text-full-length"},
+			                     
+			                   ],
+		                   "drawCallback": function( settings ) {
+
+				                	$(".linkButton").each(function(index){
+				                		var tempLink = [[@{/}]] + $(this).attr('href');
+				                	   		$(this).attr('href', tempLink);
+				                	});
+
+		               		}
 						});
 			        }
 				 $(".datatable-responsive-eventi-attuazione").DataTable({
