@@ -612,6 +612,25 @@
 						</div>
 					</div>
 				</div>
+				
+				<!-- modale conferma variazioni dati e documenti -->
+				<div class="modal fade" id="confermaVariazioniDatiEDocumenti"
+					data-model-index="1" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h3 class="modal-title" id="myModalLabel" th:text="#{label.conferma_azione}">Conferma azione</h3>
+							</div>
+							<div class="modal-body">
+								<h2>Si desidera vedere Variazioni dati e documenti?</h2>
+							</div>
+							<div class="modal-footer">
+								<a type="button" class="btn btn-success pull-right" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/variazioneDati|}">Conferma</a>
+								<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" >Indietro</button>
+							</div>
+						</div>
+					</div>
+				</div>
 
 				<div class="x_panel">
 					<div class="x_title x_menu">
@@ -631,7 +650,7 @@
 									<li><a th:if="${accreditamentoWrapper.canValutaDomanda and !(accreditamentoWrapper.accreditamento.isValutazioneSegreteriaVariazioneDati() or accreditamentoWrapper.accreditamento.isValutazioneCrecmVariazioneDati())}" th:text="#{label.valuta_domanda}" onclick="switchMode('validate')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canValutaDomanda and (accreditamentoWrapper.accreditamento.isValutazioneSegreteriaVariazioneDati() or accreditamentoWrapper.accreditamento.isValutazioneCrecmVariazioneDati())}" th:text="#{label.valuta_variazione_dati}" onclick="switchMode('validate')"></a></li>
 									<li class="divider actions" th:if="${accreditamentoWrapper.canVariazioneDati or accreditamentoWrapper.canValutaVariazioneDati}"></li>
-									<li><a th:if="${accreditamentoWrapper.canVariazioneDati}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/variazioneDati|}" th:text="#{label.variazione_dati}"></a></li>
+									<li> <a th:if="${accreditamentoWrapper.canVariazioneDati}" th:href="#{#}" th:text="#{label.variazione_dati}" data-toggle="modal" data-target="#confermaVariazioniDatiEDocumenti"></a></li>
 									<li class="divider actions" th:if="${accreditamentoWrapper.canEnableField or accreditamentoWrapper.canPrendiInCarica or accreditamentoWrapper.canPresaVisione or accreditamentoWrapper.canAssegnaNuovoGruppo or accreditamentoWrapper.canInviaRichiestaIntegrazioneInAttesaDiFirma or accreditamentoWrapper.canInviaRichiestaPreavvisoRigettoInAttesaDiFirma or accreditamentoWrapper.canAccreditatoInAttesaDiFirma or accreditamentoWrapper.canDiniegoInAttesaDiFirma}"></li>
 									<li><a th:if="${accreditamentoWrapper.canEnableField}" th:text="#{label.abilita_id_editabili}" onclick="switchMode('enableField')"></a></li>
 									<li><a th:if="${accreditamentoWrapper.canPrendiInCarica}" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/takeCharge|}" th:text="#{label.prendi_in_carica}"></a></li>
