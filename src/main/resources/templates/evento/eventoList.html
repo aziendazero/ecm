@@ -342,7 +342,7 @@
 					confermati = 12
 					azioni = 13
 					date = [6,7,11]
-					url = "/evento/eventoListPaginated"
+					url = [[@{/evento/eventoListPaginated}]]
 					dataColumns = [
 				            { "data": "codiceIdent"},
 				            { "data": "denominazioneLeg"},
@@ -365,7 +365,7 @@
 					confermati = 11
 					date = [5,6,10]
 					azioni = 12
-					url = "/provider/" + [[${providerId}]] + "/evento/eventoListPaginated"
+					url = [[@{|/provider/${providerId}/evento/eventoListPaginated|}]]
 					dataColumns = [
 				            { "data": "codiceIdent"},
 				            { "data": "edizione" },
