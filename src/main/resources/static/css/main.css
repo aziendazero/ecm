@@ -1514,3 +1514,13 @@ table.dataTable tbody tr.selected {
 .wordwrap{
 	word-break: break-all;
 }
+
+.eventiListWrapper > table
+{
+    width: 100%;
+}
+
+.datatable-responsive-eventi-provider  th 
+{
+	word-break: keep-all !important;
+}
