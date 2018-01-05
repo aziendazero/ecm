@@ -622,7 +622,7 @@
 								<h3 class="modal-title" id="myModalLabel" th:text="#{label.conferma_azione}">Conferma azione</h3>
 							</div>
 							<div class="modal-body">
-								<h2>Si desidera vedere Variazioni dati e documenti?</h2>
+								<h2 th:text="#{label.conferma_variazione_dati_e_documenti}">Si desidera avviare il flusso Variazioni dati e documenti?</h2>
 							</div>
 							<div class="modal-footer">
 								<a type="button" class="btn btn-success pull-right" th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/variazioneDati|}">Conferma</a>
