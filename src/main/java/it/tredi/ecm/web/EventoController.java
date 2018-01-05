@@ -245,7 +245,7 @@ public class EventoController {
 		EventoListDataModel dataModel = new EventoListDataModel();
 		//DateFormatter
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		dataModel.setCodiceIdent("<a href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/show\">" + event.getCodiceIdentificativo() + "</a>");
+		dataModel.setCodiceIdent("<a class=\"linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/show\">" + event.getCodiceIdentificativo() + "</a>");
 		if(Utils.getAuthenticatedUser().isSegreteria())
 			dataModel.setDenominazioneLeg(event.getProvider().getDenominazioneLegale());
 		dataModel.setEdizione(event.getEdizione());
