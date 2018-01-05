@@ -566,6 +566,29 @@
 										</div>
 									</div>
 								</div>
+								
+								<!-- ALTRE FORME DI FINANZIAMENTO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<h2 th:text="#{label.forme_finanziamento_radio}"></h2>
+									</label>
+								</div>
+
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="altreFormeFinanziamento"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="altreFormeFinanziamento">
+										<div class="checkbox">
+											<label>
+												<input type="radio" class="flat altreFormeFinanziamento" th:field="${ricercaEventoWrapper.altreFormeFinanziamento}" th:value="${true}"/>
+												<span th:text="#{label.sì}"></span>
+											</label>
+											<label>
+												<input type="radio" class="flat altreFormeFinanziamento" th:field="${ricercaEventoWrapper.altreFormeFinanziamento}" th:value="${false}"/>
+												<span th:text="#{label.no}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
 
 							<input id="submitButton" type="submit" style="display: none;" />
 
