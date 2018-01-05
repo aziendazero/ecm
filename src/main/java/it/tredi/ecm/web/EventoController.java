@@ -301,44 +301,44 @@ public class EventoController {
 		String buttons = "";
 		if(Utils.getAuthenticatedUser().isSegreteria() || Utils.getAuthenticatedUser().isProvider()) {
 			if(event.canEdit() || Utils.getAuthenticatedUser().isSegreteria()) {
-				buttons += "	<a class=\"btn btn-primary min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/edit\" title=\""
+				buttons += "	<a class=\"btn btn-primary min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/edit\" title=\""
 								+ messageSource.getMessage("label.modifica", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-pencil\"></i></a>"; 
 			}
 			
 			if(Utils.getAuthenticatedUser().isSegreteria() && event.canSegreteriaShiftData()) {
-				buttons+= "<button type=\"button\" class=\"btn btn-primary min-icon-width\" onclick=\"openModalScadenze(" + event.getId() +
+				buttons+= "<button type=\"button\" class=\"btn btn-primary min-icon-width \" onclick=\"openModalScadenze(" + event.getId() +
 						", '" + event.getDataScadenzaPagamento() + "', '" + event.getDataScadenzaInvioRendicontazione() + "')\" title=\"" + messageSource.getMessage("label.abilita", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-unlock-alt\"> </i></button>";
 			}
 			
 			if(event.canDoPagamento()) {
 				if((event.getProvider().getMyPay() != null && event.getProvider().getMyPay()) || (event.getProvider().getMyPay() == null && event.getProvider().isGruppoB())) {
-					buttons += "<a class=\"btn btn-success btn-min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + 
+					buttons += "<a class=\"btn btn-success btn-min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + 
 									event.getId() + "/paga\" title=\"" + messageSource.getMessage("label.paga", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"></i></a>";
 				}
 				
 				if (event.getProvider().getMyPay() != null && !event.getProvider().getMyPay()) {
-					buttons += "<a class=\"btn btn-success btn-min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + 
+					buttons += "<a class=\"btn btn-success btn-min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + 
 															event.getId() + "/quietanzaPage\" title=\"" + messageSource.getMessage("label.allega_quietanza", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"></i></a>";
 				}
 			}
 			
 			if (event.getPagato() && event.getPagatoQuietanza()) {
-				buttons += "<a class=\"btn btn-success btn-min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + 
+				buttons += "<a class=\"btn btn-success btn-min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + 
 														event.getId() + "/quietanzaPagamento/show\"  title=\"" + messageSource.getMessage("label.visualizza_quietanza", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"> </i></a>";
 			}
 			
 			if (Utils.getAuthenticatedUser().isSegreteria()) {
-				buttons += "<a class=\"btn btn-primary min-icon-width\" href=\"/audit/entity/" + event.getAuditEntityType() + "/entityId/" + event.getId() + 
+				buttons += "<a class=\"btn btn-primary min-icon-width linkButton\" href=\"audit/entity/" + event.getAuditEntityType() + "/entityId/" + event.getId() + 
 										"\" th:title=\"" + messageSource.getMessage("label.registro_operazioni", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-book\"></i></a>";
 			}
 			
 			if (event.canDoRendicontazione()) {
-				buttons += "<a class=\"btn btn-warning min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/rendiconto\" title=\"" +
+				buttons += "<a class=\"btn btn-warning min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/rendiconto\" title=\"" +
 																messageSource.getMessage("label.rendiconto", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file-text\"></i></a>";
 			}
 			
 			if (event.canDoUploadSponsor()) {
-				buttons += "<a class=\"btn btn-primary min-icon-width\" href=\"/provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/allegaContrattiSponsor\" title=\"" +
+				buttons += "<a class=\"btn btn-primary min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/allegaContrattiSponsor\" title=\"" +
 														messageSource.getMessage("label.allega_contratti_sponsor", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file\"></i></a>";
 			}
 			
@@ -400,8 +400,8 @@ public class EventoController {
 	} catch (Exception e) {
 			LOGGER.error(Utils.getLogMessage("GET /evento/list"),e);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			dataTable.setError("Session expired or an Error occured! Please refresh the page.");
-			return null;
+			dataTable.setError("Session expired or an Error occured! Please refresh the page. \n" + e.getMessage());
+			return dataTable;
 		}
     }
 	
@@ -452,8 +452,8 @@ public class EventoController {
 	} catch (Exception e) {
 			LOGGER.error(Utils.getLogMessage("GET /evento/list"),e);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
-			dataTable.setError("Session expired or an Error occured! Please refresh the page.");
-			return null;
+			dataTable.setError("Session expired or an Error occured! Please refresh the page. \n" + e.getMessage());
+			return dataTable;
 		}
     }
 

@@ -227,9 +227,9 @@
 								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_evento_list}">Non ci sono eventi!</i>
 							</h2>
 						</div> -->
-
+					<div class = "eventiListWrapper" style = "width: 95%">
 						<table th:unless="${ #lists.isEmpty(eventoList) or (showAllList != null) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-							<thead>
+							<thead style = "word-break: keep-all !important;">
 								<tr>
 									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 									<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
@@ -304,7 +304,7 @@
 								</tr>
 							</tbody>
 						</table>
-						
+						</div>
 						<table th:if="${showAllList}" class = "datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead>
 									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
@@ -336,15 +336,18 @@
 				var date = []
 				var dataColums = []
 				var azioni
+				var titolo
 				var url
 				if([[${#authentication.principal.isSegreteria()}]]) {
 					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13]
 					confermati = 12
 					azioni = 13
+					titolo = 4
 					date = [6,7,11]
-					url = [[@{/evento/eventoListPaginated}]]
+					url = [[@{|/evento/eventoListPaginated|}]];
+					
 					dataColumns = [
-				            { "data": "codiceIdent"},
+				            { "data": "codiceIdent", "sWidth" : "10%"},
 				            { "data": "denominazioneLeg"},
 				            { "data": "edizione" },
 				            { "data": "tipo"},
@@ -365,6 +368,7 @@
 					confermati = 11
 					date = [5,6,10]
 					azioni = 12
+					titolo = 3
 					url = [[@{|/provider/${providerId}/evento/eventoListPaginated|}]]
 					dataColumns = [
 				            { "data": "codiceIdent"},
@@ -397,6 +401,7 @@
 						 $(".datatable-responsive-eventi-provider").DataTable({
 							"bFilter" : false,
 							"bInfo" : false,
+						    "bAutoWidth":false,
 							"bPaginate" : true,
 							 "columnDefs": [
 						                     {"targets": colonne, "width": "1px"},
@@ -404,7 +409,7 @@
 	// 					                     { "type": 'date-eu', "targets": date},
 						                   ],
 							"aoColumnDefs": [
-							    { "sClass": "wordwrap-200", "aTargets": [ 4 ] }
+							    { "sClass": "wordwrap", "aTargets": [ titolo ] }
 							  ],
 							  
 						}); 
@@ -424,10 +429,18 @@
 						      "columnDefs": [
 				                     {"targets": colonne, "width": "1px"},
 				                     {"targets": confermati, "sClass": "center"},
-				                     {"targets": 4, "sClass": "wordwrap"},
+			                     {"targets": titolo, "sClass": "wordwrap"},
 				                     {"targets": azioni, "sClass": "text-full-length"},
 				                     
-				                   ]
+			                   ],
+		                   "drawCallback": function( settings ) {
+
+				                	$(".linkButton").each(function(index){
+				                		var tempLink = [[@{/}]] + $(this).attr('href');
+				                	   		$(this).attr('href', tempLink);
+				                	});
+
+		               		}
 						});
 			        }
 				 $(".datatable-responsive-eventi-attuazione").DataTable({
