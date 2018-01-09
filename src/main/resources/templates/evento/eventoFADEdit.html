@@ -776,14 +776,14 @@
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<div class="radio">
-												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
-													<input type="radio" class="flat supporto" th:field="${eventoWrapper.evento.supportoSvoltoDaEsperto}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato or @eventoServiceController.fadDisableSupportoSvoltoDaEsperto(eventoWrapper.evento)} ? 'label-disabled' : ''">
+													<input type="radio" class="flat supporto" th:field="${eventoWrapper.evento.supportoSvoltoDaEsperto}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato or @eventoServiceController.fadDisableSupportoSvoltoDaEsperto(eventoWrapper.evento)}" />
 												<span th:text="#{label.sì}">Sì</span>
 											</label>
 										</div>
 										<div class="radio">
-												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
-													<input type="radio" class="flat supporto" th:field="${eventoWrapper.evento.supportoSvoltoDaEsperto}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+												<label th:class="${isRiedizione or isEditSemiBloccato or @eventoServiceController.fadDisableSupportoSvoltoDaEsperto(eventoWrapper.evento)} ? 'label-disabled' : ''">
+													<input type="radio" class="flat supporto" th:field="${eventoWrapper.evento.supportoSvoltoDaEsperto}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato or @eventoServiceController.fadDisableSupportoSvoltoDaEsperto(eventoWrapper.evento)}" />
 												<span th:text="#{label.no}">No</span>
 											</label>
 										</div>
