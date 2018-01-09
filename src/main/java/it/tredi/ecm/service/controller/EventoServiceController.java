@@ -31,6 +31,10 @@ public class EventoServiceController {
 		return versione;
 	}
 	
+	public boolean isVersionDue(Evento evento) {
+		return versioneEvento(evento) == EventoVersioneEnum.DUE_DAL_2018;
+	}
+	
 	public boolean fadDisableSupportoSvoltoDaEsperto(EventoFAD evento) {
 		if(versioneEvento(evento) == EventoVersioneEnum.DUE_DAL_2018 && evento.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE) {
 			return true;
