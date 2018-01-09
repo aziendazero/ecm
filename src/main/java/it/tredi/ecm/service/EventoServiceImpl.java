@@ -2456,6 +2456,12 @@ public class EventoServiceImpl implements EventoService {
 				query = Utils.QUERY_AND(query, "e.eventoSponsorizzato = :sponsorizzato");
 				params.put("sponsorizzato", wrapper.getSponsorizzato().booleanValue());
 			}
+			
+			//ALTRE FORME DI FINANZIAMENTO
+			if(wrapper.getAltreFormeFinanziamento() != null) {
+				query = Utils.QUERY_AND(query, "e.altreFormeFinanziamento = :altreFormeFinanziamento");
+				params.put("altreFormeFinanziamento", wrapper.getAltreFormeFinanziamento().booleanValue());
+			}
 
 			//DOCENTI
 			if(wrapper.getDocenti() != null && !wrapper.getDocenti().isEmpty()) {
