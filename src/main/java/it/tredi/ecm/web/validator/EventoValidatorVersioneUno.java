@@ -120,7 +120,8 @@ public class EventoValidatorVersioneUno {
 		int minGiorni;
 		if(evento.getProvider().getTipoOrganizzatore().getGruppo().equals("A"))
 			minGiorni = ecmProperties.getGiorniMinEventoProviderA();
-		else minGiorni = ecmProperties.getGiorniMinEventoProviderB();
+		else
+			minGiorni = ecmProperties.getGiorniMinEventoProviderB();
 		if(evento.isRiedizione())
 			minGiorni = ecmProperties.getGiorniMinEventoRiedizione();
 
@@ -130,16 +131,38 @@ public class EventoValidatorVersioneUno {
 					errors.rejectValue(prefix + "dataInizio", "error.empty");
 				else {
 					if(!Utils.getAuthenticatedUser().isSegreteria()) {
-						if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni))
-								|| (evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()))
+						if(
+							evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni))
+							// 08/01/2018 
+							// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
+							// da non applicare ad eventi FSC
+							//|| 
+							//evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()
+						)
+							//Non è possibile inserire una riedizione di un Evento entro 10 giorni dalla data del suo inizio
 							errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida");
 					}
 					if(evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())) {
+						//La data di inizio di una riedizione non può essere antecedente a quella dell'evento rieditato
 						errors.rejectValue(prefix + "dataInizio", "error.data_inizio_antecedente_al_padre");
 					}
-					if(evento instanceof EventoRES) {
-						//numero date da rispettare
-						checkDateInizioFine(evento, evento.getEventoPadre(), prefix, errors);
+					if(!(evento instanceof EventoFSC)) {
+						if(
+								// 08/01/2018 
+								// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
+								// da non applicare ad eventi FSC
+								//evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())
+								//|| 
+								evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()
+						) {
+							// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
+							errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida_per_anno_padre");
+						}
+						//se l'evento è un riedizione il numero delle date deve coincidere
+						if(evento instanceof EventoRES) {
+							//numero date da rispettare
+							checkDateInizioFine(evento, evento.getEventoPadre(), prefix, errors);
+						}
 					}
 				}
 			}
@@ -166,15 +189,28 @@ public class EventoValidatorVersioneUno {
 				//numero date da rispettare
 				checkDateInizioFine(evento, eventoDaDB, prefix, errors);
 			}
-			/* escludere dal controllo le riedizioni FSC */
-			if(evento.isRiedizione() && !(evento instanceof EventoFSC)) {
-				if((evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear())
-						|| evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio()))
-					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida_anno_padre");
-				//se l'evento è un riedizione il numero delle date deve coincidere
-				if(evento instanceof EventoRES) {
-					//numero date da rispettare
-					checkDateInizioFine(evento, evento.getEventoPadre(), prefix, errors);
+			if(evento.isRiedizione()) {
+				if(evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())) {
+					//La data di inizio di una riedizione non può essere antecedente a quella dell'evento rieditato
+					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_antecedente_al_padre");
+				}
+				if(!(evento instanceof EventoFSC)) {
+					if(
+							// 08/01/2018 
+							// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
+							// da non applicare ad eventi FSC
+							//evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())
+							//|| 
+							evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()
+					) {
+						// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
+						errors.rejectValue(prefix + "dataInizio", "error.data_inizio_riedizione_non_valida_per_anno_padre");
+					}
+					//se l'evento è un riedizione il numero delle date deve coincidere
+					if(evento instanceof EventoRES) {
+						//numero date da rispettare
+						checkDateInizioFine(evento, evento.getEventoPadre(), prefix, errors);
+					}
 				}
 			}
 		}
