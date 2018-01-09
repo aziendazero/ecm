@@ -65,6 +65,7 @@ import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.service.controller.EventoServiceController;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
@@ -102,6 +103,10 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 
 	@Autowired
 	private MessageSource messageSource;
+	
+	@Autowired
+	private EventoServiceController eventoServiceController;
+
 
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -288,7 +293,8 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		
 		addCellLabelCampoValore("label.tipologia_evento", eventoFSC.getTipologiaEventoFSC(), tableFields);
 		
-		if(evento.getVersione() != null && eventoFSC.getTipologiaSperimentazione() != null && evento.getVersione().equals(EventoVersioneEnum.DUE_DAL_2018) && TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA.equals(eventoFSC.getTipologiaEventoFSC()))
+		EventoVersioneEnum eventoVersione = eventoServiceController.versioneEvento(evento);
+		if(eventoVersione != null && eventoFSC.getTipologiaSperimentazione() != null && eventoVersione.equals(EventoVersioneEnum.DUE_DAL_2018) && TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA.equals(eventoFSC.getTipologiaEventoFSC()))
 			addCellLabelCampoValore("label.eventofsc_tipologiaSperimentazione", eventoFSC.getTipologiaSperimentazione().getNome(), tableFields);
 			
 		if(eventoFSC.getSperimentazioneClinica() != null)
@@ -301,10 +307,10 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValoreDiscipline("label.professioni_discipline", evento.getDiscipline(), tableFields);
 		addCellLabelCampoValorePersone("label.responsabili_scientifici", evento.getResponsabili(), tableFields, true, false, false, eventoFSC.getVersione());
 		
-		if(evento.getVersione() != null && evento.getVersione().equals(EventoVersioneEnum.DUE_DAL_2018))
+		if(eventoVersione != null && eventoVersione.equals(EventoVersioneEnum.DUE_DAL_2018))
 			addCellLabelCampoValorePersoneEsperti("label.esperti", eventoFSC.getEsperti(), tableFields);
 		
-		if(evento.getVersione() != null && evento.getVersione().equals(EventoVersioneEnum.DUE_DAL_2018))
+		if(eventoVersione != null && eventoVersione.equals(EventoVersioneEnum.DUE_DAL_2018))
 			addCellLabelCampoValorePersoneInvestigatori("label.investigatori", eventoFSC.getInvestigatori(), tableFields);
 		
 		addCellLabelCampoValore("label.descrizione_del_progetto", eventoFSC.getDescrizioneProgetto(), tableFields);
@@ -376,6 +382,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 
 	private void writePdfEventoRES(Document document, EventoWrapper wrapper) throws Exception {
 		Evento evento = wrapper.getEvento();
+		EventoVersioneEnum eventoVersione = eventoServiceController.versioneEvento(evento);
     	EventoRES eventoRES = (EventoRES)evento;
 		//<h2 th:text="#{label.visualizzazione_evento(${eventoWrapper.proceduraFormativa}, ${eventoWrapper.evento.getCodiceIdentificativo()})}"></h2>
         Object[] values = {wrapper.getProceduraFormativa(), evento.getCodiceIdentificativo()};
@@ -423,7 +430,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		//<!-- RISULTATI ATTESI -->
 		addCellLabelCampoValoriString("label.risultati_attesi", eventoRES.getRisultatiAttesi(), tableFields);
 		//EventoRES programma
-		tableFields = addTableProgrammaRES(document, tableFields, eventoRES.getProgramma(), evento.getVersione());
+		tableFields = addTableProgrammaRES(document, tableFields, eventoRES.getProgramma(), eventoVersione);
 		addCellLabelCampoValore("label.brochure_evento", evento.getBrochureEvento(), tableFields);
 		addCellLabelCampoValore("label.verifica_apprendimento_partecipanti", eventoRES.getVerificaApprendimento(), tableFields);
 		addCellLabelCampoValore("label.durata", Utils.formatOrario(evento.getDurata()), tableFields);
