@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
+
 import javax.security.auth.x500.X500Principal;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.ASN1UTCTime;
@@ -110,12 +112,21 @@ public class VerificaFirmaDigitale {
 			if(data != null && cf != null){
 				Date d = sdf.parse(data.getText());
 				if(d.after(start)){
-					resultCF = cf.getText();
+					resultCF = getCodiceFiscaleFromCfElementText(cf.getText());
 				}
 			}
 		}			
 		
 		return resultCF;
+	}
+	
+	private String getCodiceFiscaleFromCfElementText(String cf) {
+		int pos = cf.indexOf("-");
+		if(pos == -1)
+			pos = cf.indexOf(":");
+		if(pos != -1)
+			return cf.substring(pos+1);
+		return cf;
 	}
 
 	/**
