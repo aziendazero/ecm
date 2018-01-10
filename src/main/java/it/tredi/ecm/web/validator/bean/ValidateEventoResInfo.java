@@ -10,4 +10,5 @@ import lombok.Setter;
 public class ValidateEventoResInfo {
 	private Set<String> risultatiAttesiUtilizzati;
 	private boolean alertResDocentiPartecipanti = false;
+	private boolean alertResDocentiNonPresenti = false;
 }
