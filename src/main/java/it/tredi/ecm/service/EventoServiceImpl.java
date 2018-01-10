@@ -966,7 +966,7 @@ public class EventoServiceImpl implements EventoService {
 			while(it.hasNext()){
 				PersonaEvento p = it.next();
 				if(eventoWrapper.getPersoneEventoInserite().contains(p))
-				p = personaEventoRepository.findOne(p.getId());
+					p = personaEventoRepository.findOne(p.getId());
 				attachedList.add(p);
 			}
 			eventoRES.setDocenti(attachedList);
