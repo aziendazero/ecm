@@ -14,7 +14,6 @@ import java.util.TreeSet;
 
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
-import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.SedeEvento;
 
 public class EventoRESDateProgrammiGiornalieriWrapper {
@@ -66,7 +65,12 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 		}
 		if(dataInizioKey == null) {
 			index++;
-			programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.INIZIO, new ProgrammaGiornalieroRES())));
+			ProgrammaGiornalieroRES progInizio = new ProgrammaGiornalieroRES();
+			//Copio i dati della sede
+			progInizio.setSede(new SedeEvento());
+			progInizio.getSede().copiaDati(this.eventoRES.getSedeEvento());
+			programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.INIZIO, progInizio)));
+			
 			dataInizioKey = index;
 		}
 		if(dataFineKey == null) {
@@ -74,6 +78,9 @@ public class EventoRESDateProgrammiGiornalieriWrapper {
 			//E' possibile che la data fine corrisponda con la data inizio e quindi non sia stato creato
 			ProgrammaGiornalieroRES progFine = new ProgrammaGiornalieroRES();
 			progFine.setGiorno(eventoRES.getDataFine());
+			//Copio i dati della sede
+			progFine.setSede(new SedeEvento());
+			progFine.getSede().copiaDati(this.eventoRES.getSedeEvento());
 			programmiGiornalieriMap.add(new AbstractMap.SimpleEntry<Long, EventoRESProgrammaGiornalieroWrapper>(index, new EventoRESProgrammaGiornalieroWrapper(EventoRESTipoDataProgrammaGiornalieroEnum.FINE, progFine)));
 			dataFineKey = index;
 		}
