@@ -40,6 +40,7 @@ import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
@@ -1436,7 +1437,8 @@ public class EventoValidatorVersioneDue {
 				return true;
 			Set<PersonaEvento> docentiTitolariDettaglio = new HashSet<PersonaEvento>();
 			for(PersonaEvento docente : dettaglio.getDocenti()) {
-				if("titolare".equalsIgnoreCase(docente.getTitolare()))
+				//il "Moderatore" NON deve essere considerato come un docente, anche se titolare, nel controllo del rapporto 1/25 tra docenti/discenti.
+				if("titolare".equalsIgnoreCase(docente.getTitolare()) && docente.getRuolo() != RuoloPersonaEventoEnum.MODERATORE)
 					docentiTitolariDettaglio.add(docente);
 			}
 			if(dettaglio.getObiettivoFormativo() == null)
