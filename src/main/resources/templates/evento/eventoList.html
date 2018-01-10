@@ -3,6 +3,31 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
 	layout:decorator="fragments/template">
 <head lang="it">
+<script>
+function loadScript(url, callback){
+    var script = document.createElement("script")
+    script.type = "text/javascript";
+
+    if (script.readyState){
+        // handle IE
+        script.onreadystatechange = function(){
+            if (script.readyState == "loaded" || script.readyState == "complete"){
+                script.onreadystatechange = null;
+                callback();
+            }
+        };
+    } else {
+        // handle other browsers
+        script.onload = function(){
+            callback();
+        };
+    }
+
+    script.src = url;
+    document.getElementsByTagName("head")[0].appendChild(script);
+}
+	//loadScript("//gyrocode.github.io/jquery-datatables-checkboxes/1.2.9/js/dataTables.checkboxes.min.js", function(){});
+	</script>
 </head>
 <body>
 	<div layout:fragment="content">
@@ -216,6 +241,29 @@
 								</th:block>
 									<a class="btn btn-success pull-right" th:text="#{label.cerca}" th:href="@{/evento/ricerca}"></a>
 									<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{/home}"></a>
+									<a data-toggle="modal" class="btn btn-success pull-right" onclick="openModal()">Archive</a>
+									<div class="modal fade" id="myModal">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h4 class="modal-title" th:text="#{label.archive_selected_events}">Archive Selected Event/Events</h4>
+												</div>
+												<div class="modal-body">
+													<form id="form" method="post" th:action="@{|/evento/${search}/archivia|}" >
+														<div class="item form-group modalAlert">
+																<input id="event_Id" name="event_Id" type="hidden" class="form-control" readonly="readonly"/>
+														</div>
+														<div class="form-group">
+															<input id="submitEventButton" class="btn btn-primary" name="submit1" type="submit" style="display: none;"/>
+														</div>
+													</form>
+												</div>
+												<div class="modal-footer">
+													<label for="submitEventButton" class="btn btn-success pull-right">Conferma</label>
+												</div>
+											</div>
+										</div>
+									</div>
 							</div>
 						</div>
 						<div class="clearfix"></div>
@@ -228,9 +276,10 @@
 							</h2>
 						</div> -->
 					<div class = "eventiListWrapper" style = "width: 95%">
-						<table th:unless="${ #lists.isEmpty(eventoList) or (showAllList != null) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+						<table id="eventiListTable" th:unless="${ #lists.isEmpty(eventoList) or (showAllList != null) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead style = "word-break: keep-all !important;">
 								<tr>
+									<th class="text-full-length" th:if="${search != null and  (search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).ALIMENTAZIONE_PRIMA_INFANZIA || search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).MEDICINE_NON_CONVENZIONALI)}"><input name="select_all" value="1" id="select-all" type="checkbox"/> Archive</th>
 									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 									<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
 									<th th:text="#{label.edizione_short}">label.edizione_short</th>
@@ -245,10 +294,12 @@
 									<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 									<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
 									<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
+									<th></th>
 								</tr>
 							</thead>
 							<tbody th:remove="all-but-first">
 								<tr th:each="evento, row : ${eventoList}">
+									<td th:if="${search != null and  (search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).ALIMENTAZIONE_PRIMA_INFANZIA || search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).MEDICINE_NON_CONVENZIONALI)}"><input th:value="${evento.id}" type="checkbox"/></td>
 									<td><a th:text="${evento.getCodiceIdentificativo()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/show|}"></a></td>
 									<td th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="${evento.provider.denominazioneLegale}"></td>
 									<td th:text="${evento.edizione}"></td>
@@ -301,6 +352,7 @@
 										<a class="btn btn-primary min-icon-width" th:if="${evento.canDoUploadSponsor()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/allegaContrattiSponsor|}" th:title="#{label.allega_contratti_sponsor}"><i class="fa fa-file"></i></a>
 										<button class="btn btn-danger min-icon-width" th:if="${evento.canEdit()}" th:onclick="|confirmDeleteEventoModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}','${evento.stato}')|" th:title="${evento.stato == T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).BOZZA} ? #{label.elimina} : #{label.annulla}"><i class="fa fa-trash"></i></button>
 									</td>
+									<td></td>
 								</tr>
 							</tbody>
 						</table>
@@ -328,9 +380,11 @@
 					</div>
 				</div>
 			</div>
+
 			<script th:inline="javascript">
 			/*<![CDATA[*/
 
+				
 				var colonne = []
 				var confermati
 				var date = []
@@ -338,6 +392,9 @@
 				var azioni
 				var titolo
 				var url
+				var table = null;
+				
+	
 				if([[${#authentication.principal.isSegreteria()}]]) {
 					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13]
 					confermati = 12
@@ -345,6 +402,7 @@
 					titolo = 4
 					date = [6,7,11]
 					url = [[@{|/evento/eventoListPaginated/|}]];
+					var table; 
 					
 					dataColumns = [
 				            { "data": "codiceIdent", "sWidth" : "10%"},
@@ -398,23 +456,96 @@
 
 			        $.fn.dataTable.moment('DD/MM/YYYY');
 			        if(![[${showAllList}]]){
-						 $(".datatable-responsive-eventi-provider").DataTable({
+					$(".datatable-responsive-eventi-provider").DataTable({
 							"bFilter" : false,
 							"bInfo" : false,
 						    "bAutoWidth":false,
 							"bPaginate" : true,
-							 "columnDefs": [
+							"aaSorting": [],
+						  	"drawCallback": function() {
+								$('input[type="checkbox"]').iCheck({
+									checkboxClass: 'icheckbox_flat-green',
+								});
+								initiCheckEvents(0, $(".datatable-responsive-eventi-provider"));
+						     },
+							"columnDefs": [
 						                     {"targets": colonne, "width": "1px"},
 						                     {"targets": confermati, "sClass": "center"},
 	// 					                     { "type": 'date-eu', "targets": date},
 						                   ],
+		                    "select": {
+		                        "style": "multi"
+		                    },
 							"aoColumnDefs": [
-							    { "sClass": "wordwrap", "aTargets": [ titolo ] }
+							    { "sClass": "wordwrap", "aTargets": [ titolo ] },
+							    { "bSortable": false, "aTargets": [ 0 ] },
+							    { "bSortable": false, "aTargets": [ -1 ], "sClass": "control", }
 							  ],
-							  
+							 "responsive": {
+						            details: {
+						                type: 'column',
+						                target: -1
+						            }
+						        },
 						}); 
+			        
+			        
+						//Handle selecting events using iCheck. 
+						//Target -- location of checkbox columns
+						//table -- table id or class
+						function initiCheckEvents(target, tableInst){
+					         // Handle iCheck change event for "select all" control
+					         $('#select-all').on('ifChecked', function(event){
+					        	 	var table = tableInst.DataTable();
+					        	 	var col = table.column( target ).nodes();
+					            var element;
+					            for (i = 0; i < col.length; i++) {
+					                element = col[i];
+					                var jqueryObject = $(element);
+				                		jqueryObject.find('input').iCheck('check');
+				                		if(!jqueryObject.parent().hasClass('selected'))
+					                		jqueryObject.parent().addClass('selected');
+					            } 
+					            
+					           // alert(text);
+					         });
+				         
+					         $('#select-all').on('ifUnchecked', function(event){
+						            var element;
+						            var table = tableInst.DataTable();
+					        	 		var col = table.column( target ).nodes();
+						            for (i = 0; i < col.length; i++) {
+						                element = col[i];
+						                var jqueryObject = $(element);
+						                	jqueryObject.find('input').iCheck('uncheck');
+						                	if(jqueryObject.parent().hasClass('selected'))
+						                		jqueryObject.parent().removeClass('selected');
+						            } 
+						        });
+				         
+					         //Handle single iCheck change event
+					         $('input').on('ifUnchecked', function(event){
+					        	 		//Remove select all check if not all events are selected
+					        	  		$('#select-all').removeProp('checked');
+					        	 		if($(this).parent().parent().parent().hasClass("selected"))
+					        	 			$(this).parent().parent().parent().removeClass("selected");
+					        	  		$('#select-all').iCheck('update');
+					          });
+					          
+					         $('input').on('ifChecked', function(event){
+					        	 var table = tableInst.DataTable();
+				        	 	 var col = table.column( target ).nodes(); // get all events in the table
+					        	 var cells = $(col)
+					        	 var checked = cells.find('input').filter(':checked').length; // get number of events selected
+					        	 //add select all check if all events are selected
+					        	 	if(checked == col.length)
+				        	  			$('#select-all').prop('checked', 'checked');
+					        	 	if(!$(this).parent().parent().parent().hasClass("selected"))
+				        	 			$(this).parent().parent().parent().addClass("selected")
+				        	  		$('#select-all').iCheck('update');
+				         	 });
+						}
 			        }
-					
 			        if([[${showAllList}]]){
 						$(".datatable-responsive-eventi-provider").DataTable({
 							"bFilter" : false,
@@ -432,7 +563,9 @@
 			                     {"targets": titolo, "sClass": "wordwrap"},
 			                     {"targets": azioni, "sClass": "text-full-length"},
 			                     
+			                     
 			                   ],
+		                   
 		                   "drawCallback": function( settings ) {
 
 				                	$(".linkButton").each(function(index){
@@ -503,8 +636,10 @@
 
 				    if([[${scadenzeEventoWrapper != null && scadenzeEventoWrapper.submitScadenzeError == true}]])
 				    	$("#scadenze-evento").modal("show");
-				})
+				});
+				
 
+				
 				function openModalScadenze(idEvento, dataPagamento, dataRendicontazione) {
 					cleanFormScadenze();
 					//action
@@ -526,9 +661,41 @@
 					$("#dataRendicontazione").val("");
 				}
 
+				function openModal() {
+					var array = tableToArray();
+					
+					if(array.length > 0){
+						writeInput(array);
+						$('#myModal').modal('show');
+					}else{
+						$("#myModal").find('input[id="event_Id"]').val(array);
+						alert('No Event Selected!')
+					}
+					
+				}
+				
+				function writeInput(array) {
+					$("#myModal").find('input[id="event_Id"]').val(array);
+					
+				}
+				/*[+
+				function tableToArray() {
+					var ids = [];
+					var $rows = $(".datatable-responsive-eventi-provider").DataTable().rows('.selected').data();
+					for(var i = 0; i < $rows.length; i++) {
+						var id = Number.parseInt((($rows[i][0]).match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [] ).map(function (v) {return +v;}).shift());
+						ids.push(id);
+					}
+					
+					return ids;
+				}
+				
+			+]*/
+			
 			/*]]>*/
 			</script>
 		</div>
 	</div>
 </body>
+
 </html>

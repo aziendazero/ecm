@@ -128,6 +128,8 @@
 	<include file="20171119_001_epf_fromcsv.xml" relativeToChangelogFile="true"/>
 	
 	<include file="20171119_003_applySQL_vista_provider_accreditati.xml" relativeToChangelogFile="true"/>
+	
+	<include file="20180110_001_add_Column_for_archiving_prima_infanzi_medicinali_non_convenzionati.xml" relativeToChangelogFile="true"/>
 
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
       Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali" 

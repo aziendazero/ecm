@@ -97,4 +97,6 @@ public interface EventoService {
 	public void salvaQuietanzaPagamento(File quietanzaPagamento, Long eventoId) throws Exception;
 	public Pagamento getPagamentoForQuietanza(Evento evento) throws Exception;
 	public Long getFileQuietanzaId(Long eventoId);
-}
+	
+	public void archiveEventoInPrimaInfanziaOrMedNonConv(List<Long> ids)
+;}
