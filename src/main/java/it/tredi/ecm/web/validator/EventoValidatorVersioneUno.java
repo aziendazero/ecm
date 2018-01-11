@@ -708,7 +708,7 @@ public class EventoValidatorVersioneUno {
 						break;
 					}
 				}
-				validateProgrammaRES(validateEventoResInfo, pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEventoRES(), evento.getNumeroPartecipanti());
+				validateProgrammaRES(validateEventoResInfo, pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEventoRES(), evento.getNumeroPartecipanti(), evento.getDocenti());
 			}
 		}
 
@@ -1311,7 +1311,7 @@ public class EventoValidatorVersioneUno {
 	}
 
 	//validate ProgrammaRES
-	private void validateProgrammaRES(ValidateEventoResInfo validateEventoResInfo, ProgrammaGiornalieroRES programma, Errors errors, String prefix, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti){
+	private void validateProgrammaRES(ValidateEventoResInfo validateEventoResInfo, ProgrammaGiornalieroRES programma, Errors errors, String prefix, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti, List<PersonaEvento> docentiEvento){
 
 		//data (gratis, non è un dato che può inseririre l'utente, ma viene generata
 		//all'inserimento delle date di inzio, fine e intermedie
@@ -1343,7 +1343,7 @@ public class EventoValidatorVersioneUno {
 			boolean atLeastOneAttivita = false; //controllo che non siano state inserite solo pause
 			boolean atLeastOneErrorDettaglioAttivita = false;
 			for(DettaglioAttivitaRES dar : programma.getProgramma()) {
-				boolean hasError = validateDettaglioAttivitaRES(validateEventoResInfo, dar, tipologiaEvento, numeroPartecipanti);
+				boolean hasError = validateDettaglioAttivitaRES(validateEventoResInfo, dar, tipologiaEvento, numeroPartecipanti, docentiEvento);
 				if(hasError) {
 					errors.rejectValue(prefix + "programma["+counter+"]", "");
 					atLeastOneErrorDettaglioAttivita = true;
@@ -1358,6 +1358,10 @@ public class EventoValidatorVersioneUno {
 				//alertResDocentiPartecipanti = false;
 				validateEventoResInfo.setAlertResDocentiPartecipanti(false);
 			}
+			else if(validateEventoResInfo.isAlertResDocentiNonPresenti()) {
+				errors.rejectValue(prefix + "programma", "error.docente_non_presente_res");
+				validateEventoResInfo.setAlertResDocentiNonPresenti(false);
+			}
 			else if(atLeastOneErrorDettaglioAttivita)
 				errors.rejectValue(prefix + "programma", "error.campi_mancanti_dettaglio_attivita");
 			else if(!atLeastOneAttivita)
@@ -1366,7 +1370,7 @@ public class EventoValidatorVersioneUno {
 	}
 
 	//validate DettaglioAttivita del ProgrammaRES
-	private boolean validateDettaglioAttivitaRES(ValidateEventoResInfo validateEventoResInfo, DettaglioAttivitaRES dettaglio, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti){
+	private boolean validateDettaglioAttivitaRES(ValidateEventoResInfo validateEventoResInfo, DettaglioAttivitaRES dettaglio, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti, List<PersonaEvento> docentiEvento){
 
 		//per prima cose se ho un risultato atteso lo aggiungo al set
 		//risultatiAttesiUtilizzati.add(dettaglio.getRisultatoAtteso());
@@ -1393,6 +1397,9 @@ public class EventoValidatorVersioneUno {
 			for(PersonaEvento docente : dettaglio.getDocenti()) {
 				if("titolare".equalsIgnoreCase(docente.getTitolare()))
 					docentiTitolariDettaglio.add(docente);
+				//Controllo che il docente sia veramente presente fra i docenti
+				if(!docentiEvento.contains(docente))
+					validateEventoResInfo.setAlertResDocentiNonPresenti(true);
 			}
 			if(dettaglio.getObiettivoFormativo() == null)
 				return true;
@@ -1408,9 +1415,11 @@ public class EventoValidatorVersioneUno {
 					(numeroPartecipanti.intValue() > (docentiTitolariDettaglio.size() * 25))) {
 				//alertResDocentiPartecipanti = true;
 				validateEventoResInfo.setAlertResDocentiPartecipanti(true);
-				return true;
 			}
 
+			if(validateEventoResInfo.isAlertResDocentiNonPresenti() || validateEventoResInfo.isAlertResDocentiPartecipanti())
+				return true;
+			
 			//controllo per eventi non di tipolgia CONVEGNO_CONGRESSO [ 1) ]
 			if(tipologiaEvento != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
 				if(dettaglio.getRisultatoAtteso() == null || dettaglio.getRisultatoAtteso().isEmpty())

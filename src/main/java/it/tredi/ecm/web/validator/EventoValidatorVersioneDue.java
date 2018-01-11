@@ -40,6 +40,7 @@ import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
@@ -713,7 +714,7 @@ public class EventoValidatorVersioneDue {
 						break;
 					}
 				}
-				validateProgrammaRES(validateEventoResInfo, pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEventoRES(), evento.getNumeroPartecipanti());
+				validateProgrammaRES(validateEventoResInfo, pgr, errors, "eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap["+ key +"].programma.", evento.getTipologiaEventoRES(), evento.getNumeroPartecipanti(), evento.getDocenti());
 			}
 		}
 
@@ -1356,7 +1357,7 @@ public class EventoValidatorVersioneDue {
 	}
 
 	//validate ProgrammaRES
-	private void validateProgrammaRES(ValidateEventoResInfo validateEventoResInfo, ProgrammaGiornalieroRES programma, Errors errors, String prefix, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti){
+	private void validateProgrammaRES(ValidateEventoResInfo validateEventoResInfo, ProgrammaGiornalieroRES programma, Errors errors, String prefix, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti, List<PersonaEvento> docentiEvento){
 
 		//data (gratis, non è un dato che può inseririre l'utente, ma viene generata
 		//all'inserimento delle date di inzio, fine e intermedie
@@ -1388,7 +1389,7 @@ public class EventoValidatorVersioneDue {
 			boolean atLeastOneAttivita = false; //controllo che non siano state inserite solo pause
 			boolean atLeastOneErrorDettaglioAttivita = false;
 			for(DettaglioAttivitaRES dar : programma.getProgramma()) {
-				boolean hasError = validateDettaglioAttivitaRES(validateEventoResInfo, dar, tipologiaEvento, numeroPartecipanti);
+				boolean hasError = validateDettaglioAttivitaRES(validateEventoResInfo, dar, tipologiaEvento, numeroPartecipanti, docentiEvento);
 				if(hasError) {
 					errors.rejectValue(prefix + "programma["+counter+"]", "");
 					atLeastOneErrorDettaglioAttivita = true;
@@ -1403,6 +1404,10 @@ public class EventoValidatorVersioneDue {
 				//alertResDocentiPartecipanti = false;
 				validateEventoResInfo.setAlertResDocentiPartecipanti(false);
 			}
+			else if(validateEventoResInfo.isAlertResDocentiNonPresenti()) {
+				errors.rejectValue(prefix + "programma", "error.docente_non_presente_res");
+				validateEventoResInfo.setAlertResDocentiNonPresenti(false);
+			}
 			else if(atLeastOneErrorDettaglioAttivita)
 				errors.rejectValue(prefix + "programma", "error.campi_mancanti_dettaglio_attivita");
 			else if(!atLeastOneAttivita)
@@ -1411,7 +1416,7 @@ public class EventoValidatorVersioneDue {
 	}
 
 	//validate DettaglioAttivita del ProgrammaRES
-	private boolean validateDettaglioAttivitaRES(ValidateEventoResInfo validateEventoResInfo, DettaglioAttivitaRES dettaglio, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti){
+	private boolean validateDettaglioAttivitaRES(ValidateEventoResInfo validateEventoResInfo, DettaglioAttivitaRES dettaglio, TipologiaEventoRESEnum tipologiaEvento, Integer numeroPartecipanti, List<PersonaEvento> docentiEvento){
 
 		//per prima cose se ho un risultato atteso lo aggiungo al set
 		//risultatiAttesiUtilizzati.add(dettaglio.getRisultatoAtteso());
@@ -1436,8 +1441,12 @@ public class EventoValidatorVersioneDue {
 				return true;
 			Set<PersonaEvento> docentiTitolariDettaglio = new HashSet<PersonaEvento>();
 			for(PersonaEvento docente : dettaglio.getDocenti()) {
-				if("titolare".equalsIgnoreCase(docente.getTitolare()))
+				//il "Moderatore" NON deve essere considerato come un docente, anche se titolare, nel controllo del rapporto 1/25 tra docenti/discenti.
+				if("titolare".equalsIgnoreCase(docente.getTitolare()) && docente.getRuolo() != RuoloPersonaEventoEnum.MODERATORE)
 					docentiTitolariDettaglio.add(docente);
+				//Controllo che il docente sia veramente presente fra i docenti
+				if(!docentiEvento.contains(docente))
+					validateEventoResInfo.setAlertResDocentiNonPresenti(true);
 			}
 			if(dettaglio.getObiettivoFormativo() == null)
 				return true;
@@ -1453,8 +1462,10 @@ public class EventoValidatorVersioneDue {
 					(numeroPartecipanti.intValue() > (docentiTitolariDettaglio.size() * 25))) {
 				//alertResDocentiPartecipanti = true;
 				validateEventoResInfo.setAlertResDocentiPartecipanti(true);
-				return true;
 			}
+			
+			if(validateEventoResInfo.isAlertResDocentiNonPresenti() || validateEventoResInfo.isAlertResDocentiPartecipanti())
+				return true;
 
 			//controllo per eventi non di tipolgia CONVEGNO_CONGRESSO [ 1) ]
 			if(tipologiaEvento != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
