@@ -275,7 +275,7 @@ function loadScript(url, callback){
 								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_evento_list}">Non ci sono eventi!</i>
 							</h2>
 						</div> -->
-					<div class = "eventiListWrapper" style = "width: 95%">
+					<div class = "eventiListWrapper" style = "width: 100%">
 						<table id="eventiListTable" th:unless="${ #lists.isEmpty(eventoList) or (showAllList != null) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 							<thead style = "word-break: keep-all !important;">
 								<tr>
@@ -357,26 +357,29 @@ function loadScript(url, callback){
 							</tbody>
 						</table>
 						</div>
-						<table th:if="${showAllList}" class = "datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-							<thead>
-									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
-									<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
-									<th th:text="#{label.edizione_short}">label.edizione_short</th>
-									<th th:text="#{label.tipo}">label.tipo</th>
-									<th th:text="#{label.titolo}">label.titolo</th>
-									<th th:text="#{label.sede}">label.sede</th>
-									<th th:text="#{label.data_inizio}">label.date</th>
-									<th th:text="#{label.data_fine}">label.date</th>
-									<th th:text="#{label.stato}"></th>
-									<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
-									<th th:text="#{label.durata}">label.ore_corso</th>
-									<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
-									<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
-									<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
-							</thead>
-							<tbody>
-							</tbody>
-						</table>
+						<div class = "eventiListWrapper" style = "width: 100%">
+							<table th:if="${showAllList}" class = "datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
+										<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
+										<th th:text="#{label.edizione_short}">label.edizione_short</th>
+										<th th:text="#{label.tipo}">label.tipo</th>
+										<th th:text="#{label.titolo}">label.titolo</th>
+										<th th:text="#{label.sede}">label.sede</th>
+										<th th:text="#{label.data_inizio}">label.date</th>
+										<th th:text="#{label.data_fine}">label.date</th>
+										<th th:text="#{label.stato}"></th>
+										<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
+										<th th:text="#{label.durata}">label.ore_corso</th>
+										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
+										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
+										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
+										<th></th>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -386,20 +389,24 @@ function loadScript(url, callback){
 
 				
 				var colonne = []
-				var confermati
+				var confermati = 0;
 				var date = []
 				var dataColums = []
-				var azioni
-				var titolo
+				var azioni = 0
+				var titolo = 0
 				var url
-				var table = null;
 				
+				if([[${search != null &&  (search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).ALIMENTAZIONE_PRIMA_INFANZIA || search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).MEDICINE_NON_CONVENZIONALI)}]]){
+					confermati++; //take into consideration the checkboxes column
+					azioni++;
+					titolo++;
+				}
 	
 				if([[${#authentication.principal.isSegreteria()}]]) {
 					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13]
-					confermati = 12
-					azioni = 13
-					titolo = 4
+					confermati += 12
+					azioni += 13
+					titolo += 4
 					date = [6,7,11]
 					url = [[@{|/evento/eventoListPaginated/|}]];
 					var table; 
@@ -418,15 +425,16 @@ function loadScript(url, callback){
 				            { "data": "durata"},
 				            { "data": "dataScadenzaRediconto"},
 				            { "data": "creditiConfermati"},
-				            { "data": "links", "orderable": false}
+				            { "data": "links", "orderable": false},
+				            { "data": null, defaultContent: ""}
 			        		]
 				}
 				else if([[${#authentication.principal.isProvider()}]]){
 					colonne = [0,1,2,4,5,6,7,8,9,10,11,12]
-					confermati = 11
+					confermati += 11
 					date = [5,6,10]
-					azioni = 12
-					titolo = 3
+					azioni += 12
+					titolo += 3
 					url = [[@{|/provider/${providerId}/evento/eventoListPaginated/|}]];
 					dataColumns = [
 				            { "data": "codiceIdent"},
@@ -441,12 +449,13 @@ function loadScript(url, callback){
 				            { "data": "durata"},
 				            { "data": "dataScadenzaRediconto"},
 				            { "data": "creditiConfermati"},
-				            { "data": "links", "orderable": false}
+				            { "data": "links", "orderable": false},
+				            { "data": null, defaultContent: ""}
 			            ]
 				}
 				else {
 					colonne = [0,1,2,4,5,6,7,8,9,10,11]
-					confermati = 11
+					confermati += 11
 					date = [5,6,10]
 				}
 				var days;
@@ -468,18 +477,15 @@ function loadScript(url, callback){
 								});
 								initiCheckEvents(0, $(".datatable-responsive-eventi-provider"));
 						     },
-							"columnDefs": [
-						                     {"targets": colonne, "width": "1px"},
-						                     {"targets": confermati, "sClass": "center"},
-	// 					                     { "type": 'date-eu', "targets": date},
-						                   ],
 		                    "select": {
 		                        "style": "multi"
 		                    },
 							"aoColumnDefs": [
 							    { "sClass": "wordwrap", "aTargets": [ titolo ] },
 							    { "bSortable": false, "aTargets": [ 0 ] },
-							    { "bSortable": false, "aTargets": [ -1 ], "sClass": "control", }
+							    { "bSortable": false, "aTargets": [ -1 ], "sClass": "control", },
+							    {"aTargets": colonne, "width": "1px"},
+			                    {"aTargets": [confermati], "sClass": "center"},
 							  ],
 							 "responsive": {
 						            details: {
@@ -562,10 +568,16 @@ function loadScript(url, callback){
 			                     {"targets": confermati, "sClass": "center"},
 			                     {"targets": titolo, "sClass": "wordwrap"},
 			                     {"targets": azioni, "sClass": "text-full-length"},
+			                     { "bSortable": false, "targets": [ -1 ], "sClass": "control", },
 			                     
 			                     
 			                   ],
-		                   
+		                   "responsive": {
+					            details: {
+					                type: 'column',
+					                target: -1
+					            }
+					        },
 		                   "drawCallback": function( settings ) {
 
 				                	$(".linkButton").each(function(index){
