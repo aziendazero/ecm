@@ -327,6 +327,7 @@ public class RiepilogoRuoliFSC {
 						 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
 						 * NO COORDINATORE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
 						 * COORDINATORE_X				1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
+						 * ESPERTO:						1 credito ogni mezz'ora (max 50)
 						 *
 						 * */
 						switch(ruolo.getRuoloBase())
@@ -355,6 +356,7 @@ public class RiepilogoRuoliFSC {
 							//case RESPONSABILE:
 							case RESPONSABILE_SCIENTIFICO:
 							//case COORDINATORE:
+							case ESPERTO:
 							case COORDINATORE_X:
 								crediti = 1 * (int) (tempoDedicato * 2);
 								crediti = (crediti > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
@@ -384,17 +386,12 @@ public class RiepilogoRuoliFSC {
 						switch(ruolo.getRuoloBase())
 						{
 							case PARTECIPANTE:
-								if(evento.getTipologiaGruppo() != null && evento.getTipologiaGruppo() != TipologiaGruppoFSCEnum.COMITATI_AZIENDALI_PERMANENTI) {
-									moltiplicatore = 1f;
-									if(evento.getPresenteTutorEspertoEsternoValidatoreAttivita() != null && evento.getPresenteTutorEspertoEsternoValidatoreAttivita().booleanValue()) {
-										moltiplicatore += 0.3f;
-									}
-									if(evento.getObiettivoRegionale() != null && evento.getObiettivoRegionale().getId() != NON_RIENTRA_NEGLI_OBIETTIVI_REGIONALI_ID) {
-										moltiplicatore += 0.3f;
-									}
-								} else {
-									//evento.getTipologiaGruppo() == null || evento.getTipologiaGruppo() == TipologiaGruppoFSCEnum.COMITATI_AZIENDALI_PERMANENTI
-									moltiplicatore = 1f;
+								moltiplicatore = 1f;
+								if(evento.getPresenteTutorEspertoEsternoValidatoreAttivita() != null && evento.getPresenteTutorEspertoEsternoValidatoreAttivita().booleanValue()) {
+									moltiplicatore += 0.3f;
+								}
+								if(evento.getObiettivoRegionale() != null && evento.getObiettivoRegionale().getId() != NON_RIENTRA_NEGLI_OBIETTIVI_REGIONALI_ID) {
+									moltiplicatore += 0.3f;
 								}
 									
 								crediti = moltiplicatore * (int) tempoDedicato;
@@ -482,7 +479,7 @@ public class RiepilogoRuoliFSC {
 					 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
 					 * NO COORDINATORE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
 					 * COORDINATORE_X				1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-
+					 * ESPERTO:						1 credito ogni mezz'ora (max 50)
 					 * */
 					switch(ruolo.getRuoloBase())
 					{
@@ -491,7 +488,7 @@ public class RiepilogoRuoliFSC {
 							//if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFSC())))
 							if(evento.getDataInizio() != null && evento.getDataFine() != null) {
 								//long daysBetween = DAYS.between(evento.getDataInizio(), evento.getDataFine());
-								long daysBetween = Duration.between(evento.getDataFine().atStartOfDay(), evento.getDataInizio().atStartOfDay()).toDays();
+								long daysBetween = Duration.between(evento.getDataInizio().atStartOfDay(),evento.getDataFine().plusDays(1).atStartOfDay()).toDays();
 								if(daysBetween <= GIORNI_DURATA_FSC_6_MESI) {
 									crediti = 5f;
 								} else if(daysBetween > GIORNI_DURATA_FSC_6_MESI && daysBetween <= GIORNI_DURATA_FSC_12_MESI) {
@@ -503,7 +500,7 @@ public class RiepilogoRuoliFSC {
 								crediti = 0.0f;
 							}
 							break;
-						//case ESPERTO:
+						case ESPERTO:
 						//case RESPONSABILE:
 						case RESPONSABILE_SCIENTIFICO:
 						//case COORDINATORE:
