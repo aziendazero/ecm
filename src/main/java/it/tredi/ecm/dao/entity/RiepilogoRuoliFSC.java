@@ -493,7 +493,7 @@ public class RiepilogoRuoliFSC {
 									crediti = 5f;
 								} else if(daysBetween > GIORNI_DURATA_FSC_6_MESI && daysBetween <= GIORNI_DURATA_FSC_12_MESI) {
 									crediti = 10f;
-								} else if(daysBetween <= GIORNI_DURATA_FSC_6_MESI) {
+								} else if(daysBetween > GIORNI_DURATA_FSC_12_MESI) {
 									crediti = 20f;
 								}
 							} else {
