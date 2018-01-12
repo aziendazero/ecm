@@ -596,7 +596,7 @@
 					"bPaginate" : false,
 					"ordering" : false,
 					"columnDefs": [{
-						"targets": 6,
+						"targets": 5,
 						"width": "1px",
 						"sClass": "center",
 						"responsivePriority": 1
@@ -974,7 +974,21 @@
 				                "visible": showExtCols
 							}]
 					    });							
-					} else {
+					}
+					else if (target == 'responsabileSegreteria'){
+						$('#'+target).DataTable({
+							"bFilter" : false,
+							"bInfo" : false,
+							"bPaginate" : false,
+							"ordering" : false,
+							"columnDefs": [{
+								"targets": buttonColumn,
+								"width": "1px",
+								"sClass": "center",
+								"responsivePriority": 2
+							}
+					    });
+					}else {
 						$('#'+target).DataTable({
 							"bFilter" : false,
 							"bInfo" : false,
