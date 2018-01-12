@@ -226,6 +226,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValore("label.password", eventoFAD.getPassword(), tableFields);
 		addCellLabelCampoValore("label.url", eventoFAD.getUrl(), tableFields);
 
+		//<!-- EVENTO SPONSORIZZATO -->
 		addCellLabelCampoValore("label.evento_sponsorizzato_radio", evento.getEventoSponsorizzato(), tableFields);
 		if(evento.getEventoSponsorizzato() && (eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE 
 				|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE
@@ -235,9 +236,13 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		}
 		if(evento.getEventoSponsorizzato() != null && evento.getEventoSponsorizzato())
 			addCellLabelCampoValoreSponsors("label.sponsors", evento.getSponsors(), tableFields);
-		if(evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA && (eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE 
-																								|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE)) {
-			//<!-- RADIO SPONSOR PRIMA INFANZIA -->
+		
+		//<!-- RADIO SPONSOR PRIMA INFANZIA -->
+		if(evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA 
+				&& (eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE 
+					|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE
+					|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_SI_ONLINE
+					|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_CONTESTO_SOCIALE)) {
 			addCellLabelCampoValore("label.evento_sponsorizzato_infanzia_radio", evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(), tableFields);
 			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null) {
 				if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia()) //<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->

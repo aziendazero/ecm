@@ -582,7 +582,11 @@
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
-					<th:block th:if="${eventoWrapperShow.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALIMENTAZIONE_PRIMA_INFANZIA and eventoWrapperShow.evento.eventoSponsorizzato == true and (eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).EVENTI_SEMINARIALI_IN_RETE or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_NO_ONLINE)}">
+					<th:block th:if="${eventoWrapperShow.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALIMENTAZIONE_PRIMA_INFANZIA 
+					and (eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).EVENTI_SEMINARIALI_IN_RETE 
+					or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_NO_ONLINE
+					or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_SI_ONLINE
+					or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_CONTESTO_SOCIALE)}">
 						<!-- RADIO SPONSOR PRIMA INFANZIA -->
 						<div class="item form-group">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
