@@ -2060,10 +2060,10 @@ public class EventoController {
 	}
 	
 	@RequestMapping(value = "/evento/{search}/archivia", method = RequestMethod.POST)
-	public String archiveEvent(@RequestParam("event_Id") String ids, @PathVariable("search") EventoSearchEnum search, Model model, RedirectAttributes redirectAttrs, HttpServletRequest request) {
+	public String archiveEvent(@RequestParam("event_Id") List<Long> ids, @PathVariable("search") EventoSearchEnum search, Model model, RedirectAttributes redirectAttrs, HttpServletRequest request) {
 		LOGGER.info(Utils.getLogMessage("POST /evento/archivia"));
 		try{
-				List<Long> idsLong = fromStringToListLong(ids);
+				List<Long> idsLong = ids;
 				eventoService.archiveEventoInPrimaInfanziaOrMedNonConv(idsLong);
 				LOGGER.info(Utils.getLogMessage("REDIRECT success: /eventi/ALIMENTAZIONE_PRIMA_INFANZIA/list"));
 				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "label.archivia_success", "success"));
@@ -2075,18 +2075,6 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
-
-private List<Long> fromStringToListLong(String ids){
-	List<Long> eventIds = new ArrayList<>();
-	
-	List<String> numbers = Arrays.asList(ids.split(","));
-	for (String number : numbers) {
-		if(!number.isEmpty())
-			eventIds.add(Long.valueOf(number));
-	}
-	
-	return eventIds;
-}
 
 	private RicercaEventoWrapper prepareRicercaEventoWrapper(){
 		RicercaEventoWrapper wrapper = new RicercaEventoWrapper();
