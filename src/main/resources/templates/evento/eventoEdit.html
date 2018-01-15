@@ -596,7 +596,7 @@
 					"bPaginate" : false,
 					"ordering" : false,
 					"columnDefs": [{
-						"targets": 6,
+						"targets": 5,
 						"width": "1px",
 						"sClass": "center",
 						"responsivePriority": 1
@@ -973,6 +973,26 @@
 				                "visible": showExtCols
 						}]
 				    });
+					}
+					else if (target == 'responsabileSegreteria'){
+						$('#'+target).DataTable({
+							"bFilter" : false,
+							"bInfo" : false,
+							"bPaginate" : false,
+							"ordering" : false,
+							"columnDefs": [{
+								"targets": buttonColumn,
+								"width": "1px",
+								"sClass": "center",
+								"responsivePriority": 2
+							},
+							{
+								"targets": 5,
+								"width": "1px",
+								"sClass": "center",
+								"responsivePriority": 1
+							}]
+					    });
 					} else {
 						$('#'+target).DataTable({
 							"bFilter" : false,
@@ -1989,9 +2009,8 @@
 										<th th:text="#{label.ore_attivita}" class="no-sort">ORE ATTIVITA'</th>
 										<th class="no-sort">
 											<div class="evento-button-container">
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivita" class="btn btn-success evento-table-button" 
-													th:title="#{label.inserisci_attivita}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" 
-													data-toggle="modal" data-target=".modal-add-attivitaRES">
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" 
+													th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-plus"></i></span>
 												</a>
 												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaPausa" class="btn btn-success evento-table-button" th:title="#{label.inserisci_pausa}" 
