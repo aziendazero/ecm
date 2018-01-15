@@ -296,7 +296,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		if(evento.getVersione() != null && evento.getVersione().equals(EventoVersioneEnum.DUE_DAL_2018))
 			addCellLabelCampoValorePersoneEsperti("label.esperti", eventoFSC.getEsperti(), tableFields);
 		
-		if(evento.getVersione() != null && evento.getVersione().equals(EventoVersioneEnum.DUE_DAL_2018))
+		if(evento.getVersione() != null && evento.getVersione().equals(EventoVersioneEnum.DUE_DAL_2018) && TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA.equals(eventoFSC.getTipologiaEventoFSC()))
 			addCellLabelCampoValorePersoneInvestigatori("label.investigatori", eventoFSC.getInvestigatori(), tableFields);
 		
 		addCellLabelCampoValore("label.descrizione_del_progetto", eventoFSC.getDescrizioneProgetto(), tableFields);
