@@ -464,16 +464,16 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValore("label.evento_sponsorizzato_radio", evento.getEventoSponsorizzato(), tableFields);
 		if(evento.getEventoSponsorizzato() != null && evento.getEventoSponsorizzato())
 			addCellLabelCampoValoreSponsors("label.sponsors", evento.getSponsors(), tableFields);
-		if(evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA) {
-			//<!-- RADIO SPONSOR PRIMA INFANZIA -->
-			addCellLabelCampoValore("label.evento_sponsorizzato_infanzia_radio", evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(), tableFields);
-			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null) {
-				if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia()) //<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->
-					addCellLabelCampoValore("label.allegato_autocertificazione_autorizzazione_ministero", evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), tableFields);
-				else //<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
-					addCellLabelCampoValore("label.allegato_autocertificazione_assenza_finanziamenti_sponsor", evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), tableFields);
-			}
+		
+		//<!-- RADIO SPONSOR PRIMA INFANZIA -->
+		addCellLabelCampoValore("label.evento_sponsorizzato_infanzia_radio", evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(), tableFields);
+		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null) {
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia()) //<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->
+				addCellLabelCampoValore("label.allegato_autocertificazione_autorizzazione_ministero", evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), tableFields);
+			else //<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
+				addCellLabelCampoValore("label.allegato_autocertificazione_assenza_finanziamenti_sponsor", evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), tableFields);
 		}
+		
 		//<!-- FORME FINANZIAMENTO BLOCCO -->
 		addCellLabelCampoValore("label.forme_finanziamento_radio", evento.getAltreFormeFinanziamento(), tableFields);
 		if(evento.getAltreFormeFinanziamento() != null) {
