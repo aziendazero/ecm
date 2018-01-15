@@ -107,7 +107,6 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 	@Autowired
 	private EventoServiceController eventoServiceController;
 
-
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 	private NumberStyleFormatter intFormatter = new NumberStyleFormatter("0");
@@ -315,7 +314,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		if(eventoVersione != null && eventoVersione.equals(EventoVersioneEnum.DUE_DAL_2018))
 			addCellLabelCampoValorePersoneEsperti("label.esperti", eventoFSC.getEsperti(), tableFields);
 		
-		if(eventoVersione != null && eventoVersione.equals(EventoVersioneEnum.DUE_DAL_2018))
+		if(eventoVersione != null && eventoVersione.equals(EventoVersioneEnum.DUE_DAL_2018) && TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA.equals(eventoFSC.getTipologiaEventoFSC()))
 			addCellLabelCampoValorePersoneInvestigatori("label.investigatori", eventoFSC.getInvestigatori(), tableFields);
 		
 		addCellLabelCampoValore("label.descrizione_del_progetto", eventoFSC.getDescrizioneProgetto(), tableFields);
