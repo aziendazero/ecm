@@ -184,8 +184,7 @@
 					</div>
 					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoFSC != null and 
 					eventoWrapperShow.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).ATTIVITA_DI_RICERCA and 
-					eventoWrapperShow.evento.versione != null and 
-					eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018}">
+					@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.eventofsc_tipologiaSperimentazione}">Tipologia sperimentazione</span>
 						</label>
@@ -292,10 +291,9 @@
 												<th th:text="#{label.qualifica}">Qualifica</th>
 												<th th:text="#{label.cv}">CV</th>
 												<th 
-													th:if="${eventoWrapperShow.evento.versione != null and 
-													eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018}" th:text="#{label.identificativo_persona_evento}">Identificativo Responsabile</th>
+													th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" th:text="#{label.identificativo_persona_evento}">Identificativo Responsabile</th>
 												<th 
-												th:if="${eventoWrapperShow.evento.versione != null and eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018}" 
+												th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" 
 												th:text="#{label.svolge_attivita_docenza}">Svolge attivita di docenza</th>
 											</tr>
 										</thead>
@@ -310,14 +308,12 @@
 													<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
 												</td>
 												<td 
-													th:if="${eventoWrapperShow.evento.versione != null and 
-													eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018 and 
+													th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento) and 
 													persona != null}" 
 													th:text="${persona.identificativoPersonaRuoloEvento?.nome}">
 												</td>
 												<td 
-													th:if="${eventoWrapperShow.evento.versione != null and 
-													eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018 and 
+													th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento) and 
 													persona != null}" 
 													th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}">
 												</td>
@@ -333,7 +329,7 @@
 					</div>
 					
 					<!-- ESPERTI -->
-					<div class="item form-group" th:if="${eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018}">
+					<div class="item form-group" th:if="${eventoWrapperShow.esperti != null and !#sets.isEmpty(eventoWrapperShow.esperti) and @eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.esperti}">Esperti</span>
 						</label>
@@ -412,7 +408,7 @@
 					</div>
 					
 					<!-- INVESTIGATORI -->
-					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).ATTIVITA_DI_RICERCA and eventoWrapperShow.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018}">
+					<div class="item form-group" th:if="${eventoWrapperShow.investigatori != null and !#sets.isEmpty(eventoWrapperShow.investigatori) and eventoWrapperShow.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).ATTIVITA_DI_RICERCA and @eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.investigatori}">Esperti</span>
 						</label>
@@ -821,7 +817,7 @@
 					</div>
 					
 					<!-- REDAZIONE DI UN DOCUMENTO CONCLUSIVO -->
-					<div class="item form-group">
+					<div class="item form-group" th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.prevista_redazione_documento_conclusivo}">E’ prevista la redazione di un documento conclusivo quale ad es. linee guida, procedure, protocolli, indicazioni operative?</span>
 						</label>
@@ -832,7 +828,7 @@
 					</div>
 					
 					<!-- PRESENTE TUTOR ESPERTO ESTERNO VALIDATORE -->
-					<div class="item form-group">
+					<div class="item form-group" th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.presente_tutor_esperto_esterno_validatore}">E’ presente un Tutor esperto esterno che validi le attività del gruppo?</span>
 						</label>

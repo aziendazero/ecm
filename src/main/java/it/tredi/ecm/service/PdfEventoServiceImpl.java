@@ -384,9 +384,11 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValore("label.dichiarazione_assenza_conflitto_interesse", evento.getDichiarazioneAssenzaConflittoInteresse(), tableFields);
 		addCellLabelCampoValore("label.procedura_verifica_qualita", evento.getProceduraVerificaQualitaPercepita(), tableFields);
 		
-		addCellLabelCampoValore("label.prevista_redazione_documento_conclusivo", eventoFSC.getPrevistaRedazioneDocumentoConclusivo(), tableFields);
-		addCellLabelCampoValore("label.presente_tutor_esperto_esterno_validatore", eventoFSC.getPresenteTutorEspertoEsternoValidatoreAttivita(), tableFields);
-		
+		if(eventoServiceController.isVersionDue(eventoFSC)) {
+			addCellLabelCampoValore("label.prevista_redazione_documento_conclusivo", eventoFSC.getPrevistaRedazioneDocumentoConclusivo(), tableFields);
+			addCellLabelCampoValore("label.presente_tutor_esperto_esterno_validatore", eventoFSC.getPresenteTutorEspertoEsternoValidatoreAttivita(), tableFields);
+		}
+			
 		addCellLabelCampoValore("label.autorizzazione_privacy", evento.getAutorizzazionePrivacy(), tableFields);
 		document.add(tableFields);
 	}
