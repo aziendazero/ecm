@@ -314,6 +314,9 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		if(eventoVersione != null && eventoVersione.equals(EventoVersioneEnum.DUE_DAL_2018))
 			addCellLabelCampoValorePersoneEsperti("label.esperti", eventoFSC.getEsperti(), tableFields);
 		
+		if(eventoVersione != null && eventoVersione.equals(EventoVersioneEnum.DUE_DAL_2018))
+			addCellLabelCampoValorePersoneEsperti("label.coordinatori", eventoFSC.getCoordinatori(), tableFields);
+		
 		if(eventoVersione != null && eventoVersione.equals(EventoVersioneEnum.DUE_DAL_2018) && TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA.equals(eventoFSC.getTipologiaEventoFSC()))
 			addCellLabelCampoValorePersoneInvestigatori("label.investigatori", eventoFSC.getInvestigatori(), tableFields);
 		
@@ -380,6 +383,12 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		}
 		addCellLabelCampoValore("label.dichiarazione_assenza_conflitto_interesse", evento.getDichiarazioneAssenzaConflittoInteresse(), tableFields);
 		addCellLabelCampoValore("label.procedura_verifica_qualita", evento.getProceduraVerificaQualitaPercepita(), tableFields);
+		
+		if(eventoServiceController.isVersionDue(eventoFSC)) {
+			addCellLabelCampoValore("label.prevista_redazione_documento_conclusivo", eventoFSC.getPrevistaRedazioneDocumentoConclusivo(), tableFields);
+			addCellLabelCampoValore("label.presente_tutor_esperto_esterno_validatore", eventoFSC.getPresenteTutorEspertoEsternoValidatoreAttivita(), tableFields);
+		}
+			
 		addCellLabelCampoValore("label.autorizzazione_privacy", evento.getAutorizzazionePrivacy(), tableFields);
 		document.add(tableFields);
 	}
