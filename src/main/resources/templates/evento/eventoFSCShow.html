@@ -671,7 +671,7 @@
 						<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
 						<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null and eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia == false}">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
-								<span class="label-show" th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
+								<span class="label-show" th:text="#{label.allegato_autocertificazione_assenza_finanziamenti_sponsor}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
 							</label>
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 								<div class="value" th:if="${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>
