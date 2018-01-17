@@ -60,6 +60,8 @@ public class EngineeringAppConfiguration {
 	private String protocolloEndpoint = "";
 	@Value("${protocollo.service.versione}")
 	private String protocolloServiceVersione;
+	@Value("{protocollo.webrainbow.ufficioCreatore}")
+	private String protocolloWebrainbowUfficioCreatore;
 
 	@Bean
 	public EngineeringProperties engineeringProperties(){
@@ -90,6 +92,7 @@ public class EngineeringAppConfiguration {
 		engineeringProperties.setProtocolloIdc(protocolloIdc);
 		engineeringProperties.setProtocolloEndpoint(protocolloEndpoint);
 		engineeringProperties.setProtocolloServiceVersione(protocolloServiceVersione);
+		engineeringProperties.setProtocolloWebrainbowUfficioCreatore(protocolloWebrainbowUfficioCreatore);
 
 		return engineeringProperties;
 	}
