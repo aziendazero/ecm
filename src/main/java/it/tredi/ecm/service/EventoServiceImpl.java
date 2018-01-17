@@ -80,6 +80,7 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
 import it.tredi.ecm.dao.enumlist.MotivazioneProrogaEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
@@ -1436,7 +1437,7 @@ public class EventoServiceImpl implements EventoService {
 			durata = calcoloDurataEventoRES(eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values());
 			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
-			durata = calcoloDurataEventoFSC(eventoWrapper.getProgrammaEventoFSC(), eventoWrapper.getRiepilogoRuoliFSC());
+			durata = calcoloDurataEventoFSC(eventoWrapper);
 			((EventoFSC)eventoWrapper.getEvento()).setDurata(durata);
 			//calcolo partecipanti
 			int numPartecipanti = calcolaNumeroRuoloFSC(RuoloFSCBaseEnum.PARTECIPANTE, eventoWrapper.getRiepilogoRuoliFSC());
@@ -1498,11 +1499,11 @@ public class EventoServiceImpl implements EventoService {
 		return durata;
 	}
 
-	private float calcoloDurataEventoFSC(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum, RiepilogoRuoliFSC> riepilogoRuoliFSC){
+	private float calcoloDurataEventoFSC(EventoWrapper eventoWrapper){
 		float durata = 0;
 
-		prepareRiepilogoRuoli(programma, riepilogoRuoliFSC);
-		durata = getMaxDurataPatecipanti(riepilogoRuoliFSC);
+		prepareRiepilogoRuoli(eventoWrapper);
+		durata = getMaxDurataPatecipanti(eventoWrapper.getRiepilogoRuoliFSC());
 
 		durata = Utils.getRoundedFloatValue(durata, 2);
 		return durata;
@@ -1569,12 +1570,12 @@ public class EventoServiceImpl implements EventoService {
 	 * Ragruppo i Ruoli coinvolti in una mappa <Ruolo,RiepilogoRuoloOreFSC>
 	 * dove il RiepilogoRuoloOreFSC avra la somma delle ore dei ruoli
 	 * */
-	private void prepareRiepilogoRuoli(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
-		if(riepilogoRuoliFSC != null)
+	private void prepareRiepilogoRuoli(EventoWrapper eventoWrapper){
+		if(eventoWrapper.getRiepilogoRuoliFSC() != null)
 		{
 			Set<RuoloFSCEnum> ruoliUsati = new HashSet<RuoloFSCEnum>();
 
-			Iterator<Entry<RuoloFSCEnum, RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
+			Iterator<Entry<RuoloFSCEnum, RiepilogoRuoliFSC>> iterator = eventoWrapper.getRiepilogoRuoliFSC().entrySet().iterator();
 			while(iterator.hasNext()){
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				pairs.getValue().setTempoDedicato(0f);
@@ -1583,33 +1584,38 @@ public class EventoServiceImpl implements EventoService {
 					iterator.remove();
 			}
 
-			for(FaseAzioniRuoliEventoFSCTypeA fase : programma){
-				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
-					for(RuoloOreFSC ruolo : azione.getRuoli())
-					{
-						ruoliUsati.add(ruolo.getRuolo());
-
-						if(riepilogoRuoliFSC.containsKey(ruolo.getRuolo())){
-							RiepilogoRuoliFSC r = riepilogoRuoliFSC.get(ruolo.getRuolo());
-							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
-							r.addTempo(tempoDedicato);
-						}else{
-							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
-							RiepilogoRuoliFSC r = new RiepilogoRuoliFSC(ruolo.getRuolo(), tempoDedicato, 0.0f);
-							riepilogoRuoliFSC.put(ruolo.getRuolo(), r);
+			//dpranteda - 17/01/2018: bugfix risolto, nel caso di modifica alle fasi attive non si aggiornavano tutti i calcoli
+			EventoFSC eventoFSC = ((EventoFSC)eventoWrapper.getEvento());
+			TipologiaEventoFSCEnum tipologiaEventoFSC = eventoFSC.getTipologiaEventoFSC();
+			ProgettiDiMiglioramentoFasiDaInserireFSCEnum fasiDaInserire = eventoFSC.getFasiDaInserire();
+			
+			for(FaseAzioniRuoliEventoFSCTypeA fase : eventoWrapper.getProgrammaEventoFSC()){
+				if(tipologiaEventoFSC != null && (tipologiaEventoFSC != TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO || ProgettiDiMiglioramentoFasiDaInserireFSCEnum.faseAbilitata(fasiDaInserire, fase.getFaseDiLavoro()))) {
+					for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
+						for(RuoloOreFSC ruolo : azione.getRuoli())
+						{
+							ruoliUsati.add(ruolo.getRuolo());
+	
+							if(eventoWrapper.getRiepilogoRuoliFSC().containsKey(ruolo.getRuolo())){
+								RiepilogoRuoliFSC r = eventoWrapper.getRiepilogoRuoliFSC().get(ruolo.getRuolo());
+								float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
+								r.addTempo(tempoDedicato);
+							}else{
+								float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
+								RiepilogoRuoliFSC r = new RiepilogoRuoliFSC(ruolo.getRuolo(), tempoDedicato, 0.0f);
+								eventoWrapper.getRiepilogoRuoliFSC().put(ruolo.getRuolo(), r);
+							}
 						}
 					}
 				}
 			}
 
-			iterator = riepilogoRuoliFSC.entrySet().iterator();
+			iterator = eventoWrapper.getRiepilogoRuoliFSC().entrySet().iterator();
 			while(iterator.hasNext()){
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(!ruoliUsati.contains(pairs.getValue().getRuolo()))
 					iterator.remove();
 			}
-
-
 		}
 	}
 
