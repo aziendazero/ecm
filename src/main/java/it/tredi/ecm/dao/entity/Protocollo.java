@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
+import it.tredi.ecm.service.enumlist.ProtocolloServiceVersioneEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +24,7 @@ public class Protocollo extends BaseEntityDefaultId {
 	private String idProtoBatch;
 	private String statoSpedizione;
 	private String oggetto;
+	private ProtocolloServiceVersioneEnum protocolloServiceVersion;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name="action_after_protocollo")

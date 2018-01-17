@@ -70,6 +70,7 @@ import it.tredi.ecm.dao.repository.ProtoBatchLogRepository;
 import it.tredi.ecm.dao.repository.ProtocolloRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.EngineeringProperties;
+import it.tredi.ecm.service.enumlist.ProtocolloServiceVersioneEnum;
 import it.tredi.ecm.utils.Utils;
 
 @org.springframework.stereotype.Service
@@ -184,7 +185,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		LOGGER.debug("Recupero Tutti i protocolli in uscita che non sono stati consegnati");
 		return protocolloRepository.findAllWithErrors(AVVENUTA_CONSEGNA);
 	}
-
+	
 	@Override
 	@Transactional
 	public void protocollaDomandaInArrivo(Long accreditamentoId, Long fileId) throws Exception{
@@ -210,16 +211,22 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		Provider provider = accreditamento.getProvider();
 		Sede sedeLegale = provider.getSedeLegale();
-
-		Mittente mittente = new Mittente();
-		mittente.setTipoVettore(Vettore.SDI);
-		mittente.setNominativo(provider.getDenominazioneLegale());
-		mittente.setIndirizzo(sedeLegale.getIndirizzo());
-		mittente.setCap(sedeLegale.getCap());
-		mittente.setCitta(sedeLegale.getComune());
-		//mittente.setProvincia(sedeLegale.getProvincia());
-
-		protocollaArrivo(protocollo, mittente, fileAllegatiIds);
+		if (engineeringProperties.getProtocolloServiceVersione().equals("rv")) {
+			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.RV);
+			Mittente mittente = new Mittente();
+			mittente.setTipoVettore(Vettore.SDI);
+			mittente.setNominativo(provider.getDenominazioneLegale());
+			mittente.setIndirizzo(sedeLegale.getIndirizzo());
+			mittente.setCap(sedeLegale.getCap());
+			mittente.setCitta(sedeLegale.getComune());
+			//mittente.setProvincia(sedeLegale.getProvincia());
+	
+			protocollaArrivo(protocollo, mittente, fileAllegatiIds);
+		} else if (engineeringProperties.getProtocolloServiceVersione().equals("webrainbow")) {
+			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
+			//STUB
+			//TODO
+		}
 	}
 
 	@Override
@@ -244,24 +251,31 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		protocollo.setFile(file);
 		protocollo.setAccreditamento(accreditamento);
 		protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.ESEGUI_TASK);
-
+		
 		Provider provider = accreditamento.getProvider();
 		Sede sedeLegale = provider.getSedeLegale();
 		Persona legaleRappresentante = provider.getLegaleRappresentante();
+		
+		if(engineeringProperties.getProtocolloServiceVersione().equals("rv")) {
+			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.RV);
+			Destinatario destinatario = new Destinatario();
+			destinatario.setNominativo(provider.getDenominazioneLegale());
+			destinatario.setPEC(legaleRappresentante.getAnagrafica().getPec());
+			destinatario.setTipoVettore(it.rve.protocollo.xsd.richiesta_protocollazione.Vettore.PEC);
+			if(sedeLegale != null){
+				destinatario.setIndirizzo(sedeLegale.getIndirizzo());
+				destinatario.setCap(sedeLegale.getCap());
+				destinatario.setCitta(sedeLegale.getComune());
+			}
 
-		Destinatario destinatario = new Destinatario();
-		destinatario.setNominativo(provider.getDenominazioneLegale());
-		destinatario.setPEC(legaleRappresentante.getAnagrafica().getPec());
-		destinatario.setTipoVettore(it.rve.protocollo.xsd.richiesta_protocollazione.Vettore.PEC);
-		if(sedeLegale != null){
-			destinatario.setIndirizzo(sedeLegale.getIndirizzo());
-			destinatario.setCap(sedeLegale.getCap());
-			destinatario.setCitta(sedeLegale.getComune());
+			it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
+			destinatari.getDestinatario().add(destinatario);
+			protocollaInUscita(protocollo, destinatari, fileAllegatiIds);
+		} else if (engineeringProperties.getProtocolloServiceVersione().equals("webrainbow")) {
+			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
+			//STUB 
+			//TODO
 		}
-
-		it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
-		destinatari.getDestinatario().add(destinatario);
-		protocollaInUscita(protocollo, destinatari, fileAllegatiIds);
 	}
 
 	@Transactional
@@ -705,19 +719,26 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		Sede sedeLegale = provider.getSedeLegale();
 		Persona legaleRappresentante = provider.getLegaleRappresentante();
-
-		Destinatario destinatario = new Destinatario();
-		destinatario.setNominativo(provider.getDenominazioneLegale());
-		destinatario.setPEC(legaleRappresentante.getAnagrafica().getPec());
-		destinatario.setTipoVettore(it.rve.protocollo.xsd.richiesta_protocollazione.Vettore.PEC);
-		if(sedeLegale != null){
-			destinatario.setIndirizzo(sedeLegale.getIndirizzo());
-			destinatario.setCap(sedeLegale.getCap());
-			destinatario.setCitta(sedeLegale.getComune());
+		
+		if(engineeringProperties.getProtocolloServiceVersione().equals("rv")) {
+			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.RV);
+			Destinatario destinatario = new Destinatario();
+			destinatario.setNominativo(provider.getDenominazioneLegale());
+			destinatario.setPEC(legaleRappresentante.getAnagrafica().getPec());
+			destinatario.setTipoVettore(it.rve.protocollo.xsd.richiesta_protocollazione.Vettore.PEC);
+			if(sedeLegale != null){
+				destinatario.setIndirizzo(sedeLegale.getIndirizzo());
+				destinatario.setCap(sedeLegale.getCap());
+				destinatario.setCitta(sedeLegale.getComune());
+			}
+	
+			it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
+			destinatari.getDestinatario().add(destinatario);
+			protocollaInUscita(protocollo, destinatari);
+		} else if (engineeringProperties.getProtocolloServiceVersione().equals("webrainbow")) {
+			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
+			//STUB
+			//TODO
 		}
-
-		it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
-		destinatari.getDestinatario().add(destinatario);
-		protocollaInUscita(protocollo, destinatari);
 	}
 }
