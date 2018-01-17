@@ -517,25 +517,39 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			}
 		} else {
 			for (Protocollo p : protocolliInUscita) {
-				Object response = port.protoBatchLog(p.getIdProtoBatch());
+				String stato = "";
+				String cod_stato = "";
+				String dt_insert = "";
+				String dt_update = "";
+				String n_proto = "";
+				String d_proto = "";
+				String log = "";
+				
+				if(p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) { 
+					Object response = port.protoBatchLog(p.getIdProtoBatch());
+	
+					LOGGER.debug(response);
+	
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					Document xmlResponse = builder.parse(new InputSource(new StringReader(response.toString())));
+					XPathFactory xPathfactory = XPathFactory.newInstance();
+					XPath xpath = xPathfactory.newXPath();
+	
+					stato = xpath.compile("//proto_batch/@stato").evaluate(xmlResponse);
+					cod_stato = xpath.compile("//proto_batch/@cod_stato").evaluate(xmlResponse);
+					dt_insert = xpath.compile("//proto_batch/@dt_insert").evaluate(xmlResponse);
+					dt_update = xpath.compile("//proto_batch/@dt_update").evaluate(xmlResponse);
+		//			String cod_applicativo = xpath.compile("//proto_batch/@cod_applicativo").evaluate(xmlResponse);
+					n_proto = xpath.compile("//proto_batch/n_proto").evaluate(xmlResponse);
+					d_proto = xpath.compile("//proto_batch/d_proto").evaluate(xmlResponse);
+					log = xpath.compile("//protocollo/log").evaluate(xmlResponse);
 
-				LOGGER.debug(response);
-
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder builder = factory.newDocumentBuilder();
-				Document xmlResponse = builder.parse(new InputSource(new StringReader(response.toString())));
-				XPathFactory xPathfactory = XPathFactory.newInstance();
-				XPath xpath = xPathfactory.newXPath();
-
-				String stato = xpath.compile("//proto_batch/@stato").evaluate(xmlResponse);
-				String cod_stato = xpath.compile("//proto_batch/@cod_stato").evaluate(xmlResponse);
-				String dt_insert = xpath.compile("//proto_batch/@dt_insert").evaluate(xmlResponse);
-				String dt_update = xpath.compile("//proto_batch/@dt_update").evaluate(xmlResponse);
-	//			String cod_applicativo = xpath.compile("//proto_batch/@cod_applicativo").evaluate(xmlResponse);
-				String n_proto = xpath.compile("//proto_batch/n_proto").evaluate(xmlResponse);
-				String d_proto = xpath.compile("//proto_batch/d_proto").evaluate(xmlResponse);
-				String log = xpath.compile("//protocollo/log").evaluate(xmlResponse);
-
+				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
+					//STUB
+					//TODO
+				}
+				
 				if (StringUtils.hasText(d_proto)) {
 					//p.setData(new SimpleDateFormat("dd/MM/yyyy").parse(d_proto));
 					p.setData(LocalDate.parse(d_proto, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
@@ -585,44 +599,49 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				dt_spedizione = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 			} else {
 
-				// creo la request
-				Document request = builder.newDocument();
+				if(p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) {
+					// creo la request
+					Document request = builder.newDocument();
+	
+					Element root = request.createElement("getStatoSpedizione");
+					request.appendChild(root);
+	
+					Element struttura = request.createElement("struttura");struttura.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodStruttura()));root.appendChild(struttura);
+					Element numero_proto = request.createElement("numero_proto");numero_proto.appendChild(request.createTextNode(Integer.toString(p.getNumero())));root.appendChild(numero_proto);
+					Element data_proto = request.createElement("data_proto");data_proto.appendChild(request.createTextNode(p.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));root.appendChild(data_proto);
+					Element cod_applicativo = request.createElement("cod_applicativo");cod_applicativo.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodApplicativo()));root.appendChild(cod_applicativo);
+	
+					// invoco il WS
+					Source response = dispatchThreadLocal.get().invoke(new DOMSource(request));
+	
+					// converto in DOM la risposta
+					Document xmlResponse = builder.newDocument();
+					Transformer transformer = tf.get();
+					transformer.transform(response, new DOMResult(xmlResponse));
+	
+					XPathFactory xPathfactory = XPathFactory.newInstance();
+					XPath xpath = xPathfactory.newXPath();
+	
+					LOGGER.debug(xpath.compile("//.").evaluate(xmlResponse));
+	
+					// estraggo l'xml innestato.
+					//String xmlResult = xpath.compile("//getStatoSpedizioneResponse/getStatoSpedizioneReturn").evaluate(xmlResponse);
+					String xmlResult = xpath.compile("/").evaluate(xmlResponse);
+	
+					// converto in DOM l'xml innestato per poter estrarre le informazioni tramite xpath.
+					InputSource is = new InputSource();
+					is.setCharacterStream(new StringReader(xmlResult));
+	
+					Document xmlResultDocument = builder.parse(is);
+	
+					stato = xpath.compile("//protocollo/destinatario/@stato").evaluate(xmlResultDocument);
+					nr_spedizione = xpath.compile("//protocollo/destinatario/@nr_spedizione").evaluate(xmlResultDocument);
+					dt_spedizione = xpath.compile("//protocollo/destinatario/@dt_spedizione").evaluate(xmlResultDocument);
 
-				Element root = request.createElement("getStatoSpedizione");
-				request.appendChild(root);
-
-				Element struttura = request.createElement("struttura");struttura.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodStruttura()));root.appendChild(struttura);
-				Element numero_proto = request.createElement("numero_proto");numero_proto.appendChild(request.createTextNode(Integer.toString(p.getNumero())));root.appendChild(numero_proto);
-				Element data_proto = request.createElement("data_proto");data_proto.appendChild(request.createTextNode(p.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));root.appendChild(data_proto);
-				Element cod_applicativo = request.createElement("cod_applicativo");cod_applicativo.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodApplicativo()));root.appendChild(cod_applicativo);
-
-				// invoco il WS
-				Source response = dispatchThreadLocal.get().invoke(new DOMSource(request));
-
-				// converto in DOM la risposta
-				Document xmlResponse = builder.newDocument();
-				Transformer transformer = tf.get();
-				transformer.transform(response, new DOMResult(xmlResponse));
-
-				XPathFactory xPathfactory = XPathFactory.newInstance();
-				XPath xpath = xPathfactory.newXPath();
-
-				LOGGER.debug(xpath.compile("//.").evaluate(xmlResponse));
-
-				// estraggo l'xml innestato.
-				//String xmlResult = xpath.compile("//getStatoSpedizioneResponse/getStatoSpedizioneReturn").evaluate(xmlResponse);
-				String xmlResult = xpath.compile("/").evaluate(xmlResponse);
-
-				// converto in DOM l'xml innestato per poter estrarre le informazioni tramite xpath.
-				InputSource is = new InputSource();
-				is.setCharacterStream(new StringReader(xmlResult));
-
-				Document xmlResultDocument = builder.parse(is);
-
-				stato = xpath.compile("//protocollo/destinatario/@stato").evaluate(xmlResultDocument);
-				nr_spedizione = xpath.compile("//protocollo/destinatario/@nr_spedizione").evaluate(xmlResultDocument);
-				dt_spedizione = xpath.compile("//protocollo/destinatario/@dt_spedizione").evaluate(xmlResultDocument);
-
+				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
+					//STUB
+					//TODO
+				}
 	//			String numero = xpath.compile("//protocollo/@numero").evaluate(xmlResultDocument);
 	//			String data = xpath.compile("//protocollo/@data").evaluate(xmlResultDocument);
 	//			String destinatario = xpath.compile("//protocollo/destinatario/@vettore").evaluate(xmlResultDocument);
