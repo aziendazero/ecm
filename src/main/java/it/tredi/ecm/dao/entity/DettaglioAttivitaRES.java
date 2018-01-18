@@ -8,7 +8,6 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -42,6 +41,8 @@ public class DettaglioAttivitaRES extends BaseEntityDefaultId implements Seriali
 	private final String VALUTAZIONE_APPRENDIMENTO = "VALUTAZIONE APPRENDIMENTO";
 	@Transient
 	private final String REGISTRAZIONE_PARTECIPANTI = "REGISTRAZIONE PARTECIPANTI";
+	@Transient
+	private final String SALUTI_INTRODUTTIVI = "SALUTI INTRODUTTIVI";
 
 	@DateTimeFormat (pattern = "HH:mm")
 	@Column(name="orario_inizio")
@@ -130,8 +131,28 @@ public class DettaglioAttivitaRES extends BaseEntityDefaultId implements Seriali
 			return false;
 	}
 
+	public void setAsSalutiIntroduttivi(){
+		this.argomento = SALUTI_INTRODUTTIVI;
+
+		this.docenti = null;
+		this.risultatoAtteso = "";
+		this.obiettivoFormativo = null;
+		this.metodologiaDidattica = null;
+	}
+
+	public boolean isSalutiIntroduttivi(){
+		if((this.argomento!= null && this.argomento.equalsIgnoreCase(SALUTI_INTRODUTTIVI)) &&
+				(this.docenti == null || this.docenti.isEmpty()) &&
+				(this.risultatoAtteso != null && this.risultatoAtteso.isEmpty()) &&
+				this.obiettivoFormativo == null &&
+				this.metodologiaDidattica == null)
+			return true;
+		else
+			return false;
+	}
+
 	public boolean isExtraType() {
-		return (isPausa() || isValutazioneApprendimento() || isRegistrazionePartecipanti());
+		return (isPausa() || isValutazioneApprendimento() || isRegistrazionePartecipanti() || isSalutiIntroduttivi());
 	}
 
 	public String getExtraType(){
@@ -143,6 +164,9 @@ public class DettaglioAttivitaRES extends BaseEntityDefaultId implements Seriali
 
 		if(isRegistrazionePartecipanti())
 			return REGISTRAZIONE_PARTECIPANTI;
+
+		if(isSalutiIntroduttivi())
+			return SALUTI_INTRODUTTIVI;
 
 		return "";
 	}
@@ -156,6 +180,9 @@ public class DettaglioAttivitaRES extends BaseEntityDefaultId implements Seriali
 
 		if(extraType.equalsIgnoreCase(REGISTRAZIONE_PARTECIPANTI))
 			setAsRegistrazionePartecipanti();
+
+		if(extraType.equalsIgnoreCase(SALUTI_INTRODUTTIVI))
+			setAsSalutiIntroduttivi();
 	}
 
 	public void calcolaOreAttivita(){

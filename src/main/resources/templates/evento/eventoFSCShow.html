@@ -182,6 +182,48 @@
 							<div class="value danger" th:unless="${eventoWrapperShow.evento.tipologiaEventoFSC != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoFSC != null and 
+					eventoWrapperShow.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).ATTIVITA_DI_RICERCA and 
+					@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.eventofsc_tipologiaSperimentazione}">Tipologia sperimentazione</span>
+						</label>
+
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapperShow.evento.tipologiaSperimentazione != null}" th:text="${eventoWrapperShow.evento.tipologiaSperimentazione.nome}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.tipologiaSperimentazione != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).ATTIVITA_DI_RICERCA}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.eventofsc_sperimentazioneClinica}">Sperimentazione Clinica</span>
+						</label>
+
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapperShow.evento.tipologiaEventoFSC != null and eventoWrapperShow.evento.sperimentazioneClinica != null}" th:text="${eventoWrapperShow.evento.sperimentazioneClinica} ? #{label.sì} : #{label.no}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.tipologiaEventoFSC != null and eventoWrapperShow.evento.sperimentazioneClinica != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).ATTIVITA_DI_RICERCA}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show"> </span>
+						</label>
+
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapperShow.evento.tipologiaEventoFSC != null and eventoWrapperShow.evento.ottenutoComitatoEtico != null and eventoWrapperShow.evento.sperimentazioneClinica != null and eventoWrapperShow.evento.sperimentazioneClinica and eventoWrapperShow.evento.ottenutoComitatoEtico}" th:text="#{label.eventofsc_ottenutoComitatoEtico_no_question_mark}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.tipologiaEventoFSC != null and eventoWrapperShow.evento.ottenutoComitatoEtico != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoFSC != null and eventoWrapperShow.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.eventofsc_tipologiaGruppo}">Tipologia gruppo</span>
+						</label>
+
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapperShow.evento.tipologiaEventoFSC != null and eventoWrapperShow.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO and eventoWrapperShow.evento.tipologiaGruppo != null}" th:text="${eventoWrapperShow.evento.tipologiaGruppo.nome}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.tipologiaEventoFSC != null and eventoWrapperShow.evento.ottenutoComitatoEtico != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
 
 					<!-- PROFESSIONI/DISCIPLINE -->
 					<div class="item form-group">
@@ -248,6 +290,11 @@
 												<th th:text="#{label.cf}">CF</th>
 												<th th:text="#{label.qualifica}">Qualifica</th>
 												<th th:text="#{label.cv}">CV</th>
+												<th 
+													th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" th:text="#{label.identificativo_persona_evento}">Identificativo Responsabile</th>
+												<th 
+												th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" 
+												th:text="#{label.svolge_attivita_docenza}">Svolge attivita di docenza</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -260,6 +307,16 @@
 													<a th:if="${persona.anagrafica.cv?.id}" th:text="${persona.anagrafica?.cv.nomeFile}" th:href="@{|/file/${persona.anagrafica.cv.id}|}"></a>
 													<span th:unless="${persona.anagrafica.cv?.id}" th:text="#{label.nessun_cv}"></span>
 												</td>
+												<td 
+													th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento) and 
+													persona != null}" 
+													th:text="${persona.identificativoPersonaRuoloEvento?.nome}">
+												</td>
+												<td 
+													th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento) and 
+													persona != null}" 
+													th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}">
+												</td>
 											</tr>
 										</tbody>
 									</table>
@@ -267,6 +324,123 @@
 							</div>
 						</div>
 						<div th:unless="${eventoWrapperShow.evento.responsabili != null and !#sets.isEmpty(eventoWrapperShow.evento.responsabili)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					
+					<!-- ESPERTI -->
+					<div class="item form-group" th:if="${eventoWrapperShow.esperti != null and !#sets.isEmpty(eventoWrapperShow.esperti) and @eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.esperti}">Esperti</span>
+						</label>
+						<div th:if="${eventoWrapperShow.esperti != null and !#sets.isEmpty(eventoWrapperShow.esperti)}">
+							<div class="item form-group" style="clear:both; padding:2px;"></div>
+							<div class="item form-group" style="clear:both">
+								<div class="col-md-3 col-sm-3 col-xs-11"></div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<table id="esperti" class="datatable-responsive-responsabili table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<thead>
+											 <tr>
+												<th th:text="#{label.cognome}">Cognome</th>
+												<th th:text="#{label.nome}">Nome</th>
+												<th th:text="#{label.cf}">CF</th>
+												<th th:text="#{label.identificativo_persona_evento}">Identificativo Responsabile</th>
+												<th th:text="#{label.svolge_attivita_docenza}">Svolge attivita di docenza</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:if="${#lists.size(eventoWrapperShow.esperti) > 0}"
+											th:attr="data-row-id=${__${status.index}__}"
+											th:each="persona, status : ${eventoWrapperShow.esperti}">
+												<td th:text="${persona.anagrafica.cognome}"></td>
+												<td th:text="${persona.anagrafica.nome}"></td>
+												<td th:text="${persona.anagrafica.codiceFiscale}"></td>
+												<td th:text="${persona.identificativoPersonaRuoloEvento?.nome}"></td>
+												<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}"></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div th:unless="${eventoWrapperShow.esperti != null and !#sets.isEmpty(eventoWrapperShow.esperti)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					
+					<!-- COORDINATORI -->
+					<div class="item form-group" th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.coordinatori}">Coordinatori</span>
+						</label>
+						<div th:if="${eventoWrapperShow.coordinatori != null and !#sets.isEmpty(eventoWrapperShow.coordinatori)}">
+							<div class="item form-group" style="clear:both; padding:2px;"></div>
+							<div class="item form-group" style="clear:both">
+								<div class="col-md-3 col-sm-3 col-xs-11"></div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<table id="coordinatori" class="datatable-responsive-responsabili table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<thead>
+											 <tr>
+												<th th:text="#{label.cognome}">Cognome</th>
+												<th th:text="#{label.nome}">Nome</th>
+												<th th:text="#{label.cf}">CF</th>
+												<th th:text="#{label.identificativo_persona_evento}">Identificativo</th>
+												<th th:text="#{label.svolge_attivita_docenza}">Svolge attività di docenza</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:attr="data-row-id=${__${status.index}__}"
+											th:each="persona, status : ${eventoWrapperShow.coordinatori}">
+												<td th:text="${persona.anagrafica.cognome}"></td>
+												<td th:text="${persona.anagrafica.nome}"></td>
+												<td th:text="${persona.anagrafica.codiceFiscale}"></td>
+												<td th:text="${persona.identificativoPersonaRuoloEvento?.nome}"></td>
+												<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}"></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div th:unless="${eventoWrapperShow.coordinatori != null and !#sets.isEmpty(eventoWrapperShow.coordinatori)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					
+					<!-- INVESTIGATORI -->
+					<div class="item form-group" th:if="${eventoWrapperShow.investigatori != null and !#sets.isEmpty(eventoWrapperShow.investigatori) and eventoWrapperShow.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).ATTIVITA_DI_RICERCA and @eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.investigatori}">Esperti</span>
+						</label>
+						<div th:if="${eventoWrapperShow.investigatori != null and !#sets.isEmpty(eventoWrapperShow.investigatori)}">
+							<div class="item form-group" style="clear:both; padding:2px;"></div>
+							<div class="item form-group" style="clear:both">
+								<div class="col-md-3 col-sm-3 col-xs-11"></div>
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<table id="esperti" class="datatable-responsive-responsabili table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+										<thead>
+											 <tr>
+												<th th:text="#{label.cognome}">Cognome</th>
+												<th th:text="#{label.nome}">Nome</th>
+												<th th:text="#{label.cf}">CF</th>
+												<th th:text="#{label.qualifica}">Qualifica</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:if="${#lists.size(eventoWrapperShow.investigatori) > 0}"
+											th:attr="data-row-id=${__${status.index}__}"
+											th:each="persona, status : ${eventoWrapperShow.investigatori}">
+												<td th:text="${persona.anagrafica.cognome}"></td>
+												<td th:text="${persona.anagrafica.nome}"></td>
+												<td th:text="${persona.anagrafica.codiceFiscale}"></td>
+												<td th:text="${persona.qualifica}"></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div th:unless="${eventoWrapperShow.investigatori != null and !#sets.isEmpty(eventoWrapperShow.investigatori)}" class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
@@ -470,6 +644,16 @@
 							<div class="value danger" th:unless="${eventoWrapperShow.evento.eventoSponsorizzato != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
+					<!-- DICHIARAZIONE LETTA -->
+					<div class="item form-group">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show"> </span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapperShow.evento.eventoSponsorizzato != null and eventoWrapperShow.evento.eventoSponsorizzato == true}" th:text="#{label.info_sponsor_evento}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.eventoSponsorizzato != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
 					<!-- SPONSOR INFO -->
 					<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoSponsorizzato == true}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -502,7 +686,7 @@
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
-					<th:block th:if="${eventoWrapperShow.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALIMENTAZIONE_PRIMA_INFANZIA and eventoWrapperShow.evento.eventoSponsorizzato == true}">
+					<th:block>
 						<!-- RADIO SPONSOR PRIMA INFANZIA -->
 						<div class="item form-group">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -526,7 +710,7 @@
 						<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
 						<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null and eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia == false}">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
-								<span class="label-show" th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
+								<span class="label-show" th:text="#{label.allegato_autocertificazione_assenza_finanziamenti_sponsor}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
 							</label>
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 								<div class="value" th:if="${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>
@@ -629,6 +813,28 @@
 						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 							<div class="value" th:if="${eventoWrapperShow.evento.proceduraVerificaQualitaPercepita != null}" th:text="${eventoWrapperShow.evento.proceduraVerificaQualitaPercepita} ? #{label.sì} : #{label.no} "></div>
 							<div class="value danger" th:unless="${eventoWrapperShow.evento.proceduraVerificaQualitaPercepita != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					
+					<!-- REDAZIONE DI UN DOCUMENTO CONCLUSIVO -->
+					<div class="item form-group" th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.prevista_redazione_documento_conclusivo}">E’ prevista la redazione di un documento conclusivo quale ad es. linee guida, procedure, protocolli, indicazioni operative?</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapperShow.evento.previstaRedazioneDocumentoConclusivo != null}" th:text="${eventoWrapperShow.evento.previstaRedazioneDocumentoConclusivo} ? #{label.sì} : #{label.no} "></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.previstaRedazioneDocumentoConclusivo != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+					
+					<!-- PRESENTE TUTOR ESPERTO ESTERNO VALIDATORE -->
+					<div class="item form-group" th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.presente_tutor_esperto_esterno_validatore}">E’ presente un Tutor esperto esterno che validi le attività del gruppo?</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapperShow.evento.presenteTutorEspertoEsternoValidatoreAttivita != null}" th:text="${eventoWrapperShow.evento.presenteTutorEspertoEsternoValidatoreAttivita} ? #{label.sì} : #{label.no} "></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.presenteTutorEspertoEsternoValidatoreAttivita != null}" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
 

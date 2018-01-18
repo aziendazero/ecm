@@ -51,15 +51,15 @@ public class Utils {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		if(authentication == null){
-			LOGGER.info("Authentication null found");
+			LOGGER.debug("Authentication null found");
 			return null;
 		}else if(authentication instanceof AnonymousAuthenticationToken){
-			LOGGER.info("AnonymousAuthentication found");
+			LOGGER.debug("AnonymousAuthentication found");
 			return null;
 		}else if(authentication instanceof CasAuthenticationToken){
-			LOGGER.info("CasAuthentication found");
+			LOGGER.debug("CasAuthentication found");
 		}else if(authentication instanceof UsernamePasswordAuthenticationToken){
-			LOGGER.info("UsernamePasswordAuthenticationToken found");
+			LOGGER.debug("UsernamePasswordAuthenticationToken found");
 		}
 
 		currentUser = (CurrentUser) authentication.getPrincipal();

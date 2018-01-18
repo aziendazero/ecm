@@ -251,6 +251,17 @@
 							<div class="value danger" th:unless="${eventoWrapperShow.evento.titoloConvegno != null and !#strings.isEmpty(eventoWrapperShow.evento.titoloConvegno)}" th:text="#{label.dato_non_inserito}"></div>
 							</div>
 					</div>
+					
+					<!-- NUMERO PARTECIPANTI PER CORSO -->
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoRES == T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).CORSO_AGGIORNAMENTO and @eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.numero_partecipanti_per_corso}">Numero dei partecipanti</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapperShow.evento.numeroPartecipantiPerCorso != null}" th:text="${eventoWrapperShow.evento.numeroPartecipantiPerCorso.nome}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.numeroPartecipantiPerCorso != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
 
 					<!-- NUMERO PARTECIPANTI -->
 					<div class="item form-group">
@@ -304,10 +315,10 @@
 						</div>
 					</div>
 
-					<!-- DOCENTI/RELATORI/TUTOR -->
+					<!-- DOCENTI/RELATORI/TUTOR/MODERATORE -->
 					<div class="item form-group">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
-							<span class="label-show" th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
+							<span class="label-show" th:text="#{label.docenti_relatori_tutor_moderatore}">Docenti/Relatori/Tutor/Moderatore</span>
 						</label>
 						<div th:if="${eventoWrapperShow.evento.docenti != null and !#sets.isEmpty(eventoWrapperShow.evento.docenti)}">
 							<div class="item form-group" style="clear:both; padding:2px;"></div>
@@ -689,7 +700,7 @@
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
-					<th:block th:if="${eventoWrapperShow.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALIMENTAZIONE_PRIMA_INFANZIA and eventoWrapperShow.evento.eventoSponsorizzato == true}">
+					<th:block>
 						<!-- RADIO SPONSOR PRIMA INFANZIA -->
 						<div class="item form-group">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -713,7 +724,7 @@
 						<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
 						<div class="item form-group" th:if="${eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia != null and eventoWrapperShow.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia == false}">
 							<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
-								<span class="label-show" th:text="#{label.allegato_autocertificazione_assenza_finanziamenti}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
+								<span class="label-show" th:text="#{label.allegato_autocertificazione_assenza_finanziamenti_sponsor}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
 							</label>
 							<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 								<div class="value" th:if="${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapperShow.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>

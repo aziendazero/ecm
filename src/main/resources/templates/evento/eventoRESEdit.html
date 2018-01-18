@@ -72,8 +72,9 @@
 							</button>
 							<h4 id="container-titleNoPausa" class="modal-title" th:text="#{label.inserisci_attivita}">Inserisci attivita</h4>
 							<h4 id="container-titlePausa" class="modal-title" th:text="#{label.inserisci_pausa}">Inserisci pausa</h4>
-							<h4 id="container-titleValutazioneApprendimento" class="modal-title" th:text="#{label.inserisci_valutazione_apprendimento}">Inserisci pausa</h4>
-							<h4 id="container-titleRegistrazionePartecipanti" class="modal-title" th:text="#{label.inserisci_registrazione_partecipanti}">Inserisci pausa</h4>
+							<h4 id="container-titleValutazioneApprendimento" class="modal-title" th:text="#{label.inserisci_valutazione_apprendimento}">Inserisci Valutazione apprendimento</h4>
+							<h4 id="container-titleRegistrazionePartecipanti" class="modal-title" th:text="#{label.inserisci_registrazione_partecipanti}">Inserisci Registrazione partecipanti</h4>
+							<h4 id="container-titleSalutiIntroduttivi" class="modal-title" th:text="#{label.inserisci_saluti_introduttivi}">Inserisci Saluti introduttivi</h4>
 						</div>
 						<div class="modal-body" id="container-attivitaRES">
 							<form id="addAttivitaRES" name="addAttivitaRES" class="form-horizontal form-label-left"
@@ -155,7 +156,7 @@
 													<option
 														th:each="docente, row : ${eventoWrapper.docenti}"
 														th:value="${{docente.id}}"
-														th:text="${docente.anagrafica.cognome}">Docente Selezionato
+														th:text="${docente.descrizionePerAttivitaRES}">Docente Selezionato
 													</option>
 												</select>
 											</div>
@@ -764,6 +765,31 @@
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.titoloConvegno')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.titoloConvegno')}__}"></div>
 										</div>
 
+										<!-- NUMERO PARTECIPANTI PER CORSO (attivo se selezionato Corso di aggiornamento teorico e/o pratico (massimo 200 partecipanti)) -->
+										<div class="item form-group partecipanti-per_corso" style="display: none;" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipantiPerCorso')} ? 'bad'">
+											<div class="col-xs-1"></div>
+											<label class="control-label col-md-3 col-sm-3 col-xs-11">
+												<span th:text="#{label.numero_partecipanti_per_corso}"></span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<select id="numeroPartecipantiPerCorso"
+													class="selectpicker"
+													th:field="${eventoWrapper.evento.numeroPartecipantiPerCorso}"
+													data-width="100%" data-style="btn-primary"
+													data-actions-box="true" data-size="10"
+													data-hide-disabled="false"
+													title="Seleziona una tipologia..." th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}">
+													<option
+														th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum).values()}"
+														th:value="${tipologia}"
+														th:text="${tipologia.nome}">
+													</option>
+												</select>
+											</div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipantiPerCorso')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.numeroPartecipantiPerCorso')}__}"></div>
+										</div>
+
 										<!-- NUMERO PARTECIPANTI -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.numeroPartecipanti')} ? 'bad'">
 											<label class="control-label col-xs-1">
@@ -793,7 +819,7 @@
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabili')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.responsabili')}__}"></div>
 											<div class="item form-group" style="clear:both; padding:2px;"></div>
 											<div class="item form-group" style="clear:both">
-												<div class="col-xs-offset-1 col-xs-10">
+												<div id="responsabiliScientificiContainer" class="col-xs-offset-1 col-xs-10">
 													<th:block th:include="evento/eventoEdit :: responsabiliScientifici" />
 												</div>
 											</div>
@@ -805,14 +831,15 @@
 												<span>20</span>
 											</label>
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="docenti-relatori-tutor">
-												<span th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
+												<span id="docreltut" th:text="#{label.docenti_relatori_tutor}">Docenti/Relatori/Tutor</span>
+												<span id="docreltutmod" th:text="#{label.docenti_relatori_tutor_moderatore}">Docenti/Relatori/Tutor/Moderatore</span>
 												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"></div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.docenti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.docenti')}__}"></div>
 											<div class="item form-group" style="clear:both; padding:2px;"></div>
 											<div class="item form-group" style="clear:both">
-												<div class="col-xs-offset-1 col-xs-10">
+												<div id="docentiContainer" class="col-xs-offset-1 col-xs-10">
 													<th:block th:include="evento/eventoEdit :: docenti" />
 												</div>
 											</div>
@@ -1080,7 +1107,7 @@
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabileSegreteria')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.responsabileSegreteria')}__}"></div>
 											<div class="item form-group" style="clear:both; padding:2px;"></div>
 											<div class="item form-group" style="clear:both">
-												<div class="col-xs-offset-1 col-xs-10">
+												<div id="responsabileSegreteriaContainer" class="col-xs-offset-1 col-xs-10">
 													<th:block th:include="evento/eventoEdit :: responsabileSegreteria" />
 												</div>
 											</div>
@@ -1312,83 +1339,90 @@
 													</div>
 												</div>
 											</div>
-											<div class="no-padding infanzia-sponsor-radio item form-group" style="display: none;" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia')} ? 'bad'">
-												<div class="control-label col-xs-1"></div>
-												<label class="control-label col-md-3 col-sm-3 col-xs-11">
-													<span th:text="#{label.evento_sponsorizzato_infanzia_radio}">L’evento è sponsorizzato da aziende che trattano alimenti per la prima infanzia?</span>
-													<span class="required">*</span>
-												</label>
-												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-													<div class="radio">
-														<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
-															<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
-															<span th:text="#{label.sì}">Sì</span>
-														</label>
-													</div>
-													<div class="radio">
-														<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
-															<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
-															<span th:text="#{label.no}">No</span>
-														</label>
-													</div>
-												</div>
-												<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia')}__}"></div>
-											</div>
-											<div class="no-padding infanzia-sponsor-si" style="display: none;">
-												<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->
-												<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAutorizzazioneMinisteroSalute')} ? 'bad'">
-													<div class="col-xs-1"></div>
-													<label class="control-label col-md-3 col-sm-3 col-xs-11">
-														<span th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
-														<span class="required">*</span>
-													</label>
-													<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
-														<i class="fa fa-file-text"></i>
-														<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29212.docx"></a>
-													</div>
-													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-														<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block> -->
-														<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE}', autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, 'edit', false)" ></th:block>
-														<th:block th:if="${isRiedizione or isEditSemiBloccato}">
-															<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.id}|}"></a></div>
-															<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}" th:text="#{label.allegato_non_inserito}"></div>
-														</th:block>
-													</div>
-													<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAutorizzazioneMinisteroSalute')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('autocertificazioneAutorizzazioneMinisteroSalute')}__}"></div>
-												</div>
-											</div>
-											<div class="no-padding infanzia-sponsor-no" style="display: none;">
-												<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
-												<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia')} ? 'bad'">
-													<div class="col-xs-1"></div>
-													<label class="control-label col-md-3 col-sm-3 col-xs-11">
-														<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti_sponsor}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
-														<span class="required">*</span>
-													</label>
-													<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
-														<i class="fa fa-file-text"></i>
-														<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29210.docx"></a>
-													</div>
-													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-														<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block> -->
-														<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA}', autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, 'edit', false)" ></th:block>
-														<th:block th:if="${isRiedizione or isEditSemiBloccato}">
-															<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>
-															<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.allegato_non_inserito}"></div>
-														</th:block>
-													</div>
-													<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia')}__}"></div>
-												</div>
-											</div>
 										</div>
 
+										<div class="divider-dashed" ></div>
+
+										<!-- SEZIONE PORTATA FUORI CON NUMERAZIONE PROPRIA -->
+										<div class="no-padding infanzia-sponsor-radio item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia')} ? 'bad'">
+											<label class="control-label col-xs-1">
+												<span class="numVers1"></span><span class="numVers2">46</span>
+											</label>
+											<label class="control-label col-md-3 col-sm-3 col-xs-11">
+												<span th:text="#{label.evento_sponsorizzato_infanzia_radio}">L’evento è sponsorizzato da aziende che trattano alimenti per la prima infanzia?</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<div class="radio">
+													<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
+														<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${true}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+														<span th:text="#{label.sì}">Sì</span>
+													</label>
+												</div>
+												<div class="radio">
+													<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''" >
+														<input type="radio" class="flat sponsor-infanzia" th:field="${eventoWrapper.evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia}" th:value="${false}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+														<span th:text="#{label.no}">No</span>
+													</label>
+												</div>
+											</div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia')}__}"></div>
+										</div>
+										<div class="no-padding infanzia-sponsor-si">
+											<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->
+											<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAutorizzazioneMinisteroSalute')} ? 'bad'">
+												<div class="col-xs-1"></div>
+												<label class="control-label col-md-3 col-sm-3 col-xs-11">
+													<span th:text="#{label.allegato_autocertificazione_autorizzazione_ministero}">Autocertificazione di autorizzazione del Ministero della Salute</span>
+													<span class="required">*</span>
+												</label>
+												<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
+													<i class="fa fa-file-text"></i>
+													<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29212.docx"></a>
+												</div>
+												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+													<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block> -->
+													<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE}', autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, 'edit', false)" ></th:block>
+													<th:block th:if="${isRiedizione or isEditSemiBloccato}">
+														<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.id}|}"></a></div>
+														<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}" th:text="#{label.allegato_non_inserito}"></div>
+													</th:block>
+												</div>
+												<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAutorizzazioneMinisteroSalute')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('autocertificazioneAutorizzazioneMinisteroSalute')}__}"></div>
+											</div>
+										</div>
+										<div class="no-padding infanzia-sponsor-no">
+											<!-- ALLEGATO AUTOCERTIFICAZIONE ASSENZA PARTECIPAZIONE SPONSOR INFANZIA -->
+											<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia')} ? 'bad'">
+												<div class="col-xs-1"></div>
+												<label class="control-label col-md-3 col-sm-3 col-xs-11">
+													<span th:text="#{label.allegato_autocertificazione_assenza_finanziamenti_sponsor}">Autocertificazione relativa all'assenza di partecipazione finanziaria di imprese interessate agli alimenti per la prima infanzia</span>
+													<span class="required">*</span>
+												</label>
+												<div th:unless="${isRiedizione or isEditSemiBloccato}" class="model-link">
+													<i class="fa fa-file-text"></i>
+													<a class="autocertificazione_modello" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=991996&amp;name=DLFE-29210.docx"></a>
+												</div>
+												<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+													<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block> -->
+													<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA}', autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, 'edit', false)" ></th:block>
+													<th:block th:if="${isRiedizione or isEditSemiBloccato}">
+														<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>
+														<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.allegato_non_inserito}"></div>
+													</th:block>
+												</div>
+												<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia')}__}"></div>
+											</div>
+										</div>
+										<!-- SEZIONE PORTATA FUORI CON NUMERAZIONE PROPRIA -->
+											
 										<div class="divider-dashed" ></div>
 
 										<!-- FORME FINANZIAMENTO BLOCCO -->
 										<!-- RADIO FORME FINANZIAMENTO -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.altreFormeFinanziamento')} ? 'bad'">
 											<label class="control-label col-xs-1">
-												<span>46</span>
+												<span class="numVers1">46</span><span class="numVers2">47</span>
 											</label>
 											<label class="control-label col-md-3 col-sm-3 col-xs-11">
 												<span th:text="#{label.forme_finanziamento_radio}">Sono presenti forme di finanziamento?</span>
@@ -1463,7 +1497,7 @@
 										<!-- RADIO PARTNER -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoAvvalePartner')} ? 'bad'">
 											<label class="control-label col-xs-1">
-												<span>47</span>
+												<span class="numVers1">47</span><span class="numVers2">48</span>
 											</label>
 											<label class="control-label col-md-3 col-sm-3 col-xs-11">
 												<span th:text="#{label.si_avvale_di_partner}">L’evento si avvale di partner?</span>
@@ -1504,7 +1538,7 @@
 										<!-- DICHIARAZIONE CONFLITTO INTERESSI -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'dichiarazioneAssenzaConflittoInteresse')} ? 'bad'">
 											<label class="control-label col-xs-1">
-												<span>48</span>
+												<span class="numVers1">48</span><span class="numVers2">49</span>
 											</label>
 											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="dichiarazioneAssenzaConflittoInteresse">
 												<span th:text="#{label.dichiarazione_assenza_conflitto_interesse}">Dichiarazione di assenza di conflitto di interesse</span>
@@ -1530,7 +1564,7 @@
 										<!-- PROCEDURA VERIFICA QUALITÀ -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.proceduraVerificaQualitaPercepita')} ? 'bad'">
 											<label class="control-label col-xs-1">
-												<span>49</span>
+												<span class="numVers1">49</span><span class="numVers2">50</span>
 											</label>
 											<div class="control-label col-md-3 col-sm-3 col-xs-11">
 											</div>
@@ -1551,7 +1585,7 @@
 										<!-- AUTORIZZAZIONE -->
 										<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.autorizzazionePrivacy')} ? 'bad'">
 											<label class="control-label col-xs-1">
-												<span>50</span>
+												<span class="numVers1">50</span><span class="numVers2">51</span>
 											</label>
 											<div class="control-label col-md-3 col-sm-3 col-xs-11">
 											</div>
@@ -1590,6 +1624,15 @@
 						deselectAllText : 'Deseleziona tutti',
 						countSelectedText : '{0} selezionate'
 					});
+					
+					$('#dataInizio').on("apply.daterangepicker change", function() {
+						setDocRelTutMod();
+						setAttivitaSalutiIntroduttivi();
+						mostraNascondiCampoNumeroPartecipantiPerCorso();
+					});
+					$('#dataInizio').on('change', setDocRelTutMod);
+					$('#dataInizio').on('change', setAttivitaSalutiIntroduttivi);
+					$('#dataInizio').on('change', mostraNascondiCampoNumeroPartecipantiPerCorso);
 
 				    $("#addAttivitaRES-metodolgieDidattiche").prop('disabled',true);
 
@@ -1621,6 +1664,8 @@
 				});
 
 				function initAll(){
+					setDocRelTutMod();
+					setAttivitaSalutiIntroduttivi();
 
 					$("#add-attivitaRES-modal").draggable({
 					    handle: ".modal-content"
@@ -1925,6 +1970,11 @@
 							$(".radio-workshop").iCheck('enable');
 							$(".label-radio-workshop").removeClass("label-disabled");
 						}
+
+						$(".partecipanti-per_corso").slideUp("slow");
+						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+						$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+
 						$(".workshop-seminario").slideUp("slow");
 						$(".titolo-convegno").prop("disabled", true);
 						$("#brochure-obbligatoria").removeClass("hidden");
@@ -1939,6 +1989,11 @@
 						if($(".titolo-convegno").attr("data-editabile") === 'true') {
 							$(".titolo-convegno").prop("disabled", false);
 						}
+						
+						$(".partecipanti-per_corso").slideUp("slow");
+						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+						$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+						
 						$("#brochure-obbligatoria").removeClass("hidden");
 						abilitaModalitaVerificaApprendimento('esame');
 						$(".risultati-attesi-input").show();
@@ -1946,6 +2001,8 @@
 					case 'CORSO_AGGIORNAMENTO':
 						$(".convegno-congresso").slideUp("slow");
 						$(".workshop-seminario").slideUp("slow");
+						$(".partecipanti-per_corso").slideDown("slow");
+						
 						$(".radio-workshop").iCheck('disable');
 						$(".label-radio-workshop").addClass("label-disabled");
 						$(".titolo-convegno").prop("disabled", true);
@@ -1956,6 +2013,7 @@
 					default:
 						$(".convegno-congresso").slideUp("slow");
 						$(".workshop-seminario").slideUp("slow");
+						$(".partecipanti-per_corso").slideUp("slow");
 						$(".radio-workshop").iCheck('disable');
 						$(".label-radio-workshop").addClass("label-disabled");
 						$(".titolo-convegno").prop("disabled", true);
@@ -1964,8 +2022,43 @@
 						$(".risultati-attesi-input").show();
 						break;
 					}
+					mostraNascondiCampoNumeroPartecipantiPerCorso(value);
 				}
 
+				//funzione che calcola al doc ready o all'onchange della relativa select
+				//se mostrare o meno input aggiuntivi relativi alla tipologia dell'evento
+				function mostraNascondiCampoNumeroPartecipantiPerCorso(valueTipologiaEvento) {
+					if (typeof valueTipologiaEvento == 'undefined')
+						valueTipologiaEvento = $('#tipologia_evento').val();
+					var versione = getVersione();
+					if(versione === 2) {
+						switch (valueTipologiaEvento) {
+						case 'CONVEGNO_CONGRESSO':
+							$(".partecipanti-per_corso").slideUp("slow");
+							$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+							$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+							break;
+						case 'WORKSHOP_SEMINARIO':
+							$(".partecipanti-per_corso").slideUp("slow");
+							$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+							$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+							break;
+						case 'CORSO_AGGIORNAMENTO':
+							$(".partecipanti-per_corso").slideDown("slow");
+							break;
+						default:
+							$(".partecipanti-per_corso").slideUp("slow");
+							$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+							$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+							break;
+						}
+					} else {
+						$(".partecipanti-per_corso").slideUp("slow");
+						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+						$("#numeroPartecipantiPerCorso").selectpicker('refresh');						
+					}
+				}
+				
 				//funzione che calcola al doc ready o all'onchange della relativa select
 				//se mostrare o meno input aggiuntivi relativi alla lingua dell'evento
 				function mostraNascondiCampiLingua(value) {
@@ -2146,24 +2239,33 @@
 						$('#addAttivitaTo_indirizzo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.indirizzo").val(indirizzoVal);
 						$('#addAttivitaTo_luogo').attr("name","eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap[" + programmaIndex + "].programma.sede.luogo").val(luogoVal);
 
-						if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO' || extraType == 'REGISTRAZIONE PARTECIPANTI'){
+						if(extraType == 'PAUSA' || extraType == 'VALUTAZIONE APPRENDIMENTO' || extraType == 'REGISTRAZIONE PARTECIPANTI' || extraType == 'SALUTI INTRODUTTIVI'){
 							$("#container-titleNoPausa").hide();
 
 							if(extraType == 'PAUSA'){
 								$("#container-titlePausa").show();
 								$("#container-titleValutazioneApprendimento").hide();
 								$("#container-titleRegistrazionePartecipanti").hide();
+								$("#container-titleSalutiIntroduttivi").hide();
 							}
 							else if (extraType == 'VALUTAZIONE APPRENDIMENTO'){
 								$("#container-titleValutazioneApprendimento").show();
 								$("#container-titlePausa").hide();
 								$("#container-titleRegistrazionePartecipanti").hide();
+								$("#container-titleSalutiIntroduttivi").hide();
 							}
-							else {
+							else if (extraType == 'REGISTRAZIONE PARTECIPANTI'){
 								$("#container-titleRegistrazionePartecipanti").show();
 								$("#container-titlePausa").hide();
 								$("#container-titleValutazioneApprendimento").hide();
+								$("#container-titleSalutiIntroduttivi").hide();
+							} else {
+								$("#container-titleSalutiIntroduttivi").show();
+								$("#container-titleRegistrazionePartecipanti").hide();
+								$("#container-titlePausa").hide();
+								$("#container-titleValutazioneApprendimento").hide();
 							}
+
 							$("#container-argomento").hide();
 							$("#container-docente").hide();
 							$("#container-risultatoAtteso").hide();
@@ -2173,6 +2275,7 @@
 							$("#container-titlePausa").hide();
 							$("#container-titleValutazioneApprendimento").hide();
 							$("#container-titleRegistrazionePartecipanti").hide();
+							$("#container-titleSalutiIntroduttivi").hide();
 							$("#container-titleNoPausa").show();
 							$("#container-argomento").show();
 							$("#container-docente").show();
@@ -2356,6 +2459,27 @@
 						default: 	break;
 					}
 				}
+				
+				function setDocRelTutMod() {
+					var versione = getVersione();
+					if (versione === 2) {
+						$("#docreltut").hide();
+						$("#docreltutmod").show();
+					} else {
+						$("#docreltutmod").hide();
+						$("#docreltut").show();
+					}
+				}
+
+				function setAttivitaSalutiIntroduttivi() {
+					var versione = getVersione();
+					if (versione === 2) {
+						$(".attivitaSalutiIntroduttivi").show();
+					} else {
+						$(".attivitaSalutiIntroduttivi").hide();
+					}
+				}
+				
 			/*]]>*/
 			</script>
 		</div>

@@ -1,7 +1,5 @@
 package it.tredi.ecm.service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +24,6 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.PersistentSet;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
@@ -68,8 +65,6 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
-import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -80,17 +75,17 @@ import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
 import it.tredi.ecm.dao.enumlist.MotivazioneProrogaEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum;
 import it.tredi.ecm.dao.enumlist.RendicontazioneInviataStatoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
-import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
-import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
@@ -101,9 +96,9 @@ import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
-import it.tredi.ecm.exception.PagInCorsoException;
 import it.tredi.ecm.service.bean.EcmProperties;
-import it.tredi.ecm.service.enumlist.EventoVersioneEnum;
+import it.tredi.ecm.service.component.EventoCrediti;
+import it.tredi.ecm.service.controller.EventoServiceController;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -147,7 +142,11 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired private PagamentoService pagamentoService;
 	@Autowired private EngineeringService engineeringService;
+	
+	@Autowired private EventoCrediti eventoCrediti;
 
+	@Autowired private EventoServiceController eventoServiceController;
+	
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -653,6 +652,7 @@ public class EventoServiceImpl implements EventoService {
 				xml_b = XmlReportBuilder.buildXMLReportForCogeaps(rendiconto.getData(), evento);
 			}
 			catch (Exception e) {
+				LOGGER.error("Errore processando il file csv: " + fileName, e);
 				throw new EcmException("error.csv_to_xml_report_error", e.getMessage(), e);
 			}
 
@@ -917,6 +917,24 @@ public class EventoServiceImpl implements EventoService {
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) throws Exception{
 		Evento evento = eventoWrapper.getEvento();
 
+		if(evento instanceof EventoFSC) {
+			if(versioneEvento(evento) == EventoVersioneEnum.UNO_PRIMA_2018) {
+				//cancello eventuali esperti coordinatori e investigatori inseriti
+				if(eventoWrapper.getEsperti() != null)
+					eventoWrapper.getEsperti().clear();
+				if(eventoWrapper.getCoordinatori() != null)
+					eventoWrapper.getCoordinatori().clear();
+				if(eventoWrapper.getInvestigatori() != null)
+					eventoWrapper.getInvestigatori().clear();
+			} else {
+				//cancello investigatori inseriti se la TipologiaEventoFSC non è ATTIVITA_DI_RICERCA
+				if(((EventoFSC) evento).getTipologiaEventoFSC() != TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA) {
+					if(eventoWrapper.getInvestigatori() != null)
+						eventoWrapper.getInvestigatori().clear();
+				}
+			}
+		}
+		
 		calculateAutoCompilingData(eventoWrapper);
 
 		if(evento instanceof EventoRES){
@@ -935,11 +953,21 @@ public class EventoServiceImpl implements EventoService {
 			eventoRES.setRisultatiAttesi(risultatiAttesi);
 
 			//Docenti
-			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
+//			int pos = 0;
+//			for(PersonaEvento pers : eventoRES.getDocenti()) {
+//				//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+//				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+//					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+//					eventoRES.getDocenti().set(pos, p);
+//				}
+//				pos++;
+//			}
+			Iterator<PersonaEvento> it = eventoRES.getDocenti().iterator();
 			List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
 			while(it.hasNext()){
 				PersonaEvento p = it.next();
-				p = personaEventoRepository.findOne(p.getId());
+				if(eventoWrapper.getPersoneEventoInserite().contains(p))
+					p = personaEventoRepository.findOne(p.getId());
 				attachedList.add(p);
 			}
 			eventoRES.setDocenti(attachedList);
@@ -953,22 +981,94 @@ public class EventoServiceImpl implements EventoService {
 				eventoRES.setDocumentoVerificaRicaduteFormative(null);
 			}
 		}else if(evento instanceof EventoFSC){
+			EventoFSC eventoFSC = (EventoFSC) evento;
 			retrieveProgrammaAndAddJoin(eventoWrapper);
 
 			if(eventoWrapper.getRiepilogoRuoliFSC() != null) {
-				((EventoFSC) evento).getRiepilogoRuoli().clear();
-				((EventoFSC) evento).getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());
+				eventoFSC.getRiepilogoRuoli().clear();
+				eventoFSC.getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());
 			}
+			
+			//Esperti
+//			int pos = 0;
+//			for(PersonaEvento pers : eventoFSC.getEsperti()) {
+//				//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+//				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+//					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+//					eventoFSC.getEsperti().set(pos, p);
+//				}
+//				pos++;
+//			}
+			Iterator<PersonaEvento> itPersona = eventoFSC.getEsperti().iterator();
+			List<PersonaEvento> attachedListPersona = new ArrayList<PersonaEvento>();
+			while(itPersona.hasNext()){
+				PersonaEvento p = itPersona.next();
+				if(eventoWrapper.getPersoneEventoInserite().contains(p))
+					p = personaEventoRepository.findOne(p.getId());
+				attachedListPersona.add(p);
+			}
+			eventoFSC.setEsperti(attachedListPersona);
+			
+
+			//Coordinatori
+//			pos = 0;
+//			for(PersonaEvento pers : eventoFSC.getCoordinatori()) {
+//				//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+//				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+//					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+//					eventoFSC.getCoordinatori().set(pos, p);
+//				}
+//				pos++;
+//			}
+			itPersona = eventoWrapper.getCoordinatori().iterator();
+			attachedListPersona = new ArrayList<PersonaEvento>();
+			while(itPersona.hasNext()){
+				PersonaEvento p = itPersona.next();
+				if(eventoWrapper.getPersoneEventoInserite().contains(p))
+					p = personaEventoRepository.findOne(p.getId());
+				attachedListPersona.add(p);
+			}
+			eventoFSC.setCoordinatori(attachedListPersona);
+
+			//Investigatori
+//			pos = 0;
+//			for(PersonaEvento pers : eventoFSC.getInvestigatori()) {
+//				//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+//				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+//					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+//					eventoFSC.getInvestigatori().set(pos, p);
+//				}
+//				pos++;
+//			}
+			itPersona = eventoWrapper.getInvestigatori().iterator();
+			attachedListPersona = new ArrayList<PersonaEvento>();
+			while(itPersona.hasNext()){
+				PersonaEvento p = itPersona.next();
+				if(eventoWrapper.getPersoneEventoInserite().contains(p))
+					p = personaEventoRepository.findOne(p.getId());
+				attachedListPersona.add(p);
+			}
+			eventoFSC.setInvestigatori(attachedListPersona);
 		}else if(evento instanceof EventoFAD){
+			EventoFAD eventoFAD = (EventoFAD)evento;
 			//Docenti
-			Iterator<PersonaEvento> it = eventoWrapper.getDocenti().iterator();
+//			int pos = 0;
+//			for(PersonaEvento pers : eventoFAD.getDocenti()) {
+//				if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+//					PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+//					eventoFAD.getDocenti().set(pos, p);
+//				}
+//				pos++;
+//			}
+			Iterator<PersonaEvento> it = eventoFAD.getDocenti().iterator();
 			List<PersonaEvento> attachedList = new ArrayList<PersonaEvento>();
 			while(it.hasNext()){
 				PersonaEvento p = it.next();
+				if(eventoWrapper.getPersoneEventoInserite().contains(p))
 				p = personaEventoRepository.findOne(p.getId());
 				attachedList.add(p);
 			}
-			((EventoFAD)evento).setDocenti(attachedList);
+			eventoFAD.setDocenti(attachedList);
 
 			//Risultati Attesi
 //			Set<String> risultatiAttesi = new HashSet<String>();
@@ -1007,10 +1107,20 @@ public class EventoServiceImpl implements EventoService {
 		}
 
 		//Responsabili
+//		int pos = 0;
+//		for(PersonaEvento pers : evento.getResponsabili()) {
+//			//Se inserita durante la modifica dell'evento ricarico l'entity per evitare il detached object di hibernate e la sostituisco nella lista
+//			if(eventoWrapper.getPersoneEventoInserite().contains(pers)) {
+//				PersonaEvento p = personaEventoRepository.findOne(pers.getId());
+//				evento.getResponsabili().set(pos, p);
+//			}
+//			pos++;
+//		}
 		Iterator<PersonaEvento> itPersona = eventoWrapper.getResponsabiliScientifici().iterator();
 		List<PersonaEvento> attachedListPersona = new ArrayList<PersonaEvento>();
 		while(itPersona.hasNext()){
 			PersonaEvento p = itPersona.next();
+			if(eventoWrapper.getPersoneEventoInserite().contains(p))
 			p = personaEventoRepository.findOne(p.getId());
 			attachedListPersona.add(p);
 		}
@@ -1196,13 +1306,31 @@ public class EventoServiceImpl implements EventoService {
 			eventoWrapper.setRisultatiAttesiMapTemp(risultatiAttesiTemp);
 
 			//Docenti
-			eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
+			//eventoWrapper.setDocenti(((EventoRES) evento).getDocenti());
 
 			//Documento Verifica Ricadute Formative
 			if (((EventoRES) evento).getDocumentoVerificaRicaduteFormative() != null) {
 				eventoWrapper.setDocumentoVerificaRicaduteFormative(((EventoRES) evento).getDocumentoVerificaRicaduteFormative());
 			}
 		}else if(evento instanceof EventoFSC){
+			if(evento.getResponsabili() != null) {
+				//setto l'IdentificativoPersonaRuoloEvento su tutti i primi 3 responsabili scientifici
+				//faccio questo per i dati salvati prima dell'aggiunta del campo
+				personaEventoService.setIdentificativoPersonaRuoloEvento(evento.getResponsabili());
+			}
+
+			if(((EventoFSC) evento).getEsperti() != null) {
+				//setto l'IdentificativoPersonaRuoloEvento su tutti i primi 3 responsabili scientifici
+				//faccio questo per i dati salvati prima dell'aggiunta del campo
+				personaEventoService.setIdentificativoPersonaRuoloEvento(((EventoFSC) evento).getEsperti());
+			}
+			if(((EventoFSC) evento).getCoordinatori() != null) {
+				//setto l'IdentificativoPersonaRuoloEvento su tutti i primi 3 responsabili scientifici
+				//faccio questo per i dati salvati prima dell'aggiunta del campo
+				personaEventoService.setIdentificativoPersonaRuoloEvento(((EventoFSC) evento).getCoordinatori());
+			}
+
+			
 			//Programma
 			eventoWrapper.setProgrammaEventoFSC(((EventoFSC) evento).getFasiAzioniRuoli());
 
@@ -1214,9 +1342,15 @@ public class EventoServiceImpl implements EventoService {
 			for(RiepilogoRuoliFSC r : ((EventoFSC) evento).getRiepilogoRuoli())
 				eventoWrapper.getRiepilogoRuoliFSC().put(r.getRuolo(), r);
 
+//			//esperti
+//			eventoWrapper.setEsperti(((EventoFSC) evento).getEsperti());
+//			//coordinatori
+//			eventoWrapper.setCoordinatori(((EventoFSC) evento).getCoordinatori());
+//			//investigatori
+//			eventoWrapper.setInvestigatori(((EventoFSC) evento).getInvestigatori());
 		}else if(evento instanceof EventoFAD){
 			//Docenti
-			eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
+			//eventoWrapper.setDocenti(((EventoFAD) evento).getDocenti());
 
 			//risultati attesi
 			Long key = 1L;
@@ -1241,8 +1375,8 @@ public class EventoServiceImpl implements EventoService {
 			eventoWrapper.setProgrammaEventoFAD(((EventoFAD) evento).getProgrammaFAD());
 		}
 
-		//responsabili scientifici
-		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
+//		//responsabili scientifici
+//		eventoWrapper.setResponsabiliScientifici(evento.getResponsabili());
 
 		//sponsor
 		List<Sponsor> sponsors = new ArrayList<Sponsor>();
@@ -1291,7 +1425,7 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public void calculateAutoCompilingData(EventoWrapper eventoWrapper) throws Exception {
 		calcoloDurataEvento(eventoWrapper);
-		calcoloCreditiEvento(eventoWrapper);
+		eventoCrediti.calcoloCreditiEvento(eventoWrapper);
 		eventoWrapper.getEvento().calcolaCosto();
 	}
 
@@ -1303,7 +1437,7 @@ public class EventoServiceImpl implements EventoService {
 			durata = calcoloDurataEventoRES(eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values());
 			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
-			durata = calcoloDurataEventoFSC(eventoWrapper.getProgrammaEventoFSC(), eventoWrapper.getRiepilogoRuoliFSC());
+			durata = calcoloDurataEventoFSC(eventoWrapper);
 			((EventoFSC)eventoWrapper.getEvento()).setDurata(durata);
 			//calcolo partecipanti
 			int numPartecipanti = calcolaNumeroRuoloFSC(RuoloFSCBaseEnum.PARTECIPANTE, eventoWrapper.getRiepilogoRuoliFSC());
@@ -1365,11 +1499,11 @@ public class EventoServiceImpl implements EventoService {
 		return durata;
 	}
 
-	private float calcoloDurataEventoFSC(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum, RiepilogoRuoliFSC> riepilogoRuoliFSC){
+	private float calcoloDurataEventoFSC(EventoWrapper eventoWrapper){
 		float durata = 0;
 
-		prepareRiepilogoRuoli(programma, riepilogoRuoliFSC);
-		durata = getMaxDurataPatecipanti(riepilogoRuoliFSC);
+		prepareRiepilogoRuoli(eventoWrapper);
+		durata = getMaxDurataPatecipanti(eventoWrapper.getRiepilogoRuoliFSC());
 
 		durata = Utils.getRoundedFloatValue(durata, 2);
 		return durata;
@@ -1395,7 +1529,7 @@ public class EventoServiceImpl implements EventoService {
 		int counter = 0;
 		if(riepilogoRuoliMap != null){
 			for(RiepilogoRuoliFSC rrf : riepilogoRuoliMap.values()) {
-				if(rrf.getRuolo().getRuoloBase() == ruolo) {
+				if(rrf.getRuolo() != null && rrf.getRuolo().getRuoloBase() == ruolo) {
 					counter = counter + rrf.getNumeroPartecipanti();
 				}
 			}
@@ -1431,185 +1565,17 @@ public class EventoServiceImpl implements EventoService {
 		return durata;
 	}
 
-	private float calcoloCreditiEvento(EventoWrapper eventoWrapper) throws Exception {
-		float crediti = 0;
-
-		if(eventoWrapper.getEvento() instanceof EventoRES){
-			EventoRES evento = ((EventoRES)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEventoRES(), evento.getDurata(), eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES());
-			eventoWrapper.setCreditiProposti(crediti);
-			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
-			return crediti;
-		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
-			EventoFSC evento = ((EventoFSC)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoFSC(evento.getTipologiaEventoFSC(), eventoWrapper);
-			eventoWrapper.setCreditiProposti(crediti);
-			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FSC"));
-			return crediti;
-		}else if(eventoWrapper.getEvento() instanceof EventoFAD){
-			EventoFAD evento = ((EventoFAD)eventoWrapper.getEvento());
-			//crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
-			crediti = calcoloCreditiFormativiEventoFAD(evento);
-			eventoWrapper.setCreditiProposti(crediti);
-			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento FAD"));
-			return crediti;
-		}
-
-		return crediti;
-	}
-
-	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, Integer numeroPartecipanti, RiepilogoRES riepilogoRES){
-		float crediti = 0.0f;
-		float oreFrontale = 0f;
-		long minutiFrontale = 0;
-		float oreInterattiva = 0f;
-		long minutiInterattiva = 0;
-
-		riepilogoRES.clear();
-
-		for(EventoRESProgrammaGiornalieroWrapper progrGio : programma) {
-			for(DettaglioAttivitaRES a : progrGio.getProgramma().getProgramma()){
-				if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.FRONTALE){
-//					oreFrontale += a.getOreAttivita();
-					minutiFrontale += a.getMinutiAttivita();
-				}else if(a.getMetodologiaDidattica()!= null && a.getMetodologiaDidattica().getMetodologia() == TipoMetodologiaEnum.INTERATTIVA){
-//					oreInterattiva += a.getOreAttivita();
-					minutiInterattiva += a.getMinutiAttivita();
-				}
-
-				//popolo la lista di obiettivi formativi utilizzati
-				if(a.getObiettivoFormativo() != null)
-					riepilogoRES.getObiettivi().add(a.getObiettivoFormativo());
-
-				//popolo la lista di metodologie con annesso calcolo di ore
-				if(a.getMetodologiaDidattica() != null){
-					if(riepilogoRES.getMetodologie().containsKey(a.getMetodologiaDidattica())){
-						float ore = riepilogoRES.getMetodologie().get(a.getMetodologiaDidattica());
-						riepilogoRES.getMetodologie().put(a.getMetodologiaDidattica(), ore + a.getOreAttivita());
-					}else{
-						riepilogoRES.getMetodologie().put(a.getMetodologiaDidattica(), a.getOreAttivita());
-					}
-				}
-			}
-		}
-
-		oreFrontale = (float) minutiFrontale / 60;
-		oreFrontale = Utils.getRoundedFloatValue(oreFrontale, 2);
-		oreInterattiva = (float) minutiInterattiva / 60;
-		oreInterattiva = Utils.getRoundedFloatValue(oreInterattiva, 2);
-
-		riepilogoRES.setTotaleOreFrontali(oreFrontale);
-		riepilogoRES.setTotaleOreInterattive(oreInterattiva);
-
-		//approssimazione per calcolo con HALF_DOWN (2.5 -> 2 || 2.6 -> 3)
-		durata = Utils.getRoundedHALFDOWNFloatValue(durata);
-		oreFrontale = Utils.getRoundedHALFDOWNFloatValue(oreFrontale);
-		oreInterattiva = Utils.getRoundedHALFDOWNFloatValue(oreInterattiva);
-
-		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
-			crediti = (0.20f * (int) durata);
-			if(crediti > 5.0f)
-				crediti = 5.0f;
-		}
-
-		if(tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO){
-			crediti = 1 * (int) durata;
-			if(crediti > 50f)
-				crediti = 50f;
-		}
-
-		if(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO){
-			float creditiFrontale = 0f;
-			float creditiInterattiva = 0f;
-
-			//metodologia frontale
-			numeroPartecipanti = numeroPartecipanti!= null ? numeroPartecipanti.intValue() : 0;
-
-			if(numeroPartecipanti >=1 && numeroPartecipanti <=20){
-				creditiFrontale = (int) oreFrontale * 1.25f;
-			}else if(numeroPartecipanti >=21 && numeroPartecipanti <= 50){
-				float creditiDecrescenti = getQuotaFasciaDecrescenteForRES(numeroPartecipanti);
-				creditiFrontale = (int) oreFrontale * creditiDecrescenti;
-			}else if(numeroPartecipanti >=51 && numeroPartecipanti <=100){
-				creditiFrontale = (int) oreFrontale * 1.0f;
-			}else if(numeroPartecipanti >= 101 && numeroPartecipanti <= 150){
-				creditiFrontale = (int) oreFrontale* 0.75f;
-			}else if(numeroPartecipanti >= 151 && numeroPartecipanti <= 200){
-				creditiFrontale = (int) oreFrontale * 0.5f;
-			}
-
-			//metodologia interattiva
-			creditiInterattiva = (int) oreInterattiva * 1.5f;
-
-			crediti = creditiFrontale + creditiInterattiva;
-
-			if(crediti > 50f)
-				crediti = 50f;
-		}
-
-		crediti = Utils.getRoundedFloatValue(crediti, 1);
-
-		return crediti;
-	}
-
-	private float getQuotaFasciaDecrescenteForRES(int numeroPartecipanti){
-		switch (numeroPartecipanti){
-			case 21: return 1.24f;
-			case 22: return 1.23f;
-			case 23: return 1.23f;
-			case 24: return 1.22f;
-			case 25: return 1.21f;
-			case 26: return 1.20f;
-			case 27: return 1.19f;
-			case 28: return 1.19f;
-			case 29: return 1.18f;
-			case 30: return 1.17f;
-			case 31: return 1.16f;
-			case 32: return 1.15f;
-			case 33: return 1.15f;
-			case 34: return 1.14f;
-			case 35: return 1.13f;
-			case 36: return 1.12f;
-			case 37: return 1.11f;
-			case 38: return 1.10f;
-			case 39: return 1.10f;
-			case 40: return 1.08f;
-			case 41: return 1.08f;
-			case 42: return 1.07f;
-			case 43: return 1.06f;
-			case 44: return 1.06f;
-			case 45: return 1.05f;
-			case 46: return 1.04f;
-			case 47: return 1.03f;
-			case 48: return 1.02f;
-			case 49: return 1.02f;
-			case 50: return 1.01f;
-
-			default: return 0.0f;
-		}
-
-	}
-
-	private float calcoloCreditiFormativiEventoFSC(TipologiaEventoFSCEnum tipologiaEvento, EventoWrapper wrapper){
-		float crediti = 0.0f;
-
-		calcolaCreditiPartecipantiFSC(tipologiaEvento, wrapper.getRiepilogoRuoliFSC());
-		crediti = getMaxCreditiPartecipantiFSC(wrapper.getRiepilogoRuoliFSC());
-		calcolaCreditiAltriRuoliFSC(tipologiaEvento, wrapper.getRiepilogoRuoliFSC(),crediti);
-
-		return crediti;
-	}
 
 	/*
 	 * Ragruppo i Ruoli coinvolti in una mappa <Ruolo,RiepilogoRuoloOreFSC>
 	 * dove il RiepilogoRuoloOreFSC avra la somma delle ore dei ruoli
 	 * */
-	private void prepareRiepilogoRuoli(List<FaseAzioniRuoliEventoFSCTypeA> programma, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
-		if(riepilogoRuoliFSC != null)
+	private void prepareRiepilogoRuoli(EventoWrapper eventoWrapper){
+		if(eventoWrapper.getRiepilogoRuoliFSC() != null)
 		{
 			Set<RuoloFSCEnum> ruoliUsati = new HashSet<RuoloFSCEnum>();
 
-			Iterator<Entry<RuoloFSCEnum, RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
+			Iterator<Entry<RuoloFSCEnum, RiepilogoRuoliFSC>> iterator = eventoWrapper.getRiepilogoRuoliFSC().entrySet().iterator();
 			while(iterator.hasNext()){
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				pairs.getValue().setTempoDedicato(0f);
@@ -1618,152 +1584,43 @@ public class EventoServiceImpl implements EventoService {
 					iterator.remove();
 			}
 
-			for(FaseAzioniRuoliEventoFSCTypeA fase : programma){
-				for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
-					for(RuoloOreFSC ruolo : azione.getRuoli())
-					{
-						ruoliUsati.add(ruolo.getRuolo());
-
-						if(riepilogoRuoliFSC.containsKey(ruolo.getRuolo())){
-							RiepilogoRuoliFSC r = riepilogoRuoliFSC.get(ruolo.getRuolo());
-							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
-							r.addTempo(tempoDedicato);
-						}else{
-							float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
-							RiepilogoRuoliFSC r = new RiepilogoRuoliFSC(ruolo.getRuolo(), tempoDedicato, 0.0f);
-							riepilogoRuoliFSC.put(ruolo.getRuolo(), r);
+			//dpranteda - 17/01/2018: bugfix risolto, nel caso di modifica alle fasi attive non si aggiornavano tutti i calcoli
+			EventoFSC eventoFSC = ((EventoFSC)eventoWrapper.getEvento());
+			TipologiaEventoFSCEnum tipologiaEventoFSC = eventoFSC.getTipologiaEventoFSC();
+			ProgettiDiMiglioramentoFasiDaInserireFSCEnum fasiDaInserire = eventoFSC.getFasiDaInserire();
+			
+			for(FaseAzioniRuoliEventoFSCTypeA fase : eventoWrapper.getProgrammaEventoFSC()){
+				if(tipologiaEventoFSC != null && (tipologiaEventoFSC != TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO || ProgettiDiMiglioramentoFasiDaInserireFSCEnum.faseAbilitata(fasiDaInserire, fase.getFaseDiLavoro()))) {
+					for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
+						for(RuoloOreFSC ruolo : azione.getRuoli())
+						{
+							ruoliUsati.add(ruolo.getRuolo());
+	
+							if(eventoWrapper.getRiepilogoRuoliFSC().containsKey(ruolo.getRuolo())){
+								RiepilogoRuoliFSC r = eventoWrapper.getRiepilogoRuoliFSC().get(ruolo.getRuolo());
+								float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
+								r.addTempo(tempoDedicato);
+							}else{
+								float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
+								RiepilogoRuoliFSC r = new RiepilogoRuoliFSC(ruolo.getRuolo(), tempoDedicato, 0.0f);
+								eventoWrapper.getRiepilogoRuoliFSC().put(ruolo.getRuolo(), r);
+							}
 						}
 					}
 				}
 			}
 
-			iterator = riepilogoRuoliFSC.entrySet().iterator();
+			iterator = eventoWrapper.getRiepilogoRuoliFSC().entrySet().iterator();
 			while(iterator.hasNext()){
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(!ruoliUsati.contains(pairs.getValue().getRuolo()))
 					iterator.remove();
 			}
-
-
 		}
 	}
 
-	/*
-	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> calcolo i crediti dei PARTECIPANTI
-	 * */
-	private void calcolaCreditiPartecipantiFSC(TipologiaEventoFSCEnum tipologia, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
-		if(riepilogoRuoliFSC != null){
-			Iterator<Entry<RuoloFSCEnum,RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
-
-			while (iterator.hasNext()) {
-				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE)
-					pairs.getValue().calcolaCrediti(tipologia,0f);
-			 }
-		}
-	}
-
-	/*
-	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> calcolo i crediti degli altri RUOLI
-	 * */
-	private void calcolaCreditiAltriRuoliFSC(TipologiaEventoFSCEnum tipologia, Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC, float maxValue){
-		if(riepilogoRuoliFSC != null){
-			Iterator<Entry<RuoloFSCEnum,RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
-
-			while (iterator.hasNext()) {
-				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() != RuoloFSCBaseEnum.PARTECIPANTE)
-					pairs.getValue().calcolaCrediti(tipologia,maxValue);
-			 }
-		}
-	}
-
-	/*
-	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> individuo il valore MAX numero crediti attribuito a un PARTECIPANTE
-	 * */
-	private float getMaxCreditiPartecipantiFSC(Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
-		float max = 0.0f;
-
-		if(riepilogoRuoliFSC != null){
-			Iterator<Entry<RuoloFSCEnum,RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
-
-			while (iterator.hasNext()) {
-				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
-				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getCrediti() > max)
-					max = pairs.getValue().getCrediti();
-			 }
-		}
-
-		return max;
-	}
-	
-	private EventoVersioneEnum versioneEvento(Evento evento) {
-		EventoVersioneEnum versione = ecmProperties.getEventoVersioneDefault();
-		//se la data inizio dell'evento e' maggiore uguale al 2018 utilizzo il nuovo metodo di calcolo
-		if(evento.getDataInizio() != null) {
-			if(evento.getDataInizio().isAfter(ecmProperties.getEventoDataPassaggioVersioneDue()) || evento.getDataInizio().isEqual(ecmProperties.getEventoDataPassaggioVersioneDue())) {
-				versione = EventoVersioneEnum.DUE_DAL_2018;
-			} else {
-				versione = EventoVersioneEnum.UNO_PRIMA_2018;
-			}
-		}
-		return versione;
-	}
-
-	private float calcoloCreditiFormativiEventoFAD(EventoFAD evento) throws Exception {
-		//13/11/2017 task 12870 - Modifiche eventi FAD
-		EventoVersioneEnum versione = versioneEvento(evento);
-		switch (versione) {
-		case DUE_DAL_2018:
-			return calcoloCreditiFormativiEventoFADDal2018(evento);
-		case UNO_PRIMA_2018:
-			return calcoloCreditiFormativiEventoFADPre2018(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
-		default:
-			throw new Exception("Versione: " + versione + " non gestita");
-		}
-	}
-	
-	private float calcoloCreditiFormativiEventoFADDal2018(EventoFAD evento){
-		//crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
-		float crediti = 0.0f;
-		float durata = Utils.getRoundedHALFDOWNFloatValue(evento.getDurata());
-		
-		switch (evento.getTipologiaEventoFAD()) {
-		case APPRENDIMENTO_INDIVIDUALE_NO_ONLINE:
-			crediti = (int) durata * 1.0f;
-			break;
-		case APPRENDIMENTO_INDIVIDUALE_SI_ONLINE:
-		case APPRENDIMENTO_CONTESTO_SOCIALE:
-			if(evento.getSupportoSvoltoDaEsperto() != null && evento.getSupportoSvoltoDaEsperto())
-				crediti = (int) durata * 1.5f;
-			else
-				crediti = (int) durata * 1.0f;
-			break;
-		case EVENTI_SEMINARIALI_IN_RETE:
-			crediti = (int) durata * 1.5f;
-			break;
-		}
-
-		if(crediti > 50f)
-			crediti = 50f;
-		crediti = Utils.getRoundedFloatValue(crediti, 1);
-		return crediti;
-	}
-
-	private float calcoloCreditiFormativiEventoFADPre2018(float durata, Boolean conTutor){
-		float crediti = 0.0f;
-		durata = Utils.getRoundedHALFDOWNFloatValue(durata);
-
-		if(conTutor != null && conTutor)
-			crediti = (int) durata * 1.5f;
-		else
-			crediti = (int) durata * 1.0f;
-		if(crediti > 50f)
-			crediti = 50f;
-
-		crediti = Utils.getRoundedFloatValue(crediti, 1);
-
-		return crediti;
+	public EventoVersioneEnum versioneEvento(Evento evento) {
+		return eventoServiceController.versioneEvento(evento);
 	}
 
 	/*
@@ -1817,7 +1674,11 @@ public class EventoServiceImpl implements EventoService {
 		procedureFormative.addAll(accreditamento.getDatiAccreditamento().getProcedureFormative());
 		procedureFormative.remove(ProceduraFormativa.FAD);
 
+		if(ecmProperties.getEventoVersioniRieditabili() != null && !ecmProperties.getEventoVersioniRieditabili().isEmpty()) {
+			return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfterAndVersioneIn(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1), ecmProperties.getEventoVersioniRieditabili());			
+		} else {
 		return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1));
+	}
 	}
 
 	//trovo ultima edizione di un evento con il determinato prefix
@@ -1913,6 +1774,19 @@ public class EventoServiceImpl implements EventoService {
 					entityManager.detach(aref);
 				}
 				entityManager.detach(far);
+			}
+
+			for(PersonaEvento r : ((EventoFSC) eventoPadre).getEsperti()) {
+				LOGGER.debug(Utils.getLogMessage("Detach Esperti: " + r.getId()));
+				entityManager.detach(r);
+			}
+			for(PersonaEvento r : ((EventoFSC) eventoPadre).getCoordinatori()) {
+				LOGGER.debug(Utils.getLogMessage("Detach Coordinatori: " + r.getId()));
+				entityManager.detach(r);
+		}
+			for(PersonaEvento r : ((EventoFSC) eventoPadre).getInvestigatori()) {
+				LOGGER.debug(Utils.getLogMessage("Detach Investigatori: " + r.getId()));
+				entityManager.detach(r);
 			}
 		}
 
@@ -2118,6 +1992,33 @@ public class EventoServiceImpl implements EventoService {
 			List<RiepilogoRuoliFSC> riepilogoRuoli = new ArrayList<RiepilogoRuoliFSC>();
 			riepilogoRuoli.addAll(Arrays.asList(((EventoFSC) riedizione).getRiepilogoRuoli().toArray(new RiepilogoRuoliFSC[((EventoFSC) riedizione).getRiepilogoRuoli().size()])));
 			((EventoFSC) riedizione).setRiepilogoRuoli(riepilogoRuoli);
+			
+			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio esperti"));
+			for(PersonaEvento r : ((EventoFSC) riedizione).getEsperti()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione Esperto: " + r.getId()));
+				r.setId(null);
+				r.getAnagrafica().setCv(fileService.copyFile(r.getAnagrafica().getCv()));
+				personaEventoRepository.save(r);
+				LOGGER.debug(Utils.getLogMessage("Esperto clonato salvato: " + r.getId()));
+			}
+
+			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio coordinatori"));
+			for(PersonaEvento r : ((EventoFSC) riedizione).getCoordinatori()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione Coordinatore: " + r.getId()));
+				r.setId(null);
+				r.getAnagrafica().setCv(fileService.copyFile(r.getAnagrafica().getCv()));
+				personaEventoRepository.save(r);
+				LOGGER.debug(Utils.getLogMessage("Coordinatore clonato salvato: " + r.getId()));
+			}
+			
+			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio investigatori"));
+			for(PersonaEvento r : ((EventoFSC) riedizione).getInvestigatori()) {
+				LOGGER.debug(Utils.getLogMessage("Clonazione Investigatore: " + r.getId()));
+				r.setId(null);
+				r.getAnagrafica().setCv(fileService.copyFile(r.getAnagrafica().getCv()));
+				personaEventoRepository.save(r);
+				LOGGER.debug(Utils.getLogMessage("Investigatore clonato salvato: " + r.getId()));
+		}
 		}
 
 		//parte in comune
@@ -2868,4 +2769,51 @@ public class EventoServiceImpl implements EventoService {
 		return null;
 	}
 
+	private List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(List<PersonaEvento> personeEvento) {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(personeEvento != null) {
+			for(PersonaEvento pEv : personeEvento) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEvento() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEvento().getRuoloFSCResponsabileSCientifico());
+			}
+		}
+		return toRet;
+	}
+	
+	@Override
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(EventoFSC evento) {
+		return getListRuoloFSCEnumPerResponsabiliScientifici(evento.getResponsabili());
+	}
+
+	private List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti(List<PersonaEvento> personeEvento) {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(personeEvento != null) {
+			for(PersonaEvento pEv : personeEvento) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEvento() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEvento().getRuoloFSCEsperto());
+			}
+		}
+		return toRet;
+	}
+
+	@Override
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti(EventoFSC evento) {
+		return getListRuoloFSCEnumPerEsperti(evento.getEsperti());
+	}
+
+	private List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(List<PersonaEvento> personeEvento) {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(personeEvento != null) {
+			for(PersonaEvento pEv : personeEvento) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEvento() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEvento().getRuoloFSCCoordinatore());
+			}
+		}
+		return toRet;
+	}
+
+	@Override
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento) {
+		return getListRuoloFSCEnumPerCoordinatori(evento.getCoordinatori());
+	}
 }

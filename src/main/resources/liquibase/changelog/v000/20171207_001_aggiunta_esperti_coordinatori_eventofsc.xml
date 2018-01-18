@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20171207_001_aggiunta_esperti_coordinatori_eventofsc.xml">
+	<changeSet author="abarducci (generated)" id="1">
+		<addColumn tableName="persona_evento">
+			<column name="coordinatore_evento_id" type="int8"/>
+		</addColumn>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="2">
+		<addColumn tableName="persona_evento">
+			<column name="esperto_evento_id" type="int8"/>
+		</addColumn>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="3">
+		<addForeignKeyConstraint baseColumnNames="esperto_evento_id" baseTableName="persona_evento" constraintName="FK_eqk2vvyn8pwp5lfamb7j1acps" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
+	</changeSet>
+	<changeSet author="abarducci (generated)" id="4">
+		<addForeignKeyConstraint baseColumnNames="coordinatore_evento_id" baseTableName="persona_evento" constraintName="FK_tmcaom5sxsgjtv1dnh856c1el" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="evento"/>
+	</changeSet>
+</databaseChangeLog>
