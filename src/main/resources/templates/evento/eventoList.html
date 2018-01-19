@@ -224,8 +224,6 @@ function loadScript(url, callback){
 			</div>
 		</th:block>
 
-
-
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="x_panel">
@@ -261,124 +259,126 @@ function loadScript(url, callback){
 												<div class="modal-footer">
 													<label for="submitEventButton" class="btn btn-success pull-right">Conferma</label>
 												</div>
+											</div>
+										</div>
+									</div>
 							</div>
 						</div>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-
 						<!-- <div th:if="${#lists.isEmpty(eventoList)}">
 							<h2 class="col-xs-12 text-center">
 								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_evento_list}">Non ci sono eventi!</i>
 							</h2>
 						</div> -->
-					<div class = "eventiListWrapper" style = "width: 95%">
-						<table id="eventiListTable" th:unless="${ #lists.isEmpty(eventoList) or (showAllList != null) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-							<thead style = "word-break: keep-all !important;">
-								<tr>
-									<th class="text-full-length" th:if="${search != null and  (search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).ALIMENTAZIONE_PRIMA_INFANZIA || search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).MEDICINE_NON_CONVENZIONALI)}"><input name="select_all" value="1" id="select-all" type="checkbox"/> Archive</th>
-									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
-									<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
-									<th th:text="#{label.edizione_short}">label.edizione_short</th>
-									<th th:text="#{label.tipo}">label.tipo</th>
-									<th th:text="#{label.titolo}">label.titolo</th>
-									<th th:text="#{label.sede}">label.sede</th>
-									<th th:text="#{label.data_inizio}">label.date</th>
-									<th th:text="#{label.data_fine}">label.date</th>
-									<th th:text="#{label.stato}"></th>
-									<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
-									<th th:text="#{label.durata}">label.ore_corso</th>
-									<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
-									<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
-									<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody th:remove="all-but-first">
-								<tr th:each="evento, row : ${eventoList}">
-									<td th:if="${search != null and  (search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).ALIMENTAZIONE_PRIMA_INFANZIA || search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).MEDICINE_NON_CONVENZIONALI)}"><input th:value="${evento.id}" type="checkbox"/></td>
-									<td><a th:text="${evento.getCodiceIdentificativo()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/show|}"></a></td>
-									<td th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="${evento.provider.denominazioneLegale}"></td>
-									<td th:text="${evento.edizione}"></td>
-									<td th:text="${evento.proceduraFormativa.name()}"></td>
-									<td style="word-break: break-word" th:text="${evento.titolo}"></td>
-
-									<td th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
-										<span></span>
-									</td>
-									<td th:unless="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
-										<span th:text="${evento.sedeEvento?.luogo}"></span>
-									</td>
-
-									<td th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></td>
-									<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
-									<td>
-										<div th:text="${evento.stato.nome}"></div>
-										<div th:if="${evento.pagato != null and evento.pagato and !evento.isCancellato()}"><span class="label-pagato" th:text="#{label.pagato}"></span></div>
-										<div th:if="${evento.isCancellato()}"><span class="label-non-pagato" th:text="#{label.cancellato}"></span></div>
-										<div th:if="${evento.pagato == null or (!evento.pagato and !evento.isCancellato())}">
-											<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>
-											<span th:unless="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.da_pagare}"></span>
-										</div>
-									</td>
-									<td th:text="${evento.numeroPartecipanti}"></td>
-									<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario( evento.durata != null ? evento.durata : 0)}"></td>
-									<td th:text="${evento.dataScadenzaInvioRendicontazione == null} ? '' : ${#temporals.format(evento.dataScadenzaInvioRendicontazione, 'dd/MM/yyyy')}"></td>
-									<td>
-										<div th:if="${evento.confermatiCrediti != null}">
-											<i class="fa table-icon fa-check green" th:if="${evento.confermatiCrediti}" th:title="#{label.sì}"></i>
-											<i class="fa table-icon fa-remove red" th:unless="${evento.confermatiCrediti}" th:title="#{label.no}"></i>
-										</div>
-										<div th:if="${evento.confermatiCrediti == null}">
-											<i class="fa table-icon fa-question grey" th:title="#{label.non_specificato}"></i>
-										</div>
-									</td>
-									<td class="text-full-length" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">
-										<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit() or #authentication.principal.isSegreteria()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
-										<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalScadenze(${evento.id}, '${evento.dataScadenzaPagamento}', '${evento.dataScadenzaInvioRendicontazione}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
-
-										<!-- TODO DISABILITATO PER LA PRODUZIONE -->
-										<th:block th:if="${evento.canDoPagamento()}">
-											<a th:if="${evento.provider.myPay == true or (evento.provider.myPay == null and evento.provider.isGruppoB())}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>
-											<a th:if="${evento.provider.myPay == false}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/quietanzaPage|}" th:title="#{label.allega_quietanza}"><i class="fa fa-euro"></i></a>
-										</th:block>
-										<a th:if="${evento.pagato and evento.pagatoQuietanza}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/quietanzaPagamento/show|}"  th:title="#{label.visualizza_quietanza}"><i class="fa fa-euro"> </i></a>
-
-										<a class="btn btn-primary min-icon-width" th:if="${#authentication.principal.account.isSegreteria()}" th:href="@{|/audit/entity/${evento.getAuditEntityType()}/entityId/${evento.id}|}" th:title="#{label.registro_operazioni}"><i class="fa fa-book"></i></a>
-										<a class="btn btn-warning min-icon-width" th:if="${evento.canDoRendicontazione()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/rendiconto|}" th:title="#{label.rendiconto}"><i class="fa fa-file-text"></i></a>
-										<a class="btn btn-primary min-icon-width" th:if="${evento.canDoUploadSponsor()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/allegaContrattiSponsor|}" th:title="#{label.allega_contratti_sponsor}"><i class="fa fa-file"></i></a>
-										<button class="btn btn-danger min-icon-width" th:if="${evento.canEdit()}" th:onclick="|confirmDeleteEventoModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}','${evento.stato}')|" th:title="${evento.stato == T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).BOZZA} ? #{label.elimina} : #{label.annulla}"><i class="fa fa-trash"></i></button>
-									</td>
-									<td></td>
-								</tr>
-							</tbody>
-						</table>
+						<div class = "eventiListWrapper" style = "width: 95%">
+							<table id="eventiListTable" th:if="${(eventoList != null and !#lists.isEmpty(eventoList)) and (showAllList == null or showAllList == false) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead style = "word-break: keep-all !important;">
+									<tr>
+										<th class="text-full-length" th:if="${search != null and  (search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).ALIMENTAZIONE_PRIMA_INFANZIA || search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).MEDICINE_NON_CONVENZIONALI)}"><input name="select_all" value="1" id="select-all" type="checkbox"/> Archive</th>
+										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
+										<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
+										<th th:text="#{label.edizione_short}">label.edizione_short</th>
+										<th th:text="#{label.tipo}">label.tipo</th>
+										<th th:text="#{label.titolo}">label.titolo</th>
+										<th th:text="#{label.sede}">label.sede</th>
+										<th th:text="#{label.data_inizio}">label.date</th>
+										<th th:text="#{label.data_fine}">label.date</th>
+										<th th:text="#{label.stato}"></th>
+										<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
+										<th th:text="#{label.durata}">label.ore_corso</th>
+										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
+										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
+										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody th:remove="all-but-first">
+									<tr th:each="evento, row : ${eventoList}">
+										<td th:if="${search != null and  (search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).ALIMENTAZIONE_PRIMA_INFANZIA || search == T(it.tredi.ecm.dao.enumlist.EventoSearchEnum).MEDICINE_NON_CONVENZIONALI)}"><input th:value="${evento.id}" type="checkbox"/></td>
+										<td><a th:text="${evento.getCodiceIdentificativo()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/show|}"></a></td>
+										<td th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="${evento.provider.denominazioneLegale}"></td>
+										<td th:text="${evento.edizione}"></td>
+										<td th:text="${evento.proceduraFormativa.name()}"></td>
+										<td style="word-break: break-word" th:text="${evento.titolo}"></td>
+	
+										<td th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
+											<span></span>
+										</td>
+										<td th:unless="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
+											<span th:text="${evento.sedeEvento?.luogo}"></span>
+										</td>
+	
+										<td th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></td>
+										<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
+										<td>
+											<div th:text="${evento.stato.nome}"></div>
+											<div th:if="${evento.pagato != null and evento.pagato and !evento.isCancellato()}"><span class="label-pagato" th:text="#{label.pagato}"></span></div>
+											<div th:if="${evento.isCancellato()}"><span class="label-non-pagato" th:text="#{label.cancellato}"></span></div>
+											<div th:if="${evento.pagato == null or (!evento.pagato and !evento.isCancellato())}">
+												<span th:if="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.pagInCorso}"></span>
+												<span th:unless="${evento.pagInCorso}" class="label-non-pagato" th:text="#{label.da_pagare}"></span>
+											</div>
+										</td>
+										<td th:text="${evento.numeroPartecipanti}"></td>
+										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario( evento.durata != null ? evento.durata : 0)}"></td>
+										<td th:text="${evento.dataScadenzaInvioRendicontazione == null} ? '' : ${#temporals.format(evento.dataScadenzaInvioRendicontazione, 'dd/MM/yyyy')}"></td>
+										<td>
+											<div th:if="${evento.confermatiCrediti != null}">
+												<i class="fa table-icon fa-check green" th:if="${evento.confermatiCrediti}" th:title="#{label.sì}"></i>
+												<i class="fa table-icon fa-remove red" th:unless="${evento.confermatiCrediti}" th:title="#{label.no}"></i>
+											</div>
+											<div th:if="${evento.confermatiCrediti == null}">
+												<i class="fa table-icon fa-question grey" th:title="#{label.non_specificato}"></i>
+											</div>
+										</td>
+										<td class="text-full-length" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">
+											<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit() or #authentication.principal.isSegreteria()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
+											<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalScadenze(${evento.id}, '${evento.dataScadenzaPagamento}', '${evento.dataScadenzaInvioRendicontazione}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
+	
+											<!-- TODO DISABILITATO PER LA PRODUZIONE -->
+											<th:block th:if="${evento.canDoPagamento()}">
+												<a th:if="${evento.provider.myPay == true or (evento.provider.myPay == null and evento.provider.isGruppoB())}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>
+												<a th:if="${evento.provider.myPay == false}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/quietanzaPage|}" th:title="#{label.allega_quietanza}"><i class="fa fa-euro"></i></a>
+											</th:block>
+											<a th:if="${evento.pagato and evento.pagatoQuietanza}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/quietanzaPagamento/show|}"  th:title="#{label.visualizza_quietanza}"><i class="fa fa-euro"> </i></a>
+	
+											<a class="btn btn-primary min-icon-width" th:if="${#authentication.principal.account.isSegreteria()}" th:href="@{|/audit/entity/${evento.getAuditEntityType()}/entityId/${evento.id}|}" th:title="#{label.registro_operazioni}"><i class="fa fa-book"></i></a>
+											<a class="btn btn-warning min-icon-width" th:if="${evento.canDoRendicontazione()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/rendiconto|}" th:title="#{label.rendiconto}"><i class="fa fa-file-text"></i></a>
+											<a class="btn btn-primary min-icon-width" th:if="${evento.canDoUploadSponsor()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/allegaContrattiSponsor|}" th:title="#{label.allega_contratti_sponsor}"><i class="fa fa-file"></i></a>
+											<button class="btn btn-danger min-icon-width" th:if="${evento.canEdit()}" th:onclick="|confirmDeleteEventoModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}','${evento.stato}')|" th:title="${evento.stato == T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).BOZZA} ? #{label.elimina} : #{label.annulla}"><i class="fa fa-trash"></i></button>
+										</td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 						<div class = "eventiListWrapper" style = "width: 100%">
-						<table th:if="${showAllList}" class = "datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-							<thead>
-									<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
-									<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
-									<th th:text="#{label.edizione_short}">label.edizione_short</th>
-									<th th:text="#{label.tipo}">label.tipo</th>
-									<th th:text="#{label.titolo}">label.titolo</th>
-									<th th:text="#{label.sede}">label.sede</th>
-									<th th:text="#{label.data_inizio}">label.date</th>
-									<th th:text="#{label.data_fine}">label.date</th>
-									<th th:text="#{label.stato}"></th>
-									<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
-									<th th:text="#{label.durata}">label.ore_corso</th>
-									<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
-									<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
-									<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
+							<table th:if="${showAllList != null and showAllList == true}" class = "datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
+										<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
+										<th th:text="#{label.edizione_short}">label.edizione_short</th>
+										<th th:text="#{label.tipo}">label.tipo</th>
+										<th th:text="#{label.titolo}">label.titolo</th>
+										<th th:text="#{label.sede}">label.sede</th>
+										<th th:text="#{label.data_inizio}">label.date</th>
+										<th th:text="#{label.data_fine}">label.date</th>
+										<th th:text="#{label.stato}"></th>
+										<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
+										<th th:text="#{label.durata}">label.ore_corso</th>
+										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
+										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
+										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 										<th></th>
-							</thead>
-							<tbody>
-							</tbody>
-						</table>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
-			</div>
 			</div>
 
 			<script th:inline="javascript">

@@ -470,7 +470,7 @@ public class EventoController {
 			}else{
 				//svuota sessione eventoList per ricaricare tutto
 				//Removed model Atrribute eventoList
-				//redirectAttrs.addFlashAttribute("eventoList", null);
+				redirectAttrs.addFlashAttribute("eventoList", null);
 				Long providerId = currentProvider.getId();
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
 				return "redirect:/provider/"+providerId+"/evento/list";
@@ -491,10 +491,13 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"));
 		try {
 			//Remove old database call for loading eventi, loading is done using lazy loading
-//			if(model.asMap().get("eventoList") == null || !Objects.equals(providerId, model.asMap().get("providerId")))
-//				model.addAttribute("eventoList", eventoService.getAllEventiForProviderId(providerId));
-			//model attribute to tell if template should display full list of events using ajax
-			model.addAttribute("showAllList", true);
+			if(model.asMap().get("eventoList") == null || !Objects.equals(providerId, model.asMap().get("providerId"))) {
+				//model attribute to tell if template should display full list of events using ajax
+				model.asMap().remove("eventoList");
+				model.addAttribute("showAllList", true);
+			}else {
+				model.addAttribute("showAllList", false);
+			}
 			return goToList(model, providerId, request);
 		}
 		catch (AccreditamentoNotFoundException accreditamentoNotFoundEx) {
