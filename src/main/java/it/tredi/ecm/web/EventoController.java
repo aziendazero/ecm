@@ -2129,8 +2129,10 @@ public class EventoController {
 				case CREDITI_NON_CONFERMATI : listaEventi = eventoService.getEventiCreditiNonConfermati();
 								break;
 				case ALIMENTAZIONE_PRIMA_INFANZIA : listaEventi = eventoService.getEventiAlimentazionePrimaInfanzia();
-								break;
+													model.addAttribute("archiviaEvento",true);
+													break;
 				case MEDICINE_NON_CONVENZIONALI : listaEventi = eventoService.getEventiMedicineNonConvenzionali();
+													model.addAttribute("archiviaEvento",true);
 								break;
 
 				default: break;
