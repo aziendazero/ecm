@@ -283,6 +283,12 @@ public class Evento extends BaseEntity {
 	@Column(name = "contenuti_evento")
 	@Enumerated(EnumType.STRING)
 	private ContenutiEventoEnum contenutiEvento;
+	
+	@Column(name= "archiviato_prima_infanzia")
+	private boolean archivatoPrimaInfanzia;
+	
+	@Column(name="archiviato_medicinali_non_convenzionati")
+	private boolean archiviatoMedicinali;
 
 	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	@Column(name = "data_inizio")//inizio evento

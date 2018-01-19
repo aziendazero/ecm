@@ -2,9 +2,11 @@ package it.tredi.ecm.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -76,6 +78,7 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoSearchEnum;
@@ -2131,6 +2134,7 @@ public class EventoController {
 			}
 
 			model.addAttribute("label", search.getNome());
+			model.addAttribute("search", search);
 			model.addAttribute("eventoList", listaEventi);
 			model.addAttribute("canCreateEvento", false);
 			if(Utils.getAuthenticatedUser().isSegreteria())
@@ -2195,6 +2199,23 @@ public class EventoController {
 			LOGGER.error(Utils.getLogMessage("POST /evento/ricerca"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/evento/ricerca";
+		}
+	}
+	
+	@RequestMapping(value = "/evento/{search}/archivia", method = RequestMethod.POST)
+	public String archiveEvent(@RequestParam("event_Id") List<Long> ids, @PathVariable("search") EventoSearchEnum search, Model model, RedirectAttributes redirectAttrs, HttpServletRequest request) {
+		LOGGER.info(Utils.getLogMessage("POST /evento/archivia"));
+		try{
+				List<Long> idsLong = ids;
+				eventoService.archiveEventoInPrimaInfanziaOrMedNonConv(idsLong);
+				LOGGER.info(Utils.getLogMessage("REDIRECT success: /eventi/ALIMENTAZIONE_PRIMA_INFANZIA/list"));
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "label.archivia_success", "success"));
+				return "redirect:/eventi/" + search + "/list";
+		}catch (Exception ex){
+			LOGGER.info(Utils.getLogMessage("Errore: /evento/archiva"));
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.error(Utils.getLogMessage(ex.getMessage()),ex);
+			return "redirect:/home";
 		}
 	}
 

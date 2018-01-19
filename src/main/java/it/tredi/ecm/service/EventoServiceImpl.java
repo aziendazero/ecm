@@ -1,5 +1,7 @@
 package it.tredi.ecm.service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.PersistentSet;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
@@ -65,6 +68,8 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.ProgrammaGiornalieroRES;
+import it.tredi.ecm.dao.entity.Provider;
+import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.entity.RendicontazioneInviata;
 import it.tredi.ecm.dao.entity.RiepilogoFAD;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
@@ -2615,13 +2620,13 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public Set<Evento> getEventiAlimentazionePrimaInfanzia(){
 		LOGGER.debug("Recupero eventi con alimenti prima infanzia");
-		return eventoRepository.findAllByContenutiEvento(ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA);
+		return eventoRepository.findAllByContenutiEventoAndArchivatoPrimaInfanziaFalse(ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA);
 	}
 
 	@Override
 	public Integer countAllEventiAlimentazionePrimaInfanzia(){
 		LOGGER.debug("Conteggio eventi con alimenti prima infanzia");
-		return eventoRepository.countAllByContenutiEvento(ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA);
+		return eventoRepository.countAllByContenutiEventoAndArchivatoPrimaInfanziaFalse(ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA);
 	}
 
 	@Override
@@ -2629,7 +2634,7 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug("Recupero eventi con medicine non convenzionali");
 		//l'obiettivo 1042 è un obiettivo nazionale (medicine non convenzionali)
 		Obiettivo nonConvenzionale = obiettivoService.getObiettivo(1042L);
-		return eventoRepository.findAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE, nonConvenzionale);
+		return eventoRepository.findAllByArchiviatoMedicinaliFalseAndContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE, nonConvenzionale);
 	}
 
 	@Override
@@ -2637,7 +2642,7 @@ public class EventoServiceImpl implements EventoService {
 		LOGGER.debug("Conteggio eventi con medicine non convenzionali");
 		//l'obiettivo 1042 è un obiettivo nazionale (medicine non convenzionali)
 		Obiettivo nonConvenzionale = obiettivoService.getObiettivo(1042L);
-		return eventoRepository.countAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE, nonConvenzionale);
+		return eventoRepository.countAllByArchiviatoMedicinaliFalseAndContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum.MEDICINE_NON_CONVENZIONALE, nonConvenzionale);
 	}
 
 //	@Override
@@ -2815,5 +2820,21 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento) {
 		return getListRuoloFSCEnumPerCoordinatori(evento.getCoordinatori());
+	}
+	
+		@Override
+	public void archiveEventoInPrimaInfanziaOrMedNonConv(List<Long> ids) {
+			List<Evento> events = eventoRepository.findAll(ids);
+			
+			for(Evento event : events) {
+				if(event.getContenutiEvento().equals(ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA)) {
+					event.setArchivatoPrimaInfanzia(true);
+					eventoRepository.save(event);
+				} else {
+					event.setArchiviatoMedicinali(true);
+					eventoRepository.save(event);
+				}
+			}
+		
 	}
 }

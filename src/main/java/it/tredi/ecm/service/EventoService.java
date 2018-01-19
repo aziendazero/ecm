@@ -105,4 +105,6 @@ public interface EventoService {
 	public 	List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(EventoFSC evento);
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti(EventoFSC evento);
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento);
+	
+	public void archiveEventoInPrimaInfanziaOrMedNonConv(List<Long> ids);
 }

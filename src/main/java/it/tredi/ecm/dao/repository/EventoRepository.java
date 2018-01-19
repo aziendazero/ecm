@@ -50,13 +50,19 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Evento findOneByPrefix(String prefix);
 	public Evento findOneByPrefixAndEdizione(String prefix, int edizione);
 
-	public Integer countAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum medicineNonConvenzionale, Obiettivo nonConvenzionale);
-	public Set<Evento> findAllByContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum medicineNonConvenzionale, Obiettivo nonConvenzionale);
-	public Integer countAllByContenutiEvento(ContenutiEventoEnum alimentazionePrimaInfanzia);
-	public Set<Evento> findAllByContenutiEvento(ContenutiEventoEnum alimentazionePrimaInfanzia);
+	//public Integer countAllByArchiviatoMedicinaliFalseAndContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum medicineNonConvenzionale, Obiettivo nonConvenzionale);
+	//public Set<Evento> findAllByArchiviatoMedicinaliFalseAndContenutiEventoOrObiettivoNazionale(ContenutiEventoEnum medicineNonConvenzionale, Obiettivo nonConvenzionale);
+	public Integer countAllByContenutiEventoAndArchivatoPrimaInfanziaFalse(ContenutiEventoEnum alimentazionePrimaInfanzia);
+	public Set<Evento> findAllByContenutiEventoAndArchivatoPrimaInfanziaFalse(ContenutiEventoEnum alimentazionePrimaInfanzia);
 
 	//MEV RIEDIZIONI 04/2017
 	public Set<Evento> findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(Long providerId, EventoStatoEnum bozza, EventoStatoEnum cancellato, Set<ProceduraFormativa> procedureFormative, LocalDate fineAnnoScorso);
+	
+	@Query("Select e FROM Evento e WHERE e.archiviatoMedicinali <> true AND (e.contenutiEvento = :medicineNonConvenzionale OR e.obiettivoNazionale = :nonConvenzionale)")
+	public Set<Evento> findAllByArchiviatoMedicinaliFalseAndContenutiEventoOrObiettivoNazionale(@Param("medicineNonConvenzionale") ContenutiEventoEnum medicineNonConvenzionale, @Param("nonConvenzionale") Obiettivo nonConvenzionale);
+	
+	@Query("Select COUNT (e) FROM Evento e WHERE e.archiviatoMedicinali <> true AND (e.contenutiEvento = :medicineNonConvenzionale OR e.obiettivoNazionale = :nonConvenzionale)")
+	public int countAllByArchiviatoMedicinaliFalseAndContenutiEventoOrObiettivoNazionale(@Param("medicineNonConvenzionale") ContenutiEventoEnum medicineNonConvenzionale, @Param("nonConvenzionale") Obiettivo nonConvenzionale);
 
 	//RIEDIZIONI CON VERSIONE EVENTO
 	public Set<Evento> findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfterAndVersioneIn(Long providerId, EventoStatoEnum bozza, EventoStatoEnum cancellato, Set<ProceduraFormativa> procedureFormative, LocalDate fineAnnoScorso, Set<EventoVersioneEnum> versione);
