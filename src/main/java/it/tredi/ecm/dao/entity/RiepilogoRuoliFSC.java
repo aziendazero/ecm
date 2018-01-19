@@ -431,20 +431,15 @@ public class RiepilogoRuoliFSC {
 					switch(ruolo.getRuoloBase())
 					{
 						case PARTECIPANTE:
-							if(evento.getTipologiaGruppo() != null && evento.getTipologiaGruppo() != TipologiaGruppoFSCEnum.COMITATI_AZIENDALI_PERMANENTI) {
-								moltiplicatore = 1f;
-								if(evento.getPrevistaRedazioneDocumentoConclusivo() != null && evento.getPrevistaRedazioneDocumentoConclusivo().booleanValue()) {
-									moltiplicatore += 0.3f;
-								}
-								if(evento.getPresenteTutorEspertoEsternoValidatoreAttivita() != null && evento.getPresenteTutorEspertoEsternoValidatoreAttivita().booleanValue()) {
-									moltiplicatore += 0.3f;
-								}
-								if(evento.getObiettivoRegionale() != null && evento.getObiettivoRegionale().getId() != NON_RIENTRA_NEGLI_OBIETTIVI_REGIONALI_ID) {
-									moltiplicatore += 0.3f;
-								}
-							} else {
-								//evento.getTipologiaGruppo() == null || evento.getTipologiaGruppo() == TipologiaGruppoFSCEnum.COMITATI_AZIENDALI_PERMANENTI
-								moltiplicatore = 1f;
+							moltiplicatore = 1f;
+							if(evento.getPrevistaRedazioneDocumentoConclusivo() != null && evento.getPrevistaRedazioneDocumentoConclusivo().booleanValue()) {
+								moltiplicatore += 0.3f;
+							}
+							if(evento.getPresenteTutorEspertoEsternoValidatoreAttivita() != null && evento.getPresenteTutorEspertoEsternoValidatoreAttivita().booleanValue()) {
+								moltiplicatore += 0.3f;
+							}
+							if(evento.getObiettivoRegionale() != null && evento.getObiettivoRegionale().getId() != NON_RIENTRA_NEGLI_OBIETTIVI_REGIONALI_ID) {
+								moltiplicatore += 0.3f;
 							}
 								
 							crediti = moltiplicatore * (int) tempoDedicato;
