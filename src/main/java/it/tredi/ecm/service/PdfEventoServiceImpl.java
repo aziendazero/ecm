@@ -237,11 +237,10 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 			addCellLabelCampoValoreSponsors("label.sponsors", evento.getSponsors(), tableFields);
 		
 		//<!-- RADIO SPONSOR PRIMA INFANZIA -->
-		if(evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA 
-				&& (eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE 
+		if(eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE 
 					|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE
 					|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_SI_ONLINE
-					|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_CONTESTO_SOCIALE)) {
+					|| eventoFAD.getTipologiaEventoFAD() == TipologiaEventoFADEnum.APPRENDIMENTO_CONTESTO_SOCIALE) {
 			addCellLabelCampoValore("label.evento_sponsorizzato_infanzia_radio", evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(), tableFields);
 			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null) {
 				if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia()) //<!-- ALLEGATO AUTOCERTIFICAZIONE AUTORIZZAZIONE MINISTERO SALUTE -->
