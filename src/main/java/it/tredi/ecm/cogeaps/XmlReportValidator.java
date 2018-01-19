@@ -89,23 +89,23 @@ public class XmlReportValidator {
 							List<Element> professioni = partecipante.elements();
 							for(Element professione : professioni) {
 								if(!prof.contains(professione.attributeValue("cod_prof"))) {
-									throw new Exception("Le professioni dell'evento non corrispondono a quelli memorizzati nel database!");
+									throw new Exception("Le professioni dell'evento non corrispondono a quelle memorizzate nel database!");
 								}
 								List<Element> discpline = professione.elements();
 								for(Element disciplina : discpline) {
 									if(!disc.contains(disciplina.getTextTrim())) {
-										throw new Exception("Le discipline dell'evento non corrispondono a quelli memorizzati nel database!");
+										throw new Exception("Le discipline dell'evento non corrispondono a quelle memorizzate nel database!");
 									}
 								}
 							}
 						}
 					}
 					else {
-						throw new Exception("Non e stato restituito nessuna professione o disciplina dall database");
+						throw new Exception("Non è stata restituita nessuna professione o disciplina dal database");
 					}
 				}
 				else {
-					throw new Exception("Errore durante la lettura della professione e disciplina dal database");
+					throw new Exception("Errore durante la lettura delle professioni e/o discipline dal database");
 				}
 			}
 			else {
@@ -114,7 +114,7 @@ public class XmlReportValidator {
 			
 		}
 		else {
-			throw new Exception("Errore durante la lettura dei dati del xml");
+			throw new Exception("Errore durante la lettura dei dati dall'xml");
 		}
 		
 		
