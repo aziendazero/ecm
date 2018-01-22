@@ -404,7 +404,7 @@ function loadScript(url, callback){
 					azioni = 13
 					titolo = 4
 					date = [6,7,11]
-					url = [[@{|/evento/eventoListPaginated|}]];
+					url = [[${providerId == null}]] ? [[@{|/evento/eventoListPaginated|}]] : [[@{|/provider/${providerId}/evento/eventoListPaginated|}]];
 					
 					dataColumns = [
 				            { "data": "codiceIdent", "sWidth" : "10%"},

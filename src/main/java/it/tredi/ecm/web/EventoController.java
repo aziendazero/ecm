@@ -232,6 +232,7 @@ public class EventoController {
 				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
 			//model attribute to tell if template should display full list of events using ajax
 			model.addAttribute("showAllList", true);
+			model.asMap().remove("eventoList");
 			return goToEventoList(request, model);
 		}
 		catch (Exception ex) {
@@ -469,7 +470,7 @@ public class EventoController {
 				throw new Exception("Provider non registrato");
 			}else{
 				//svuota sessione eventoList per ricaricare tutto
-				//Removed model Atrribute eventoList
+				//Removed model Attribute eventoList
 				redirectAttrs.addFlashAttribute("eventoList", null);
 				Long providerId = currentProvider.getId();
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/evento/list"));
