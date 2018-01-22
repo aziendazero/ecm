@@ -5,13 +5,15 @@ import lombok.Getter;
 @Getter
 public enum ProtocolloServiceVersioneEnum {
 
-	RV(1),
-	WEBRAINBOW(2);
+	RV(1, "rv"),
+	WEBRAINBOW(1, "webrainbow");
 	
 	private int numeroVersione;
+	private String nome;
 
-	private ProtocolloServiceVersioneEnum(int numeroVersione){
+	private ProtocolloServiceVersioneEnum(int numeroVersione, String nome){
 		this.numeroVersione = numeroVersione;
+		this.nome = nome;
 	}
 
 	public static ProtocolloServiceVersioneEnum getByNumeroVersione(int numeroVersione) {

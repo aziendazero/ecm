@@ -250,7 +250,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 //			}
 			
 			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
-					mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, null);
+					mittente, "test", null, null, null, null, null);
 			
 			String data = responseWRB.getDataRegistrazione().getValue();
 			String numero = responseWRB.getNumeroProtocollo().getValue();
