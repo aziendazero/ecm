@@ -1254,34 +1254,37 @@ public class EventoServiceImpl implements EventoService {
 		Evento evento = getEvento(id);
 		try {
 			RendicontazioneInviata ultimaRendicontazioneInviata = evento.getUltimaRendicontazioneInviata();
-			if (ultimaRendicontazioneInviata == null || !ultimaRendicontazioneInviata.getStato().equals(RendicontazioneInviataStatoEnum.PENDING)) //se non sono presenti invii pendenti -> impossibile richiedere lo stato dell'elaborazione
-				throw new Exception("error.nessuna_elaborazione_pendente");
+			if (ultimaRendicontazioneInviata == null || !ultimaRendicontazioneInviata.getStato().equals(RendicontazioneInviataStatoEnum.PENDING)) {//se non sono presenti invii pendenti -> impossibile richiedere lo stato dell'elaborazione
+				//throw new Exception("error.nessuna_elaborazione_pendente");
+				LOGGER.info("Skip rendicontaizone for Evento " + id + " - effettuato altri invii successivi.");
+			}else {
 
-			CogeapsStatoElaborazioneResponse cogeapsStatoElaborazioneResponse = cogeapsWsRestClient.statoElaborazione(ultimaRendicontazioneInviata.getFileName());
+				CogeapsStatoElaborazioneResponse cogeapsStatoElaborazioneResponse = cogeapsWsRestClient.statoElaborazione(ultimaRendicontazioneInviata.getFileName());
 
-			if (cogeapsStatoElaborazioneResponse.getStatus() != 0) //errore HTTP (auth...) 401
-				throw new Exception(cogeapsStatoElaborazioneResponse.getError() + ": " + cogeapsStatoElaborazioneResponse.getMessage());
-			if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() == 400) //400 (fileName non trovato)
-				throw new Exception(cogeapsStatoElaborazioneResponse.getErrMsg());
-			if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() != 200) //se non 200 (errore server imprevisto)
-				throw new Exception(cogeapsStatoElaborazioneResponse.getMessage());
+				if (cogeapsStatoElaborazioneResponse.getStatus() != 0) //errore HTTP (auth...) 401
+					throw new Exception(cogeapsStatoElaborazioneResponse.getError() + ": " + cogeapsStatoElaborazioneResponse.getMessage());
+				if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() == 400) //400 (fileName non trovato)
+					throw new Exception(cogeapsStatoElaborazioneResponse.getErrMsg());
+				if (cogeapsStatoElaborazioneResponse.getHttpStatusCode() != 200) //se non 200 (errore server imprevisto)
+					throw new Exception(cogeapsStatoElaborazioneResponse.getMessage());
 
-			//se si passa di qua significa che la richiesta HTTP ha avuto esito 200.
-			//se elaborazione completata segno eventuali errori altrimenti non faccio nulla (non si tiene traccia delle richieste la cui risposta porta ancora in uno stato pending)
+				//se si passa di qua significa che la richiesta HTTP ha avuto esito 200.
+				//se elaborazione completata segno eventuali errori altrimenti non faccio nulla (non si tiene traccia delle richieste la cui risposta porta ancora in uno stato pending)
 
-			//se elaborazione completata -> update rendicontazione_inviata
-			if (cogeapsStatoElaborazioneResponse.isElaborazioneCompletata()) {
-				ultimaRendicontazioneInviata.setResponse(cogeapsStatoElaborazioneResponse.getResponse());
-				if (cogeapsStatoElaborazioneResponse.getErrCode() != 0 || cogeapsStatoElaborazioneResponse.getCodiceErroreBloccante() != 0)
-					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.ERROR);
-				else{
-					ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.SUCCESS);
-					evento.setStato(EventoStatoEnum.RAPPORTATO);
-					evento.setAnagrafeRegionaleCrediti(anagrafeRegionaleCreditiService.extractAnagrafeRegionaleCreditiPartecipantiFromXml(ultimaRendicontazioneInviata.getFileName(), ultimaRendicontazioneInviata.getFileRendicontazione().getData()));//extract info AnagrafeRegionaleCrediti
-					save(evento);
+				//se elaborazione completata -> update rendicontazione_inviata
+				if (cogeapsStatoElaborazioneResponse.isElaborazioneCompletata()) {
+					ultimaRendicontazioneInviata.setResponse(cogeapsStatoElaborazioneResponse.getResponse());
+					if (cogeapsStatoElaborazioneResponse.getErrCode() != 0 || cogeapsStatoElaborazioneResponse.getCodiceErroreBloccante() != 0)
+						ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.ERROR);
+					else{
+						ultimaRendicontazioneInviata.setResult(RendicontazioneInviataResultEnum.SUCCESS);
+						evento.setStato(EventoStatoEnum.RAPPORTATO);
+						evento.setAnagrafeRegionaleCrediti(anagrafeRegionaleCreditiService.extractAnagrafeRegionaleCreditiPartecipantiFromXml(ultimaRendicontazioneInviata.getFileName(), ultimaRendicontazioneInviata.getFileRendicontazione().getData()));//extract info AnagrafeRegionaleCrediti
+						save(evento);
+					}
+					ultimaRendicontazioneInviata.setStato(RendicontazioneInviataStatoEnum.COMPLETED);
+					rendicontazioneInviataService.save(ultimaRendicontazioneInviata);
 				}
-				ultimaRendicontazioneInviata.setStato(RendicontazioneInviataStatoEnum.COMPLETED);
-				rendicontazioneInviataService.save(ultimaRendicontazioneInviata);
 			}
 		}
 		catch (Exception e) {
