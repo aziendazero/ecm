@@ -290,6 +290,7 @@ function loadScript(url, callback){
 										<th th:text="#{label.durata}">label.ore_corso</th>
 										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
+										<th th:text="#{label.versione}">Versione</th>
 										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 										<th></th>
 									</tr>
@@ -302,14 +303,14 @@ function loadScript(url, callback){
 										<td th:text="${evento.edizione}"></td>
 										<td th:text="${evento.proceduraFormativa.name()}"></td>
 										<td style="word-break: break-word" th:text="${evento.titolo}"></td>
-	
+
 										<td th:if="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
 											<span></span>
 										</td>
 										<td th:unless="${evento.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FAD}">
 											<span th:text="${evento.sedeEvento?.luogo}"></span>
 										</td>
-	
+
 										<td th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></td>
 										<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
 										<td>
@@ -333,17 +334,18 @@ function loadScript(url, callback){
 												<i class="fa table-icon fa-question grey" th:title="#{label.non_specificato}"></i>
 											</div>
 										</td>
+										<td th:text="${@eventoServiceController.versioneEvento(evento).numeroVersione}"></td>
 										<td class="text-full-length" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">
 											<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit() or #authentication.principal.isSegreteria()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
 											<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalScadenze(${evento.id}, '${evento.dataScadenzaPagamento}', '${evento.dataScadenzaInvioRendicontazione}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
-	
+
 											<!-- TODO DISABILITATO PER LA PRODUZIONE -->
 											<th:block th:if="${evento.canDoPagamento()}">
 												<a th:if="${evento.provider.myPay == true or (evento.provider.myPay == null and evento.provider.isGruppoB())}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/paga|}" th:title="#{label.paga}"><i class="fa fa-euro"></i></a>
 												<a th:if="${evento.provider.myPay == false}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/quietanzaPage|}" th:title="#{label.allega_quietanza}"><i class="fa fa-euro"></i></a>
 											</th:block>
 											<a th:if="${evento.pagato and evento.pagatoQuietanza}" class="btn btn-success btn-min-icon-width" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/quietanzaPagamento/show|}"  th:title="#{label.visualizza_quietanza}"><i class="fa fa-euro"> </i></a>
-	
+
 											<a class="btn btn-primary min-icon-width" th:if="${#authentication.principal.account.isSegreteria()}" th:href="@{|/audit/entity/${evento.getAuditEntityType()}/entityId/${evento.id}|}" th:title="#{label.registro_operazioni}"><i class="fa fa-book"></i></a>
 											<a class="btn btn-warning min-icon-width" th:if="${evento.canDoRendicontazione()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/rendiconto|}" th:title="#{label.rendiconto}"><i class="fa fa-file-text"></i></a>
 											<a class="btn btn-primary min-icon-width" th:if="${evento.canDoUploadSponsor()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/allegaContrattiSponsor|}" th:title="#{label.allega_contratti_sponsor}"><i class="fa fa-file"></i></a>
@@ -370,6 +372,7 @@ function loadScript(url, callback){
 										<th th:text="#{label.durata}">label.ore_corso</th>
 										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
+										<th th:text="#{label.versione}">Versione</th>
 										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 										<th></th>
 								</thead>
@@ -391,13 +394,13 @@ function loadScript(url, callback){
 				var azioni
 				var titolo
 				var url
-				
+
 				if([[${search != null && archiviaEvento == true}]]){
 					confermati++; //take into consideration the checkboxes column
 					azioni++;
 					titolo++;
 				}
-	
+
 				if([[${#authentication.principal.isSegreteria()}]]) {
 					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13]
 					confermati = 12
@@ -405,7 +408,7 @@ function loadScript(url, callback){
 					titolo = 4
 					date = [6,7,11]
 					url = [[${providerId == null}]] ? [[@{|/evento/eventoListPaginated|}]] : [[@{|/provider/${providerId}/evento/eventoListPaginated|}]];
-					
+
 					dataColumns = [
 				            { "data": "codiceIdent", "sWidth" : "10%"},
 				            { "data": "denominazioneLeg"},
@@ -420,6 +423,7 @@ function loadScript(url, callback){
 				            { "data": "durata"},
 				            { "data": "dataScadenzaRediconto"},
 				            { "data": "creditiConfermati"},
+				            { "data": "versione"},
 				            { "data": "links", "orderable": false},
 				            { "data": null, defaultContent: ""}
 			        		]
@@ -444,6 +448,7 @@ function loadScript(url, callback){
 				            { "data": "durata"},
 				            { "data": "dataScadenzaRediconto"},
 				            { "data": "creditiConfermati"},
+				            { "data": "versione"},
 				            { "data": "links", "orderable": false},
 				            { "data": null, defaultContent: ""}
 			            ]
@@ -488,10 +493,10 @@ function loadScript(url, callback){
 						                target: -1
 						            }
 						        },
-						}); 
-							  
-			        
-						//Handle selecting events using iCheck. 
+						});
+
+
+						//Handle selecting events using iCheck.
 						//Target -- location of checkbox columns
 						//table -- table id or class
 						function initiCheckEvents(target, tableInst){
@@ -506,11 +511,11 @@ function loadScript(url, callback){
 				                		jqueryObject.find('input').iCheck('check');
 				                		if(!jqueryObject.parent().hasClass('selected'))
 					                		jqueryObject.parent().addClass('selected');
-					            } 
-					            
+					            }
+
 					           // alert(text);
-						}); 
-				         
+						});
+
 					         $('#select-all').on('ifUnchecked', function(event){
 						            var element;
 						            var table = tableInst.DataTable();
@@ -523,7 +528,7 @@ function loadScript(url, callback){
 						                		jqueryObject.parent().removeClass('selected');
 			        }
 						        });
-					
+
 					         //Handle single iCheck change event
 					         $('input').on('ifUnchecked', function(event){
 					        	 		//Remove select all check if not all events are selected
@@ -532,7 +537,7 @@ function loadScript(url, callback){
 					        	 			$(this).parent().parent().parent().removeClass("selected");
 					        	  		$('#select-all').iCheck('update');
 					          });
-					          
+
 					         $('input').on('ifChecked', function(event){
 					        	 var table = tableInst.DataTable();
 				        	 	 var col = table.column( target ).nodes(); // get all events in the table
@@ -564,7 +569,7 @@ function loadScript(url, callback){
 			                     {"targets": titolo, "sClass": "wordwrap"},
 				                     {"targets": azioni, "sClass": "text-full-length"},
 			                     { "bSortable": false, "targets": [ -1 ], "sClass": "control", },
-				                     
+
 			                   ],
 		                   "responsive": {
 					            details: {
@@ -581,7 +586,7 @@ function loadScript(url, callback){
 
 		               		}
 						});
-						
+
 						$(".datatable-responsive-eventi-provider").DataTable().on( 'responsive-display', function ( e, datatable, row, showHide, update ) {
 							    	$(".linkButton").each(function(index){
 				                		var tempLink = [[@{/}]] + $(this).attr('href');
@@ -620,7 +625,7 @@ function loadScript(url, callback){
 
 					if([[${error}]]) {
 						$("#scelta-tipologia-modal").modal("show");
-					} 
+					}
 
 					$("input[name=proceduraFormativa]").each(function() {
 						$(this).on('ifToggled', function() {
@@ -650,7 +655,7 @@ function loadScript(url, callback){
 				    if([[${scadenzeEventoWrapper != null && scadenzeEventoWrapper.submitScadenzeError == true}]])
 				    	$("#scadenze-evento").modal("show");
 				});
-				
+
 
 
 				function openModalScadenze(idEvento, dataPagamento, dataRendicontazione) {
@@ -676,7 +681,7 @@ function loadScript(url, callback){
 
 				function openModal() {
 					var array = tableToArray();
-					
+
 					if(array.length > 0){
 						writeInput(array);
 						$('#myModal').modal('show');
@@ -684,12 +689,12 @@ function loadScript(url, callback){
 						$("#myModal").find('input[id="event_Id"]').val(array);
 						alert('No Event Selected!')
 					}
-					
+
 				}
-				
+
 				function writeInput(array) {
 					$("#myModal").find('input[id="event_Id"]').val(array);
-					
+
 				}
 				/*[+
 				function tableToArray() {
@@ -699,12 +704,12 @@ function loadScript(url, callback){
 						var id = Number.parseInt((($rows[i][0]).match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [] ).map(function (v) {return +v;}).shift());
 						ids.push(id);
 					}
-					
+
 					return ids;
 				}
-				
+
 			+]*/
-			
+
 			/*]]>*/
 			</script>
 		</div>

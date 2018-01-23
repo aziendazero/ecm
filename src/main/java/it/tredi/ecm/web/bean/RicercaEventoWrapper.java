@@ -76,6 +76,9 @@ public class RicercaEventoWrapper {
 	
 	//campo non di ricerca ma il solito id che mettiamo in hidden per gestire il form
 	private Long providerId;
+	
+	//campo versione
+	private Integer versione;
 
 	//docenti
 	private Map<Integer, PersonaEvento> docenti = new HashMap<Integer, PersonaEvento>();
