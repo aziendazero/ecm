@@ -127,7 +127,7 @@ import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
 import it.tredi.ecm.web.validator.ScadenzeEventoValidator;
 
 @Controller
-@SessionAttributes({"eventoWrapper","eventoWrapperRendiconto", "eventoList", "providerId", "returnLink"})
+@SessionAttributes({"eventoWrapper","eventoWrapperRendiconto", "searchList", "providerId", "returnLink"})
 public class EventoController {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EventoController.class);
 
@@ -232,7 +232,11 @@ public class EventoController {
 				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
 			//model attribute to tell if template should display full list of events using ajax
 			model.addAttribute("showAllList", true);
+			//Remove eventoList, thymeleafs checks if eventoList is present to display the list
 			model.asMap().remove("eventoList");
+			//Remove providerId, js in template checks if providerId is present to do a call for provider events
+			//This controller is for segretaria to list ALL eventi
+			model.asMap().remove("providerId");
 			return goToEventoList(request, model);
 		}
 		catch (Exception ex) {
@@ -509,6 +513,64 @@ public class EventoController {
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/list"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
+			return "redirect:/home";
+		}
+	}
+	
+	//Handle search results differently. searchList should be stored, eventoList should be flush everytime it is displayed
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventi(principal)")
+	@RequestMapping("/evento/ricercaList")
+	public String getRicercaListEventi(Model model, RedirectAttributes redirectAttrs, HttpServletRequest request){
+		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
+		try {
+
+			if(model.asMap().get("searchList") != null) {
+				//Populate eventoList with search results
+				model.addAttribute("eventoList", model.asMap().get("searchList"));
+				//model attribute to tell if template should display full list of events using ajax
+				model.addAttribute("showAllList", false);
+			}
+
+			LOGGER.info(Utils.getLogMessage("VIEW: evento/ricercaList"));
+
+			if(Utils.getAuthenticatedUser().isSegreteria())
+				model.addAttribute("scadenzeEventoWrapper", new ScadenzeEventoWrapper());
+
+			return goToEventoList(request, model);
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /evento/ricercaList"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "";
+		}
+	}
+	
+	//Handle search results for provider
+	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventiProvider(principal, #providerId)")
+	@RequestMapping("/provider/{providerId}/evento/ricercaList")
+	public String getRicercaListEventiProvider(@PathVariable Long providerId, Model model,
+			HttpServletRequest request, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/ricercaList"));
+		try {
+			//Remove old database call for loading eventi, loading is done using lazy loading
+			if(model.asMap().get("searchList") != null) {
+				//Populate eventoList with search results
+				model.addAttribute("eventoList", model.asMap().get("searchList"));
+				//model attribute to tell if template should display full list of events using ajax
+				model.addAttribute("showAllList", false);
+			}
+			return goToList(model, providerId, request);
+		}
+		catch (AccreditamentoNotFoundException accreditamentoNotFoundEx) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/ricercaList"),accreditamentoNotFoundEx);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.non_risulta_attivo_nessun_accreditamento", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
+			return "redirect:/home";
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/evento/ricercaList"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /redirect:/home"));
 			return "redirect:/home";
@@ -2190,15 +2252,15 @@ public class EventoController {
 				wrapper.setCampoIdProvider(wrapper.getProviderId());
 				//assicura di non fare il refresh della lista per gli utenti Provider
 				redirectAttrs.addFlashAttribute("providerId", wrapper.getProviderId());
-				returnRedirect = "redirect:/provider/" + wrapper.getProviderId() + "/evento/list";
+				returnRedirect = "redirect:/provider/" + wrapper.getProviderId() + "/evento/ricercaList";
 			}else{
-				returnRedirect = "redirect:/evento/list";
+				returnRedirect = "redirect:/evento/ricercaList";
 			}
 
 			List<Evento> listaEventi = new ArrayList<Evento>();
 			listaEventi = eventoService.cerca(wrapper);
 
-			redirectAttrs.addFlashAttribute("eventoList", listaEventi);
+			redirectAttrs.addFlashAttribute("searchList", listaEventi);
 
 			return returnRedirect;
 		}catch (Exception ex) {

@@ -267,11 +267,11 @@ function loadScript(url, callback){
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<!-- <div th:if="${#lists.isEmpty(eventoList)}">
+						<div th:if="${#lists.isEmpty(eventoList) and (showAllList == null or showAllList == false)}">
 							<h2 class="col-xs-12 text-center">
 								<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"> </span> <i th:text="#{label.nessun_evento_list}">Non ci sono eventi!</i>
 							</h2>
-						</div> -->
+						</div>
 						<div class = "eventiListWrapper" style = "width: 95%">
 							<table id="eventiListTable" th:if="${(eventoList != null and !#lists.isEmpty(eventoList)) and (showAllList == null or showAllList == false) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<thead style = "word-break: keep-all !important;">
