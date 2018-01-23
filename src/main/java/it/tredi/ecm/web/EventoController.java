@@ -83,6 +83,7 @@ import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoSearchEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaFADEnum;
@@ -300,6 +301,9 @@ public class EventoController {
 			dataModel.setCreditiConfermati("<div><i class=\"fa table-icon fa-question grey\" title=\"" + messageSource.getMessage("label.non_specificato", null, LocaleContextHolder.getLocale()) + "\"></i></div>");
 		}
 		
+		if(event.getVersione() != null) {
+			dataModel.setVersione(event.getVersione().getNumeroVersione());
+		}
 		
 		//Build the Azioni Buttons
 		String buttons = "";

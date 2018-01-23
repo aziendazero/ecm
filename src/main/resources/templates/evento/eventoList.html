@@ -290,6 +290,7 @@ function loadScript(url, callback){
 										<th th:text="#{label.durata}">label.ore_corso</th>
 										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
+										<th th:text="#{label.versione}">Versione</th>
 										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 										<th></th>
 									</tr>
@@ -333,6 +334,7 @@ function loadScript(url, callback){
 												<i class="fa table-icon fa-question grey" th:title="#{label.non_specificato}"></i>
 											</div>
 										</td>
+										<td th:text="${evento.versione == null} ? '' : ${evento.versione.numeroVersione}"></td>
 										<td class="text-full-length" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">
 											<a class="btn btn-primary min-icon-width" th:if="${evento.canEdit() or #authentication.principal.isSegreteria()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
 											<button th:if="${#authentication.principal.account.isSegreteria() and evento.canSegreteriaShiftData()}" type="button" class="btn btn-primary min-icon-width" th:onclick="|openModalScadenze(${evento.id}, '${evento.dataScadenzaPagamento}', '${evento.dataScadenzaInvioRendicontazione}')|" th:title="#{label.abilita}"><i class="fa fa-unlock-alt"> </i></button>
@@ -370,6 +372,7 @@ function loadScript(url, callback){
 										<th th:text="#{label.durata}">label.ore_corso</th>
 										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
+										<th th:text="#{label.versione}">Versione</th>
 										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 										<th></th>
 								</thead>
@@ -420,6 +423,7 @@ function loadScript(url, callback){
 				            { "data": "durata"},
 				            { "data": "dataScadenzaRediconto"},
 				            { "data": "creditiConfermati"},
+				            { "data": "versione"},
 				            { "data": "links", "orderable": false},
 				            { "data": null, defaultContent: ""}
 			        		]
@@ -444,6 +448,7 @@ function loadScript(url, callback){
 				            { "data": "durata"},
 				            { "data": "dataScadenzaRediconto"},
 				            { "data": "creditiConfermati"},
+				            { "data": "versione"},
 				            { "data": "links", "orderable": false},
 				            { "data": null, defaultContent: ""}
 			            ]

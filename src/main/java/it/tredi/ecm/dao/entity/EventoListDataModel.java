@@ -2,6 +2,7 @@ package it.tredi.ecm.dao.entity;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import lombok.Data;
 
 @Data
@@ -48,5 +49,8 @@ public class EventoListDataModel {
 	
 	@JsonView(EventoListDataTableModel.View.class)
 	private String creditiConfermati;
+	
+	@JsonView(EventoListDataTableModel.View.class)
+	private Integer versione;
 	
 }
