@@ -566,7 +566,9 @@
 										</div>
 									</div>
 								</div>
-								
+
+								<div class="divider-dashed"></div>
+
 								<!-- ALTRE FORME DI FINANZIAMENTO -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -589,7 +591,9 @@
 										</div>
 									</div>
 								</div>
-								
+
+								<div class="divider-dashed"></div>
+
 								<!-- VERSIONE -->
 								<div class="item form-group">
 									<label class="control-label col-md-3 col-sm-3 col-xs-11">
@@ -612,20 +616,33 @@
 										</div>
 									</div>
 								</div>
-								
+
+								<div class="divider-dashed"></div>
+
 								<!-- ARCHIVIATO -->
 								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="archivatoPrimaInfanzia">
-										<span th:text="#{label.eventi_archiviati}">Evento archiviato</span>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<h2 th:text="#{label.eventi_archiviati}">Evento archiviato</h2>
 									</label>
 
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="archivatoPrimaInfanzia">
+										<!-- PRIMA INFANZIA -->
 										<div class="checkbox">
 											<label>
 												<input type="checkbox" class="flat archivatoPrimaInfanzia" th:field="${ricercaEventoWrapper.archivatoPrimaInfanzia}"/>
+												<span th:text="#{label.con_alimentazione_prima_infanzia}"></span>
+											</label>
+										</div>
+
+										<!-- MEDICINE NON CONVENZIONALI -->
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="flat archiviatoMedicinali" th:field="${ricercaEventoWrapper.archiviatoMedicinali}"/>
+												<span th:text="#{label.con_medicine_non_convenzionali}"></span>
 											</label>
 										</div>
 									</div>
+
 								</div>
 
 							<input id="submitButton" type="submit" style="display: none;" />

@@ -2382,10 +2382,16 @@ public class EventoServiceImpl implements EventoService {
 				params.put("versione", EventoVersioneEnum.getByNumeroVersione(wrapper.getVersione()));
 			}
 
-			//ARCHIVIATI
-			if(wrapper.getArchivatoPrimaInfanzia() != null) {
+			//ARCHIVIATI PRIMA INFANZIA
+			if(wrapper.getArchivatoPrimaInfanzia() != null && wrapper.getArchivatoPrimaInfanzia().booleanValue()) {
 				query = Utils.QUERY_AND(query, "e.archivatoPrimaInfanzia = :archivatoPrimaInfanzia");
-				params.put("archivatoPrimaInfanzia", wrapper.getArchivatoPrimaInfanzia());
+				params.put("archivatoPrimaInfanzia", wrapper.getArchivatoPrimaInfanzia().booleanValue());
+			}
+
+			//ARCHIVIATI MEDICINE NON CONVENZIONALI
+			if(wrapper.getArchiviatoMedicinali() != null && wrapper.getArchiviatoMedicinali()) {
+				query = Utils.QUERY_AND(query, "e.archiviatoMedicinali = :archiviatoMedicinali");
+				params.put("archiviatoMedicinali", wrapper.getArchiviatoMedicinali().booleanValue());
 			}
 
 			//DOCENTI

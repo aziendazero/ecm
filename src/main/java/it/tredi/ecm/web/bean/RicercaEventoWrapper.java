@@ -73,15 +73,18 @@ public class RicercaEventoWrapper {
 
 	// Info se sono presenti altre forme di finanziamento
 	private Boolean altreFormeFinanziamento;
-	
+
 	//campo non di ricerca ma il solito id che mettiamo in hidden per gestire il form
 	private Long providerId;
-	
+
 	//campo versione
 	private Integer versione;
-	
-	//eventi archiviati
+
+	//eventi archiviati alimenti prima infanzia
 	private Boolean archivatoPrimaInfanzia;
+
+	//eventi archiviati medicine non convenzionali
+	private Boolean archiviatoMedicinali;
 
 	//docenti
 	private Map<Integer, PersonaEvento> docenti = new HashMap<Integer, PersonaEvento>();
