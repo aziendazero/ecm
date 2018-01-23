@@ -79,6 +79,9 @@ public class RicercaEventoWrapper {
 	
 	//campo versione
 	private Integer versione;
+	
+	//eventi archiviati
+	private Boolean archivatoPrimaInfanzia;
 
 	//docenti
 	private Map<Integer, PersonaEvento> docenti = new HashMap<Integer, PersonaEvento>();

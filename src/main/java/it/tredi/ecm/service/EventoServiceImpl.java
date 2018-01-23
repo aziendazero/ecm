@@ -2374,6 +2374,12 @@ public class EventoServiceImpl implements EventoService {
 				query = Utils.QUERY_AND(query, "e.versione = :versione");
 				params.put("versione", EventoVersioneEnum.getByNumeroVersione(wrapper.getVersione()));
 			}
+			
+			//ARCHIVIATI
+			if(wrapper.getArchivatoPrimaInfanzia() != null) {
+				query = Utils.QUERY_AND(query, "e.archivatoPrimaInfanzia = :archivatoPrimaInfanzia");
+				params.put("archivatoPrimaInfanzia", wrapper.getArchivatoPrimaInfanzia());
+			}
 
 			//DOCENTI
 			if(wrapper.getDocenti() != null && !wrapper.getDocenti().isEmpty()) {
