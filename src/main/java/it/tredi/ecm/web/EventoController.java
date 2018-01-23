@@ -113,6 +113,7 @@ import it.tredi.ecm.service.PersonaEventoService;
 import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.bean.CurrentUser;
+import it.tredi.ecm.service.controller.EventoServiceController;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ErrorsAjaxWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -159,6 +160,7 @@ public class EventoController {
 	@Autowired private ScadenzeEventoValidator scadenzeEventoValidator;
 
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
+	@Autowired private EventoServiceController eventoServiceController;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -302,7 +304,7 @@ public class EventoController {
 		}
 		
 		if(event.getVersione() != null) {
-			dataModel.setVersione(event.getVersione().getNumeroVersione());
+			dataModel.setVersione(eventoServiceController.versioneEvento(event).getNumeroVersione());
 		}
 		
 		//Build the Azioni Buttons
