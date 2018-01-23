@@ -307,7 +307,10 @@ public class EventoController {
 			dataModel.setCreditiConfermati("<div><i class=\"fa table-icon fa-question grey\" title=\"" + messageSource.getMessage("label.non_specificato", null, LocaleContextHolder.getLocale()) + "\"></i></div>");
 		}
 
-		dataModel.setVersione(eventoServiceController.versioneEvento(event).getNumeroVersione());
+		if(event.getVersione() != null)
+			dataModel.setVersione(event.getVersione().getNumeroVersione());
+		else
+			dataModel.setVersione(null);
 
 		//Build the Azioni Buttons
 		String buttons = "";
@@ -522,7 +525,7 @@ public class EventoController {
 			return "redirect:/home";
 		}
 	}
-	
+
 	//Handle search results differently. searchList should be stored, eventoList should be flush everytime it is displayed
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventi(principal)")
 	@RequestMapping("/evento/ricercaList")
@@ -550,7 +553,7 @@ public class EventoController {
 			return "";
 		}
 	}
-	
+
 	//Handle search results for provider
 	@PreAuthorize("@securityAccessServiceImpl.canShowAllEventiProvider(principal, #providerId)")
 	@RequestMapping("/provider/{providerId}/evento/ricercaList")

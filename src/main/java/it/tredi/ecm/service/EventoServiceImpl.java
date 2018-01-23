@@ -147,11 +147,11 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired private PagamentoService pagamentoService;
 	@Autowired private EngineeringService engineeringService;
-	
+
 	@Autowired private EventoCrediti eventoCrediti;
 
 	@Autowired private EventoServiceController eventoServiceController;
-	
+
 	@Override
 	public Evento getEvento(Long id) {
 		LOGGER.debug("Recupero evento: " + id);
@@ -712,92 +712,99 @@ public class EventoServiceImpl implements EventoService {
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "prefix", "edizione"));
 			break;
-		
+
 		case 1:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "provider.denominazioneLegale"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "provider.denominazioneLegale"));
 			break;
-			
+
 		case 2:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "edizione"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "edizione"));
 			break;
-			
+
 		case 3:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "proceduraFormativa"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "proceduraFormativa"));
 			break;
-			
+
 		case 4:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "titolo"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "titolo"));
 			break;
-			
+
 		case 6:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataInizio"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataInizio"));
 			break;
-			
+
 		case 7:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataFine"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataFine"));
 			break;
-			
+
 		case 8:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "stato"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "stato"));
 			break;
-			
+
 		case 9:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "numeroPartecipanti"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "numeroPartecipanti"));
 			break;
-			
+
 		case 10:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "durata"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "durata"));
 			break;
-			
+
 		case 11:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataScadenzaInvioRendicontazione"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataScadenzaInvioRendicontazione"));
 			break;
-			
+
 		case 12:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "confermatiCrediti"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "confermatiCrediti"));
 			break;
-			
+
+		case 13:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "versione"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "versione"));
+			break;
+
 		default:
 			request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
 			break;
 		}
 		return eventoRepository.findAll(request);
 	}
-	
-	
+
+
 	//Get all events of events per provider id.  ordering is based on column number
 	@Override
 	public Page<Evento> getAllEventiForProviderId(Long providerId, Integer pageNumber, Integer columnNumber, String order, Integer numOfPages) {
@@ -810,84 +817,84 @@ public class EventoServiceImpl implements EventoService {
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "prefix", "edizione"));
 			break;
-			
+
 		case 1:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "edizione"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "edizione"));
 			break;
-			
+
 		case 2:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "proceduraFormativa"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "proceduraFormativa"));
 			break;
-			
+
 		case 3:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "titolo"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "titolo"));
 			break;
-			
+
 		case 5:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataInizio"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataInizio"));
 			break;
-			
+
 		case 6:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataFine"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataFine"));
 			break;
-			
+
 		case 7:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "stato"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "stato"));
 			break;
-			
+
 		case 8:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "numeroPartecipanti"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "numeroPartecipanti"));
 			break;
-			
+
 		case 9:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "durata"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "durata"));
 			break;
-			
+
 		case 10:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataScadenzaInvioRendicontazione"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "dataScadenzaInvioRendicontazione"));
 			break;
-			
+
 		case 11:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "confermatiCrediti"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "confermatiCrediti"));
 			break;
-			
+
 		default:
 			request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
 			break;
 		}
 		return eventoRepository.findAllByProviderId(providerId, request);
 	}
-	
+
 	@Override
 	public List<Evento> getAllEventi() {
 		LOGGER.debug("Recupero tutti gli eventi");
@@ -911,7 +918,7 @@ public class EventoServiceImpl implements EventoService {
 		if(ecmProperties.isDebugTestMode()) {
 			return canCreateEvento(account);
 		}
-		
+
 		return canCreateEvento(account)
 			&& (LocalDate.now().isAfter(LocalDate.of(LocalDate.now().getYear(), 1, 1))
 			&& LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), 12, 20)));
@@ -939,7 +946,7 @@ public class EventoServiceImpl implements EventoService {
 				}
 			}
 		}
-		
+
 		calculateAutoCompilingData(eventoWrapper);
 
 		if(evento instanceof EventoRES){
@@ -993,7 +1000,7 @@ public class EventoServiceImpl implements EventoService {
 				eventoFSC.getRiepilogoRuoli().clear();
 				eventoFSC.getRiepilogoRuoli().addAll(eventoWrapper.getRiepilogoRuoliFSC().values());
 			}
-			
+
 			//Esperti
 //			int pos = 0;
 //			for(PersonaEvento pers : eventoFSC.getEsperti()) {
@@ -1013,7 +1020,7 @@ public class EventoServiceImpl implements EventoService {
 				attachedListPersona.add(p);
 			}
 			eventoFSC.setEsperti(attachedListPersona);
-			
+
 
 			//Coordinatori
 //			pos = 0;
@@ -1335,7 +1342,7 @@ public class EventoServiceImpl implements EventoService {
 				personaEventoService.setIdentificativoPersonaRuoloEvento(((EventoFSC) evento).getCoordinatori());
 			}
 
-			
+
 			//Programma
 			eventoWrapper.setProgrammaEventoFSC(((EventoFSC) evento).getFasiAzioniRuoli());
 
@@ -1593,14 +1600,14 @@ public class EventoServiceImpl implements EventoService {
 			EventoFSC eventoFSC = ((EventoFSC)eventoWrapper.getEvento());
 			TipologiaEventoFSCEnum tipologiaEventoFSC = eventoFSC.getTipologiaEventoFSC();
 			ProgettiDiMiglioramentoFasiDaInserireFSCEnum fasiDaInserire = eventoFSC.getFasiDaInserire();
-			
+
 			for(FaseAzioniRuoliEventoFSCTypeA fase : eventoWrapper.getProgrammaEventoFSC()){
 				if(tipologiaEventoFSC != null && (tipologiaEventoFSC != TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO || ProgettiDiMiglioramentoFasiDaInserireFSCEnum.faseAbilitata(fasiDaInserire, fase.getFaseDiLavoro()))) {
 					for(AzioneRuoliEventoFSC azione : fase.getAzioniRuoli()){
 						for(RuoloOreFSC ruolo : azione.getRuoli())
 						{
 							ruoliUsati.add(ruolo.getRuolo());
-	
+
 							if(eventoWrapper.getRiepilogoRuoliFSC().containsKey(ruolo.getRuolo())){
 								RiepilogoRuoliFSC r = eventoWrapper.getRiepilogoRuoliFSC().get(ruolo.getRuolo());
 								float tempoDedicato = ruolo.getTempoDedicato() != null ? ruolo.getTempoDedicato() : 0.0f;
@@ -1680,7 +1687,7 @@ public class EventoServiceImpl implements EventoService {
 		procedureFormative.remove(ProceduraFormativa.FAD);
 
 		if(ecmProperties.getEventoVersioniRieditabili() != null && !ecmProperties.getEventoVersioniRieditabili().isEmpty()) {
-			return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfterAndVersioneIn(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1), ecmProperties.getEventoVersioniRieditabili());			
+			return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfterAndVersioneIn(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1), ecmProperties.getEventoVersioniRieditabili());
 		} else {
 		return eventoRepository.findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(providerId, EventoStatoEnum.BOZZA, EventoStatoEnum.CANCELLATO, procedureFormative, LocalDate.of(LocalDate.now().getYear(), 1, 1).minusDays(1));
 	}
@@ -1997,7 +2004,7 @@ public class EventoServiceImpl implements EventoService {
 			List<RiepilogoRuoliFSC> riepilogoRuoli = new ArrayList<RiepilogoRuoliFSC>();
 			riepilogoRuoli.addAll(Arrays.asList(((EventoFSC) riedizione).getRiepilogoRuoli().toArray(new RiepilogoRuoliFSC[((EventoFSC) riedizione).getRiepilogoRuoli().size()])));
 			((EventoFSC) riedizione).setRiepilogoRuoli(riepilogoRuoli);
-			
+
 			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio esperti"));
 			for(PersonaEvento r : ((EventoFSC) riedizione).getEsperti()) {
 				LOGGER.debug(Utils.getLogMessage("Clonazione Esperto: " + r.getId()));
@@ -2015,7 +2022,7 @@ public class EventoServiceImpl implements EventoService {
 				personaEventoRepository.save(r);
 				LOGGER.debug(Utils.getLogMessage("Coordinatore clonato salvato: " + r.getId()));
 			}
-			
+
 			LOGGER.debug(Utils.getLogMessage("Clonazione e salvataggio investigatori"));
 			for(PersonaEvento r : ((EventoFSC) riedizione).getInvestigatori()) {
 				LOGGER.debug(Utils.getLogMessage("Clonazione Investigatore: " + r.getId()));
@@ -2128,7 +2135,7 @@ public class EventoServiceImpl implements EventoService {
 	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
 		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalseAndStatoNot(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.CANCELLATO);
 	}
-	
+
 	@Override
 	public int countEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
 		Set<Evento> listaEventi = getEventiForProviderIdInScadenzaDiPagamento(providerId);
@@ -2136,7 +2143,7 @@ public class EventoServiceImpl implements EventoService {
 			return listaEventi.size();
 		return 0;
 	}
-	
+
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiRendicontazione(Long providerId) {
@@ -2164,7 +2171,7 @@ public class EventoServiceImpl implements EventoService {
 			return listaEventi.size();
 		return 0;
 	}
-	
+
 	@Override
 	public Set<Evento> getEventiForProviderIdScadutiENonRendicontati(Long providerId) {
 		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBeforeAndStato(providerId, LocalDate.now(), EventoStatoEnum.VALIDATO);
@@ -2362,19 +2369,19 @@ public class EventoServiceImpl implements EventoService {
 				query = Utils.QUERY_AND(query, "e.eventoSponsorizzato = :sponsorizzato");
 				params.put("sponsorizzato", wrapper.getSponsorizzato().booleanValue());
 			}
-			
+
 			//ALTRE FORME DI FINANZIAMENTO
 			if(wrapper.getAltreFormeFinanziamento() != null) {
 				query = Utils.QUERY_AND(query, "e.altreFormeFinanziamento = :altreFormeFinanziamento");
 				params.put("altreFormeFinanziamento", wrapper.getAltreFormeFinanziamento().booleanValue());
 			}
-			
+
 			//VERSIONE
 			if(wrapper.getVersione() != null) {
 				query = Utils.QUERY_AND(query, "e.versione = :versione");
 				params.put("versione", EventoVersioneEnum.getByNumeroVersione(wrapper.getVersione()));
 			}
-			
+
 			//ARCHIVIATI
 			if(wrapper.getArchivatoPrimaInfanzia() != null) {
 				query = Utils.QUERY_AND(query, "e.archivatoPrimaInfanzia = :archivatoPrimaInfanzia");
@@ -2796,7 +2803,7 @@ public class EventoServiceImpl implements EventoService {
 		}
 		return toRet;
 	}
-	
+
 	@Override
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(EventoFSC evento) {
 		return getListRuoloFSCEnumPerResponsabiliScientifici(evento.getResponsabili());
@@ -2833,11 +2840,11 @@ public class EventoServiceImpl implements EventoService {
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento) {
 		return getListRuoloFSCEnumPerCoordinatori(evento.getCoordinatori());
 	}
-	
+
 		@Override
 	public void archiveEventoInPrimaInfanziaOrMedNonConv(List<Long> ids) {
 			List<Evento> events = eventoRepository.findAll(ids);
-			
+
 			for(Evento event : events) {
 				if(event.getContenutiEvento().equals(ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA)) {
 					event.setArchivatoPrimaInfanzia(true);
@@ -2847,6 +2854,6 @@ public class EventoServiceImpl implements EventoService {
 					eventoRepository.save(event);
 				}
 			}
-		
+
 	}
 }
