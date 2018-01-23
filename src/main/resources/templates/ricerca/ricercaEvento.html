@@ -612,6 +612,21 @@
 										</div>
 									</div>
 								</div>
+								
+								<!-- ARCHIVIATO -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="archivatoPrimaInfanzia">
+										<span th:text="#{label.eventi_archiviati}">Evento archiviato</span>
+									</label>
+
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="archivatoPrimaInfanzia">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="flat archivatoPrimaInfanzia" th:field="${ricercaEventoWrapper.archivatoPrimaInfanzia}"/>
+											</label>
+										</div>
+									</div>
+								</div>
 
 							<input id="submitButton" type="submit" style="display: none;" />
 
