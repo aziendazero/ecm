@@ -99,7 +99,8 @@ public class RelazioneAnnualeController {
 	public String inserisciRelazioniAnnualiForProvider(@PathVariable Long providerId, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/relazioneAnnuale/insert"));
 		try {
-			RelazioneAnnuale relazioneAnnuale = relazioneAnnualeService.createRelazioneAnnuale(providerId, LocalDate.now().getYear());
+			//dpranteda 24/01/2018: la relazione da inserire è quella dell'anno precedente!
+			RelazioneAnnuale relazioneAnnuale = relazioneAnnualeService.createRelazioneAnnuale(providerId, LocalDate.now().getYear() -1);
 			if(relazioneAnnuale == null){
 				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 				return "redirect:/provider/" + providerId + "/relazioneAnnuale/list";
