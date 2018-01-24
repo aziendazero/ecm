@@ -279,7 +279,7 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public boolean canInsertRelazioneAnnuale(Long providerId) {
 		Provider provider = providerRepository.findOne(providerId);
-		boolean relazioneAnnualeInseritaAnnoCorrente = relazioneAnnualeService.isRelazioneAnnualeInseritaAnnoCorrente(providerId);
+		boolean relazioneAnnualeInseritaAnnoCorrente = relazioneAnnualeService.isLastRelazioneAnnualeInserita(providerId);
 		return provider.canInsertRelazioneAnnuale() && !relazioneAnnualeInseritaAnnoCorrente;
 	}
 
@@ -650,7 +650,7 @@ public class ProviderServiceImpl implements ProviderService {
 						provider.getDataScadenzaInsertRelazioneAnnuale(),
 						wrapper.getDataScadenzaInsertRelazioneAnnuale(),
 						LocalDate.now(),
-						!relazioneAnnualeService.isRelazioneAnnualeInseritaAnnoCorrente(providerId),
+						!relazioneAnnualeService.isLastRelazioneAnnualeInserita(providerId),
 						provider.getId());
 			}
 			provider.setDataScadenzaInsertRelazioneAnnuale(wrapper.getDataScadenzaInsertRelazioneAnnuale());
