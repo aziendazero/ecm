@@ -45,7 +45,7 @@
 				<div class="x_panel">
 					<div class="x_title">
 						<h2 th:text="#{label.pagamenti_annuali}">Elenco Pagamenti</h2>
-						<a class="btn btn-primary pull-right" th:if="${#authentication.principal.account.isProviderVisualizzatore()}" th:text="#{label.indietro}" th:href="@{|/provider/${provider.id}/${evento.id}/evento/list|}"></a>
+						<a class="btn btn-primary pull-right" th:if="${#authentication.principal.account.isProviderVisualizzatore()}" th:text="#{label.indietro}" th:href="@{|/provider/${evento.provider.id}/evento/list|}"></a>
 						<a class="btn btn-primary pull-right" th:unless="${#authentication.principal.account.isProviderVisualizzatore()}" th:text="#{label.indietro}" th:href="@{|/evento/list|}"></a>
 						<div class="clearfix"></div>
 					</div>
