@@ -118,8 +118,8 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	}
 
 	@Override
-	public boolean isRelazioneAnnualeInseritaAnnoCorrente(Long providerId) {
-		int annoCorrente = LocalDate.now().getYear();
+	public boolean isLastRelazioneAnnualeInserita(Long providerId) {
+		int annoCorrente = LocalDate.now().getYear()-1;
 		//tiommi 2017-06-15
 		Set<RelazioneAnnuale> setRelazioni = relazioneAnnualeRepository.findAllByProviderIdAndAnnoRiferimento(providerId, annoCorrente);
 		for (RelazioneAnnuale ra : setRelazioni) {

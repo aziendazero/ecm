@@ -18,5 +18,5 @@ public interface RelazioneAnnualeService {
 
 	public RelazioneAnnuale createRelazioneAnnuale(Long providerId, Integer annoRiferimento);
 	public void elaboraRelazioneAnnualeAndSave(RelazioneAnnuale relazioneAnnuale, File relazioneFinale, boolean asBozza);
-	public boolean isRelazioneAnnualeInseritaAnnoCorrente(Long providerId);
+	public boolean isLastRelazioneAnnualeInserita(Long providerId);
 }
