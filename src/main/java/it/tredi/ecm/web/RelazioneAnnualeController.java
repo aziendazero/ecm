@@ -210,7 +210,7 @@ public class RelazioneAnnualeController {
 
 	private RelazioneAnnualeWrapper prepareWrapperNew(RelazioneAnnuale relazioneAnnuale){
 		RelazioneAnnualeWrapper wrapper = new RelazioneAnnualeWrapper();
-		relazioneAnnuale.setAnnoRiferimento(LocalDate.now().getYear());
+		//relazioneAnnuale.setAnnoRiferimento(LocalDate.now().getYear());
 		wrapper.setProviderId(relazioneAnnuale.getProvider().getId());
 		wrapper.setRelazioneAnnuale(relazioneAnnuale);
 		return wrapper;
