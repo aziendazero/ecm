@@ -45,6 +45,7 @@ import org.xml.sax.InputSource;
 
 import it.peng.wr.webservice.protocollo.Corrispondente;
 import it.peng.wr.webservice.protocollo.ObjectFactory;
+import it.peng.wr.webservice.protocollo.Pecinviata;
 import it.peng.wr.webservice.protocollo.Protocol;
 import it.peng.wr.webservice.protocollo.ProtocolWebService;
 import it.peng.wr.webservice.protocollo.Risultatoprotocollo;
@@ -530,6 +531,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	public void protoBatchLog() throws Exception {
 		Set<Protocollo> protocolliInUscita = protocolloRepository.getProtocolliInUscita();
 		LapisWebSOAPType port = protocolloThreadLocal.get();
+		ProtocolWebService portWRB = protocolWRB.getProtocolWebServicePort();
 
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -584,8 +586,23 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					log = xpath.compile("//protocollo/log").evaluate(xmlResponse);
 
 				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
-					//STUB
 					//TODO
+					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getNumero().toString(), null, false, true);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					dt_insert = LocalDate.parse(protocollo.getDataRegistrazione().toString()).format(formatter);
+					dt_update = LocalDate.now().format(formatter);
+					n_proto = protocollo.getNumeroProtocollo();
+					for(Pecinviata pec  : protocollo.getPecInviate()) {
+						String status = portWRB.getStatoPEC(n_proto, dt_insert, pec.getId().getValue());
+						
+						if(status.equals("KO"));
+							stato = "KO";
+						
+					}
+					stato = stato.isEmpty() ? "OK" : stato;
+					//cod_stato - not present
+					//d_proto - not present
+					//log - not present
 				}
 				
 				if (StringUtils.hasText(d_proto)) {
@@ -678,7 +695,18 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
 					//STUB
-					//TODO
+					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getNumero().toString(), null, false, true);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					dt_spedizione = LocalDate.parse(protocollo.getDataRegistrazione().toString()).format(formatter);
+					nr_spedizione = protocollo.getNumeroProtocollo();
+					for(Pecinviata pec  : protocollo.getPecInviate()) {
+						String status = portWRB.getStatoPEC(nr_spedizione, dt_spedizione, pec.getId().getValue());
+						
+						if(status.equals("KO"));
+							stato = "KO";
+						
+					}
+					stato = stato.isEmpty() ? "OK" : stato;
 				}
 	//			String numero = xpath.compile("//protocollo/@numero").evaluate(xmlResultDocument);
 	//			String data = xpath.compile("//protocollo/@data").evaluate(xmlResultDocument);
@@ -704,7 +732,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				protoBatchLogRepository.save(plog);
 
 				//Verifico se deve essere eseguita qualche istruzione automatica dopo la protocollazione
-				if(p.getAccreditamento() != null && stato != null && stato.equalsIgnoreCase(AVVENUTA_CONSEGNA)){
+				if(p.getAccreditamento() != null && stato != null && (stato.equalsIgnoreCase(AVVENUTA_CONSEGNA) || stato.equalsIgnoreCase("OK"))){
 					if(p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.ESEGUI_TASK) {
 						LOGGER.info("ProtocolloID: " + p.getId() + " - Avanzamento Task per Accreditamento: " + p.getAccreditamento().getId());
 						if(p.getAccreditamento().getStato() == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE
