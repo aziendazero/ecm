@@ -546,7 +546,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	public void protoBatchLog() throws Exception {
 		Set<Protocollo> protocolliInUscita = protocolloRepository.getProtocolliInUscita();
 		LapisWebSOAPType port = protocolloThreadLocal.get();
-		ProtocolWebService portWRB = protocolWRB.getProtocolWebServicePort();
 
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
 
