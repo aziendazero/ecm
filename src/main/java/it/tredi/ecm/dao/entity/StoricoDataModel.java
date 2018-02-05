@@ -18,6 +18,6 @@ public class StoricoDataModel {
 	@JsonView(StoricoDataTableModel.View.class)
 	private String dataValutazione = "";
 	
-//	@JsonView(StoricoDataTableModel.View.class)
-//	private String selezionaLink = "";
+	@JsonView(StoricoDataTableModel.View.class)
+	private String selezionaLink = "";
 }

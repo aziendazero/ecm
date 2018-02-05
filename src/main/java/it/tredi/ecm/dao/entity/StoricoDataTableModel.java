@@ -24,7 +24,7 @@ public class StoricoDataTableModel {
 	   * parameter. Do not include if there is no error.
 	   */
 	  @JsonView(View.class)
-	  private String error;
+	  private String error = "";
 
 	  public interface View {
 	}

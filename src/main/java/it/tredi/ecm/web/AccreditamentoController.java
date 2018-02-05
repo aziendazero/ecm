@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -109,7 +112,7 @@ public class AccreditamentoController {
 
 	@Autowired private AccreditamentoStatoHistoryService accreditamentoStatoHistoryService;
 	@Autowired private InviaAlProtocolloValidator inviaAlProtocolloValidator;
-
+	@Autowired private MessageSource messageSource;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -1605,10 +1608,10 @@ public class AccreditamentoController {
 //TODO		@PreAuthorize("@securityAccessServiceImpl.canShowStorico(principal,#accreditamentoId)")
 	@JsonView(StoricoDataTableModel.View.class)
 	@RequestMapping("/accreditamento/{accreditamentoId}/getStorico")
-	@ResponseBody
-	public StoricoDataTableModel getValutazioniStorico(@PathVariable Long accreditamentoId) throws Exception{
+	public @ResponseBody StoricoDataTableModel getValutazioniStorico(@PathVariable Long accreditamentoId) throws Exception{
 		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
 		StoricoDataTableModel dataTable = new StoricoDataTableModel();
+		dataTable.setData(new ArrayList<>());
 		if(valutazioni != null && !valutazioni.isEmpty()) {
 			for(Valutazione v : valutazioni) {
 				dataTable.getData().add(buildStoricoDataTableModel(v));
@@ -1623,8 +1626,7 @@ public class AccreditamentoController {
 		model.setFullName(v.getAccount().getFullName());
 		model.setAccreditamentoStatoValutazione(v.getAccreditamentoStatoValutazione().getNome());
 		model.setDataValutazione(v.getDataValutazione().getDayOfMonth()+"/"+v.getDataValutazione().getMonthValue()+"/"+v.getDataValutazione().getYear());
-		//model.setSelezionaLink("<a class=\"btn btn-primary btn-lookup\" onclick=\"mostraRiepilogoValutazione(' + "+v.getId()+" + ')\">'+[[#{label.seleziona}]]+'</a>");
-//		model.setSelezionaLink(" ");
+		model.setSelezionaLink("<a class=\"btn btn-primary btn-lookup\" onclick=\"mostraRiepilogoValutazione("+v.getId()+")\">"+messageSource.getMessage("label.seleziona", null, LocaleContextHolder.getLocale())+"</a>");
 		
 		return model;
 	}

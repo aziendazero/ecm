@@ -68,8 +68,8 @@
 			var dataColumns = [
 		            { "data": "fullName"},
 		            { "data": "accreditamentoStatoValutazione" },
-		            { "data": "dataValutazione"}/* ,
-		            { "data": "selezionaLink"} */
+		            { "data": "dataValutazione"},
+		            { "data": "selezionaLink"}
 	            ]
 			
 			$(document).ready(function() {
@@ -80,20 +80,22 @@
 					scrollY: 300,
 					"bScrollCollapse": true,
 				    scroller: true,
-				    "ajax":{
-						  "url": [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/getStorico|}]]
-					  },
-					  "columns": dataColumns,
+					//colonna del pulsante seleziona
+				    "columnDefs": [
+				                   	{"targets": [ '_all' ], "orderable": false },
+				                    {"targets": 3, "orderable": false, "width": "1px"},
+				                  ],
 				    "order": [ 2, 'asc' ],
 				});
 
 			})
 
-			/* function showStorico() {
+			function showStorico() {
 				$('#tabella-modale-storico').DataTable({
+					"destroy" : true,
 					"bFilter" : false,
 					"bInfo" : false,
-					"bPaginate" : true,
+					"bPaginate" : false,
 			        "bServerSide": true,
 			        "sort": "position",
 					"ajax":{
@@ -103,7 +105,7 @@
 				});
 				
 				$("#showAllStorico-modal").modal("show");
-			} */
+			}
 
 			function mostraRiepilogoValutazione(valutazioneId) {
 				var url = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/valutazione/|}]] + valutazioneId + "/show";
