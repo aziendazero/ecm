@@ -31,13 +31,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.entity.StoricoDataModel;
+import it.tredi.ecm.dao.entity.StoricoDataTableModel;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
@@ -1598,10 +1603,30 @@ public class AccreditamentoController {
 	}
 
 //TODO		@PreAuthorize("@securityAccessServiceImpl.canShowStorico(principal,#accreditamentoId)")
+	@JsonView(StoricoDataTableModel.View.class)
 	@RequestMapping("/accreditamento/{accreditamentoId}/getStorico")
 	@ResponseBody
-	public Set<Valutazione>getValutazioniStorico(@PathVariable Long accreditamentoId){
-		return valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
+	public StoricoDataTableModel getValutazioniStorico(@PathVariable Long accreditamentoId) throws Exception{
+		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
+		StoricoDataTableModel dataTable = new StoricoDataTableModel();
+		if(valutazioni != null && !valutazioni.isEmpty()) {
+			for(Valutazione v : valutazioni) {
+				dataTable.getData().add(buildStoricoDataTableModel(v));
+			}
+		}
+		return dataTable;
+	}
+	
+	private StoricoDataModel buildStoricoDataTableModel(Valutazione v) throws Exception{
+		StoricoDataModel model = new StoricoDataModel();
+		
+		model.setFullName(v.getAccount().getFullName());
+		model.setAccreditamentoStatoValutazione(v.getAccreditamentoStatoValutazione().getNome());
+		model.setDataValutazione(v.getDataValutazione().getDayOfMonth()+"/"+v.getDataValutazione().getMonthValue()+"/"+v.getDataValutazione().getYear());
+		//model.setSelezionaLink("<a class=\"btn btn-primary btn-lookup\" onclick=\"mostraRiepilogoValutazione(' + "+v.getId()+" + ')\">'+[[#{label.seleziona}]]+'</a>");
+//		model.setSelezionaLink(" ");
+		
+		return model;
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canEditVerbaleAccreditamento(principal,#accreditamentoId)")
