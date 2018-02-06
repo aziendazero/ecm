@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,13 +34,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.entity.StoricoDataModel;
+import it.tredi.ecm.dao.entity.StoricoDataTableModel;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
@@ -104,7 +112,7 @@ public class AccreditamentoController {
 
 	@Autowired private AccreditamentoStatoHistoryService accreditamentoStatoHistoryService;
 	@Autowired private InviaAlProtocolloValidator inviaAlProtocolloValidator;
-
+	@Autowired private MessageSource messageSource;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -1598,10 +1606,32 @@ public class AccreditamentoController {
 	}
 
 //TODO		@PreAuthorize("@securityAccessServiceImpl.canShowStorico(principal,#accreditamentoId)")
+	@JsonView(StoricoDataTableModel.View.class)
 	@RequestMapping("/accreditamento/{accreditamentoId}/getStorico")
-	@ResponseBody
-	public Set<Valutazione>getValutazioniStorico(@PathVariable Long accreditamentoId){
-		return valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
+	public @ResponseBody StoricoDataTableModel getValutazioniStorico(@PathVariable Long accreditamentoId) throws Exception{
+		Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniStoricizzateForAccreditamentoId(accreditamentoId);
+		StoricoDataTableModel dataTable = new StoricoDataTableModel();
+		dataTable.setData(new ArrayList<>());
+		if(valutazioni != null && !valutazioni.isEmpty()) {
+			for(Valutazione v : valutazioni) {
+				dataTable.getData().add(buildStoricoDataTableModel(v));
+			}
+		}
+		return dataTable;
+	}
+	
+	private StoricoDataModel buildStoricoDataTableModel(Valutazione v) throws Exception{
+		StoricoDataModel model = new StoricoDataModel();
+		if(v.getAccount().getFullName() != null)
+			model.setFullName(v.getAccount().getFullName());
+		if(v.getAccreditamentoStatoValutazione().getNome() != null)
+			model.setAccreditamentoStatoValutazione(v.getAccreditamentoStatoValutazione().getNome());
+		if(v.getDataValutazione() != null)
+			model.setDataValutazione(v.getDataValutazione().getDayOfMonth()+"/"+v.getDataValutazione().getMonthValue()+"/"+v.getDataValutazione().getYear());
+		
+		model.setSelezionaLink("<a class=\"btn btn-primary btn-lookup\" onclick=\"mostraRiepilogoValutazione("+v.getId()+")\">"+messageSource.getMessage("label.seleziona", null, LocaleContextHolder.getLocale())+"</a>");
+		
+		return model;
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canEditVerbaleAccreditamento(principal,#accreditamentoId)")

@@ -65,6 +65,13 @@
 		<script th:inline="javascript">
 		/*<![CDATA[*/
 
+			var dataColumns = [
+		            { "data": "fullName"},
+		            { "data": "accreditamentoStatoValutazione" },
+		            { "data": "dataValutazione"},
+		            { "data": "selezionaLink"}
+	            ]
+			
 			$(document).ready(function() {
 
 				$('.datatable-responsive-storico').DataTable({
@@ -84,20 +91,19 @@
 			})
 
 			function showStorico() {
-				var table = $('#tabella-modale-storico').DataTable();
-				table.clear();
-				urlGet = [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/getStorico|}]];
-				$.get(urlGet, function(data){
-					for(var item = 0; item < data.length; item++){
-						var obj = data[item];
-						table.row.add([
-							obj.account.fullName,
-							obj.accreditamentoStatoValutazione.nome,
-							obj.dataValutazione.dayOfMonth + "/" + obj.dataValutazione.monthValue + "/" + obj.dataValutazione.year,
-							'<a class="btn btn-primary btn-lookup" onclick="mostraRiepilogoValutazione(' + obj.id + ')">'+[[#{label.seleziona}]]+'</a>'
-						]).draw(false);
-					}
+				$('#tabella-modale-storico').DataTable({
+					"destroy" : true,
+					"bFilter" : false,
+					"bInfo" : false,
+					"bPaginate" : false,
+			        "bServerSide": true,
+			        "sort": "position",
+					"ajax":{
+						  "url": [[@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/getStorico|}]]
+					  },
+					  "columns": dataColumns
 				});
+				
 				$("#showAllStorico-modal").modal("show");
 			}
 
