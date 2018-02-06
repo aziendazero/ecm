@@ -1622,10 +1622,13 @@ public class AccreditamentoController {
 	
 	private StoricoDataModel buildStoricoDataTableModel(Valutazione v) throws Exception{
 		StoricoDataModel model = new StoricoDataModel();
+		if(v.getAccount().getFullName() != null)
+			model.setFullName(v.getAccount().getFullName());
+		if(v.getAccreditamentoStatoValutazione().getNome() != null)
+			model.setAccreditamentoStatoValutazione(v.getAccreditamentoStatoValutazione().getNome());
+		if(v.getDataValutazione() != null)
+			model.setDataValutazione(v.getDataValutazione().getDayOfMonth()+"/"+v.getDataValutazione().getMonthValue()+"/"+v.getDataValutazione().getYear());
 		
-		model.setFullName(v.getAccount().getFullName());
-		model.setAccreditamentoStatoValutazione(v.getAccreditamentoStatoValutazione().getNome());
-		model.setDataValutazione(v.getDataValutazione().getDayOfMonth()+"/"+v.getDataValutazione().getMonthValue()+"/"+v.getDataValutazione().getYear());
 		model.setSelezionaLink("<a class=\"btn btn-primary btn-lookup\" onclick=\"mostraRiepilogoValutazione("+v.getId()+")\">"+messageSource.getMessage("label.seleziona", null, LocaleContextHolder.getLocale())+"</a>");
 		
 		return model;
