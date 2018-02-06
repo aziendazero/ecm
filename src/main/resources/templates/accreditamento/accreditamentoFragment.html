@@ -1536,7 +1536,7 @@
 													<tr th:each="history, row : ${accreditamentoHistoryDecadenzaList}">
 														<td th:text="${history.dataInizio != null} ? ${#temporals.format(history.dataInizio,'dd/MM/yyyy - HH:mm')} : ''"></td>
 														<td th:unless="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome}"></td>
-														<td th:unless="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome}"></td>
+														<!-- td th:unless="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome}"></td -->
 														<td th:if="${history?.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" th:text="${history?.stato.nome + ' ' + #messages.msg('label.provider_ha_richiesto_conclusione_procedimento')}"></td>
 														<!-- td th:text="${history?.account?.username}"></td -->
 													</tr>
