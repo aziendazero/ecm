@@ -49,6 +49,8 @@ import it.peng.wr.webservice.protocollo.Pecinviata;
 import it.peng.wr.webservice.protocollo.Protocol;
 import it.peng.wr.webservice.protocollo.ProtocolWebService;
 import it.peng.wr.webservice.protocollo.Risultatoprotocollo;
+import it.peng.wr.webservice.protocollo.WebServiceException;
+import it.peng.wr.webservice.protocollo.WebServiceException_Exception;
 import it.rve.protocollo.lapiswebsoap.LapisWebSOAPService;
 import it.rve.protocollo.lapiswebsoap.LapisWebSOAPType;
 import it.rve.protocollo.xsd.protocolla_arrivo.Allegati;
@@ -96,8 +98,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	@Autowired private EmailService emailService;
 	@Autowired private EcmProperties ecmProperties;
 	
-	private Protocol protocolWRB ;
- 	private ProtocolWebService portWRB ;
+	private Protocol protocolWRB = new Protocol();
+ 	private ProtocolWebService portWRB = protocolWRB.getProtocolWebServicePort();
  	private ObjectFactory objectFactory = new ObjectFactory();
 
 	private static JAXBContext protocollaArrivoReqContext = null;
@@ -211,9 +213,9 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		File file = fileService.getFile(fileId);
 
-		if(file.isProtocollato()){
-			throw new Exception("File già protocollato");
-		}
+//		if(file.isProtocollato()){
+//			throw new Exception("File già protocollato");
+//		}
 
 		Protocollo protocollo = new Protocollo();
 		protocollo.setFile(file);
@@ -251,21 +253,27 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 //				doc.setNomeFile(f.);
 //			}
 			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
-					mittente, "69.02.03.00.00", null, null, null, null, null);
+					mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, null);
 			
 			LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
 			
 			String data = responseWRB.getDataRegistrazione().getValue();
 			String numero = responseWRB.getNumeroProtocollo().getValue();
 			
-			
-			protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+			protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 			protocollo.setNumero(Integer.parseInt(numero));
 			protocollo.setIdProtoBatch(null);
 			protocollo.setStatoSpedizione(null);
 			protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
 			
 			protocolloRepository.save(protocollo);
+			
+//			try {
+//			it.peng.wr.webservice.protocollo.Protocollo test = new it.peng.wr.webservice.protocollo.Protocollo();
+//			test = portWRB.getProtocollo(numero, data, null, null);
+//			}catch(WebServiceException_Exception e) {
+//				e.printStackTrace();
+//			}
 			
 		}
 	}
