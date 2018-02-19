@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum ProtocolloServiceVersioneEnum {
 
 	RV(1, "rv"),
-	WEBRAINBOW(1, "webrainbow");
+	WEBRAINBOW(2, "webrainbow");
 	
 	private int numeroVersione;
 	private String nome;

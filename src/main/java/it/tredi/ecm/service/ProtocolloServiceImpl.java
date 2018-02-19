@@ -96,8 +96,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	@Autowired private EmailService emailService;
 	@Autowired private EcmProperties ecmProperties;
 	
-	private Protocol protocolWRB = new Protocol();
- 	private ProtocolWebService portWRB = protocolWRB.getProtocolWebServicePort();
+	private Protocol protocolWRB ;
+ 	private ProtocolWebService portWRB ;
  	private ObjectFactory objectFactory = new ObjectFactory();
 
 	private static JAXBContext protocollaArrivoReqContext = null;
@@ -601,8 +601,9 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
 					//TODO
-					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getNumero().toString(), null, false, true);
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getNumero().toString(), p.getData().format(formatter), false, true);
+					formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 					dt_insert = LocalDate.parse(protocollo.getDataRegistrazione().toString()).format(formatter);
 					dt_update = LocalDate.now().format(formatter);
 					n_proto = protocollo.getNumeroProtocollo();
@@ -742,7 +743,10 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
 				plog.setNSpedizione(nr_spedizione);
 				plog.setProtocollo(p);
-				plog.setStato(stato);
+				if(stato.equalsIgnoreCase(AVVENUTA_CONSEGNA) || stato.equalsIgnoreCase("OK"))
+					plog.setStato("avvenuta_consegna");
+				else
+					plog.setStato(stato);
 				protoBatchLogRepository.save(plog);
 
 				//Verifico se deve essere eseguita qualche istruzione automatica dopo la protocollazione
