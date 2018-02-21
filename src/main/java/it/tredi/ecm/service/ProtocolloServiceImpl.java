@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -246,36 +247,72 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			mittente.setIndirizzo(objectFactory.createCorrispondenteIndirizzo(sedeLegale.getIndirizzo()));
 			mittente.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
 			
-//			List<it.peng.wr.webservice.protocollo.Documento> documenti = new ArrayList<it.peng.wr.webservice.protocollo.Documento>();
-//			for(FileData f : file.getFileData()) {
-//				it.peng.wr.webservice.protocollo.Documento doc = new it.peng.wr.webservice.protocollo.Documento();
-//				doc.setId(objectFactory.createDocumentoId(f.getId().toString()));
-//				doc.setNomeFile(f.);
-//			}
+			List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(file, fileAllegatiIds);
+			
 			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
-					mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, null);
+					mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, documenti);
 			
-			LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
+//			LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
 			
-			String data = responseWRB.getDataRegistrazione().getValue();
-			String numero = responseWRB.getNumeroProtocollo().getValue();
-			
-			protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-			protocollo.setNumero(Integer.parseInt(numero));
-			protocollo.setIdProtoBatch(null);
-			protocollo.setStatoSpedizione(null);
-			protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
-			
-			protocolloRepository.save(protocollo);
-			
-//			try {
-//			it.peng.wr.webservice.protocollo.Protocollo test = new it.peng.wr.webservice.protocollo.Protocollo();
-//			test = portWRB.getProtocollo(numero, data, null, null);
-//			}catch(WebServiceException_Exception e) {
-//				e.printStackTrace();
-//			}
-			
+			if(responseWRB.getCodice().getValue().equals("OK")) {
+				LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
+				LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
+				
+				String data = responseWRB.getDataRegistrazione().getValue();
+				String numero = responseWRB.getNumeroProtocollo().getValue();
+				
+				protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+				protocollo.setNumero(Integer.parseInt(numero));
+				protocollo.setIdProtoBatch(responseWRB.getId().getValue());
+				protocollo.setStatoSpedizione(null);
+				protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
+				
+				protocolloRepository.save(protocollo);
+				
+			}else {
+				LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
+				LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
+				
+				//TODO error handling
+			}
 		}
+	}
+	
+	private List<it.peng.wr.webservice.protocollo.Documento> getDocumentoPrincipaleAndAllegati(File file, Set<Long> fileAllegatiIds){
+		List<it.peng.wr.webservice.protocollo.Documento> documenti = new ArrayList<it.peng.wr.webservice.protocollo.Documento>();
+		it.peng.wr.webservice.protocollo.Documento documentoPrincipale = new it.peng.wr.webservice.protocollo.Documento();
+		documentoPrincipale.setId(objectFactory.createDocumentoId(file.getId().toString()));
+		documentoPrincipale.setNomeFile(file.getNomeFile());
+		documentoPrincipale.setStream(file.getData());
+		documentoPrincipale.setMimeType(URLConnection.guessContentTypeFromName(file.getNomeFile()));
+		documentoPrincipale.setTipo(file.getTipo().getNome());
+		documenti.add(documentoPrincipale);
+		
+		List<File> allegati = new ArrayList<>();
+		for(Long id : fileAllegatiIds) {
+			try {
+				allegati.add(fileService.getFile(id));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		for(File f : allegati) {
+			
+			try {
+				it.peng.wr.webservice.protocollo.Documento doc = new it.peng.wr.webservice.protocollo.Documento();
+				doc.setId(objectFactory.createDocumentoId(f.getId().toString()));
+				doc.setNomeFile(f.getNomeFile());
+				doc.setStream(f.getData());
+				doc.setMimeType(URLConnection.guessContentTypeFromName(f.getNomeFile()));
+				doc.setTipo(f.getTipo().getNome());
+				
+				documenti.add(doc);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return documenti;
 	}
 
 	@Override
