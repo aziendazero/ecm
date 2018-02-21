@@ -24,6 +24,8 @@ public class ProtoBatchLog extends BaseEntityDefaultId {
 
 	private String nSpedizione;
 	private Date dtSpedizione;
+	
+	private boolean pecInviata;
 
 	@ManyToOne @JoinColumn(name = "protocollo_id")
 	private Protocollo protocollo;

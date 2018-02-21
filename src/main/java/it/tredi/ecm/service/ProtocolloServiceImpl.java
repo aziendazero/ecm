@@ -337,6 +337,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			destinatari.add(destinatario);
 			
 			//TODO protocollaInUscita(protocollo, destinatari, fileAllegatiIds); 
+			protocollo.setPecInviata(false);
 		}
 	}
 
@@ -586,8 +587,9 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				String n_proto = "";
 				String d_proto = "";
 				String log = "";
+				boolean pecInviata = false;
 				
-				if(p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) { 
+				if(p.getProtocolloServiceVersion() == null || p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) { 
 					Object response = port.protoBatchLog(p.getIdProtoBatch());
 	
 					LOGGER.debug(response);
@@ -644,6 +646,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				plog.setLog(log);
 				plog.setProtocollo(p);
 				plog.setStato(stato);
+				plog.setPecInviata(pecInviata);
 
 				protoBatchLogRepository.save(plog);
 			}
@@ -667,6 +670,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			String stato = null;
 			String nr_spedizione = null;
 			String dt_spedizione = null;
+			boolean pecInviata = false;
 			if(ecmProperties.isDebugSaltaProtocollo()) {
 				String start = "2016-01-01 00:00";
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -677,7 +681,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				dt_spedizione = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 			} else {
 
-				if(p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) {
+				if(p.getProtocolloServiceVersion() == null || p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) {
 					// creo la request
 					Document request = builder.newDocument();
 	
@@ -729,7 +733,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 							stato = "KO";
 						
 					}
-					stato = stato.isEmpty() ? "OK" : stato;
+					stato = stato.isEmpty() ? AVVENUTA_CONSEGNA : stato;
+					pecInviata = stato.isEmpty() ? true : false;
 				}
 	//			String numero = xpath.compile("//protocollo/@numero").evaluate(xmlResultDocument);
 	//			String data = xpath.compile("//protocollo/@data").evaluate(xmlResultDocument);
@@ -745,20 +750,21 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 			if(p.getStatoSpedizione() == null || !p.getStatoSpedizione().equals(stato)) {
 				p.setStatoSpedizione(stato);
+				if(pecInviata) //Avoid adding pecInviata in protocolls with old service
+					p.setPecInviata(pecInviata);
 				protocolloRepository.save(p);
 
 				ProtoBatchLog plog = new ProtoBatchLog();
 				plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
 				plog.setNSpedizione(nr_spedizione);
 				plog.setProtocollo(p);
-				if(stato.equalsIgnoreCase(AVVENUTA_CONSEGNA) || stato.equalsIgnoreCase("OK"))
-					plog.setStato("avvenuta_consegna");
-				else
-					plog.setStato(stato);
+				plog.setStato(stato);
+				if(pecInviata)
+					plog.setPecInviata(pecInviata);
 				protoBatchLogRepository.save(plog);
 
 				//Verifico se deve essere eseguita qualche istruzione automatica dopo la protocollazione
-				if(p.getAccreditamento() != null && stato != null && (stato.equalsIgnoreCase(AVVENUTA_CONSEGNA) || stato.equalsIgnoreCase("OK"))){
+				if(p.getAccreditamento() != null && stato != null && (stato.equalsIgnoreCase(AVVENUTA_CONSEGNA))){
 					if(p.getActionAfterProtocollo() == ActionAfterProtocollaEnum.ESEGUI_TASK) {
 						LOGGER.info("ProtocolloID: " + p.getId() + " - Avanzamento Task per Accreditamento: " + p.getAccreditamento().getId());
 						if(p.getAccreditamento().getStato() == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE
