@@ -25,7 +25,7 @@ public class Protocollo extends BaseEntityDefaultId {
 	private String statoSpedizione;
 	private String oggetto;
 	private ProtocolloServiceVersioneEnum protocolloServiceVersion;
-	private boolean pecInviata;
+	private Boolean pecInviata;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name="action_after_protocollo")

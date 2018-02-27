@@ -247,10 +247,10 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			mittente.setIndirizzo(objectFactory.createCorrispondenteIndirizzo(sedeLegale.getIndirizzo()));
 			mittente.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
 			
-			List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(file, fileAllegatiIds);
+//			List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(file, fileAllegatiIds); 
 			
 			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
-					mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, documenti);
+					mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, null);
 			
 //			LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
 			
@@ -263,7 +263,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				
 				protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 				protocollo.setNumero(Integer.parseInt(numero));
-				protocollo.setIdProtoBatch(responseWRB.getId().getValue());
+				protocollo.setIdProtoBatch(null);
 				protocollo.setStatoSpedizione(null);
 				protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
 				
@@ -278,42 +278,42 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		}
 	}
 	
-	private List<it.peng.wr.webservice.protocollo.Documento> getDocumentoPrincipaleAndAllegati(File file, Set<Long> fileAllegatiIds){
-		List<it.peng.wr.webservice.protocollo.Documento> documenti = new ArrayList<it.peng.wr.webservice.protocollo.Documento>();
-		it.peng.wr.webservice.protocollo.Documento documentoPrincipale = new it.peng.wr.webservice.protocollo.Documento();
-		documentoPrincipale.setId(objectFactory.createDocumentoId(file.getId().toString()));
-		documentoPrincipale.setNomeFile(file.getNomeFile());
-		documentoPrincipale.setStream(file.getData());
-		documentoPrincipale.setMimeType(URLConnection.guessContentTypeFromName(file.getNomeFile()));
-		documentoPrincipale.setTipo(file.getTipo().getNome());
-		documenti.add(documentoPrincipale);
-		
-		List<File> allegati = new ArrayList<>();
-		for(Long id : fileAllegatiIds) {
-			try {
-				allegati.add(fileService.getFile(id));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		for(File f : allegati) {
-			
-			try {
-				it.peng.wr.webservice.protocollo.Documento doc = new it.peng.wr.webservice.protocollo.Documento();
-				doc.setId(objectFactory.createDocumentoId(f.getId().toString()));
-				doc.setNomeFile(f.getNomeFile());
-				doc.setStream(f.getData());
-				doc.setMimeType(URLConnection.guessContentTypeFromName(f.getNomeFile()));
-				doc.setTipo(f.getTipo().getNome());
-				
-				documenti.add(doc);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return documenti;
-	}
+//	private List<it.peng.wr.webservice.protocollo.Documento> getDocumentoPrincipaleAndAllegati(File file, Set<Long> fileAllegatiIds){
+//		List<it.peng.wr.webservice.protocollo.Documento> documenti = new ArrayList<it.peng.wr.webservice.protocollo.Documento>();
+//		it.peng.wr.webservice.protocollo.Documento documentoPrincipale = objectFactory.createDocumento();
+//		documentoPrincipale.setId(objectFactory.createDocumentoId(file.getId().toString()));
+//		documentoPrincipale.setNomeFile(file.getNomeFile());
+//		documentoPrincipale.setStream(file.getData());
+//		documentoPrincipale.setMimeType(URLConnection.guessContentTypeFromName(file.getNomeFile()));
+//		documentoPrincipale.setTipo(file.getTipo().getNome());
+//		documenti.add(documentoPrincipale);
+//		
+//		List<File> allegati = new ArrayList<>();
+//		for(Long id : fileAllegatiIds) {
+//			try {
+//				allegati.add(fileService.getFile(id));
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		for(File f : allegati) {
+//			
+//			try {
+//				it.peng.wr.webservice.protocollo.Documento doc = new it.peng.wr.webservice.protocollo.Documento();
+//				doc.setId(objectFactory.createDocumentoId(f.getId().toString()));
+//				doc.setNomeFile(f.getNomeFile());
+//				doc.setStream(f.getData());
+//				doc.setMimeType(URLConnection.guessContentTypeFromName(f.getNomeFile()));
+//				doc.setTipo(f.getTipo().getNome());
+//				
+//				documenti.add(doc);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		return documenti;
+//	} for the document list TODO
 
 	@Override
 	@Transactional
@@ -374,7 +374,16 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			destinatari.add(destinatario);
 			
 			//TODO protocollaInUscita(protocollo, destinatari, fileAllegatiIds); 
+			Risultatoprotocollo responseUscitaWRB = portWRB.creaProtocolloInUscita(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
+					engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), destinatari, null, null, null, null, true, null);
+			
+			protocollo.setIdProtoBatch(null);
+			protocollo.setNumero(Integer.parseInt(responseUscitaWRB.getNumeroProtocollo().getValue()));
+			protocollo.setData(null);
+			protocollo.setStatoSpedizione(null);
 			protocollo.setPecInviata(false);
+			
+			protocolloRepository.save(protocollo);
 		}
 	}
 
@@ -624,7 +633,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				String n_proto = "";
 				String d_proto = "";
 				String log = "";
-				boolean pecInviata = false;
+				Boolean pecInviata = false;
 				
 				if(p.getProtocolloServiceVersion() == null || p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) { 
 					Object response = port.protoBatchLog(p.getIdProtoBatch());
@@ -707,7 +716,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			String stato = null;
 			String nr_spedizione = null;
 			String dt_spedizione = null;
-			boolean pecInviata = false;
+			Boolean pecInviata = false;
 			if(ecmProperties.isDebugSaltaProtocollo()) {
 				String start = "2016-01-01 00:00";
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
