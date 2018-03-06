@@ -240,41 +240,45 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
 			//STUB
 			//TODO
+			protocollaInEntrata(protocollo, sedeLegale, provider);
+		}
+	}
+	
+	private void protocollaInEntrata(Protocollo protocollo, Sede sedeLegale, Provider provider) throws Exception {
+		Corrispondente mittente = new Corrispondente();
+		mittente.setCap(objectFactory.createCorrispondenteCap(sedeLegale.getCap()));
+		mittente.setCitta(objectFactory.createCorrispondenteCitta(sedeLegale.getComune()));
+		mittente.setIndirizzo(objectFactory.createCorrispondenteIndirizzo(sedeLegale.getIndirizzo()));
+		mittente.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
+		
+//		List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(file, fileAllegatiIds); 
+		
+		Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
+				mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, null);
+		
+//		LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
+		
+		if(responseWRB.getCodice().getValue().equals("OK")) {
+			LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
+			LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
 			
-			Corrispondente mittente = new Corrispondente();
-			mittente.setCap(objectFactory.createCorrispondenteCap(sedeLegale.getCap()));
-			mittente.setCitta(objectFactory.createCorrispondenteCitta(sedeLegale.getComune()));
-			mittente.setIndirizzo(objectFactory.createCorrispondenteIndirizzo(sedeLegale.getIndirizzo()));
-			mittente.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
+			String data = responseWRB.getDataRegistrazione().getValue();
+			String numero = responseWRB.getNumeroProtocollo().getValue();
 			
-//			List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(file, fileAllegatiIds); 
+			protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+			protocollo.setNumero(Integer.parseInt(numero));
+			protocollo.setIdProtoBatch(null);
+			protocollo.setStatoSpedizione(null);
+			protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
 			
-			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
-					mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, null);
+			protocolloRepository.save(protocollo);
 			
-//			LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
+		}else {
+			LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
+			LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
 			
-			if(responseWRB.getCodice().getValue().equals("OK")) {
-				LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
-				LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
-				
-				String data = responseWRB.getDataRegistrazione().getValue();
-				String numero = responseWRB.getNumeroProtocollo().getValue();
-				
-				protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-				protocollo.setNumero(Integer.parseInt(numero));
-				protocollo.setIdProtoBatch(null);
-				protocollo.setStatoSpedizione(null);
-				protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
-				
-				protocolloRepository.save(protocollo);
-				
-			}else {
-				LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
-				LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
-				
-				//TODO error handling
-			}
+			//TODO error handling
+			throw new Exception(responseWRB.getCodice().getValue()+": "+responseWRB.getDescrizione().getValue());
 		}
 	}
 	
@@ -377,9 +381,19 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			Risultatoprotocollo responseUscitaWRB = portWRB.creaProtocolloInUscita(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
 					engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), destinatari, null, null, null, null, true, null);
 			
-			protocollo.setIdProtoBatch(null);
+			LOGGER.info(Utils.getLogMessage("Codice: " + responseUscitaWRB.getCodice().getValue()));
+			LOGGER.info(Utils.getLogMessage("Data Registrazione: " + responseUscitaWRB.getDataRegistrazione().getValue()));
+			LOGGER.info(Utils.getLogMessage("Descrizione: " + responseUscitaWRB.getDescrizione().getValue()));
+			LOGGER.info(Utils.getLogMessage("Id: " + responseUscitaWRB.getId().getValue()));
+			LOGGER.info(Utils.getLogMessage("Link: " + responseUscitaWRB.getLink().getValue()));
+			LOGGER.info(Utils.getLogMessage("NumeroProtocollo: " + responseUscitaWRB.getNumeroProtocollo().getValue()));
+			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate date = LocalDate.parse("2018-03-05", formatter);
+			
+			protocollo.setIdProtoBatch(responseUscitaWRB.getId().getValue());
 			protocollo.setNumero(Integer.parseInt(responseUscitaWRB.getNumeroProtocollo().getValue()));
-			protocollo.setData(null);
+			protocollo.setData(date);
 			protocollo.setStatoSpedizione(null);
 			protocollo.setPecInviata(false);
 			
@@ -657,8 +671,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
 					//TODO
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getNumero().toString(), p.getData().format(formatter), false, true);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD-MM-YYYY");
+					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getIdProtoBatch(), p.getData().format(formatter), false, true);
 					formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 					dt_insert = LocalDate.parse(protocollo.getDataRegistrazione().toString()).format(formatter);
 					dt_update = LocalDate.now().format(formatter);
@@ -768,8 +782,9 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
 					//STUB
-					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getNumero().toString(), null, false, true);
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD-MM-YYYY");
+					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getNumero().toString(), p.getData().format(formatter), false, true);
+					formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 					dt_spedizione = LocalDate.parse(protocollo.getDataRegistrazione().toString()).format(formatter);
 					nr_spedizione = protocollo.getNumeroProtocollo();
 					for(Pecinviata pec  : protocollo.getPecInviate()) {
