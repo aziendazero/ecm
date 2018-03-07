@@ -1001,7 +1001,7 @@
 														<td th:unless="${riepilogo.value.ruolo?.ruoloBase == null}" th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
 														<td th:if="${riepilogo.value.ruolo?.ruoloBase == null}"></td>
 														<td th:unless="${riepilogo.key == null}">
-																<input class="form-control" type="number" th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" th:disabled="${isEditSemiBloccato or (isRiedizione
+																<input class="form-control" type="number" min="0" oninput="validity.valid||(value='0');" step="any" th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" th:disabled="${isEditSemiBloccato or (isRiedizione
 																		and (eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).TRAINING_INDIVIDUALIZZATO
 																			or eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO))}" />
 														</td>
@@ -1078,7 +1078,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
-											<input type="number" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" th:disabled="${isRiedizione or isEditSemiBloccato}" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" />
+											<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" th:disabled="${isRiedizione or isEditSemiBloccato}" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" />
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.crediti')}__}"></div>
 									</div>
@@ -1173,7 +1173,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="quota">
-											<input type="number" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+											<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.quotaPartecipazione')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.quotaPartecipazione')}__}"></div>
 								</div>
