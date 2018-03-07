@@ -732,7 +732,7 @@
 								<div class="item">
 									<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-1 col-md-1 col-sm-1 col-xs-1' : 'text-right col-xs-1'}" th:text="${!showOnly ? T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdEcm('datiAccreditamento.numeroDipendenti') : ''}"></label>
 									<label th:class="${valutabile ? 'margin-valutabile text-center col-lg-2 col-md-2 col-sm-4 col-xs-4' : 'col-xs-11'}">
-										<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.numero_dipendenti_title}">Numero dipendenti dedicati alla formazione</span>
+										<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.numero_personale_dedicato_alla_formazione}">Numero personale dedicato alla formazione</span>
 										<span th:if="${editabile}" class="required">*</span>
 									</label>
 								</div>
@@ -750,7 +750,7 @@
 							<!-- TEMPO INDETERMINATO -->
 							<div th:class="${valutabile ? 'item validateAlert form-group' : 'item form-group'}" th:classappend="${#fields.hasErrors('datiAccreditamentoWrapper.datiAccreditamento.numeroDipendentiFormazioneTempoIndeterminato')} ? 'bad'">
 								<label th:unless="${valutabile}" class="control-label col-md-4 col-sm-4 col-xs-12" for="tempo_indeterminato">
-									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.tempo_indeterminato}">Tempo indeterminato</span>
+									<span th:class="${showOnly ? 'label-show' : ''}" th:text="#{label.numero_dipendenti}">Numero dipendenti</span>
 								</label>
 								<th:block th:if="${editabile}">
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="tempo_indeterminato">
