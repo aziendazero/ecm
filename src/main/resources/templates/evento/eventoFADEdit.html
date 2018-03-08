@@ -150,7 +150,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="durata">
-											<input type="number" pattern="numeric" class="form-control" th:field="*{oreAttivita}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+											<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" pattern="numeric" class="form-control" th:field="*{oreAttivita}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 									</div>
 								</div>
 
