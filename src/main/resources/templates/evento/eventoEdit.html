@@ -2366,16 +2366,16 @@
 						<th th:text="#{label.svolge_attivita_docenza}">Svolge attività di docenza</th>
 						<th style="padding-right: 8px;">
 							<div class="evento-button-container">
-								<a th:unless="${isEventoIniziato}" id="lookup-coordinatori" class="btn btn-primary evento-table-button" onclick="openLookupPersona('coordinatori','base')" data-toggle="modal" data-target=".modal-lookup-persona">
+								<a th:unless="${isEventoIniziato or #lists.size(eventoWrapper.coordinatori) >= 3}" id="lookup-coordinatori" class="btn btn-primary evento-table-button" onclick="openLookupPersona('coordinatori','base')" data-toggle="modal" data-target=".modal-lookup-persona">
 										<span><i class="fa fa-search"></i></span>
 									</a>
-								<a th:unless="${isEventoIniziato}" id="add-coordinatori" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('coordinatori','base',false,undefined,true)" data-toggle="modal" data-target=".modal-add-persona">
+								<a th:unless="${isEventoIniziato or #lists.size(eventoWrapper.coordinatori) >= 3}" id="add-coordinatori" class="btn btn-success evento-table-button" onclick="openAddPersonaTo('coordinatori','base',false,undefined,true)" data-toggle="modal" data-target=".modal-add-persona">
 										<span><i class="fa fa-plus"></i></span>
 									</a>
-								<a th:if="${isEventoIniziato}" id="lookup-coordinatori" class="btn btn-primary disabled evento-table-button">
+								<a th:if="${isEventoIniziato or #lists.size(eventoWrapper.coordinatori) >= 3}" id="lookup-coordinatori" class="btn btn-primary disabled evento-table-button">
 									<span><i class="fa fa-search"></i></span>
 								</a>
-								<a th:if="${isEventoIniziato}" id="add-coordinatori" class="btn btn-success disabled evento-table-button">
+								<a th:if="${isEventoIniziato or #lists.size(eventoWrapper.coordinatori) >= 3}" id="add-coordinatori" class="btn btn-success disabled evento-table-button">
 									<span><i class="fa fa-plus"></i></span>
 								</a>
 							</div>
