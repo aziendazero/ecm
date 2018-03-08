@@ -726,7 +726,7 @@
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 												data-hide-disabled="false" th:disabled="${isRiedizione or isEditSemiBloccato}"
-											title="Seleziona una tipologia di sperimentazione...">
+											title="Seleziona una tipologia di attività di ricerca...">
 											<option
 												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaSperimentazioneFSCEnum).values()}"
 												th:value="${tipologia}"
@@ -747,7 +747,7 @@
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<div class="radio">
 												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' :  ''">
-													<input id="sperimentazioneClinicaSiId" th:disabled="${isRiedizione or isEditSemiBloccato}" type="radio" class="flat sperimentazioneClinica" th:field="${eventoWrapper.evento.sperimentazioneClinica}" th:value="${true}" />
+													<input id="sperimentazioneClinicaSiId" th:disabled="${isRiedizione or isEditSemiBloccato}" type="radio" class="flat sperimentazioneClinica" th:field="${eventoWrapper.evento.sperimentazioneClinica}" th:value="${true}"/>
 													<span th:text="#{label.sì}">Sì</span>
 											</label>
 										</div>
@@ -1565,6 +1565,13 @@
 				selectRuoliCoinvolti['PROGETTI_DI_MIGLIORAMENTO'] = new Array(['PARTECIPANTE','ESPERTO','COORDINATORE_GRUPPI','RESPONSABILE_PROGETTO']);
 
 				$(document).ready(function() {
+					
+					specialCasesAttivitaDiRicerca();
+					
+					$("#tipologiaSperimentazione").change(function(){
+						specialCasesAttivitaDiRicerca();
+					});
+					
 					//init selecpicker
 				    $('select').selectpicker({
 						selectAllText : 'Seleziona tutti',
@@ -1600,6 +1607,37 @@
 						$("#modale-alert-fsctutorpartecipanti").modal("show");
 
 				});
+				
+				function specialCasesAttivitaDiRicerca(){
+					if($("#tipologiaSperimentazione").val() === [[${T(it.tredi.ecm.dao.enumlist.TipologiaSperimentazioneFSCEnum).SPERIMENTAZIONE_FARMACO_DIPSOSITIVO_MEDICO.toString()}]]) {
+						$(".ottenutoComitatoEtico").find('span[class=required]').show();
+						$("#sperimentazioneClinicaSiId").prop("disabled", false);
+						$("#sperimentazioneClinicaSiId").parent().addClass("checked").click();
+						if($("#sperimentazioneClinicaNoId").parent().hasClass("checked")){
+							$("#sperimentazioneClinicaNoId").parent().removeClass("checked");
+						}
+						$("#sperimentazioneClinicaNoId").prop("disabled", true);
+					}else if($("#tipologiaSperimentazione").val() === [[${T(it.tredi.ecm.dao.enumlist.TipologiaSperimentazioneFSCEnum).STUDI_OSSERVAZIONALI.toString()}]]) {
+						$("#sperimentazioneClinicaNoId").prop("disabled", false);
+						$("#sperimentazioneClinicaNoId").parent().addClass("checked").click();
+						$(".ottenutoComitatoEtico").find('span[class=required]').hide();
+						$(".ottenutoComitatoEtico").slideDown("slow");
+						if($("#sperimentazioneClinicaSiId").parent().hasClass("checked")){
+							$("#sperimentazioneClinicaSiId").parent().removeClass("checked");
+						}
+						$("#sperimentazioneClinicaSiId").prop("disabled", true);
+					}else {
+						if($("#sperimentazioneClinicaSiId").parent().hasClass("checked")){
+							$("#sperimentazioneClinicaSiId").parent().removeClass("checked");
+						}else if($("#sperimentazioneClinicaNoId").parent().hasClass("checked")){
+							$("#sperimentazioneClinicaNoId").parent().removeClass("checked");
+						}
+						$(".ottenutoComitatoEtico").slideUp("slow");
+						$(".ottenutoComitatoEtico").find('span[class=required]').show();
+						$("#sperimentazioneClinicaSiId").prop("disabled", false);
+						$("#sperimentazioneClinicaNoId").prop("disabled", false);
+					}
+				}
 
 				function initAll(){
 
