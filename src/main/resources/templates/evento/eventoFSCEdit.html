@@ -1611,31 +1611,22 @@
 				function specialCasesAttivitaDiRicerca(){
 					if($("#tipologiaSperimentazione").val() === [[${T(it.tredi.ecm.dao.enumlist.TipologiaSperimentazioneFSCEnum).SPERIMENTAZIONE_FARMACO_DIPSOSITIVO_MEDICO.toString()}]]) {
 						$(".ottenutoComitatoEtico").find('span[class=required]').show();
-						$("#sperimentazioneClinicaSiId").prop("disabled", false);
-						$("#sperimentazioneClinicaSiId").parent().addClass("checked").click();
-						if($("#sperimentazioneClinicaNoId").parent().hasClass("checked")){
-							$("#sperimentazioneClinicaNoId").parent().removeClass("checked");
-						}
-						$("#sperimentazioneClinicaNoId").prop("disabled", true);
+						$("#sperimentazioneClinicaSiId").iCheck('enable');
+						$("#sperimentazioneClinicaSiId").iCheck('check');
+						$("#sperimentazioneClinicaNoId").iCheck('disable');
 					}else if($("#tipologiaSperimentazione").val() === [[${T(it.tredi.ecm.dao.enumlist.TipologiaSperimentazioneFSCEnum).STUDI_OSSERVAZIONALI.toString()}]]) {
-						$("#sperimentazioneClinicaNoId").prop("disabled", false);
-						$("#sperimentazioneClinicaNoId").parent().addClass("checked").click();
+						$("#sperimentazioneClinicaNoId").iCheck('enable');
+						$("#sperimentazioneClinicaNoId").iCheck('check');
 						$(".ottenutoComitatoEtico").find('span[class=required]').hide();
 						$(".ottenutoComitatoEtico").slideDown("slow");
-						if($("#sperimentazioneClinicaSiId").parent().hasClass("checked")){
-							$("#sperimentazioneClinicaSiId").parent().removeClass("checked");
-						}
-						$("#sperimentazioneClinicaSiId").prop("disabled", true);
+						$("#sperimentazioneClinicaSiId").iCheck('disable');
 					}else {
-						if($("#sperimentazioneClinicaSiId").parent().hasClass("checked")){
-							$("#sperimentazioneClinicaSiId").parent().removeClass("checked");
-						}else if($("#sperimentazioneClinicaNoId").parent().hasClass("checked")){
-							$("#sperimentazioneClinicaNoId").parent().removeClass("checked");
-						}
+						$("#sperimentazioneClinicaSiId").iCheck('uncheck');
+						$("#sperimentazioneClinicaNoId").iCheck('uncheck');
 						$(".ottenutoComitatoEtico").slideUp("slow");
 						$(".ottenutoComitatoEtico").find('span[class=required]').show();
-						$("#sperimentazioneClinicaSiId").prop("disabled", false);
-						$("#sperimentazioneClinicaNoId").prop("disabled", false);
+						$("#sperimentazioneClinicaSiId").iCheck('enable');
+						$("#sperimentazioneClinicaNoId").iCheck('enable');
 					}
 				}
 
