@@ -238,7 +238,7 @@
 											<span th:text="#{label.tempo_dedicato}">Tempo Dedicato</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
-											<input type="number" pattern="numeric" th:step="${eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO ? 2 : 1}" class="form-control"
+											<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" pattern="numeric" th:step="${eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO ? 2 : 1}" class="form-control"
 												th:field="${eventoWrapper.tempRuoloOreFSC.tempoDedicato}" />
 										</div>
 									</div>
@@ -726,7 +726,7 @@
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 												data-hide-disabled="false" th:disabled="${isRiedizione or isEditSemiBloccato}"
-											title="Seleziona una tipologia di sperimentazione...">
+											title="Seleziona una tipologia di attività di ricerca...">
 											<option
 												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaSperimentazioneFSCEnum).values()}"
 												th:value="${tipologia}"
@@ -747,7 +747,7 @@
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<div class="radio">
 												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' :  ''">
-													<input id="sperimentazioneClinicaSiId" th:disabled="${isRiedizione or isEditSemiBloccato}" type="radio" class="flat sperimentazioneClinica" th:field="${eventoWrapper.evento.sperimentazioneClinica}" th:value="${true}" />
+													<input id="sperimentazioneClinicaSiId" th:disabled="${isRiedizione or isEditSemiBloccato}" type="radio" class="flat sperimentazioneClinica" th:field="${eventoWrapper.evento.sperimentazioneClinica}" th:value="${true}"/>
 													<span th:text="#{label.sì}">Sì</span>
 											</label>
 										</div>
@@ -1001,7 +1001,7 @@
 														<td th:unless="${riepilogo.value.ruolo?.ruoloBase == null}" th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
 														<td th:if="${riepilogo.value.ruolo?.ruoloBase == null}"></td>
 														<td th:unless="${riepilogo.key == null}">
-																<input class="form-control" type="number" th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" th:disabled="${isEditSemiBloccato or (isRiedizione
+																<input class="form-control" type="number" min="0" oninput="validity.valid||(value='0');" step="any" th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" th:disabled="${isEditSemiBloccato or (isRiedizione
 																		and (eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).TRAINING_INDIVIDUALIZZATO
 																			or eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO))}" />
 														</td>
@@ -1078,7 +1078,7 @@
 											<span class="required">*</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
-											<input type="number" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" th:disabled="${isRiedizione or isEditSemiBloccato}" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" />
+											<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" th:disabled="${isRiedizione or isEditSemiBloccato}" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" />
 										</div>
 										<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.crediti')}__}"></div>
 									</div>
@@ -1173,7 +1173,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11" id="quota">
-											<input type="number" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+											<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" class="form-control optional" th:field="${eventoWrapper.evento.quotaPartecipazione}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.quotaPartecipazione')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.quotaPartecipazione')}__}"></div>
 								</div>
@@ -1565,6 +1565,13 @@
 				selectRuoliCoinvolti['PROGETTI_DI_MIGLIORAMENTO'] = new Array(['PARTECIPANTE','ESPERTO','COORDINATORE_GRUPPI','RESPONSABILE_PROGETTO']);
 
 				$(document).ready(function() {
+					
+					specialCasesAttivitaDiRicerca();
+					
+					$("#tipologiaSperimentazione").change(function(){
+						specialCasesAttivitaDiRicerca();
+					});
+					
 					//init selecpicker
 				    $('select').selectpicker({
 						selectAllText : 'Seleziona tutti',
@@ -1600,6 +1607,28 @@
 						$("#modale-alert-fsctutorpartecipanti").modal("show");
 
 				});
+				
+				function specialCasesAttivitaDiRicerca(){
+					if($("#tipologiaSperimentazione").val() === [[${T(it.tredi.ecm.dao.enumlist.TipologiaSperimentazioneFSCEnum).SPERIMENTAZIONE_FARMACO_DIPSOSITIVO_MEDICO.toString()}]]) {
+						$(".ottenutoComitatoEtico").find('span[class=required]').show();
+						$("#sperimentazioneClinicaSiId").iCheck('enable');
+						$("#sperimentazioneClinicaSiId").iCheck('check');
+						$("#sperimentazioneClinicaNoId").iCheck('disable');
+					}else if($("#tipologiaSperimentazione").val() === [[${T(it.tredi.ecm.dao.enumlist.TipologiaSperimentazioneFSCEnum).STUDI_OSSERVAZIONALI.toString()}]]) {
+						$("#sperimentazioneClinicaNoId").iCheck('enable');
+						$("#sperimentazioneClinicaNoId").iCheck('check');
+						$(".ottenutoComitatoEtico").find('span[class=required]').hide();
+						$(".ottenutoComitatoEtico").slideDown("slow");
+						$("#sperimentazioneClinicaSiId").iCheck('disable');
+					}else {
+						$("#sperimentazioneClinicaSiId").iCheck('uncheck');
+						$("#sperimentazioneClinicaNoId").iCheck('uncheck');
+						$(".ottenutoComitatoEtico").slideUp("slow");
+						$(".ottenutoComitatoEtico").find('span[class=required]').show();
+						$("#sperimentazioneClinicaSiId").iCheck('enable');
+						$("#sperimentazioneClinicaNoId").iCheck('enable');
+					}
+				}
 
 				function initAll(){
 
