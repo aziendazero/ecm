@@ -238,6 +238,15 @@ public class RiepilogoRuoliFSC {
 			crediti = 0.0f;
 		}
 	}
+	
+	private boolean checkIsCoordinatoreEnabled(EventoFSC evento) {
+		for (PersonaEvento pers : evento.getCoordinatori()) {
+			if(pers.getIdentificativoPersonaRuoloEvento().getRuoloFSCCoordinatore() == ruolo) {
+				return pers.isSvolgeAttivitaDiDocenza();
+			}
+		}
+		return false;
+	}
 
 	public void calcolaCreditiVersioneDue(EventoFSC evento, float f){
 		/*
@@ -299,11 +308,18 @@ public class RiepilogoRuoliFSC {
 								break;
 							case ESPERTO:
 							//case COORDINATORE:
-							case COORDINATORE_X:
 							//case RESPONSABILE:
 							case RESPONSABILE_SCIENTIFICO:
 								crediti = 1 * (int) (tempoDedicato * 2);
 								crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : crediti;
+								break;
+							case COORDINATORE_X:
+								if(checkIsCoordinatoreEnabled(evento)) {
+									crediti = 1 * (int) (tempoDedicato * 2);
+									crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : crediti;
+								} else {
+									crediti = 0.0f;
+								}
 								break;
 							default:
 								crediti = 0.0f;
@@ -357,9 +373,16 @@ public class RiepilogoRuoliFSC {
 							case RESPONSABILE_SCIENTIFICO:
 							//case COORDINATORE:
 							case ESPERTO:
-							case COORDINATORE_X:
 								crediti = 1 * (int) (tempoDedicato * 2);
 								crediti = (crediti > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
+								break;
+							case COORDINATORE_X:
+								if(checkIsCoordinatoreEnabled(evento)) {
+									crediti = 1 * (int) (tempoDedicato * 2);
+									crediti = (crediti > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
+								} else {
+									crediti = 0.0f;
+								}
 								break;
 							default:
 								crediti = 0.0f;
@@ -400,9 +423,16 @@ public class RiepilogoRuoliFSC {
 							//case RESPONSABILE:
 							case RESPONSABILE_SCIENTIFICO:
 							//case COORDINATORE:
-							case COORDINATORE_X:
 								crediti = 1 * (int) (tempoDedicato * 2);
 								crediti = (crediti > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE : crediti;
+								break;
+							case COORDINATORE_X:
+								if(checkIsCoordinatoreEnabled(evento)) {
+									crediti = 1 * (int) (tempoDedicato * 2);
+									crediti = (crediti > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE : crediti;
+								} else {
+									crediti = 0.0f;
+								}
 								break;
 							default:
 								crediti = 0.0f;
@@ -449,9 +479,16 @@ public class RiepilogoRuoliFSC {
 						//case RESPONSABILE:
 						case RESPONSABILE_SCIENTIFICO:
 						//case COORDINATORE:
-						case COORDINATORE_X:
 							crediti = 1 * (int) (tempoDedicato * 2);
 							crediti = (crediti > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
+							break;
+						case COORDINATORE_X:
+							if(checkIsCoordinatoreEnabled(evento)) {
+								crediti = 1 * (int) (tempoDedicato * 2);
+								crediti = (crediti > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
+							} else {
+								crediti = 0.0f;
+							}
 							break;
 						default:
 							crediti = 0.0f;
@@ -499,9 +536,16 @@ public class RiepilogoRuoliFSC {
 						//case RESPONSABILE:
 						case RESPONSABILE_SCIENTIFICO:
 						//case COORDINATORE:
-						case COORDINATORE_X:
 							crediti = 1 * (int) (tempoDedicato * 2);
 							crediti = (crediti > ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE) ? ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE : crediti;
+							break;
+						case COORDINATORE_X:
+							if(checkIsCoordinatoreEnabled(evento)) {
+								crediti = 1 * (int) (tempoDedicato * 2);
+								crediti = (crediti > ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE) ? ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE : crediti;
+							} else {
+								crediti = 0.0f;
+							}
 							break;
 						default:
 							crediti = 0.0f;

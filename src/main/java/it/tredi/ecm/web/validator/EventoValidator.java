@@ -80,10 +80,10 @@ public class EventoValidator {
 			//potrebbe non essere valido
 			if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
 				// vengono settati tutti a null perche' nella versione 1 non esistevano 
-				validateFasiAzioniRuoliFSCInfo.setInvalidResponsabileScentifico(true);
+				validateFasiAzioniRuoliFSCInfo.setInvalidResponsabileScientifico(true);
 			} else {
 				if(!listRuoloFSCEnumPerResponsabiliScientifici.contains(ruoloOre.getRuolo()))
-					validateFasiAzioniRuoliFSCInfo.setInvalidResponsabileScentifico(true);
+					validateFasiAzioniRuoliFSCInfo.setInvalidResponsabileScientifico(true);
 			}
 		} else if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE_X) {
 			//potrebbe non essere valido

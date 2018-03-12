@@ -8,10 +8,10 @@ import lombok.Setter;
 public class ValidateFasiAzioniRuoliFSCInfo {
 	private boolean atLeastOnePartecipante = false;
 	private boolean atLeastOneTutor = false;
-	private boolean invalidResponsabileScentifico = false;
-//	private boolean invalidResponsabileScentificoA = false;
-//	private boolean invalidResponsabileScentificoB = false;
-//	private boolean invalidResponsabileScentificoC = false;
+	private boolean invalidResponsabileScientifico = false;
+//	private boolean invalidResponsabileScientificoA = false;
+//	private boolean invalidResponsabileScientificoB = false;
+//	private boolean invalidResponsabileScientificoC = false;
 	private boolean invalidCoordinatore = false;
 //	private boolean invalidCoordinatoreA = false;
 //	private boolean invalidCoordinatoreB = false;

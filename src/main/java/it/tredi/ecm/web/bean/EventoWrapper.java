@@ -353,7 +353,7 @@ public class EventoWrapper {
 		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
 		if(this.getCoordinatori() != null) {
 			for(PersonaEvento pEv : this.getCoordinatori()) {
-				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEvento() != null)
+				if(pEv.getIdentificativoPersonaRuoloEvento() != null)
 					toRet.add(pEv.getIdentificativoPersonaRuoloEvento().getRuoloFSCCoordinatore());
 			}
 		}
