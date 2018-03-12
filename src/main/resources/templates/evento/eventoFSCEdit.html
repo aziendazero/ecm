@@ -836,7 +836,7 @@
 								</div>
 
 								<!-- COORDINATORI -->
-								<div id="coordinatori_block" class="item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.coordinatori')} ? 'bad'">
+								<div id="coordinatori_block" class="item alert-tabella-evento form-group" th:classappend="'bad'">
 									<label class="control-label col-xs-1">
 										<span></span>
 									</label>
@@ -845,6 +845,7 @@
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12"></div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.coordinatori')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.coordinatori')}__}"></div>
+									<div class="alert" th:text="#{message.coordinatori_massiomo_3}"></div>
 									<div class="item form-group" style="clear:both; padding:2px;"></div>
 									<div class="item form-group" style="clear:both">
 										<div id="coordinatoriContainer" class="col-xs-offset-1 col-xs-10">
