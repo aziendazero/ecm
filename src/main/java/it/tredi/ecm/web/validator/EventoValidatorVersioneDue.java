@@ -1542,7 +1542,7 @@ public class EventoValidatorVersioneDue {
 				}
 
 				//hasErrors
-				if(validationResults[0] || validationResults[3] || validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScentifico()
+				if(validationResults[0] || validationResults[3] || validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScientifico()
 						|| validateFasiAzioniRuoliFSCInfo.isInvalidCoordinatore()
 						|| validateFasiAzioniRuoliFSCInfo.isInvalidEsperto()) {
 					//Evidenzio la riga della AzioneRuoliEventoFSC
@@ -1581,7 +1581,7 @@ public class EventoValidatorVersioneDue {
 			}
 			
 			//mostro i messaggi di non validita' dei ruoli dinamici non piu' presenti in sezione 1
-			if(validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScentifico())
+			if(validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScientifico())
 				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_responsabile_scientifico_x_non_valido");
 			if(validateFasiAzioniRuoliFSCInfo.isInvalidCoordinatore())
 				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_coordinatore_x_non_valido");
@@ -1612,7 +1612,9 @@ public class EventoValidatorVersioneDue {
 			return new boolean[] {true, false, false, false};
 
 		//parti specifiche
-		int numCoordinatori = 0;
+		int numCoordinatoriA = 0;
+		int numCoordinatoriB = 0;
+		int numCoordinatoriC = 0;
 		int numResponsabili = 0;
 		boolean hasPartecipante = false;
 		boolean hasTutor = false;
@@ -1632,8 +1634,12 @@ public class EventoValidatorVersioneDue {
 					if(r.getRuolo() == null)
 						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					else {
-						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE)
-							numCoordinatori++;
+						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_A)
+							numCoordinatoriA++;
+						else if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_B)
+							numCoordinatoriB++;
+						else if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_C)
+							numCoordinatoriC++;
 						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 							if(r.getTempoDedicato() < 1)
 								return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
@@ -1644,7 +1650,7 @@ public class EventoValidatorVersioneDue {
 							hasTutor = true;
 					}
 				}
-				if(numCoordinatori > 1)
+				if(numCoordinatoriA > 1 || numCoordinatoriB > 1 || numCoordinatoriC > 1)
 					return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 
 			break;
@@ -1663,8 +1669,12 @@ public class EventoValidatorVersioneDue {
 					if(r.getRuolo() == null)
 						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					else {
-						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE)
-							numCoordinatori++;
+						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_A)
+							numCoordinatoriA++;
+						else if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_B)
+							numCoordinatoriB++;
+						else if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_C)
+							numCoordinatoriC++;
 						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 							if(r.getTempoDedicato() < 2)
 								return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
@@ -1676,7 +1686,7 @@ public class EventoValidatorVersioneDue {
 				}
 				//caso particolare (qua le fasi sono come le azioni per le altre tipologie,
 				//quindi controllo che nella riga ci sia almeno 1 ruolo Partecipante)
-				if(numCoordinatori > 1)
+				if(numCoordinatoriA > 1 || numCoordinatoriB > 0 || numCoordinatoriC > 0)
 					return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 
 			break;

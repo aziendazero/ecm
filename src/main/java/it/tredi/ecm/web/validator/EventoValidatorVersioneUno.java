@@ -1495,7 +1495,7 @@ public class EventoValidatorVersioneUno {
 				}
 
 				//hasErrors
-				if(validationResults[0] || validationResults[3] || validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScentifico()
+				if(validationResults[0] || validationResults[3] || validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScientifico()
 						|| validateFasiAzioniRuoliFSCInfo.isInvalidCoordinatore()
 						|| validateFasiAzioniRuoliFSCInfo.isInvalidEsperto()) {
 					//Evidenzio la riga della AzioneRuoliEventoFSC
@@ -1534,7 +1534,7 @@ public class EventoValidatorVersioneUno {
 			}
 
 			//mostro i messaggi di non validita' dei ruoli dinamici non piu' presenti in sezione 1
-			if(validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScentifico())
+			if(validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScientifico())
 				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_responsabile_scientifico_x_non_valido");
 			if(validateFasiAzioniRuoliFSCInfo.isInvalidCoordinatore())
 				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_coordinatore_x_non_valido");
