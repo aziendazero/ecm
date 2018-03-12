@@ -294,6 +294,10 @@ public class EventoController {
 		dataModel.setStato(statoBuild);
 		dataModel.setNumPart(event.getNumeroPartecipanti() != null ? event.getNumeroPartecipanti().toString() : "");
 		dataModel.setDurata(Utils.formatOrario(event.getDurata() != null ? event.getDurata() : 0));
+		if(event.getCrediti() != null)
+			dataModel.setCrediti(event.getCrediti());
+		else
+			dataModel.setCrediti(0);
 		if(event.getDataScadenzaInvioRendicontazione() != null)
 			dataModel.setDataScadenzaRediconto(event.getDataScadenzaInvioRendicontazione().format(formatter));
 
