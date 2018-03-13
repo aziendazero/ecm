@@ -42,6 +42,7 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
@@ -1285,12 +1286,14 @@ public class EventoValidatorVersioneDue {
 		/* ACCESSO PIATTAFORMA (serie di campi obbligatori)
 		 * 3 campi testuali
 		 * */
-		if(evento.getUserId() == null || evento.getUserId().isEmpty())
-			errors.rejectValue(prefix + "userId", "error.empty");
-		if(evento.getPassword() == null || evento.getPassword().isEmpty())
-			errors.rejectValue(prefix + "password", "error.empty");
-		if(evento.getUrl() == null || evento.getUrl().isEmpty())
-			errors.rejectValue(prefix + "url", "error.empty");
+		if(evento.getTipologiaEventoFAD() == null || evento.getTipologiaEventoFAD() != TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE) {
+			if(evento.getUserId() == null || evento.getUserId().isEmpty())
+				errors.rejectValue(prefix + "userId", "error.empty");
+			if(evento.getPassword() == null || evento.getPassword().isEmpty())
+				errors.rejectValue(prefix + "password", "error.empty");
+			if(evento.getUrl() == null || evento.getUrl().isEmpty())
+				errors.rejectValue(prefix + "url", "error.empty");
+		}
 
 	}
 
