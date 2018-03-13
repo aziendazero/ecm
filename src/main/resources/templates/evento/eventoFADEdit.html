@@ -916,7 +916,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-											<input type="text" class="form-control optional" th:field="${eventoWrapper.evento.userId}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+											<input type="text" class="form-control optional" th:field="${eventoWrapper.evento.userId}" th:disabled="${isRiedizione or isEditSemiBloccato or eventoWrapper.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_NO_ONLINE}" />
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.userId')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.userId')}__}"></div>
 								</div>
@@ -927,7 +927,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-											<input type="text" class="form-control optional" th:field="${eventoWrapper.evento.password}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+											<input type="text" class="form-control optional" th:field="${eventoWrapper.evento.password}" th:disabled="${isRiedizione or isEditSemiBloccato or eventoWrapper.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_NO_ONLINE}" />
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.password')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.password')}__}"></div>
 								</div>
@@ -938,7 +938,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-											<input type="text" pattern="site" class="form-control optional" th:field="${eventoWrapper.evento.url}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
+											<input type="text" pattern="site" class="form-control optional" th:field="${eventoWrapper.evento.url}" th:disabled="${isRiedizione or isEditSemiBloccato or eventoWrapper.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_NO_ONLINE}" />
 									</div>
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.url')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.url')}__}"></div>
 								</div>
