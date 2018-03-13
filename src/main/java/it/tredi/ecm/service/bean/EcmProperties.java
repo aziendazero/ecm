@@ -69,4 +69,8 @@ public class EcmProperties {
 	private int numeroMassimoCoordinatoriEvento;
 	
 	private int numeroGiorniUltimaModificaEvento;
+	
+	private int giorniPossibilitaPosticipoDaInizioEventoProviderA = 4;
+	private int giorniPossibilitaPosticipoDaInizioEventoProviderB = 10;
+	
 }

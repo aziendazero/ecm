@@ -136,6 +136,11 @@ public class EcmAppConfiguration {
 
 	@Value("${evento.lista.default.giorni.ultima.modifica}")
 	private int numeroGiorniUltimaModificaEvento = 365;
+
+	@Value("${giorni.possibilita.posticipo.da.inizio.evento.provider.A}")
+	private int giorniPossibilitaPosticipoDaInizioEventoProviderA = 4;
+	@Value("${giorni.possibilita.posticipo.da.inizio.evento.provider.B}")
+	private int giorniPossibilitaPosticipoDaInizioEventoProviderB = 10;
 	
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -198,6 +203,9 @@ public class EcmAppConfiguration {
 		ecmProperties.setNumeroMassimoCoordinatoriEvento(numeroMassimoCoordinatoriEvento);
 
 		ecmProperties.setNumeroGiorniUltimaModificaEvento(numeroGiorniUltimaModificaEvento);
+		
+		ecmProperties.setGiorniPossibilitaPosticipoDaInizioEventoProviderA(giorniPossibilitaPosticipoDaInizioEventoProviderA);
+		ecmProperties.setGiorniPossibilitaPosticipoDaInizioEventoProviderB(giorniPossibilitaPosticipoDaInizioEventoProviderB);
 		return ecmProperties;
 	}
 
