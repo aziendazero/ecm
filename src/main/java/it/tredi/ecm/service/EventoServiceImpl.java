@@ -796,7 +796,8 @@ public class EventoServiceImpl implements EventoService {
 			request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
 			break;
 		}
-		return eventoRepository.findAll(request);
+		LocalDateTime ultimaModifica = LocalDateTime.now().minusDays(ecmProperties.getNumeroGiorniUltimaModificaEvento());
+		return eventoRepository.findAllByDataUltimaModificaAfter(ultimaModifica, request);
 	}
 
 
@@ -887,7 +888,8 @@ public class EventoServiceImpl implements EventoService {
 			request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
 			break;
 		}
-		return eventoRepository.findAllByProviderId(providerId, request);
+		LocalDateTime ultimaModifica = LocalDateTime.now().minusDays(ecmProperties.getNumeroGiorniUltimaModificaEvento());
+		return eventoRepository.findAllByProviderIdAndDataUltimaModificaAfter(providerId, ultimaModifica, request);
 	}
 
 	@Override

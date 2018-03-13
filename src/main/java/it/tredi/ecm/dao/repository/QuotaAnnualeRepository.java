@@ -20,7 +20,9 @@ public interface QuotaAnnualeRepository extends CrudRepository<QuotaAnnuale, Lon
 	@Query("SELECT p FROM Pagamento p WHERE p.id IN (SELECT qa.pagamento.id FROM QuotaAnnuale qa WHERE qa.pagato = false AND qa.pagInCorso = true)")
 	public Set<Pagamento> getPagamentiProviderDaVerificare();
 	
-	@Query("SELECT p FROM Provider p WHERE p.id IN (SELECT distinct qa.provider.id FROM QuotaAnnuale qa WHERE qa.pagato = false AND qa.pagInCorso = false AND qa.pagamento.dataScadenzaPagamento < :now)")
+	//Modificare la query della vaschetta dei provider con mancato pagamento, non selezionando più quelli con stato temporaneamente sospeso.
+	//@Query("SELECT p FROM Provider p WHERE p.id IN (SELECT distinct qa.provider.id FROM QuotaAnnuale qa WHERE qa.pagato = false AND qa.pagInCorso = false AND qa.pagamento.dataScadenzaPagamento < :now)")
+	@Query("SELECT p FROM Provider p WHERE p.status <> 'SOSPESO' AND  p.id IN (SELECT distinct qa.provider.id FROM QuotaAnnuale qa WHERE qa.pagato = false AND qa.pagInCorso = false AND qa.pagamento.dataScadenzaPagamento < :now)")
 	public Set<Provider> findAllProviderNotPagamentoEffettuatoAllaScadenza(@Param("now") LocalDate now);
 	
 	public int countByProviderIdAndPagatoFalse(Long providerId);

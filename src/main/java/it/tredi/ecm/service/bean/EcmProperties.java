@@ -67,4 +67,6 @@ public class EcmProperties {
 	
 	private int numeroMassimoEspertiEvento;
 	private int numeroMassimoCoordinatoriEvento;
+	
+	private int numeroGiorniUltimaModificaEvento;
 }

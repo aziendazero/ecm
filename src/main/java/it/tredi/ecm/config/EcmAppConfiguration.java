@@ -133,6 +133,9 @@ public class EcmAppConfiguration {
 	private int numeroMassimoEspertiEvento = 3;
 	@Value("${numero.massimo.coordinatori.evento}")
 	private int numeroMassimoCoordinatoriEvento = 3;
+
+	@Value("${evento.lista.default.giorni.ultima.modifica}")
+	private int numeroGiorniUltimaModificaEvento = 365;
 	
 	@Bean
 	public EcmProperties ecmProperties(){
@@ -193,6 +196,8 @@ public class EcmAppConfiguration {
 		
 		ecmProperties.setNumeroMassimoEspertiEvento(numeroMassimoEspertiEvento);
 		ecmProperties.setNumeroMassimoCoordinatoriEvento(numeroMassimoCoordinatoriEvento);
+
+		ecmProperties.setNumeroGiorniUltimaModificaEvento(numeroGiorniUltimaModificaEvento);
 		return ecmProperties;
 	}
 
