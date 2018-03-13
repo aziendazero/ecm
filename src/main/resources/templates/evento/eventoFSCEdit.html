@@ -999,8 +999,8 @@
 													<tr th:each="riepilogo , r : ${eventoWrapper.riepilogoRuoliFSC}"
 														th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'riepilogoRuoliFSC['+riepilogo.key+']')} ? 'bad-row'">
 														<td th:text="${riepilogo.value.ruolo?.nome}"></td>
-														<td th:unless="${riepilogo.value.ruolo?.ruoloBase == null}" th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
-														<td th:if="${riepilogo.value.ruolo?.ruoloBase == null}"></td>
+														<td th:unless="${riepilogo.value.ruolo?.ruoloBase == null} or not ${eventoWrapper.fscShowCodificaRuoloXml(riepilogo.value.ruolo)}" th:text="${riepilogo.value.ruolo?.ruoloBase.codifica}"></td>
+														<td th:if="${riepilogo.value.ruolo?.ruoloBase == null} or not ${eventoWrapper.fscShowCodificaRuoloXml(riepilogo.value.ruolo)}"></td>
 														<td th:unless="${riepilogo.key == null}">
 																<input class="form-control" type="number" min="0" oninput="validity.valid||(value='0');" step="any" th:field="${eventoWrapper.riepilogoRuoliFSC[__${riepilogo.key}__]?.numeroPartecipanti}" th:disabled="${isEditSemiBloccato or (isRiedizione
 																		and (eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).TRAINING_INDIVIDUALIZZATO
@@ -1915,7 +1915,8 @@
 									//console.log($(this).attr("value"));
 									//se evento versione 2 non ablito gli esperti e neppure i coordinatori
 									if(versione === 1 || ($(this).attr("value") != 'ESPERTO_A' && $(this).attr("value") != 'ESPERTO_B' && $(this).attr("value") != 'ESPERTO_C'
-										 && $(this).attr("value") != 'COORDINATORE' && $(this).attr("value") != 'COORDINATORE_GRUPPI' && $(this).attr("value") != 'COORDINATORE_ATTIVITA_RICERCA' && $(this).attr("value") != 'COORDINATORE_ATTIVITA_AUDIT' )) {
+										 && $(this).attr("value") != 'COORDINATORE' && $(this).attr("value") != 'COORDINATORE_GRUPPI' && $(this).attr("value") != 'COORDINATORE_ATTIVITA_RICERCA' && $(this).attr("value") != 'COORDINATORE_ATTIVITA_AUDIT'
+									     && $(this).attr("value") != 'COORDINATORE_GRUPPI_A' && $(this).attr("value") != 'COORDINATORE_GRUPPI_B' && $(this).attr("value") != 'COORDINATORE_GRUPPI_C' )) {
 										if($(this).attr("value") == data[item])
 											$(this).show();
 									}

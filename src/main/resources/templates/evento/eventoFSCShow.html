@@ -500,7 +500,8 @@
 								<tbody>
 									<tr th:each="riepilogo , r : ${eventoWrapperShow.evento.riepilogoRuoli}">
 										<td th:text="${riepilogo.ruolo?.nome}"></td>
-										<td th:text="${riepilogo.ruolo?.ruoloBase?.codifica}"></td>
+										<td th:unless="${riepilogo.ruolo?.ruoloBase == null} or not ${eventoWrapperShow.fscShowCodificaRuoloXml(riepilogo.ruolo)}" th:text="${riepilogo.ruolo?.ruoloBase?.codifica}"></td>
+										<td th:if="${riepilogo.ruolo?.ruoloBase == null} or not ${eventoWrapperShow.fscShowCodificaRuoloXml(riepilogo.ruolo)}" ></td>
 										<td>
 											<label th:text="${riepilogo.numeroPartecipanti}"></label>
 										</td>

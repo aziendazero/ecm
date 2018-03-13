@@ -360,6 +360,25 @@ public class EventoWrapper {
 		return toRet;
 	}
 	
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatoriDocenti() {
+		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
+		if(this.getCoordinatori() != null) {
+			for(PersonaEvento pEv : this.getCoordinatori()) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEvento() != null)
+					toRet.add(pEv.getIdentificativoPersonaRuoloEvento().getRuoloFSCCoordinatore());
+			}
+		}
+		return toRet;
+	}
+	
+	public boolean fscShowCodificaRuoloXml(RuoloFSCEnum ruolo) {
+		if(ruolo == RuoloFSCEnum.COORDINATORE_A || ruolo == RuoloFSCEnum.COORDINATORE_B || ruolo == RuoloFSCEnum.COORDINATORE_C) {
+			if(!getListRuoloFSCEnumPerCoordinatoriDocenti().contains(ruolo))
+				return false;
+		}
+		return true;
+	}
+
 	public List<PersonaEvento> getDocenti() {
 		if(evento != null) {
 			if(evento instanceof EventoRES)
