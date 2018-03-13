@@ -289,6 +289,7 @@ function loadScript(url, callback){
 										<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
 										<th th:text="#{label.durata}">label.ore_corso</th>
 										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
+										<th th:text="#{label.flag_crediti}">label.flag_crediti</th>
 										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
 										<th th:text="#{label.versione}">Versione</th>
 										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
@@ -325,6 +326,7 @@ function loadScript(url, callback){
 										<td th:text="${evento.numeroPartecipanti}"></td>
 										<td th:text="${T(it.tredi.ecm.utils.Utils).formatOrario( evento.durata != null ? evento.durata : 0)}"></td>
 										<td th:text="${evento.dataScadenzaInvioRendicontazione == null} ? '' : ${#temporals.format(evento.dataScadenzaInvioRendicontazione, 'dd/MM/yyyy')}"></td>
+										<td th:text="${evento.crediti}"></td>
 										<td>
 											<div th:if="${evento.confermatiCrediti != null}">
 												<i class="fa table-icon fa-check green" th:if="${evento.confermatiCrediti}" th:title="#{label.sì}"></i>
@@ -372,6 +374,7 @@ function loadScript(url, callback){
 										<th th:text="#{label.numero_partecipanti_short}">label.numero_partecipanti_short</th>
 										<th th:text="#{label.durata}">label.ore_corso</th>
 										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
+										<th th:text="#{label.flag_crediti}">label.flag_crediti</th>
 										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
 										<th th:text="#{label.versione}">Versione</th>
 										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
@@ -403,9 +406,9 @@ function loadScript(url, callback){
 				}
 
 				if([[${#authentication.principal.isSegreteria()}]]) {
-					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13]
-					confermati = 12
-					azioni = 14
+					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13,14]
+					confermati = 13
+					azioni = 15
 					titolo = 4
 					date = [6,7,11]
 					url = [[${providerId == null}]] ? [[@{|/evento/eventoListPaginated|}]] : [[@{|/provider/${providerId}/evento/eventoListPaginated|}]];
@@ -423,6 +426,7 @@ function loadScript(url, callback){
 				            { "data": "numPart"},
 				            { "data": "durata"},
 				            { "data": "dataScadenzaRediconto"},
+				            { "data": "crediti"},
 				            { "data": "creditiConfermati"},
 				            { "data": "versione"},
 				            { "data": "links", "orderable": false},
@@ -430,10 +434,10 @@ function loadScript(url, callback){
 			        		]
 				}
 				else if([[${#authentication.principal.isProvider()}]]){
-					colonne = [0,1,2,4,5,6,7,8,9,10,11,12]
-					confermati = 11
+					colonne = [0,1,2,4,5,6,7,8,9,10,11,12,13]
+					confermati = 12
 					date = [5,6,10]
-					azioni = 13
+					azioni = 14
 					titolo = 3
 					url = [[@{|/provider/${providerId}/evento/eventoListPaginated|}]]
 					dataColumns = [
@@ -448,6 +452,7 @@ function loadScript(url, callback){
 				            { "data": "numPart"},
 				            { "data": "durata"},
 				            { "data": "dataScadenzaRediconto"},
+				            { "data": "crediti"},
 				            { "data": "creditiConfermati"},
 				            { "data": "versione"},
 				            { "data": "links", "orderable": false},
@@ -455,8 +460,8 @@ function loadScript(url, callback){
 			            ]
 				}
 				else {
-					colonne = [0,1,2,4,5,6,7,8,9,10,11]
-					confermati = 11
+					colonne = [0,1,2,4,5,6,7,8,9,10,11,12]
+					confermati = 12
 					date = [5,6,10]
 				}
 				var days;

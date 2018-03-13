@@ -53,4 +53,7 @@ public class EventoListDataModel {
 	@JsonView(EventoListDataTableModel.View.class)
 	private Integer versione;
 	
+	@JsonView(EventoListDataTableModel.View.class)
+	private float crediti;
+	
 }

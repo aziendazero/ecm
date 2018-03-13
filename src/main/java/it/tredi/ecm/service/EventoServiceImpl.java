@@ -780,12 +780,19 @@ public class EventoServiceImpl implements EventoService {
 
 		case 12:
 			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "crediti"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "crediti"));
+			break;
+			
+		case 13:
+			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "confermatiCrediti"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "confermatiCrediti"));
 			break;
 
-		case 13:
+		case 14:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "versione"));
 			else if(order.equals("desc"))
@@ -878,6 +885,13 @@ public class EventoServiceImpl implements EventoService {
 			break;
 
 		case 11:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "crediti"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "crediti"));
+			break;
+			
+		case 12:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "confermatiCrediti"));
 			else if(order.equals("desc"))
