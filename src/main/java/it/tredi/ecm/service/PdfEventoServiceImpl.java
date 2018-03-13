@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,6 +62,7 @@ import it.tredi.ecm.dao.enumlist.MetodoDiLavoroEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaFADEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaRESEnum;
 import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
+import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
@@ -271,6 +273,13 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 	private void writePdfEventoFSC(Document document, EventoWrapper wrapper) throws Exception {
 		Evento evento = wrapper.getEvento();
     	EventoFSC eventoFSC = (EventoFSC)evento;
+    	List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatoriDocenti = new ArrayList<RuoloFSCEnum>();
+		if(eventoFSC.getCoordinatori() != null) {
+			for(PersonaEvento pEv : eventoFSC.getCoordinatori()) {
+				if(pEv.isSvolgeAttivitaDiDocenza() && pEv.getIdentificativoPersonaRuoloEvento() != null)
+					listRuoloFSCEnumPerCoordinatoriDocenti.add(pEv.getIdentificativoPersonaRuoloEvento().getRuoloFSCCoordinatore());
+			}
+		}
 		//<h2 th:text="#{label.visualizzazione_evento(${eventoWrapper.proceduraFormativa}, ${eventoWrapper.evento.getCodiceIdentificativo()})}"></h2>
         Object[] values = {wrapper.getProceduraFormativa(), evento.getCodiceIdentificativo()};
         Paragraph parTitolo = new Paragraph();
@@ -326,7 +335,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		if(tableTemp != null)
 			document.add(tableTemp);
 		addCellLabelCampoValore("label.brochure_evento", evento.getBrochureEvento(), tableFields);
-		tableFields = addTableRiepilogoRuoli(document, tableFields, eventoFSC.getRiepilogoRuoli());
+		tableFields = addTableRiepilogoRuoli(document, tableFields, eventoFSC.getRiepilogoRuoli(), listRuoloFSCEnumPerCoordinatoriDocenti);
 		addCellLabelCampoValore("label.numero_partecipanti", evento.getNumeroPartecipanti(), tableFields);
 		addCellLabelCampoValore("label.durata", Utils.formatOrario(evento.getDurata()), tableFields);
 		addCellLabelCampoValoreZeroComeNonInserito("label.crediti_formativi_attribuiti_evento", evento.getCrediti(), tableFields);
@@ -640,8 +649,17 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 	private String formatValue(LocalTime time) {
 		return time.format(timeFormatter);
 	}
+	
+	private boolean fscShowCodificaRuoloXml(RuoloFSCEnum ruolo, List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatoriDocenti) {
+		if(ruolo == RuoloFSCEnum.COORDINATORE_A || ruolo == RuoloFSCEnum.COORDINATORE_B || ruolo == RuoloFSCEnum.COORDINATORE_C) {
+			if(!listRuoloFSCEnumPerCoordinatoriDocenti.contains(ruolo))
+				return false;
+		}
+		return true;
+	}
 
-	private PdfPTable addTableRiepilogoRuoli(Document document, PdfPTable tableFields, List<RiepilogoRuoliFSC> riepilogoRuoli) throws Exception  {
+
+	private PdfPTable addTableRiepilogoRuoli(Document document, PdfPTable tableFields, List<RiepilogoRuoliFSC> riepilogoRuoli, List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatoriDocenti) throws Exception  {
 		PdfPTable subTable = null;
 		subTable = new PdfPTable(5);
 		subTable.setWidthPercentage(100);
@@ -657,7 +675,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 			for(RiepilogoRuoliFSC riepRu : riepilogoRuoli) {
 				if(riepRu.getRuolo() != null) {
 					addCellSubTable(riepRu.getRuolo().getNome(), subTable);
-					if(riepRu.getRuolo().getRuoloBase() != null)
+					if(riepRu.getRuolo() != null && riepRu.getRuolo().getRuoloBase() != null && fscShowCodificaRuoloXml(riepRu.getRuolo(), listRuoloFSCEnumPerCoordinatoriDocenti))
 						addCellSubTable(riepRu.getRuolo().getRuoloBase().getCodifica(), subTable);
 					else
 						addCellSubTable("", subTable);
