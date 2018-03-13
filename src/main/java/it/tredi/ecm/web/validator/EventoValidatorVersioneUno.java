@@ -118,10 +118,14 @@ public class EventoValidatorVersioneUno {
 		 * le riedizioni si devono svolgere nell'anno solare di riferimento del padre (anno data fine) e non possono iniziare prima del padre
 		 * */
 		int minGiorni;
-		if(evento.getProvider().getTipoOrganizzatore().getGruppo().equals("A"))
+		int giorniPossibilitaPosticipoDaInizioEventoProvider;
+		if(evento.getProvider().getTipoOrganizzatore().getGruppo().equals("A")) {
 			minGiorni = ecmProperties.getGiorniMinEventoProviderA();
-		else
+			giorniPossibilitaPosticipoDaInizioEventoProvider = ecmProperties.getGiorniPossibilitaPosticipoDaInizioEventoProviderA();
+		} else {
 			minGiorni = ecmProperties.getGiorniMinEventoProviderB();
+			giorniPossibilitaPosticipoDaInizioEventoProvider = ecmProperties.getGiorniPossibilitaPosticipoDaInizioEventoProviderB();
+		}
 		if(evento.isRiedizione())
 			minGiorni = ecmProperties.getGiorniMinEventoRiedizione();
 
@@ -177,12 +181,21 @@ public class EventoValidatorVersioneUno {
 			//impedisce anticipazioni di date di eventi validati fuori dal tempo massimo e un cambio di numero di date confrontando con l'evento
 			//sul DB non ancora modificato
 			Evento eventoDaDB = eventoService.getEvento(evento.getId());
-			if(evento.getDataInizio() == null)
+			if(evento.getDataInizio() == null) {
 				errors.rejectValue(prefix + "dataInizio", "error.empty");
-			//SOLO se ho cambiato la data faccio il controllo sul minGiorni (e non sono segreteria)
-			if(!evento.getDataInizio().isEqual(eventoDaDB.getDataInizio()) && !Utils.getAuthenticatedUser().isSegreteria()) {
-				if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)))
-					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_non_valida");
+			} else {
+				//SOLO se ho cambiato la data faccio il controllo sul minGiorni (e non sono segreteria)
+				if(!evento.getDataInizio().isEqual(eventoDaDB.getDataInizio()) && !Utils.getAuthenticatedUser().isSegreteria()) {
+					if(evento.getDataInizio().isBefore(eventoDaDB.getDataInizio())) {
+						//data anticipata
+						if(evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni)))
+							errors.rejectValue(prefix + "dataInizio", "error.data_inizio_non_valida");
+					} else {
+						//data posticipata è possibile entro 4 giorni dall'inizio dell'evento, per il provider di tipo A, e entro 10 giorni per il provider di tipo B
+						if(eventoDaDB.getDataInizio().isBefore(LocalDate.now().plusDays(giorniPossibilitaPosticipoDaInizioEventoProvider)))
+							errors.rejectValue(prefix + "dataInizio", "error.data_inizio_posticipo_non_valida");
+					}
+				}
 			}
 			//impedisce di unificare le date di inizio / fine se l'evento ha riedizioni
 			if(eventoService.existRiedizioniOfEventoId(evento.getId())) {
