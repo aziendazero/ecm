@@ -48,4 +48,6 @@ public interface ValutazioneService {
 	//post refactoring
 	public void initializeFieldValutazioni(Valutazione valutazione, Accreditamento accreditamento);
 	public void sbloccaValutazioneByFieldIntegrazioneList(Valutazione valutazione, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList);
+	public void valutazioneIdNotStoricizzatoAndAccountId(Long valutazioneId, Long accountId);
+	public void riassegnaAccountValutazioneNotStoricizzato(Long valutazioneId, Long accountId);
 }

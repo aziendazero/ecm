@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	layout:decorator="fragments/template">
+<head lang="it">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title x_menu">
+					<h2 th:text="${#messages.msg('label.provider_accreditamento') + ' ' + accreditamento.provider.denominazioneLegale + ' (' + accreditamento.provider.id + ') ' + #messages.msg('label.tipo_provider') + ' ' + accreditamento.provider.tipoOrganizzatore.gruppo}"></h2>
+						<div class="pull-right buttons-header">
+							<a data-toggle="modal" class="btn btn-success pull-right" onclick="openModal()">Riassegna</a>
+							<a class="btn btn-primary pull-right" th:text="#{label.indietro}" th:href="@{|/accreditamento/${accreditamentoId}/show|}"></a>
+							<div class="modal fade" id="myModal">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h4 class="modal-title" th:text="#{label.riassegna_account}"></h4>
+										</div>
+										<div class="modal-body">
+											<form id="form" method="post" th:action="@{|/accreditamento/${valutazioneWrapper.accreditamentoId}/riassegnaAccountValutazione/riassegna|}" >
+												<div class="item form-group modalAlert">
+												  <h4 th:text="#{label.conferma_riassegna}"></h4>	
+												</div>
+											</form>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-default" data-dismiss="modal">Cancela</button>
+											<label for="submitRiassegnaButton" class="btn btn-success pull-right">Conferma</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>		
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2 th:text="#{label.riassegnaAccountValutazione}"></h2>
+						<div class="clearfix"></div>
+					</div>
+					
+					<!-- Info del accreditamento -->	
+					<div class="x_content">
+						<table id="InfoAccreditamento" class="table table-striped table-bordered dt-responsive nowrap" style="width: 100%">
+								<h4 th:text="#{label.info_accreditamento}"></h4>
+								<thead>
+									<tr>
+										<th th:text="#{label.id}"></th>
+										<th th:text="#{label.tipo}"></th>
+										<th th:text="#{label.stato }"></th>
+										<th th:text="#{label.tipo_Wf}"></th>
+										<th th:text="#{label.valutatore}"></th>
+									</tr>
+								</thead>
+								<tbody th:remove="all-but-first">
+							 	 <tr>
+									 <td th:text="${accreditamentoId}"></td>  	
+									 <td th:text="${accreditamento.tipoDomanda.nome}"></td> 
+									 <td th:text="${accreditamento.stato.nome}"></td> 
+									 <td th:text="${accreditamento.workflowInCorso?.tipo}"></td>
+									 <td> 
+									 	<form id="selection" method='post' th:action="@{|/accreditamento/${valutazioneWrapper.accreditamentoId}/riassegnaAccountValutazione/riassegna|}" enctype="multipart/form-data">
+										 <select id="segreteria" class="selectpicker required"
+											data-width="100%"
+											data-style="btn-primary"
+											data-size="10" th:attr="data-max-options=${valutazioneWrapper.accountSelected}" th:field="${valutazioneWrapper.accountSelected}">
+												<option th:each="segreteria, row: ${valutazioneWrapper.allAccountProfileSegreteria}"
+													th:value="${segreteria.id}" th:text="${segreteria.fullName}">
+												</option>
+											</select>
+											<input id="submitRiassegnaButton" class="btn btn-primary" name="submitRiassegna" type="submit" style="display: none;"/>
+										</form>
+									</td>
+								</tr> 
+							  </tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+				function openModal(){
+					$('#myModal').modal('show');
+				}
+			/*]]>*/
+			</script>
+		</div>
+	</div>
+</body>
+</html>

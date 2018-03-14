@@ -87,6 +87,7 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 		Valutazione valutazione = valutazioneRepository.findOneByAccreditamentoIdAndAccountIdAndStoricizzatoFalse(accreditamentoId, accountId);
 		return valutazione;
 	}
+	
 
 	@Override
 	public Set<Valutazione> getAllValutazioniForAccreditamentoIdAndNotStoricizzato(Long accreditamentoId) {
@@ -529,4 +530,33 @@ public class ValutazioneServiceImpl implements ValutazioneService {
 	}
 
 
+	@Override
+	public void valutazioneIdNotStoricizzatoAndAccountId(Long valutazioneId, Long accountId) {
+		LOGGER.debug(Utils.getLogMessage("Riassegnamento valutazione " + valutazioneId + "di domanda di Accreditamento ad un ALTRO account" + accountId));
+		
+		Valutazione valutazione = getValutazione(valutazioneId);
+		Set<Account> accountSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
+		for (Account account : accountSegreteria) {
+			if(account.getId().equals(accountId)) {
+				valutazione.setAccount(account);
+				valutazioneRepository.save(valutazione);
+				return;
+			}
+		}
+	}
+	
+	@Override
+	public void riassegnaAccountValutazioneNotStoricizzato(Long valutazioneId, Long accountId) {
+		LOGGER.debug(Utils.getLogMessage("Riassegnamento valutazione " + valutazioneId + " di domanda di Accreditamento ad un ALTRO account: " + accountId));
+		
+		Valutazione valutazione = getValutazione(valutazioneId);
+		Account account = accountService.getUserById(accountId);
+		valutazione.setAccount(account);
+		save(valutazione);
+	}
+	
+		
 }
+
+
+

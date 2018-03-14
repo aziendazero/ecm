@@ -38,7 +38,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccreditamentoWrapper {
-
+		
 	//dati domanda di accreditamento
 	private Accreditamento accreditamento;
 
