@@ -1567,12 +1567,6 @@
 
 				$(document).ready(function() {
 					
-					specialCasesAttivitaDiRicerca();
-					
-					$("#tipologiaSperimentazione").change(function(){
-						specialCasesAttivitaDiRicerca();
-					});
-					
 					//init selecpicker
 				    $('select').selectpicker({
 						selectAllText : 'Seleziona tutti',
@@ -1633,6 +1627,11 @@
 
 				function initAll(){
 
+					$("#tipologiaSperimentazione").change(function(){
+						specialCasesAttivitaDiRicerca();
+					});
+					
+					
 					$("#add-attivitaFSC-modal").draggable({
 						handle: ".modal-content"
 					});
@@ -1666,6 +1665,7 @@
 					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
 					$(".sperimentazioneClinica").on("ifChecked", setEvResOttenutoComitatoEtico);
 
+					specialCasesAttivitaDiRicerca();					
 					setEspertiCoordinatori();
 					mostraFlagCalcoloCrediti();
 					setEvResTipologiaGruppo();
