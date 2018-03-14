@@ -1963,6 +1963,7 @@
 				//funzione che calcola al doc ready o all'onchange della relativa select
 				//se mostrare o meno input aggiuntivi relativi alla tipologia dell'evento
 				function mostraNascondiCampiTipologiaEvento(value) {
+					//console.log('mostraNascondiCampiTipologiaEvento - value: ' + value);
 					switch (value) {
 					case 'CONVEGNO_CONGRESSO':
 						$(".convegno-congresso").slideDown("slow");
@@ -2028,8 +2029,11 @@
 				//funzione che calcola al doc ready o all'onchange della relativa select
 				//se mostrare o meno input aggiuntivi relativi alla tipologia dell'evento
 				function mostraNascondiCampoNumeroPartecipantiPerCorso(valueTipologiaEvento) {
-					if (typeof valueTipologiaEvento == 'undefined')
+					console.log('mostraNascondiCampoNumeroPartecipantiPerCorso - valueTipologiaEvento in ingresso: '+ valueTipologiaEvento)
+					if (typeof valueTipologiaEvento == 'undefined' || typeof valueTipologiaEvento != 'string') {
 						valueTipologiaEvento = $('#tipologia_evento').val();
+						console.log('mostraNascondiCampoNumeroPartecipantiPerCorso - valueTipologiaEvento valorizzato: '+ valueTipologiaEvento)
+					}
 					var versione = getVersione();
 					if(versione === 2) {
 						switch (valueTipologiaEvento) {
