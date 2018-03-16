@@ -65,4 +65,9 @@ public interface WorkflowService {
 	public void eseguiTaskValutazioneTeamLeaderForCurrentUser(Accreditamento accreditamento) throws Exception;
 	public void eseguiTaskValutazioneVariazioneDatiForCurrentUser(Accreditamento accreditamento, List<String> usernameWorkflowValutatoriCrecm, Integer numeroValutazioniCrecmRichieste, AccreditamentoStatoEnum stato) throws Exception;
 	String getSystemUsername();
+
+
+	public TaskInstanceDataModel getTaskForState(Accreditamento accreditamento) throws Exception;
+	public void rilasciaTask(Accreditamento accreditamento) throws Exception;
+
 }

@@ -496,6 +496,20 @@ public class WorkflowServiceImpl implements WorkflowService {
 		return null;
 	}
 
+	@Override
+	public TaskInstanceDataModel getTaskForState(Accreditamento accreditamento) throws Exception {
+		WorkflowInfo wfi = accreditamento.getWorkflowInCorso();
+		if(wfi == null)
+			return null;
+		AccreditamentoStatoEnum stato = accreditamento.getStatoForWorkflow();
+		List<TaskInstanceDataModel> tasks = bonitaAPIWrapper.getReadyTasksListToDelegate(wfi.getProcessInstanceId().longValue());
+		for(TaskInstanceDataModel task : tasks) {
+			if(stato.name().equals(task.getDescription()))
+				return task;
+		}
+		return null;
+	}
+
 	private TaskInstanceDataModel userDataModelGetTaskForState(UserDataModel userDataModel, Accreditamento accreditamento) throws Exception {
 		WorkflowInfo wfi = accreditamento.getWorkflowInCorso();
 		if(wfi == null || wfi.getProcessInstanceId() == null)
@@ -948,5 +962,17 @@ public class WorkflowServiceImpl implements WorkflowService {
 			bonitaAPIWrapper.assignTask(user.getWorkflowUserDataModel(), task.getId());
 		}
 		bonitaAPIWrapper.executeTask(user.getWorkflowUserDataModel(), task.getId());
+	}
+
+	@Override
+	public void rilasciaTask(Accreditamento accreditamento) throws Exception {
+		TaskInstanceDataModel task = getTaskForState(accreditamento);
+		if(task == null) {
+			LOGGER.error("Il task non è disponibile per l'accreditamento: " + accreditamento.getId());
+			throw new Exception("Il task non è disponibile per l'accreditamento: " + accreditamento.getId());
+		}
+
+		//lo rilascio
+		bonitaAPIWrapper.releaseTask(task.getId());
 	}
 }
