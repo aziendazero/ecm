@@ -636,7 +636,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		LapisWebSOAPType port = protocolloThreadLocal.get();
 
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
-
+		ProtoBatchLog plog = new ProtoBatchLog();
 		if(ecmProperties.isDebugSaltaProtocollo()) {
 			String start = "2016-01-01 00:00";
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -647,7 +647,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				p.setNumero((int)secsFrom++);
 				protocolloRepository.save(p);
 
-				ProtoBatchLog plog = new ProtoBatchLog();
+				plog = new ProtoBatchLog();
 				plog.setCodStato("0");
 				plog.setDtIns(null);
 				plog.setDtUpd(null);
@@ -667,6 +667,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				String d_proto = "";
 				String log = "";
 				Boolean pecInviata = false;
+				fmt = new SimpleDateFormat("dd/MM/yyyy");
 				
 				if(p.getProtocolloServiceVersion() == null || p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) { 
 					Object response = port.protoBatchLog(p.getIdProtoBatch());
@@ -687,14 +688,19 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					n_proto = xpath.compile("//proto_batch/n_proto").evaluate(xmlResponse);
 					d_proto = xpath.compile("//proto_batch/d_proto").evaluate(xmlResponse);
 					log = xpath.compile("//protocollo/log").evaluate(xmlResponse);
+					
+					plog.setDtIns(StringUtils.hasText(dt_insert) ? fmt.parse(dt_insert) : null);
+					plog.setDtUpd(StringUtils.hasText(dt_update) ? fmt.parse(dt_update) : null);
 
 				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
 					//TODO
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD-MM-YYYY");
-					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getIdProtoBatch(), p.getData().format(formatter), false, true);
-					formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-					dt_insert = LocalDate.parse(protocollo.getDataRegistrazione().toString()).format(formatter);
-					dt_update = LocalDate.now().format(formatter);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					String numero = p.getNumero().toString();
+					numero  = numero.length() < 7 ? ("0000000" + numero).substring(numero.length()) : numero;
+					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(numero, p.getData().format(formatter), false, true);
+
+					dt_insert = protocollo.getDataRegistrazione().toString();
+					dt_update = LocalDateTime.now().toString();
 					n_proto = protocollo.getNumeroProtocollo();
 					for(Pecinviata pec  : protocollo.getPecInviate()) {
 						String status = portWRB.getStatoPEC(n_proto, dt_insert, pec.getId().getValue());
@@ -707,6 +713,10 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					//cod_stato - not present
 					//d_proto - not present
 					//log - not present
+					fmt = new SimpleDateFormat("yyyy-MM-ddXXX");
+					plog.setDtIns(StringUtils.hasText(dt_insert) ? fmt.parse(dt_insert) : null);
+					fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+					plog.setDtUpd(StringUtils.hasText(dt_update) ? fmt.parse(dt_update) : null);
 				}
 				
 				if (StringUtils.hasText(d_proto)) {
@@ -718,10 +728,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				}
 				protocolloRepository.save(p);
 
-				ProtoBatchLog plog = new ProtoBatchLog();
+				
 				plog.setCodStato(cod_stato);
-				plog.setDtIns(StringUtils.hasText(dt_insert) ? fmt.parse(dt_insert) : null);
-				plog.setDtUpd(StringUtils.hasText(dt_update) ? fmt.parse(dt_update) : null);
 				plog.setLog(log);
 				plog.setProtocollo(p);
 				plog.setStato(stato);
@@ -740,6 +748,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	 */
 	public void getStatoSpedizione() throws Exception {
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
+		ProtoBatchLog plog = new ProtoBatchLog();
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = dbf.newDocumentBuilder();
@@ -798,12 +807,15 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					stato = xpath.compile("//protocollo/destinatario/@stato").evaluate(xmlResultDocument);
 					nr_spedizione = xpath.compile("//protocollo/destinatario/@nr_spedizione").evaluate(xmlResultDocument);
 					dt_spedizione = xpath.compile("//protocollo/destinatario/@dt_spedizione").evaluate(xmlResultDocument);
+					plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
 
 				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD-MM-YYYY");
-					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(p.getNumero().toString(), p.getData().format(formatter), false, true);
-					formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-					dt_spedizione = LocalDate.parse(protocollo.getDataRegistrazione().toString()).format(formatter);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					String numero = p.getNumero().toString();
+					numero  = numero.length() < 7 ? ("0000000" + numero).substring(numero.length()) : numero;
+					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(numero, p.getData().format(formatter), false, true);
+
+					dt_spedizione = protocollo.getDataRegistrazione().toString();
 					nr_spedizione = protocollo.getNumeroProtocollo();
 					for(Pecinviata pec  : protocollo.getPecInviate()) {
 						String status = portWRB.getStatoPEC(nr_spedizione, dt_spedizione, pec.getId().getValue());
@@ -812,8 +824,11 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 							stato = "KO";
 						
 					}
-					stato = stato.isEmpty() ? AVVENUTA_CONSEGNA : stato;
-					pecInviata = stato.isEmpty() ? true : false;
+					stato = stato == null ? AVVENUTA_CONSEGNA : stato;
+					pecInviata = stato.equals(AVVENUTA_CONSEGNA) ? true : false;
+					
+					fmt = new SimpleDateFormat("yyyy-MM-ddXXX");
+					plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
 				}
 	//			String numero = xpath.compile("//protocollo/@numero").evaluate(xmlResultDocument);
 	//			String data = xpath.compile("//protocollo/@data").evaluate(xmlResultDocument);
@@ -833,8 +848,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					p.setPecInviata(pecInviata);
 				protocolloRepository.save(p);
 
-				ProtoBatchLog plog = new ProtoBatchLog();
-				plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
 				plog.setNSpedizione(nr_spedizione);
 				plog.setProtocollo(p);
 				plog.setStato(stato);
