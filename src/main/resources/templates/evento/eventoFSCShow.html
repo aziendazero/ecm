@@ -291,7 +291,7 @@
 												<th th:text="#{label.qualifica}">Qualifica</th>
 												<th th:text="#{label.cv}">CV</th>
 												<th 
-													th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" th:text="#{label.identificativo_persona_evento}">Identificativo Responsabile</th>
+													th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" th:text="#{label.identificativo_persona_evento_responsabile}">Identificativo Responsabile</th>
 												<th 
 												th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" 
 												th:text="#{label.svolge_attivita_docenza}">Svolge attivita di docenza</th>
@@ -344,7 +344,7 @@
 												<th th:text="#{label.cognome}">Cognome</th>
 												<th th:text="#{label.nome}">Nome</th>
 												<th th:text="#{label.cf}">CF</th>
-												<th th:text="#{label.identificativo_persona_evento}">Identificativo Responsabile</th>
+												<th th:text="#{label.identificativo_persona_evento_esperto}">Identificativo Responsabile</th>
 												<th th:text="#{label.svolge_attivita_docenza}">Svolge attivita di docenza</th>
 											</tr>
 										</thead>
@@ -384,7 +384,7 @@
 												<th th:text="#{label.cognome}">Cognome</th>
 												<th th:text="#{label.nome}">Nome</th>
 												<th th:text="#{label.cf}">CF</th>
-												<th th:text="#{label.identificativo_persona_evento}">Identificativo</th>
+												<th th:text="#{label.identificativo_persona_evento_coordinatore}">Identificativo</th>
 												<th th:text="#{label.svolge_attivita_docenza}">Svolge attività di docenza</th>
 											</tr>
 										</thead>
