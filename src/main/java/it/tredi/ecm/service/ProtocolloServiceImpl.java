@@ -99,7 +99,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	@Autowired private WorkflowService workflowService;
 	@Autowired private EmailService emailService;
 	@Autowired private EcmProperties ecmProperties;
-	
+
 	private Protocol protocolWRB = new Protocol();
  	private ProtocolWebService portWRB = protocolWRB.getProtocolWebServicePort();
  	private ObjectFactory objectFactory = new ObjectFactory();
@@ -200,7 +200,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		LOGGER.debug("Recupero Tutti i protocolli in uscita che non sono stati consegnati");
 		return protocolloRepository.findAllWithErrors(AVVENUTA_CONSEGNA);
 	}
-	
+
 	@Override
 	@Transactional
 	public void protocollaDomandaInArrivo(Long accreditamentoId, Long fileId) throws Exception{
@@ -215,115 +215,19 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 		File file = fileService.getFile(fileId);
 
-//		if(file.isProtocollato()){
-//			throw new Exception("File già protocollato");
-//		}
-
 		Protocollo protocollo = new Protocollo();
 		protocollo.setFile(file);
 		protocollo.setAccreditamento(accreditamento);
 		protocollo.setActionAfterProtocollo(null);
 
-		Provider provider = accreditamento.getProvider();
-		Sede sedeLegale = provider.getSedeLegale();
 		if (engineeringProperties.getProtocolloServiceVersione().equals("rv")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.RV);
-			Mittente mittente = new Mittente();
-			mittente.setTipoVettore(Vettore.SDI);
-			mittente.setNominativo(provider.getDenominazioneLegale());
-			mittente.setIndirizzo(sedeLegale.getIndirizzo());
-			mittente.setCap(sedeLegale.getCap());
-			mittente.setCitta(sedeLegale.getComune());
-			//mittente.setProvincia(sedeLegale.getProvincia());
-	
-			protocollaArrivo(protocollo, mittente, fileAllegatiIds);
+			protocollaInEntrata_RV(protocollo, fileAllegatiIds);
 		} else if (engineeringProperties.getProtocolloServiceVersione().equals("webrainbow")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
-			protocollaInEntrata(protocollo, sedeLegale, provider, file, fileAllegatiIds);
+			protocollaInEntrata_WebRainbow(protocollo, fileAllegatiIds);
 		}
 	}
-	
-	private void protocollaInEntrata(Protocollo protocollo, Sede sedeLegale, Provider provider,File file, Set<Long> fileAllegatiIds) throws Exception {
-		Corrispondente mittente = new Corrispondente();
-		mittente.setCap(objectFactory.createCorrispondenteCap(sedeLegale.getCap()));
-		mittente.setCitta(objectFactory.createCorrispondenteCitta(sedeLegale.getComune()));
-		mittente.setIndirizzo(objectFactory.createCorrispondenteIndirizzo(sedeLegale.getIndirizzo()));
-		mittente.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
-		
-		List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(file, fileAllegatiIds); 
-		
-		Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
-				mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, documenti);
-		
-//		LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
-		
-		if(responseWRB.getCodice().getValue().equals("OK")) {
-			LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
-			LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
-			
-			String data = responseWRB.getDataRegistrazione().getValue();
-			String numero = responseWRB.getNumeroProtocollo().getValue();
-			
-			protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-			protocollo.setNumero(Integer.parseInt(numero));
-			protocollo.setIdProtoBatch(null);
-			protocollo.setStatoSpedizione(null);
-			protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
-			
-			protocolloRepository.save(protocollo);
-			
-		}else {
-			LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
-			LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
-			
-			//TODO error handling
-			throw new Exception(responseWRB.getCodice().getValue()+": "+responseWRB.getDescrizione().getValue());
-		}
-	}
-	
-	@SuppressWarnings("unused")
-	private List<it.peng.wr.webservice.protocollo.Documento> getDocumentoPrincipaleAndAllegati(File file, Set<Long> fileAllegatiIds){
-		List<it.peng.wr.webservice.protocollo.Documento> documenti = new ArrayList<it.peng.wr.webservice.protocollo.Documento>();
-		it.peng.wr.webservice.protocollo.Documento documentoPrincipale = objectFactory.createDocumento();
-		documentoPrincipale.setId(objectFactory.createDocumentoId(file.getId().toString()));
-		documentoPrincipale.setNomeFile(file.getNomeFile());
-		documentoPrincipale.setStream(file.getData());
-		documentoPrincipale.setMimeType(URLConnection.guessContentTypeFromName(file.getNomeFile()));
-		documentoPrincipale.setTipo("1");
-		documenti.add(documentoPrincipale);
-		
-		List<File> allegati = new ArrayList<>();
-		for(Long id : fileAllegatiIds) {
-			try {
-				allegati.add(fileService.getFile(id));
-			} catch (Exception e) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw  = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				LOGGER.info(Utils.getLogMessage(sw.toString()));
-			}
-		}
-		for(File f : allegati) {
-			
-			try {
-				it.peng.wr.webservice.protocollo.Documento doc = new it.peng.wr.webservice.protocollo.Documento();
-				doc.setId(objectFactory.createDocumentoId(f.getId().toString()));
-				doc.setNomeFile(f.getNomeFile());
-				doc.setStream(f.getData());
-				doc.setMimeType(URLConnection.guessContentTypeFromName(f.getNomeFile()));
-				doc.setTipo("2");
-				
-				documenti.add(doc);
-			} catch (Exception e) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw  = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				LOGGER.info(Utils.getLogMessage(sw.toString()));
-			}
-		}
-		
-		return documenti;
-	} //for the document list TODO
 
 	@Override
 	@Transactional
@@ -347,33 +251,68 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		protocollo.setFile(file);
 		protocollo.setAccreditamento(accreditamento);
 		protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.ESEGUI_TASK);
-		
-		Provider provider = accreditamento.getProvider();
-		Sede sedeLegale = provider.getSedeLegale();
-		Persona legaleRappresentante = provider.getLegaleRappresentante();
-		
+
 		if(engineeringProperties.getProtocolloServiceVersione().equals("rv")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.RV);
-			Destinatario destinatario = new Destinatario();
-			destinatario.setNominativo(provider.getDenominazioneLegale());
-			destinatario.setPEC(legaleRappresentante.getAnagrafica().getPec());
-			destinatario.setTipoVettore(it.rve.protocollo.xsd.richiesta_protocollazione.Vettore.PEC);
-			if(sedeLegale != null){
-				destinatario.setIndirizzo(sedeLegale.getIndirizzo());
-				destinatario.setCap(sedeLegale.getCap());
-				destinatario.setCitta(sedeLegale.getComune());
-			}
-
-			it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
-			destinatari.getDestinatario().add(destinatario);
-			protocollaInUscita(protocollo, destinatari, fileAllegatiIds);
+			protocollaInUscita_RV(protocollo, fileAllegatiIds);
 		} else if (engineeringProperties.getProtocolloServiceVersione().equals("webrainbow")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
-			protocollaAllegatoFlussoDomandaInUscita(protocollo, sedeLegale, legaleRappresentante, provider, file, fileAllegatiIds);
+			protocollaInUscita_WebRainbow(protocollo, fileAllegatiIds);
 		}
 	}
-	
-	private void protocollaAllegatoFlussoDomandaInUscita(Protocollo protocollo, Sede sedeLegale, Persona legaleRappresentante, Provider provider, File file,  Set<Long> fileAllegatiIds) {
+
+	/*****	WebRainbow	*****/
+	private void protocollaInEntrata_WebRainbow(Protocollo protocollo, Set<Long> fileAllegatiIds) throws Exception {
+		Provider provider = protocollo.getAccreditamento().getProvider();
+		Sede sedeLegale = provider.getSedeLegale();
+
+		Corrispondente mittente = new Corrispondente();
+		mittente.setCap(objectFactory.createCorrispondenteCap(sedeLegale.getCap()));
+		mittente.setCitta(objectFactory.createCorrispondenteCitta(sedeLegale.getComune()));
+		mittente.setIndirizzo(objectFactory.createCorrispondenteIndirizzo(sedeLegale.getIndirizzo()));
+		mittente.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
+
+		List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(protocollo.getFile(), fileAllegatiIds);
+
+		if(ecmProperties.isDebugSaltaProtocollo()) {
+			fakeProtocolloInEntrata(protocollo);
+		}else {
+			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()),
+					mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, documenti);
+
+			if(responseWRB.getCodice().getValue().equals("OK")) {
+				LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
+				LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
+
+				String data = responseWRB.getDataRegistrazione().getValue();
+				String numero = responseWRB.getNumeroProtocollo().getValue();
+
+				protocollo.setData(LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+				protocollo.setNumero(Integer.parseInt(numero));
+				protocollo.setIdProtoBatch(null);
+				protocollo.setStatoSpedizione(null);
+				protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
+			}else {
+				LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
+				LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
+
+				//TODO error handling
+				throw new Exception(responseWRB.getCodice().getValue()+": "+responseWRB.getDescrizione().getValue());
+			}
+		}
+		protocolloRepository.save(protocollo);
+	}
+
+	private void protocollaInUscita_WebRainbow(Protocollo protocollo) throws Exception {
+		protocollaInUscita_WebRainbow(protocollo, new HashSet<Long>());
+	}
+
+	@Transactional
+	private void protocollaInUscita_WebRainbow(Protocollo protocollo, Set<Long> fileAllegatiIds) throws Exception{
+		Provider provider = protocollo.getAccreditamento().getProvider();
+		Sede sedeLegale = provider.getSedeLegale();
+		Persona legaleRappresentante = provider.getLegaleRappresentante();
+
 		Corrispondente destinatario = new Corrispondente();
 		destinatario.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
 		destinatario.setPec(objectFactory.createCorrispondentePec(legaleRappresentante.getAnagrafica().getPec()));
@@ -382,55 +321,95 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			destinatario.setCap(objectFactory.createCorrispondenteCap(sedeLegale.getCap()));
 			destinatario.setCitta(objectFactory.createCorrispondenteCitta(sedeLegale.getComune()));
 		}
-		
+
 		List<Corrispondente> destinatari = new ArrayList<>();
-		List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(file, fileAllegatiIds); 
-
 		destinatari.add(destinatario);
-		
-		//TODO protocollaInUscita(protocollo, destinatari, fileAllegatiIds); 
-		Risultatoprotocollo responseUscitaWRB;
-		try {
-			responseUscitaWRB = portWRB.creaProtocolloInUscita(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()), 
-					engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), destinatari, null, null, null, null, true, documenti);
-		
-			LOGGER.info(Utils.getLogMessage("Codice: " + responseUscitaWRB.getCodice().getValue()));
-			LOGGER.info(Utils.getLogMessage("Data Registrazione: " + responseUscitaWRB.getDataRegistrazione().getValue()));
-			LOGGER.info(Utils.getLogMessage("Descrizione: " + responseUscitaWRB.getDescrizione().getValue()));
-			LOGGER.info(Utils.getLogMessage("Id: " + responseUscitaWRB.getId().getValue()));
-			LOGGER.info(Utils.getLogMessage("Link: " + responseUscitaWRB.getLink().getValue()));
-			LOGGER.info(Utils.getLogMessage("NumeroProtocollo: " + responseUscitaWRB.getNumeroProtocollo().getValue()));
-			
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			LocalDate date = LocalDate.parse(responseUscitaWRB.getDataRegistrazione().getValue(), formatter);
-			
-			protocollo.setIdProtoBatch(null);
-			protocollo.setNumero(Integer.parseInt(responseUscitaWRB.getNumeroProtocollo().getValue()));
-			protocollo.setData(date);
-			protocollo.setStatoSpedizione(null);
-			protocollo.setPecInviata(false);
-			
-			protocolloRepository.save(protocollo);
-		} catch (Exception e) {
-			//Convert stackTrance into a string and print it in logger
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			e.printStackTrace(pw);
-			LOGGER.info(Utils.getLogMessage(sw.toString()));
+
+		List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(protocollo.getFile(), fileAllegatiIds);
+		if(ecmProperties.isDebugSaltaProtocollo()) {
+			fakeProtocolloInUscita(protocollo);
+		} else {
+			try {
+				Risultatoprotocollo responseUscitaWRB = portWRB.creaProtocolloInUscita(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()),
+						engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), destinatari, null, null, null, null, true, documenti);
+
+				LOGGER.info(Utils.getLogMessage("Codice: " + responseUscitaWRB.getCodice().getValue()));
+				LOGGER.info(Utils.getLogMessage("Data Registrazione: " + responseUscitaWRB.getDataRegistrazione().getValue()));
+				LOGGER.info(Utils.getLogMessage("Descrizione: " + responseUscitaWRB.getDescrizione().getValue()));
+				LOGGER.info(Utils.getLogMessage("Id: " + responseUscitaWRB.getId().getValue()));
+				LOGGER.info(Utils.getLogMessage("Link: " + responseUscitaWRB.getLink().getValue()));
+				LOGGER.info(Utils.getLogMessage("NumeroProtocollo: " + responseUscitaWRB.getNumeroProtocollo().getValue()));
+
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				LocalDate date = LocalDate.parse(responseUscitaWRB.getDataRegistrazione().getValue(), formatter);
+
+				protocollo.setIdProtoBatch(null);
+				protocollo.setNumero(Integer.parseInt(responseUscitaWRB.getNumeroProtocollo().getValue()));
+				protocollo.setData(date);
+				protocollo.setStatoSpedizione(null);
+				protocollo.setPecInviata(false);
+				protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
+			} catch (Exception e) {
+				LOGGER.error("Errore creazione protocollo in uscita WebRainbow", e);
+			}
 		}
+
+		protocolloRepository.save(protocollo);
 	}
 
-	@Transactional
-	private void protocollaArrivo(Protocollo protocollo, Mittente mittente) throws Exception {
-		protocollaArrivo(protocollo, mittente, new HashSet<Long>());
-	}
+	@SuppressWarnings("unused")
+	private List<it.peng.wr.webservice.protocollo.Documento> getDocumentoPrincipaleAndAllegati(File file, Set<Long> fileAllegatiIds){
+		List<it.peng.wr.webservice.protocollo.Documento> documenti = new ArrayList<it.peng.wr.webservice.protocollo.Documento>();
 
+		/* AGGIUNGO ALLEGATO PRINCIPALE */
+		it.peng.wr.webservice.protocollo.Documento documentoPrincipale = objectFactory.createDocumento();
+		documentoPrincipale.setId(objectFactory.createDocumentoId(file.getId().toString()));
+		documentoPrincipale.setNomeFile(file.getNomeFile());
+		documentoPrincipale.setStream(file.getData());
+		documentoPrincipale.setMimeType(URLConnection.guessContentTypeFromName(file.getNomeFile()));
+		documentoPrincipale.setTipo("1");
+		documenti.add(documentoPrincipale);
+
+		/* AGGIUNGO ALTRI ALLEGATI SE PRESENTI */
+		File f = null;
+		for(Long id : fileAllegatiIds) {
+			try {
+				f = fileService.getFile(id);
+
+				it.peng.wr.webservice.protocollo.Documento doc = new it.peng.wr.webservice.protocollo.Documento();
+				doc.setId(objectFactory.createDocumentoId(f.getId().toString()));
+				doc.setNomeFile(f.getNomeFile());
+				doc.setStream(f.getData());
+				doc.setMimeType(URLConnection.guessContentTypeFromName(f.getNomeFile()));
+				doc.setTipo("2");
+				documenti.add(doc);
+			} catch (Exception e) {
+				LOGGER.error("Errore aggiunta documenti al protocollo : ", e);
+			}
+		}
+
+		return documenti;
+	}
+	/*****	WebRainbow	*****/
+
+
+	/*****	RV	*****/
 	@Transactional
-	private void protocollaArrivo(Protocollo protocollo, Mittente mittente, Set<Long> fileAllegatiIds) throws Exception {
+	private void protocollaInEntrata_RV(Protocollo protocollo, Set<Long> fileAllegatiIds) throws Exception {
+		Provider provider = protocollo.getAccreditamento().getProvider();
+		Sede sedeLegale = provider.getSedeLegale();
+
+		Mittente mittente = new Mittente();
+		mittente.setTipoVettore(Vettore.SDI);
+		mittente.setNominativo(provider.getDenominazioneLegale());
+		mittente.setIndirizzo(sedeLegale.getIndirizzo());
+		mittente.setCap(sedeLegale.getCap());
+		mittente.setCitta(sedeLegale.getComune());
+		//mittente.setProvincia(sedeLegale.getProvincia());
+
 		Richiesta richiesta = buildRichiestaArrivo(protocollo, mittente, fileAllegatiIds);
 
 		LapisWebSOAPType port = protocolloThreadLocal.get();
-
 		Transformer transformer = tf.get();
 
 		StringWriter writer = new StringWriter();
@@ -441,16 +420,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		LOGGER.info("ProtocollaArrivo - " + requestString);
 
 		if(ecmProperties.isDebugSaltaProtocollo()) {
-			String start = "2016-01-01 00:00";
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-			LocalDateTime startDT = LocalDateTime.parse(start, formatter);
-			long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
-			protocollo.setData(LocalDate.now());
-			protocollo.setNumero((int)secsFrom);
-			protocollo.setIdProtoBatch(null);
-			protocollo.setStatoSpedizione(null);
-			protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
-
+			fakeProtocolloInEntrata(protocollo);
 		} else {
 			Object response = port.protocollaArrivo(requestString);
 			LOGGER.debug(response);
@@ -530,24 +500,37 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	}
 
 	@Transactional
-	private void protocollaInUscita(Protocollo p, it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari d) throws Exception {
-		protocollaInUscita(p, d, new HashSet<Long>());
+	private void protocollaInUscita_RV(Protocollo p) throws Exception {
+		protocollaInUscita_RV(p, new HashSet<Long>());
 	}
 
 	@Transactional
-	private void protocollaInUscita(Protocollo p, it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari d, Set<Long> fileAllegatiIds) throws Exception {
+	private void protocollaInUscita_RV(Protocollo p, Set<Long> fileAllegatiIds) throws Exception {
+		Provider provider = p.getAccreditamento().getProvider();
+		Sede sedeLegale = provider.getSedeLegale();
+		Persona legaleRappresentante = provider.getLegaleRappresentante();
+
+		Destinatario destinatario = new Destinatario();
+		destinatario.setNominativo(provider.getDenominazioneLegale());
+		destinatario.setPEC(legaleRappresentante.getAnagrafica().getPec());
+		destinatario.setTipoVettore(it.rve.protocollo.xsd.richiesta_protocollazione.Vettore.PEC);
+		if(sedeLegale != null){
+			destinatario.setIndirizzo(sedeLegale.getIndirizzo());
+			destinatario.setCap(sedeLegale.getCap());
+			destinatario.setCitta(sedeLegale.getComune());
+		}
+
+		it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
+		destinatari.getDestinatario().add(destinatario);
+
 		String idProtoBatch = null;
 		it.rve.protocollo.xsd.richiesta_protocollazione.Richiesta richiesta = null;
 		if(ecmProperties.isDebugSaltaProtocollo()) {
-			String start = "2016-01-01 00:00";
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-			LocalDateTime startDT = LocalDateTime.parse(start, formatter);
-			long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
-			idProtoBatch = Long.toString(secsFrom);
+			fakeProtocolloInUscita(p);
 		} else {
 			LapisWebSOAPType port = protocolloThreadLocal.get();
 
-			richiesta = buildRichiestaUscita(p,d, fileAllegatiIds);
+			richiesta = buildRichiestaUscita(p, destinatari, fileAllegatiIds);
 
 			Transformer transformer = tf.get();
 
@@ -560,13 +543,13 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 			idProtoBatch = port.protoBatch(requestString);
 			LOGGER.debug(idProtoBatch);
-		}
 
-		p.setData(null);
-		p.setNumero(null);
-		p.setIdProtoBatch(idProtoBatch);
-		p.setStatoSpedizione(null);
-		p.setOggetto(Utils.buildOggetto(p.getFile().getTipo(), p.getAccreditamento().getProvider()));
+			p.setData(null);
+			p.setNumero(null);
+			p.setIdProtoBatch(idProtoBatch);
+			p.setStatoSpedizione(null);
+			p.setOggetto(Utils.buildOggetto(p.getFile().getTipo(), p.getAccreditamento().getProvider()));
+		}
 
 		protocolloRepository.save(p);
 	}
@@ -630,7 +613,9 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 		return richiesta;
 	}
+	/*****	RV	*****/
 
+	/*****	THREAD FASE 1	*****/
 	public void protoBatchLog() throws Exception {
 		Set<Protocollo> protocolliInUscita = protocolloRepository.getProtocolliInUscita();
 		LapisWebSOAPType port = protocolloThreadLocal.get();
@@ -668,18 +653,18 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				String log = "";
 				Boolean pecInviata = false;
 				fmt = new SimpleDateFormat("dd/MM/yyyy");
-				
-				if(p.getProtocolloServiceVersion() == null || p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) { 
+
+				if(p.getProtocolloServiceVersion() == null || p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) {
 					Object response = port.protoBatchLog(p.getIdProtoBatch());
-	
+
 					LOGGER.debug(response);
-	
+
 					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder builder = factory.newDocumentBuilder();
 					Document xmlResponse = builder.parse(new InputSource(new StringReader(response.toString())));
 					XPathFactory xPathfactory = XPathFactory.newInstance();
 					XPath xpath = xPathfactory.newXPath();
-	
+
 					stato = xpath.compile("//proto_batch/@stato").evaluate(xmlResponse);
 					cod_stato = xpath.compile("//proto_batch/@cod_stato").evaluate(xmlResponse);
 					dt_insert = xpath.compile("//proto_batch/@dt_insert").evaluate(xmlResponse);
@@ -688,7 +673,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					n_proto = xpath.compile("//proto_batch/n_proto").evaluate(xmlResponse);
 					d_proto = xpath.compile("//proto_batch/d_proto").evaluate(xmlResponse);
 					log = xpath.compile("//protocollo/log").evaluate(xmlResponse);
-					
+
 					plog.setDtIns(StringUtils.hasText(dt_insert) ? fmt.parse(dt_insert) : null);
 					plog.setDtUpd(StringUtils.hasText(dt_update) ? fmt.parse(dt_update) : null);
 
@@ -699,26 +684,22 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					numero  = numero.length() < 7 ? ("0000000" + numero).substring(numero.length()) : numero;
 					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(numero, p.getData().format(formatter), false, true);
 
-					dt_insert = protocollo.getDataRegistrazione().toString();
 					dt_update = LocalDateTime.now().toString();
+
+					dt_insert = protocollo.getDataRegistrazione().toString();
 					n_proto = protocollo.getNumeroProtocollo();
 					for(Pecinviata pec  : protocollo.getPecInviate()) {
 						String status = portWRB.getStatoPEC(n_proto, dt_insert, pec.getId().getValue());
-						
 						if(status.equals("KO"));
 							stato = "KO";
-						
 					}
 					stato = stato.isEmpty() ? "OK" : stato;
-					//cod_stato - not present
-					//d_proto - not present
-					//log - not present
 					fmt = new SimpleDateFormat("yyyy-MM-ddXXX");
 					plog.setDtIns(StringUtils.hasText(dt_insert) ? fmt.parse(dt_insert) : null);
 					fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 					plog.setDtUpd(StringUtils.hasText(dt_update) ? fmt.parse(dt_update) : null);
 				}
-				
+
 				if (StringUtils.hasText(d_proto)) {
 					//p.setData(new SimpleDateFormat("dd/MM/yyyy").parse(d_proto));
 					p.setData(LocalDate.parse(d_proto, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
@@ -728,7 +709,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				}
 				protocolloRepository.save(p);
 
-				
+
 				plog.setCodStato(cod_stato);
 				plog.setLog(log);
 				plog.setProtocollo(p);
@@ -746,6 +727,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	 *
 	 * @throws Exception
 	 */
+	/*****	THREAD FASE 2	*****/
 	public void getStatoSpedizione() throws Exception {
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
 		ProtoBatchLog plog = new ProtoBatchLog();
@@ -772,38 +754,38 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				if(p.getProtocolloServiceVersion() == null || p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) {
 					// creo la request
 					Document request = builder.newDocument();
-	
+
 					Element root = request.createElement("getStatoSpedizione");
 					request.appendChild(root);
-	
+
 					Element struttura = request.createElement("struttura");struttura.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodStruttura()));root.appendChild(struttura);
 					Element numero_proto = request.createElement("numero_proto");numero_proto.appendChild(request.createTextNode(Integer.toString(p.getNumero())));root.appendChild(numero_proto);
 					Element data_proto = request.createElement("data_proto");data_proto.appendChild(request.createTextNode(p.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));root.appendChild(data_proto);
 					Element cod_applicativo = request.createElement("cod_applicativo");cod_applicativo.appendChild(request.createTextNode(engineeringProperties.getProtocolloCodApplicativo()));root.appendChild(cod_applicativo);
-	
+
 					// invoco il WS
 					Source response = dispatchThreadLocal.get().invoke(new DOMSource(request));
-	
+
 					// converto in DOM la risposta
 					Document xmlResponse = builder.newDocument();
 					Transformer transformer = tf.get();
 					transformer.transform(response, new DOMResult(xmlResponse));
-	
+
 					XPathFactory xPathfactory = XPathFactory.newInstance();
 					XPath xpath = xPathfactory.newXPath();
-	
+
 					LOGGER.debug(xpath.compile("//.").evaluate(xmlResponse));
-	
+
 					// estraggo l'xml innestato.
 					//String xmlResult = xpath.compile("//getStatoSpedizioneResponse/getStatoSpedizioneReturn").evaluate(xmlResponse);
 					String xmlResult = xpath.compile("/").evaluate(xmlResponse);
-	
+
 					// converto in DOM l'xml innestato per poter estrarre le informazioni tramite xpath.
 					InputSource is = new InputSource();
 					is.setCharacterStream(new StringReader(xmlResult));
-	
+
 					Document xmlResultDocument = builder.parse(is);
-	
+
 					stato = xpath.compile("//protocollo/destinatario/@stato").evaluate(xmlResultDocument);
 					nr_spedizione = xpath.compile("//protocollo/destinatario/@nr_spedizione").evaluate(xmlResultDocument);
 					dt_spedizione = xpath.compile("//protocollo/destinatario/@dt_spedizione").evaluate(xmlResultDocument);
@@ -819,14 +801,14 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					nr_spedizione = protocollo.getNumeroProtocollo();
 					for(Pecinviata pec  : protocollo.getPecInviate()) {
 						String status = portWRB.getStatoPEC(nr_spedizione, dt_spedizione, pec.getId().getValue());
-						
+
 						if(status.equals("KO"));
 							stato = "KO";
-						
+
 					}
 					stato = stato == null ? AVVENUTA_CONSEGNA : stato;
 					pecInviata = stato.equals(AVVENUTA_CONSEGNA) ? true : false;
-					
+
 					fmt = new SimpleDateFormat("yyyy-MM-ddXXX");
 					plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
 				}
@@ -908,7 +890,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	public void protocollaBloccoProviderInUscita(Long providerId, File fileDaProtocollare, MotivazioneDecadenzaEnum motivazione) throws Exception {
 		LOGGER.info(Utils.getLogMessage("Richiesta Protocollazione In Uscita per il file " + fileDaProtocollare.getId() + " del provider " + providerId));
 
-		Provider provider = providerService.getProvider(providerId);
 		//prende sempre l'ultimo accreditamento del provider a prescindere dallo stato
 		Accreditamento accreditamento = accreditamentoService.getLastAccreditamentoForProviderId(providerId);
 
@@ -919,6 +900,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		Protocollo protocollo = new Protocollo();
 		protocollo.setFile(fileDaProtocollare);
 		protocollo.setAccreditamento(accreditamento);
+
 		if(motivazione == MotivazioneDecadenzaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD)
 			protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.SCADENZA_INSERIMENTO_DOMANDA_STANDARD);
 		else if(motivazione == MotivazioneDecadenzaEnum.MANCATO_PAGAMENTO_QUOTA_ANNUALE)
@@ -926,41 +908,37 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		else if(motivazione == MotivazioneDecadenzaEnum.RICHIESTA_PROVIDER)
 			protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.BLOCCA_PER_RICHIESTA_PROVIDER);
 
-		Sede sedeLegale = provider.getSedeLegale();
-		Persona legaleRappresentante = provider.getLegaleRappresentante();
-		
 		if(engineeringProperties.getProtocolloServiceVersione().equals("rv")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.RV);
-			Destinatario destinatario = new Destinatario();
-			destinatario.setNominativo(provider.getDenominazioneLegale());
-			destinatario.setPEC(legaleRappresentante.getAnagrafica().getPec());
-			destinatario.setTipoVettore(it.rve.protocollo.xsd.richiesta_protocollazione.Vettore.PEC);
-			if(sedeLegale != null){
-				destinatario.setIndirizzo(sedeLegale.getIndirizzo());
-				destinatario.setCap(sedeLegale.getCap());
-				destinatario.setCitta(sedeLegale.getComune());
-			}
-	
-			it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
-			destinatari.getDestinatario().add(destinatario);
-			protocollaInUscita(protocollo, destinatari);
+			protocollaInUscita_RV(protocollo);
 		} else if (engineeringProperties.getProtocolloServiceVersione().equals("webrainbow")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
-			//STUB
-			//TODO
-			Corrispondente destinatario = new Corrispondente();
-			destinatario.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
-			destinatario.setPec(objectFactory.createCorrispondentePec(legaleRappresentante.getAnagrafica().getPec()));
-			if(sedeLegale != null) {
-				destinatario.setIndirizzo(objectFactory.createCorrispondenteIndirizzo(sedeLegale.getIndirizzo()));
-				destinatario.setCap(objectFactory.createCorrispondenteCap(sedeLegale.getCap()));
-				destinatario.setCitta(objectFactory.createCorrispondenteCitta(sedeLegale.getComune()));
-			}
-			
-			List<Corrispondente> destinatari = new ArrayList<>();
-			destinatari.add(destinatario);
-			
-			//TODO protocollaInUscita(protocollo, destinatari, fileAllegatiIds);
+			protocollaInUscita_WebRainbow(protocollo);
 		}
+	}
+
+	private void fakeProtocolloInEntrata(Protocollo protocollo) throws Exception {
+		String start = "2016-01-01 00:00";
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		LocalDateTime startDT = LocalDateTime.parse(start, formatter);
+		long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
+		protocollo.setData(LocalDate.now());
+		protocollo.setNumero((int)secsFrom);
+		protocollo.setIdProtoBatch(null);
+		protocollo.setStatoSpedizione(null);
+		protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
+	}
+
+	private void fakeProtocolloInUscita(Protocollo protocollo) throws Exception {
+		String start = "2016-01-01 00:00";
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		LocalDateTime startDT = LocalDateTime.parse(start, formatter);
+		long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
+		String idProtoBatch = Long.toString(secsFrom);
+		protocollo.setData(null);
+		protocollo.setNumero(null);
+		protocollo.setIdProtoBatch(idProtoBatch);
+		protocollo.setStatoSpedizione(null);
+		protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
 	}
 }

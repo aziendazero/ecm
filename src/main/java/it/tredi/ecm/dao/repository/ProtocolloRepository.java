@@ -11,7 +11,7 @@ import it.tredi.ecm.dao.entity.Protocollo;
 public interface ProtocolloRepository extends CrudRepository<Protocollo, Long> {
 	public Set<Protocollo> findAll();
 
-		@Query("SELECT p From Protocollo p WHERE (p.idProtoBatch is not null AND p.numero is null) OR pecInviata = false")
+	@Query("SELECT p From Protocollo p WHERE (p.idProtoBatch is not null AND p.numero is null) OR pecInviata = false")
 //	@Query("SELECT p From Protocollo p WHERE p.idProtoBatch is not null AND p.numero is null")
 	public Set<Protocollo> getProtocolliInUscita();
 
