@@ -7,7 +7,7 @@
 <body>
 	<div layout:fragment="content">
 
-		<div th:if="${#authentication.principal.account.isSegreteria() and creditiModificati != null and creditiModificati == true}" id="modale-conferma-segreteria" class="modal fade modal-conferma" data-model-index="1" role="dialog">
+		<div th:if="${eventoWrapper.eventoConfirmWrapper.confirmRequired}" id="modale-conferma" class="modal fade modal-conferma" data-model-index="1" role="dialog">
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -16,13 +16,32 @@
 						<h4 class="modal-title" id="myModalLabel1" th:text="#{label.richiesta_conferma}">Richiesta di conferma</h4>
 					</div>
 					<div class="modal-body">
-						<div th:if="${eventoWrapper.evento.confermatiCrediti}">
-							<label class="value" th:text="#{label.richiesta_conferma_cambio_crediti(${oldValueCrediti}, ${newValueCrediti})}"></label>
-						</div>
-						<div th:unless="${eventoWrapper.evento.confermatiCrediti}">
-							<label class="value" th:if="${oldValueCrediti != newValueCrediti}" th:text="#{label.notifica_cambio_crediti(${oldValueCrediti}, ${newValueCrediti}, ${creditiProposti})}"></label>
-							<label class="value" th:if="${oldValueCrediti == newValueCrediti}" th:text="#{label.notifica_non_cambio_crediti(${newValueCrediti}, ${creditiProposti})}"></label>
-						</div>
+						<th:block th:each="confirm, row: ${eventoWrapper.eventoConfirmWrapper.confirms}">
+						
+						<th:block th:if="${confirm instanceof T(it.tredi.ecm.web.confirm.FSCTutorPartecipantiConfirm)}">
+							<div>
+								<label class="value" th:text="#{label.alert_fsc_tutor_partecipanti}"></label>
+							</div>
+						</th:block>
+
+						<th:block th:if="${confirm instanceof T(it.tredi.ecm.web.confirm.CreditiModificatiConfirm)}">
+							<div th:if="${confirm.eventoConfermatiCrediti}">
+								<label class="value" th:text="#{label.richiesta_conferma_cambio_crediti(${confirm.oldValueCrediti}, ${confirm.newValueCrediti})}"></label>
+							</div>
+							<div th:unless="${confirm.eventoConfermatiCrediti}">
+								<label class="value" th:if="${confirm.oldValueCrediti != confirm.newValueCrediti}" th:text="#{label.notifica_cambio_crediti(${confirm.oldValueCrediti}, ${confirm.newValueCrediti}, ${confirm.creditiProposti})}"></label>
+								<label class="value" th:if="${confirm.oldValueCrediti == confirm.newValueCrediti}" th:text="#{label.notifica_non_cambio_crediti(${confirm.newValueCrediti}, ${confirm.creditiProposti})}"></label>
+							</div>
+						</th:block>
+						
+						<th:block th:if="${confirm instanceof T(it.tredi.ecm.web.confirm.FSCDocentiNonUtilizzatiConfirm)}">
+							<div>
+								<label th:if="${confirm.isMultiDocenti()}" class="value" th:text="#{label.alert_fsc_docenti_non_in_eventi(${confirm.getRuoliDocenzaNonUtilizzati()})}"></label>
+								<label th:unless="${confirm.isMultiDocenti()}" class="value" th:text="#{label.alert_fsc_docente_non_in_eventi(${confirm.getRuoliDocenzaNonUtilizzati()})}"></label>
+							</div>
+						</th:block>
+						
+						</th:block>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-success pull-right" th:text="#{label.salva}" onclick="submitConfirm()"></button>
@@ -554,10 +573,10 @@
 				    "columnDefs": [ {"targets": 3, "orderable": false, "width": "1px"} ],
 				});
 
-				//modale conferma modifiche crediti segreteria
-				if([[${creditiModificati != null and creditiModificati == true}]])
-					$("#modale-conferma-segreteria").modal("show");
-
+				//modale conferma modifiche
+				if([[${eventoWrapper.eventoConfirmWrapper.confirmRequired}]])
+					$("#modale-conferma").modal("show");
+				
 				//init datatable responsabili scientifici
 			    reInitDataTableById('responsabiliScientifici');
 				/*
@@ -1574,7 +1593,7 @@
 
 			<script th:inline="javascript" th:if="${isFsc}">
 			/*<![CDATA[*/
-				ruoliRespScient = [[${eventoWrapper.getListRuoloFSCEnumPerResponsabiliScientifici()}]];
+				ruoliRespScient = [[${eventoWrapper.getListRuoloFSCEnumPerResponsabiliScientificiDocenti()}]];
 			/*]]>*/
 			</script>
 		
@@ -2279,7 +2298,7 @@
 					isFsc=${eventoWrapper.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FSC}">
 			<script th:inline="javascript" th:if="${isFsc}">
 			/*<![CDATA[*/
-				ruoliEsperti = [[${eventoWrapper.getListRuoloFSCEnumPerEsperti()}]];
+				ruoliEsperti = [[${eventoWrapper.getListRuoloFSCEnumPerEspertiDocenti()}]];
 			/*]]>*/
 			</script>
 

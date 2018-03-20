@@ -117,6 +117,9 @@ import it.tredi.ecm.web.bean.QuietanzaWrapper;
 import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 import it.tredi.ecm.web.bean.SponsorWrapper;
+import it.tredi.ecm.web.confirm.CreditiModificatiConfirm;
+import it.tredi.ecm.web.confirm.FSCDocentiNonUtilizzatiConfirm;
+import it.tredi.ecm.web.confirm.FSCTutorPartecipantiConfirm;
 import it.tredi.ecm.web.validator.AnagraficaValidator;
 import it.tredi.ecm.web.validator.EventoValidator;
 import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
@@ -721,6 +724,7 @@ public class EventoController {
 			RedirectAttributes redirectAttrs, @RequestParam("eventoWrapper_cId") String cIdWrapper){
 		LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"));
 		try {
+			eventoWrapper.getEventoConfirmWrapper().clean();
 			//gestione dei campi ripetibili
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 
@@ -739,6 +743,11 @@ public class EventoController {
 				return EDIT;
 			}
 			else {
+				eventoWrapper.getEventoConfirmWrapper().addConfirm(new CreditiModificatiConfirm(eventoWrapper));
+				eventoWrapper.getEventoConfirmWrapper().addConfirm(new FSCTutorPartecipantiConfirm(eventoWrapper.getEvento()));
+				eventoWrapper.getEventoConfirmWrapper().addConfirm(new FSCDocentiNonUtilizzatiConfirm(eventoWrapper));
+				
+				/*
 				if(Utils.getAuthenticatedUser().isSegreteria() &&
 						evento.isValidatorCheck() &&
 						(eventoWrapper.getCreditiOld() !=  evento.getCrediti() || evento.getConfermatiCrediti() == false)) {
@@ -763,6 +772,12 @@ public class EventoController {
 					model.addAttribute("FSCTutorPartecipanti", true);
 					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 					return EDIT;
+				}
+				*/
+				
+				if(eventoWrapper.getEventoConfirmWrapper().isConfirmRequired()) {
+					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
+					return EDIT;					
 				}
 				else {
 					evento.setStato(EventoStatoEnum.VALIDATO);
