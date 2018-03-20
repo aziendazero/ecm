@@ -483,7 +483,10 @@ public class EventoValidatorVersioneDue {
 		 * */
 		if(evento.getCrediti() == null)
 			errors.rejectValue(prefix + "crediti", "error.empty_crediti");
-
+		
+		if(!evento.getConfermatiCrediti().booleanValue() && evento.getCrediti() != null && (evento.getMotivazioneCrediti() == null || evento.getMotivazioneCrediti().isEmpty())) {
+			errors.rejectValue(prefix + "motivazioneCrediti", "error.empty");
+		}
 	}
 
 	private void checkDateInizioFine(Evento evento, Evento evento2, String prefix, Errors errors) {

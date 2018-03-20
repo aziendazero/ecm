@@ -827,6 +827,19 @@
 									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.crediti')}__}"></div>
 								</div>
 
+								<!-- MOTIVAZIONE CREDITI FORMATIVI INSERITI DALL'UTENTE -->
+								<div class="item form-group motivazione-crediti" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.motivazioneCrediti')} ? 'bad'">
+									<div class="col-xs-1"></div>
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="motivazioneCrediti">
+										<span th:text="#{label.crediti_formativi_attribuiti_utente_motivazione}">Motivazione Crediti attribuiti all'evento dall'utente</span>
+										<span class="required">*</span>
+									</label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="motivazioneCrediti">
+										<textarea rows="10" class="form-control motivazioneCrediti" th:field="${eventoWrapper.evento.motivazioneCrediti}" th:disabled="${isRiedizione or isEditSemiBloccato}"></textarea>
+									</div>
+									<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.motivazioneCrediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.motivazioneCrediti')}__}"></div>
+								</div>
+
 								<div class="divider-dashed"></div>
 
 								<!-- RESPONSABILE SEGRETERIA ORGANIZZATIVA -->
@@ -1314,6 +1327,11 @@
 			            radioClass: 'iradio_flat-green'
 			        });
 
+					$('#dataInizio').on("apply.daterangepicker change", function() {
+						abilitaDisabilitaMotivazioneCreditiInseritiUtente();
+					});
+					$('#dataInizio').on('change', abilitaDisabilitaMotivazioneCreditiInseritiUtente);
+					
 					//decide cosa mostrare a seconda dei campi già settati dal client
 					showHideCampsFAD();
 
@@ -1322,6 +1340,8 @@
 
 					$('#addAttivitaFAD-metodolgieDidattiche').prop('disabled',true);
 					$('#addAttivitaFAD-metodolgieDidattiche').selectpicker('refresh');
+					$('.crediti-proposti').on('keyup', abilitaDisabilitaMotivazioneCreditiInseritiUtente);
+					$('.crediti-proposti').on('change', abilitaDisabilitaMotivazioneCreditiInseritiUtente);
 				}
 
 				//implementazione della funzione che decide cosa mostrare a seconda dei campi già settati dal client specifica per FAD
@@ -1383,17 +1403,36 @@
 				//se l'utente accetta o meno i crediti proposti
 				function abilitaDisabilitaCreditiInseritiUtente(value) {
 					if($(".crediti-proposti").attr("data-editabile") === 'true') {
-					if(value) {
-						$(".crediti-proposti").val('');
-						$(".crediti-proposti").prop("disabled", true);
+						if(value) {
+							$(".crediti-proposti").val('');
+							$(".crediti-proposti").prop("disabled", true);
+						}
+						else {
+							$(".crediti-proposti").prop("disabled", false);
+						}
 					}
-					else {
-						$(".crediti-proposti").prop("disabled", false);
+					abilitaDisabilitaMotivazioneCreditiInseritiUtente();
+				}
+
+				function abilitaDisabilitaMotivazioneCreditiInseritiUtente() {
+					//console.log('abilitaDisabilitaMotivazioneCreditiInseritiUtente: ' + $(".crediti-proposti").val());
+					var versione = getVersione();
+					if (versione === 2) {
+						if($(".crediti-proposti").val() == '') {
+							//campo crediti-proposti compilato
+							$(".motivazione-crediti").slideUp("fast");
+							$(".motivazioneCrediti").val('');
+						}
+						else {
+							//value false crediti inseriti dal provider
+							$(".motivazione-crediti").slideDown("slow");
+						}
+					} else {
+						$(".motivazione-crediti").slideUp("fast");
+						$(".motivazioneCrediti").val('');
 					}
-
 				}
-				}
-
+				
 				//eventLister cambio tab
 				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 			    	tabSelected = e.target.id;
