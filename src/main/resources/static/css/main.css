@@ -1524,3 +1524,8 @@ table.dataTable tbody tr.selected {
 {
 	word-break: keep-all !important;
 }
+
+.yellowRow
+{
+	background-color: yellow !important;
+}
