@@ -32,6 +32,7 @@ import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFADEnum;
+import it.tredi.ecm.web.confirm.EventoConfirmWrapper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -130,6 +131,8 @@ public class EventoWrapper {
 	private boolean eventoIniziato = false;
 	private boolean hasDataInizioRestrictions = false;
 	private boolean hasRiedizioni = false;
+	
+	private EventoConfirmWrapper eventoConfirmWrapper = new EventoConfirmWrapper();
 
 	public List<FaseAzioniRuoliEventoFSCTypeA> getProgrammaEventoFSC(){
 		if(evento != null && evento instanceof EventoFSC){
@@ -327,7 +330,7 @@ public class EventoWrapper {
 		this.evento = evento;
 	}
 	
-	public List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici() {
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientificiDocenti() {
 		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
 		if(this.getResponsabiliScientifici() != null) {
 			for(PersonaEvento pEv : this.getResponsabiliScientifici()) {
@@ -338,7 +341,7 @@ public class EventoWrapper {
 		return toRet;
 	}
 
-	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti() {
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEspertiDocenti() {
 		List<RuoloFSCEnum> toRet = new ArrayList<RuoloFSCEnum>();
 		if(this.getEsperti() != null) {
 			for(PersonaEvento pEv : this.getEsperti()) {
