@@ -318,6 +318,9 @@ public class Evento extends BaseEntity {
 	protected Float durata;//calcolo automatico
 	protected Float crediti;//calcolo con algoritmo che puo essere modificato dal provider
 
+	@Column(columnDefinition = "text")
+	private String motivazioneCrediti;
+	
 	private Boolean confermatiCrediti;
 
 	@OneToOne(cascade=CascadeType.ALL)

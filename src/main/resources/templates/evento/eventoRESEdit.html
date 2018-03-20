@@ -1063,11 +1063,11 @@
 											<label class="control-label col-xs-1">
 												<span>37</span>
 											</label>
-											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="creditiFormativi">
+											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="creditiFormativiConf">
 												<span th:text="#{label.crediti_formativi_proposti_dal_sistema}">Crediti Fromativi proposti dal sistema</span>
 												<span class="required">*</span>
 											</label>
-											<div class="col-xs-5" id="creditiFormativi">
+											<div class="col-xs-5" id="creditiFormativiConf">
 												<span class="value-edit" th:text="${eventoWrapper.creditiProposti}"></span>
 												<span class="checkbox">
 												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
@@ -1089,10 +1089,26 @@
 												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
-												<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" th:disabled="${isRiedizione or isEditSemiBloccato}" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" />
+												<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" 
+															th:disabled="${isRiedizione or isEditSemiBloccato}" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" />
 											</div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.crediti')}__}"></div>
 										</div>
+
+										<!-- MOTIVAZIONE CREDITI FORMATIVI INSERITI DALL'UTENTE -->
+										<div class="item form-group motivazione-crediti" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.motivazioneCrediti')} ? 'bad'">
+											<div class="col-xs-1"></div>
+											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="motivazioneCrediti">
+												<span th:text="#{label.crediti_formativi_attribuiti_utente_motivazione}">Motivazione Crediti attribuiti all'evento dall'utente</span>
+												<span class="required">*</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="motivazioneCrediti">
+												<textarea rows="10" class="form-control motivazioneCrediti" th:field="${eventoWrapper.evento.motivazioneCrediti}" th:disabled="${isRiedizione or isEditSemiBloccato}"></textarea>
+											</div>
+											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.motivazioneCrediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.motivazioneCrediti')}__}"></div>
+										</div>
+										
+										
 
 										<!-- RESPONSABILE SEGRETERIA ORGANIZZATIVA -->
 										<div class="item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabileSegreteria')} ? 'bad'">
@@ -1625,15 +1641,6 @@
 						countSelectedText : '{0} selezionate'
 					});
 					
-					$('#dataInizio').on("apply.daterangepicker change", function() {
-						setDocRelTutMod();
-						setAttivitaSalutiIntroduttivi();
-						mostraNascondiCampoNumeroPartecipantiPerCorso();
-					});
-					$('#dataInizio').on('change', setDocRelTutMod);
-					$('#dataInizio').on('change', setAttivitaSalutiIntroduttivi);
-					$('#dataInizio').on('change', mostraNascondiCampoNumeroPartecipantiPerCorso);
-
 				    $("#addAttivitaRES-metodolgieDidattiche").prop('disabled',true);
 
 				    $(".datatable-responsive-programmaRES").DataTable({
@@ -1676,6 +1683,17 @@
 			            radioClass: 'iradio_flat-green'
 			        });
 
+					$('#dataInizio').on("apply.daterangepicker change", function() {
+						setDocRelTutMod();
+						setAttivitaSalutiIntroduttivi();
+						mostraNascondiCampoNumeroPartecipantiPerCorso();
+						abilitaDisabilitaMotivazioneCreditiInseritiUtente();
+					});
+					$('#dataInizio').on('change', setDocRelTutMod);
+					$('#dataInizio').on('change', setAttivitaSalutiIntroduttivi);
+					$('#dataInizio').on('change', mostraNascondiCampoNumeroPartecipantiPerCorso);
+					$('#dataInizio').on('change', abilitaDisabilitaMotivazioneCreditiInseritiUtente);
+					
 					//setta i nomi dei giorni e dei mesi a seconda delle label i18n anche per le date intermedie
 					days = getDayNamesShort();
 					months = getMonthNames();
@@ -1736,6 +1754,8 @@
 						tempTable = null;
 					})
 
+					$('.crediti-proposti').on('keyup', abilitaDisabilitaMotivazioneCreditiInseritiUtente);
+					$('.crediti-proposti').on('change', abilitaDisabilitaMotivazioneCreditiInseritiUtente);
 				}
 
 				//eventLister cambio tab
@@ -2119,8 +2139,28 @@
 							$(".crediti-proposti").prop("disabled", false);
 						}
 					}
+					abilitaDisabilitaMotivazioneCreditiInseritiUtente();
 				}
 
+				function abilitaDisabilitaMotivazioneCreditiInseritiUtente() {
+					//console.log('abilitaDisabilitaMotivazioneCreditiInseritiUtente: ' + $(".crediti-proposti").val());
+					var versione = getVersione();
+					if (versione === 2) {
+						if($(".crediti-proposti").val() == '') {
+							//oppure campo crediti-proposti compilato
+							$(".motivazione-crediti").slideUp("fast");
+							$(".motivazioneCrediti").val('');
+						}
+						else {
+							//value false crediti inseriti dal provider
+							$(".motivazione-crediti").slideDown("slow");
+						}
+					} else {
+						$(".motivazione-crediti").slideUp("fast");
+						$(".motivazioneCrediti").val('');
+					}
+				}
+				
 				//funzione che aggiunge un risultato atteso
 				function aggiungiRisultatoAtteso(caller, target) {
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRisultatoAtteso/|}]] + target, $('#formEventoRES').serialize() + eventoWrapper_cId)
