@@ -76,12 +76,12 @@ import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
 import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
+import it.tredi.ecm.dao.enumlist.ProtocolloServiceVersioneEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.repository.ProtoBatchLogRepository;
 import it.tredi.ecm.dao.repository.ProtocolloRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.EngineeringProperties;
-import it.tredi.ecm.service.enumlist.ProtocolloServiceVersioneEnum;
 import it.tredi.ecm.utils.Utils;
 
 @org.springframework.stereotype.Service
@@ -100,8 +100,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	@Autowired private EmailService emailService;
 	@Autowired private EcmProperties ecmProperties;
 
-	private Protocol protocolWRB = new Protocol();
- 	private ProtocolWebService portWRB = protocolWRB.getProtocolWebServicePort();
+	private Protocol protocolWRB = null;
+ 	private ProtocolWebService portWRB = null;
  	private ObjectFactory objectFactory = new ObjectFactory();
 
 	private static JAXBContext protocollaArrivoReqContext = null;
@@ -110,10 +110,17 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	public static String ENDPOINT_PROTOCOLLO = "";
 
 	public static final String AVVENUTA_CONSEGNA = "avvenuta-consegna";
+	public static final String CONSEGNA_PEC_IN_CORSO = "consegna-pec-in-corso";
+	public static final String PEC_NON_INVIATE = "pec-non-inviate";
+	public static final String ERRORE = "errore";
 
 	@PostConstruct
 	public void init(){
 		ENDPOINT_PROTOCOLLO = engineeringProperties.getProtocolloEndpoint();
+		if(engineeringProperties.getProtocolloServiceVersione().equalsIgnoreCase("webrainbow")) {
+			protocolWRB = new Protocol();
+			portWRB = protocolWRB.getProtocolWebServicePort();
+		}
 	}
 
 	public static synchronized JAXBContext getProtocollaArrivoReqContext() throws JAXBException {
@@ -263,6 +270,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 	/*****	WebRainbow	*****/
 	private void protocollaInEntrata_WebRainbow(Protocollo protocollo, Set<Long> fileAllegatiIds) throws Exception {
+		LOGGER.info(Utils.getLogMessage("Protocollazione WebRainbow in Entrata - IN CORSO..."));
 		Provider provider = protocollo.getAccreditamento().getProvider();
 		Sede sedeLegale = provider.getSedeLegale();
 
@@ -272,17 +280,28 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		mittente.setIndirizzo(objectFactory.createCorrispondenteIndirizzo(sedeLegale.getIndirizzo()));
 		mittente.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
 
+		Corrispondente assegnatario = new Corrispondente();
+		assegnatario.setNominativo(objectFactory.createCorrispondenteNominativo(engineeringProperties.getProtocolloWebrainbowUfficioCreatoreUscita()));
+		List<Corrispondente> assegnatari = new ArrayList<>();
+		assegnatari.add(assegnatario);
+
 		List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(protocollo.getFile(), fileAllegatiIds);
+
+		String oggetto = Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider());
 
 		if(ecmProperties.isDebugSaltaProtocollo()) {
 			fakeProtocolloInEntrata(protocollo);
 		}else {
-			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()),
-					mittente, engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), null, null, null, null, documenti);
+			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInEntrata(oggetto, mittente,
+					engineeringProperties.getProtocolloWebrainbowUfficioCreatoreEntrata(), assegnatari, null, null, null, documenti);
 
 			if(responseWRB.getCodice().getValue().equals("OK")) {
-				LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
-				LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
+				LOGGER.info(Utils.getLogMessage("Protocollazione WebRainbow in Entrata - ESEGUITA"));
+				LOGGER.info(Utils.getLogMessage("Codice: " + responseWRB.getCodice().getValue()));
+				LOGGER.info(Utils.getLogMessage("Descrizione: " + responseWRB.getDescrizione().getValue()));
+				LOGGER.info(Utils.getLogMessage("Numero: " + responseWRB.getNumeroProtocollo().getValue()));
+				LOGGER.info(Utils.getLogMessage("Data: " + responseWRB.getDataRegistrazione().getValue()));
+				LOGGER.info(Utils.getLogMessage("Id: " + responseWRB.getId().getValue()));
 
 				String data = responseWRB.getDataRegistrazione().getValue();
 				String numero = responseWRB.getNumeroProtocollo().getValue();
@@ -291,13 +310,18 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				protocollo.setNumero(Integer.parseInt(numero));
 				protocollo.setIdProtoBatch(null);
 				protocollo.setStatoSpedizione(null);
-				protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
+				protocollo.setOggetto(oggetto);
 			}else {
-				LOGGER.info(Utils.getLogMessage(responseWRB.getCodice().getValue()));
-				LOGGER.info(Utils.getLogMessage(responseWRB.getDescrizione().getValue()));
+				LOGGER.info(Utils.getLogMessage("Protocollazione WebRainbow in Entrata - ERRORE"));
+				if(responseWRB != null) {
+					LOGGER.info(Utils.getLogMessage("Codice: " + responseWRB.getCodice().getValue()));
+					LOGGER.info(Utils.getLogMessage("Descrizione: " + responseWRB.getDescrizione().getValue()));
+					LOGGER.info(Utils.getLogMessage("Numero: " + responseWRB.getNumeroProtocollo().getValue()));
+					LOGGER.info(Utils.getLogMessage("Data: " + responseWRB.getDataRegistrazione().getValue()));
+					LOGGER.info(Utils.getLogMessage("Id: " + responseWRB.getId().getValue()));
+				}
 
-				//TODO error handling
-				throw new Exception(responseWRB.getCodice().getValue()+": "+responseWRB.getDescrizione().getValue());
+				throw new Exception("Protocollazione WebRainbow in Entrata - ERRORE");
 			}
 		}
 		protocolloRepository.save(protocollo);
@@ -309,9 +333,15 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 
 	@Transactional
 	private void protocollaInUscita_WebRainbow(Protocollo protocollo, Set<Long> fileAllegatiIds) throws Exception{
+		LOGGER.info(Utils.getLogMessage("Protocollazione WebRainbow in Uscita - IN CORSO..."));
 		Provider provider = protocollo.getAccreditamento().getProvider();
 		Sede sedeLegale = provider.getSedeLegale();
 		Persona legaleRappresentante = provider.getLegaleRappresentante();
+
+		Corrispondente assegnatario = new Corrispondente();
+		assegnatario.setNominativo(objectFactory.createCorrispondenteNominativo(engineeringProperties.getProtocolloWebrainbowUfficioCreatoreUscita()));
+		List<Corrispondente> assegnatari = new ArrayList<>();
+		assegnatari.add(assegnatario);
 
 		Corrispondente destinatario = new Corrispondente();
 		destinatario.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
@@ -326,31 +356,40 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		destinatari.add(destinatario);
 
 		List<it.peng.wr.webservice.protocollo.Documento> documenti = getDocumentoPrincipaleAndAllegati(protocollo.getFile(), fileAllegatiIds);
+
+		String oggetto = Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider());
+
 		if(ecmProperties.isDebugSaltaProtocollo()) {
 			fakeProtocolloInUscita(protocollo);
 		} else {
-			try {
-				Risultatoprotocollo responseUscitaWRB = portWRB.creaProtocolloInUscita(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()),
-						engineeringProperties.getProtocolloWebrainbowUfficioCreatore(), destinatari, null, null, null, null, true, documenti);
+			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInUscita(oggetto, engineeringProperties.getProtocolloWebrainbowUfficioCreatoreUscita(),
+					destinatari, assegnatari, null, null, null, true, documenti);
+			if(responseWRB.getCodice().getValue().equals("OK")) {
+				LocalDate date = LocalDate.parse(responseWRB.getDataRegistrazione().getValue(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-				LOGGER.info(Utils.getLogMessage("Codice: " + responseUscitaWRB.getCodice().getValue()));
-				LOGGER.info(Utils.getLogMessage("Data Registrazione: " + responseUscitaWRB.getDataRegistrazione().getValue()));
-				LOGGER.info(Utils.getLogMessage("Descrizione: " + responseUscitaWRB.getDescrizione().getValue()));
-				LOGGER.info(Utils.getLogMessage("Id: " + responseUscitaWRB.getId().getValue()));
-				LOGGER.info(Utils.getLogMessage("Link: " + responseUscitaWRB.getLink().getValue()));
-				LOGGER.info(Utils.getLogMessage("NumeroProtocollo: " + responseUscitaWRB.getNumeroProtocollo().getValue()));
-
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-				LocalDate date = LocalDate.parse(responseUscitaWRB.getDataRegistrazione().getValue(), formatter);
+				LOGGER.info(Utils.getLogMessage("Codice: " + responseWRB.getCodice().getValue()));
+				LOGGER.info(Utils.getLogMessage("Descrizione: " + responseWRB.getDescrizione().getValue()));
+				LOGGER.info(Utils.getLogMessage("Numero: " + responseWRB.getNumeroProtocollo().getValue()));
+				LOGGER.info(Utils.getLogMessage("Data: " + responseWRB.getDataRegistrazione().getValue()));
+				LOGGER.info(Utils.getLogMessage("Id: " + responseWRB.getId().getValue()));
 
 				protocollo.setIdProtoBatch(null);
-				protocollo.setNumero(Integer.parseInt(responseUscitaWRB.getNumeroProtocollo().getValue()));
+				protocollo.setNumero(Integer.parseInt(responseWRB.getNumeroProtocollo().getValue()));
 				protocollo.setData(date);
 				protocollo.setStatoSpedizione(null);
 				protocollo.setPecInviata(false);
-				protocollo.setOggetto(Utils.buildOggetto(protocollo.getFile().getTipo(), protocollo.getAccreditamento().getProvider()));
-			} catch (Exception e) {
-				LOGGER.error("Errore creazione protocollo in uscita WebRainbow", e);
+				protocollo.setOggetto(oggetto);
+			}else {
+				LOGGER.error(Utils.getLogMessage("Protocollazione WebRainbow in Uscita - ERRORE"));
+				if(responseWRB != null) {
+					LOGGER.info(Utils.getLogMessage("Codice: " + responseWRB.getCodice().getValue()));
+					LOGGER.info(Utils.getLogMessage("Descrizione: " + responseWRB.getDescrizione().getValue()));
+					LOGGER.info(Utils.getLogMessage("Numero: " + responseWRB.getNumeroProtocollo().getValue()));
+					LOGGER.info(Utils.getLogMessage("Data: " + responseWRB.getDataRegistrazione().getValue()));
+					LOGGER.info(Utils.getLogMessage("Id: " + responseWRB.getId().getValue()));
+				}
+
+				throw new Exception("Protocollazione WebRainbow in Uscita - ERRORE");
 			}
 		}
 
@@ -618,7 +657,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	/*****	THREAD FASE 1	*****/
 	public void protoBatchLog() throws Exception {
 		Set<Protocollo> protocolliInUscita = protocolloRepository.getProtocolliInUscita();
-		LapisWebSOAPType port = protocolloThreadLocal.get();
 
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy");
 		ProtoBatchLog plog = new ProtoBatchLog();
@@ -655,6 +693,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				fmt = new SimpleDateFormat("dd/MM/yyyy");
 
 				if(p.getProtocolloServiceVersion() == null || p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.RV)) {
+					LapisWebSOAPType port = protocolloThreadLocal.get();
 					Object response = port.protoBatchLog(p.getIdProtoBatch());
 
 					LOGGER.debug(response);
@@ -677,38 +716,38 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					plog.setDtIns(StringUtils.hasText(dt_insert) ? fmt.parse(dt_insert) : null);
 					plog.setDtUpd(StringUtils.hasText(dt_update) ? fmt.parse(dt_update) : null);
 
+					if (StringUtils.hasText(d_proto)) {
+						p.setData(LocalDate.parse(d_proto, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+					}
+					if (StringUtils.hasText(n_proto)) {
+						p.setNumero(Integer.parseInt(n_proto));
+					}
+					protocolloRepository.save(p);
 				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
-					//TODO
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-					String numero = p.getNumero().toString();
-					numero  = numero.length() < 7 ? ("0000000" + numero).substring(numero.length()) : numero;
-					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(numero, p.getData().format(formatter), false, true);
+					it.peng.wr.webservice.protocollo.Protocollo protocolloWR = null;
+
+					String numeroProtocollo = p.getNumeroFormattedWebRainbow();
+					String dataProtocollo = p.getDataFormattedWebRainbow();
+					protocolloWR = portWRB.getProtocollo(numeroProtocollo, dataProtocollo, false, true);
+
+					//se il WS di WebRanbow risponde correttamente allora posso procedere con la verifica delle PEC e quindi non passare più da qui
+					//settiamo a idProtoBatch=id del protocollo in modo tale da seguire la stessa logica del protcollo RV per il recupero dei protocolli in uscita da dare a GetStatoSpedizione
+					if(protocolloWR.getDataRegistrazione() != null && !protocolloWR.getDataRegistrazione().toString().isEmpty() &&
+							protocolloWR.getNumeroProtocollo() != null && !protocolloWR.getNumeroProtocollo().isEmpty()) {
+						dt_insert = protocolloWR.getDataRegistrazione().toString();
+						stato = null;
+						p.setIdProtoBatch(protocolloWR.getId().getValue());
+						protocolloRepository.save(p);
+					}else {
+						dt_insert = dataProtocollo;
+						stato = ERRORE;
+					}
 
 					dt_update = LocalDateTime.now().toString();
 
-					dt_insert = protocollo.getDataRegistrazione().toString();
-					n_proto = protocollo.getNumeroProtocollo();
-					for(Pecinviata pec  : protocollo.getPecInviate()) {
-						String status = portWRB.getStatoPEC(n_proto, dt_insert, pec.getId().getValue());
-						if(status.equals("KO"));
-							stato = "KO";
-					}
-					stato = stato.isEmpty() ? "OK" : stato;
-					fmt = new SimpleDateFormat("yyyy-MM-ddXXX");
-					plog.setDtIns(StringUtils.hasText(dt_insert) ? fmt.parse(dt_insert) : null);
-					fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-					plog.setDtUpd(StringUtils.hasText(dt_update) ? fmt.parse(dt_update) : null);
+					plog.setDtIns(StringUtils.hasText(dt_insert) ? new SimpleDateFormat("yyyy-MM-ddXXX").parse(dt_insert) : null);
+					plog.setDtUpd(StringUtils.hasText(dt_update) ? new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(dt_update) : null);
 				}
-
-				if (StringUtils.hasText(d_proto)) {
-					//p.setData(new SimpleDateFormat("dd/MM/yyyy").parse(d_proto));
-					p.setData(LocalDate.parse(d_proto, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-				}
-				if (StringUtils.hasText(n_proto)) {
-					p.setNumero(Integer.parseInt(n_proto));
-				}
-				protocolloRepository.save(p);
-
 
 				plog.setCodStato(cod_stato);
 				plog.setLog(log);
@@ -792,36 +831,44 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
 
 				} else if (p.getProtocolloServiceVersion().equals(ProtocolloServiceVersioneEnum.WEBRAINBOW)) {
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-					String numero = p.getNumero().toString();
-					numero  = numero.length() < 7 ? ("0000000" + numero).substring(numero.length()) : numero;
-					it.peng.wr.webservice.protocollo.Protocollo protocollo = portWRB.getProtocollo(numero, p.getData().format(formatter), false, true);
+					it.peng.wr.webservice.protocollo.Protocollo protocolloWR = null;
+					String numeroProtocollo = p.getNumeroFormattedWebRainbow();
+					String dataProtocollo = p.getDataFormattedWebRainbow();
+					protocolloWR = portWRB.getProtocollo(numeroProtocollo, dataProtocollo, false, true);
 
-					dt_spedizione = protocollo.getDataRegistrazione().toString();
-					nr_spedizione = protocollo.getNumeroProtocollo();
-					for(Pecinviata pec  : protocollo.getPecInviate()) {
-						String status = portWRB.getStatoPEC(nr_spedizione, dt_spedizione, pec.getId().getValue());
+					if(protocolloWR.getDataRegistrazione() != null && !protocolloWR.getDataRegistrazione().toString().isEmpty() &&
+							protocolloWR.getNumeroProtocollo() != null && !protocolloWR.getNumeroProtocollo().isEmpty()) {
 
-						if(status.equals("KO"));
-							stato = "KO";
+						dt_spedizione = protocolloWR.getDataRegistrazione().toString();
+						nr_spedizione = protocolloWR.getNumeroProtocollo();
 
+						int dim = protocolloWR.getPecInviate().size();
+						boolean allPecSent = false;
+						LOGGER.info(dim + " Pec trovate per il protocollo WebRainbow " + nr_spedizione + " del " + dt_spedizione);
+						if(dim > 0) {
+							stato = CONSEGNA_PEC_IN_CORSO;
+							allPecSent = true;
+							for (int i=0; (i<dim && allPecSent); i++) {
+								String status = portWRB.getStatoPEC(nr_spedizione, dt_spedizione, protocolloWR.getPecInviate().get(i).getId().getValue());
+								if(status.equals("KO"));
+									allPecSent = false;
+							}
+						}else {
+							stato = PEC_NON_INVIATE;
+						}
+
+						pecInviata = allPecSent;
+						if(pecInviata) {
+							stato = AVVENUTA_CONSEGNA;
+						}
+					}else {
+						stato = null;
+						pecInviata = false;
 					}
-					stato = stato == null ? AVVENUTA_CONSEGNA : stato;
-					pecInviata = stato.equals(AVVENUTA_CONSEGNA) ? true : false;
 
-					fmt = new SimpleDateFormat("yyyy-MM-ddXXX");
-					plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? fmt.parse(dt_spedizione) : null);
+					plog.setPecInviata(pecInviata);
+					plog.setDtSpedizione(StringUtils.hasText(dt_spedizione) ? new SimpleDateFormat("yyyy-MM-ddXXX").parse(dt_spedizione) : null);
 				}
-	//			String numero = xpath.compile("//protocollo/@numero").evaluate(xmlResultDocument);
-	//			String data = xpath.compile("//protocollo/@data").evaluate(xmlResultDocument);
-	//			String destinatario = xpath.compile("//protocollo/destinatario/@vettore").evaluate(xmlResultDocument);
-	//			String ragione_sociale = xpath.compile("//protocollo/destinatario/@ragione_sociale").evaluate(xmlResultDocument);
-	//			String riferimento = xpath.compile("//protocollo/destinatario/@riferimento").evaluate(xmlResultDocument);
-	//			String indirizzo = xpath.compile("//protocollo/destinatario/@riferimento").evaluate(xmlResultDocument);
-	//			String comune = xpath.compile("//protocollo/destinatario/@comune").evaluate(xmlResultDocument);
-	//			String provincia = xpath.compile("//protocollo/destinatario/@provincia").evaluate(xmlResultDocument);
-	//			String cap = xpath.compile("//protocollo/destinatario/@cap").evaluate(xmlResultDocument);
-	//			String email = xpath.compile("//protocollo/destinatario/@email").evaluate(xmlResultDocument);
 			}
 
 			if(p.getStatoSpedizione() == null || !p.getStatoSpedizione().equals(stato)) {
@@ -833,8 +880,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 				plog.setNSpedizione(nr_spedizione);
 				plog.setProtocollo(p);
 				plog.setStato(stato);
-				if(pecInviata)
-					plog.setPecInviata(pecInviata);
 				protoBatchLogRepository.save(plog);
 
 				//Verifico se deve essere eseguita qualche istruzione automatica dopo la protocollazione

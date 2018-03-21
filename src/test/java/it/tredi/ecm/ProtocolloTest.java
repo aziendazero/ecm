@@ -46,10 +46,9 @@ import it.tredi.ecm.service.ValutazioneService;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 @ActiveProfiles("dev")
-@WithUserDetails("LBENEDETTI")
+@WithUserDetails("test1")
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING) // ordina i test in base al nome crescente
 @Rollback(false)
-@Ignore
 public class ProtocolloTest {
 
 	@Autowired
@@ -94,6 +93,16 @@ public class ProtocolloTest {
 	@Transactional
 	@Ignore
 	public void testProtocollaDomandaInEntrata() throws Exception{
-		protocolloService.protocollaDomandaInArrivo(11617L, 30106L);
+		Long accreditamentoId = 4435L;
+		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		protocolloService.protocollaDomandaInArrivo(accreditamentoId, accreditamento.getFileIdForProtocollo(), accreditamento.getFileIdsAllegatiForProtocollo());
+	}
+
+	@Test
+	@Transactional
+	public void testProtocollaAllegatoInUscita() throws Exception{
+		Long accreditamentoId = 4435L;
+		Long fileId = 5149L;
+		protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, fileId);
 	}
 }

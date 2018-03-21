@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20180320_001_flag_pecinviata_protocollo.xml">
+	<changeSet author="dpranteda (generated)" id="1521546033957-1">
+		<addColumn tableName="proto_batch_log">
+			<column name="pec_inviata" type="boolean" />
+		</addColumn>
+	</changeSet>
+	<changeSet author="dpranteda (generated)" id="1521546033957-2">
+		<addColumn tableName="protocollo">
+			<column name="pec_inviata" type="boolean" />
+		</addColumn>
+	</changeSet>
+</databaseChangeLog>
