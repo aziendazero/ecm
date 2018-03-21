@@ -1525,6 +1525,7 @@ table.dataTable tbody tr.selected {
 	word-break: keep-all !important;
 }
 
+
 .warning {
   color: #999 !important;
   background-color: #dddd52 !important;
@@ -1532,4 +1533,9 @@ table.dataTable tbody tr.selected {
 
 .warning::after {
   border-top: 7px solid #dddd52 !important;
+}
+
+.yellowRow
+{
+	background-color: yellow !important;
 }

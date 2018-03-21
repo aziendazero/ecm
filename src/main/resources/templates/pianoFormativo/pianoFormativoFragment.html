@@ -29,7 +29,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="evento, row : ${__${pianoFormativo}__.eventiPianoFormativo}">
+						<tr th:each="evento, row : ${__${pianoFormativo}__.eventiPianoFormativo}"  th:class="${evento.attuato} ? yellowRow">
 							<td><a th:text="${evento.titolo}" th:href="@{|${prefixURL}provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show${urlParam}|}"></a></td>
 							<td th:text="${evento.getCodiceIdentificativo()}"></td>
 							<td th:text="${evento.proceduraFormativa.name()}"></td>

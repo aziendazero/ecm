@@ -62,15 +62,21 @@
 						"bFilter" : false,
 						"bInfo" : false,
 						"bPaginate" : false,
-						"ordering" : false,
+						"ordering" : true,
+						"order": [[ 2, "desc" ]],
 						"columnDefs": [ {
+							"targets": 0,
+							"orderable": false},{
 							"targets": 1,
 							"width": "100px",
+							"orderable": false,
 							"sClass": "center"},{
 							"targets": 2,
+							"orderable": true,
 							"width": "1px",
 							"sClass": "center"},{
 							"targets": 3,
+							"orderable": false,
 							"width": "100px",
 						} ]
 					})
