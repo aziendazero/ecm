@@ -38,14 +38,14 @@ public enum AccreditamentoStatoEnum {
 
 	RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE (18, "Richiesta integrazione in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
 	RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE (19, "Richiesta Preavviso di Rigetto in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
-	DINIEGO_IN_PROTOCOLLAZIONE (20, "Respinto in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
+	DINIEGO_IN_PROTOCOLLAZIONE (20, "Diniego in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
 	ACCREDITATO_IN_PROTOCOLLAZIONE (21, "Accreditato in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
 
 	CONCLUSO (22, "Concluso", ""),//Stato in cui va alla fine della "Variazione Dati"
 
 	RICHIESTA_INTEGRAZIONE_IN_FIRMA (23, "Richiesta integrazione in attesa di firma del documento", "inFirma"),
 	RICHIESTA_PREAVVISO_RIGETTO_IN_FIRMA (24, "Richiesta Preavviso di Rigetto in attesa di firma del documento", "inFirma"),
-	DINIEGO_IN_FIRMA (25, "Respinto in attesa di firma del documento", "inFirma"),
+	DINIEGO_IN_FIRMA (25, "Diniego in attesa di firma del documento", "inFirma"),
 	ACCREDITATO_IN_FIRMA (26, "Accreditato in attesa di firma del documento", "inFirma");
 
 	private int id;
