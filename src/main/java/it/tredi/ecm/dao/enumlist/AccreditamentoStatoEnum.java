@@ -16,7 +16,7 @@ public enum AccreditamentoStatoEnum {
 	ASSEGNAMENTO (4, "Assegnamento nuovi referee", "assegnamento"),//[SOLO PROVVISORIA] - //domanda restituita alla segreteria che deve assegnare un nuovo gruppo CRECM (perchè 2/3 del primo gruppo non hanno valutato)
 	INS_ODG (5, "Inserimento nell'Ordine del giorno", "odg"),//domanda deve essere inserita in ODG per valutazione della Commissione ECM
 	VALUTAZIONE_COMMISSIONE (6, "Valutazione Commissione ECM", "valutazioneCommissione"),//domanda in discussione da parte della Commissione ECM, al termine la segreteria riporta l'esito
-	DINIEGO (7, "Respinto", "diniego"),//al secondo giro...la domanda può essere definitivamente respinta
+	DINIEGO (7, "Diniego", "diniego"),//al secondo giro...la domanda può essere definitivamente respinta
 	ACCREDITATO (8, "Accreditato", "accreditato"),//domanda approvata...90gg di tempo per pagare
 	RICHIESTA_INTEGRAZIONE (9, "Richiesta integrazione", "richiestaIntegrazione"),//segreteria deve selezionare gli id dei campi da modificare
 	INTEGRAZIONE (10, "Integrazione", "integrazione"),//provider deve modificare i campi da richiesta integrazione
@@ -38,14 +38,14 @@ public enum AccreditamentoStatoEnum {
 
 	RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE (18, "Richiesta integrazione in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
 	RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE (19, "Richiesta Preavviso di Rigetto in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
-	DINIEGO_IN_PROTOCOLLAZIONE (20, "Respinto in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
+	DINIEGO_IN_PROTOCOLLAZIONE (20, "Diniego in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
 	ACCREDITATO_IN_PROTOCOLLAZIONE (21, "Accreditato in protocollazione", "inProtocollazione"),//il thread in background controlla se il documento viene protocollato e quando questo avviene esegue il task successivo
 
 	CONCLUSO (22, "Concluso", ""),//Stato in cui va alla fine della "Variazione Dati"
 
 	RICHIESTA_INTEGRAZIONE_IN_FIRMA (23, "Richiesta integrazione in attesa di firma del documento", "inFirma"),
 	RICHIESTA_PREAVVISO_RIGETTO_IN_FIRMA (24, "Richiesta Preavviso di Rigetto in attesa di firma del documento", "inFirma"),
-	DINIEGO_IN_FIRMA (25, "Respinto in attesa di firma del documento", "inFirma"),
+	DINIEGO_IN_FIRMA (25, "Diniego in attesa di firma del documento", "inFirma"),
 	ACCREDITATO_IN_FIRMA (26, "Accreditato in attesa di firma del documento", "inFirma");
 
 	private int id;
