@@ -124,11 +124,11 @@
 	<include file="20170920_001_change_type_note_valutazione_Text.xml" relativeToChangelogFile="true" />
 
 	<include file="20171115_002_applySQL_update_nome_obiettiviNazionali.xml" relativeToChangelogFile="true"/>
-	
+
 	<include file="20171119_001_epf_fromcsv.xml" relativeToChangelogFile="true"/>
-	
+
 	<include file="20171119_003_applySQL_vista_provider_accreditati.xml" relativeToChangelogFile="true"/>
-	
+
 	<include file="20180110_001_add_Column_for_archiving_prima_infanzi_medicinali_non_convenzionati.xml" relativeToChangelogFile="true"/>
 
 	<include file="20171129_001_eventofsc_aggiunta_tipologia_sperimentazione.xml" relativeToChangelogFile="true"/>
@@ -140,18 +140,20 @@
 	<include file="20171212_001_aggiunta_investigatori_eventofsc.xml" relativeToChangelogFile="true"/>
 
 	<include file="20171220_001_aggiunta_versione_evento.xml" relativeToChangelogFile="true"/>
-	
+
 	<include file="20171222_001_eventores_aggiunta_numero_partecipanti_per_corso.xml" relativeToChangelogFile="true"/>
-	
+
 	<include file="20171227_001_eventofsc_aggiunta_campi_calcolo_crediti.xml" relativeToChangelogFile="true"/>
 
     <include file="20171228_imposto_versione_eventi_esistenti.xml" relativeToChangelogFile="true"/>
-	
+
     <include file="20180320_evento_add_column_motivazione_crediti.xml" relativeToChangelogFile="true"/>
 
+    <include file="20180322_002_applySQL_update_anagrafica_tipi_for_report.xml" relativeToChangelogFile="true"/>
+
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
-      Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali" 
-      Obiettivo n. 35 "Argomenti di carattere generale: sanità digitale, informatica di livello avanzato e lingua inglese scientifica;  normativa in materia sanitaria: principi etici e civili del S.S.N.  con acquisizione di nozioni tecnico-professionali" 	
+      Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali"
+      Obiettivo n. 35 "Argomenti di carattere generale: sanità digitale, informatica di livello avanzato e lingua inglese scientifica;  normativa in materia sanitaria: principi etici e civili del S.S.N.  con acquisizione di nozioni tecnico-professionali"
 	 -->
 	<!-- include file="20171115_004_applySQL_insert_obiettiviNazionali.xml" relativeToChangelogFile="true"/ -->
 </databaseChangeLog>
