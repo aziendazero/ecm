@@ -57,12 +57,12 @@ public class DatiEconomici {
 	}
 
 	public void init(int currentYear){
-		fatturatoComplessivoAnnoUno = currentYear;
-		fatturatoComplessivoAnnoDue = currentYear - 1;
-		fatturatoComplessivoAnnoTre = currentYear - 2;
+		fatturatoComplessivoAnnoUno = currentYear - 1;
+		fatturatoComplessivoAnnoDue = currentYear - 2;
+		fatturatoComplessivoAnnoTre = currentYear - 3;
 
-		fatturatoFormazioneAnnoUno = currentYear;
-		fatturatoFormazioneAnnoDue = currentYear - 1;
-		fatturatoFormazioneAnnoTre = currentYear - 2;
+		fatturatoFormazioneAnnoUno = currentYear - 1;
+		fatturatoFormazioneAnnoDue = currentYear - 2;
+		fatturatoFormazioneAnnoTre = currentYear - 3;
 	}
 }
