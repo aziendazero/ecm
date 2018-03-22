@@ -95,6 +95,7 @@ public class ProviderValidator {
 						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
 					}
 				}
+				Utils.rejectIfCodFiscIncorrect(providerForm.getCodiceFiscale(), errors, prefix + "codiceFiscale");
 			}
 
 			//cerco se esiste già un provider con quel CodiceFiscale registrato nella partitaIva
@@ -110,6 +111,7 @@ public class ProviderValidator {
 						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
 					}
 				}
+				Utils.rejectIfCodFiscIncorrect(providerForm.getCodiceFiscale(), errors, prefix + "codiceFiscale");
 			}
 		}
 
@@ -191,6 +193,7 @@ public class ProviderValidator {
 						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
 					}
 				}
+				Utils.rejectIfCodFiscIncorrect(providerForm.getCodiceFiscale(), errors, prefix + "codiceFiscale");
 			}
 
 			//cerco se esiste già un provider con quel CodiceFiscale registrato nella partitaIva
@@ -206,6 +209,7 @@ public class ProviderValidator {
 						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
 					}
 				}
+				Utils.rejectIfCodFiscIncorrect(providerForm.getCodiceFiscale(), errors, prefix + "codiceFiscale");
 			}
 		}
 

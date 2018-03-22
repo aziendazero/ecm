@@ -24,7 +24,8 @@ import it.tredi.ecm.utils.Utils;
 @Component
 public class AnagraficaValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnagraficaValidator.class);
-	private static final String PATTERN_CODICE_FISCALE = "[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]";
+	//@since ERM014009 used Utils
+	//private static final String PATTERN_CODICE_FISCALE = "[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]";
 	private static final String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
 	@Autowired private AnagraficaService anagraficaService;
@@ -60,8 +61,11 @@ public class AnagraficaValidator {
 						errors.rejectValue(prefix + "codiceFiscale", "error.codiceFiscale.duplicated");
 				}
 			}else{
+				Utils.rejectIfCodFiscIncorrect(anagrafica.getCodiceFiscale(), errors, prefix + "codiceFiscale");
+				/*  @since ERM014009
 				if(!Pattern.matches(PATTERN_CODICE_FISCALE, anagrafica.getCodiceFiscale()))
 					errors.rejectValue(prefix + "codiceFiscale", "error.invalid");
+				*/
 			}
 		}
 	}
@@ -91,10 +95,13 @@ public class AnagraficaValidator {
 			errors.rejectValue(prefix + "cognome", "error.empty");
 		if(anagraficaEvento.getAnagrafica().getNome() == null || anagraficaEvento.getAnagrafica().getNome().isEmpty())
 			errors.rejectValue(prefix + "nome", "error.empty");
+		/* @since ERM014009
 		if(anagraficaEvento.getAnagrafica().getCodiceFiscale() == null || anagraficaEvento.getAnagrafica().getCodiceFiscale().isEmpty()){
 			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
 		}
-		else {
+		*/
+		if(!Utils.rejectIfCodFiscIncorrect(anagraficaEvento.getAnagrafica().getCodiceFiscale(), errors, prefix + "codiceFiscale"))
+		{
 			AnagraficaEvento old = anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagraficaEvento.getAnagrafica().getCodiceFiscale(), providerId);
 			if(old != null && old.getId() != anagraficaEvento.getId()) {
 				errors.rejectValue(prefix + "codiceFiscale", "error.cf_duplicated");
@@ -116,8 +123,12 @@ public class AnagraficaValidator {
 			errors.rejectValue(prefix + "cognome", "error.empty");
 		if(anagraficaEvento.getAnagrafica().getNome() == null || anagraficaEvento.getAnagrafica().getNome().isEmpty())
 			errors.rejectValue(prefix + "nome", "error.empty");
+		/*  @since ERM014009
 		if(anagraficaEvento.getAnagrafica().getCodiceFiscale() == null || anagraficaEvento.getAnagrafica().getCodiceFiscale().isEmpty())
 			errors.rejectValue(prefix + "codiceFiscale", "error.empty");
+		*/
+		Utils.rejectIfCodFiscIncorrect(anagraficaEvento.getAnagrafica().getCodiceFiscale(), errors, prefix + "codiceFiscale");
+		
 		if(anagraficaEvento.getAnagrafica().getEmail() == null || anagraficaEvento.getAnagrafica().getEmail().isEmpty())
 			errors.rejectValue(prefix + "email", "error.empty");
 		else if(!Pattern.matches(PATTERN_EMAIL, anagraficaEvento.getAnagrafica().getEmail()))
@@ -145,11 +156,15 @@ public class AnagraficaValidator {
 			else if(!fileValidator.validateFirmaCF(anagrafica.getCv(), providerId))
 				errMap.put("file_cv_button", "error.codiceFiscale.firmatario");
 		}
+		/* @since ERM014009
 		if(anagrafica.getCodiceFiscale() == null || anagrafica.getCodiceFiscale().isEmpty())
 			errMap.put(prefix + "codice_fiscale", "error.empty");
 		else if(!Pattern.matches(PATTERN_CODICE_FISCALE, anagrafica.getCodiceFiscale()) && !anagrafica.getStraniero())
 			errMap.put(prefix + "codice_fiscale", "error.invalid");
-		else if(anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagrafica.getCodiceFiscale(), providerId) != null)
+		else 
+		*/
+		if( (anagrafica.getStraniero() || ! Utils.rejectIfCodFiscIncorrect(anagrafica.getCodiceFiscale(), errMap, prefix + "codice_fiscale")) && // base test is ok so test rest
+				anagraficaEventoService.getAnagraficaEventoByCodiceFiscaleForProvider(anagrafica.getCodiceFiscale(), providerId) != null)
 			errMap.put(prefix + "codice_fiscale", "error.cf_duplicated");
 
 		return errMap;
@@ -162,12 +177,18 @@ public class AnagraficaValidator {
 			errMap.put(prefix + "nome", "error.empty");
 		if(anagrafica.getCognome() == null || anagrafica.getCognome().isEmpty())
 			errMap.put(prefix + "cognome", "error.empty");
+		
+		/* @since ERM014009
 		if(anagrafica.getCodiceFiscale() == null || anagrafica.getCodiceFiscale().isEmpty())
 			errMap.put(prefix + "codice_fiscale", "error.empty");
 		else if(!Pattern.matches(PATTERN_CODICE_FISCALE, anagrafica.getCodiceFiscale()))
 			errMap.put(prefix + "codice_fiscale", "error.invalid");
-		else if(anagraficaFullEventoService.getAnagraficaFullEventoByCodiceFiscaleForProvider(anagrafica.getCodiceFiscale(), providerId) != null)
-			errMap.put(prefix + "codice_fiscale", "error.cf_duplicated");
+		else 
+		*/
+		if(! Utils.rejectIfCodFiscIncorrect(anagrafica.getCodiceFiscale(), errMap, prefix + "codice_fiscale") && // base test is ok so test rest
+				anagraficaFullEventoService.getAnagraficaFullEventoByCodiceFiscaleForProvider(anagrafica.getCodiceFiscale(), providerId) != null)
+			errMap.put(prefix + "codice_fiscale", "error.cf_duplicated");		
+		
 		if(anagrafica.getEmail() == null || anagrafica.getEmail().isEmpty())
 			errMap.put(prefix + "email", "error.empty");
 		else if(!Pattern.matches(PATTERN_EMAIL, anagrafica.getEmail()))

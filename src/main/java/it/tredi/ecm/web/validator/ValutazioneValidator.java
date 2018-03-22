@@ -227,8 +227,13 @@ public class ValutazioneValidator {
 				errors.rejectValue(prefix + "delegato.cognome", "error.empty");
 			if(verbaleValutazioneSulCampo.getDelegato().getNome().isEmpty())
 				errors.rejectValue(prefix + "delegato.nome", "error.empty");
+			
+			/* @since ERM014009
 			if(verbaleValutazioneSulCampo.getDelegato().getCodiceFiscale().isEmpty())
 				errors.rejectValue(prefix + "delegato.codiceFiscale", "error.empty");
+				*/
+			Utils.rejectIfCodFiscIncorrect(verbaleValutazioneSulCampo.getDelegato().getCodiceFiscale(), errors, prefix + "delegato.codiceFiscale");
+			
 //			if(verbaleValutazioneSulCampo.getDelegato().getDelega() == null || verbaleValutazioneSulCampo.getDelegato().getDelega().isNew())
 //				errors.rejectValue(prefix + "delegato.delega", "error.empty");
 		}
