@@ -32,7 +32,7 @@
 						<tr th:each="evento, row : ${__${pianoFormativo}__.eventiPianoFormativo}"  th:class="${evento.isFSCaScavalco(__${pianoFormativo}__.annoPianoFormativo)} ? yellowBGround">
 							<td><a th:text="${evento.titolo}" th:href="@{|${prefixURL}provider/${__${pianoFormativo}__.provider.id}/pianoFormativo/${__${pianoFormativo}__.id}/evento/${evento.id}/show${urlParam}|}"></a></td>
 							<td th:text="${evento.getCodiceIdentificativo()}"></td>
-							<td th:text="${!evento.isFSCaScavalco(__${pianoFormativo}__.annoPianoFormativo) ? evento.proceduraFormativa.name() : evento.proceduraFormativa.name() + ' (PFA ' + __${evento.pianoFormativo}__ + ')'}"></td>
+							<td th:text="${evento.getInfoProcedureFormativa(__${pianoFormativo}__.annoPianoFormativo)}"></td>
 							<th:block th:unless="${editabile or enableField}">
 								<td th:if="${(showOnly or enableField) and !evento.new}">
 									<i class="fa table-icon fa-check green" th:title="#{label.inserito}"></i>
