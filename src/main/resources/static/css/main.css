@@ -1520,7 +1520,7 @@ table.dataTable tbody tr.selected {
     width: 100%;
 }
 
-.datatable-responsive-eventi-provider  th 
+.datatable-responsive-eventi-provider  th
 {
 	word-break: keep-all !important;
 }
@@ -1533,9 +1533,4 @@ table.dataTable tbody tr.selected {
 
 .warning::after {
   border-top: 7px solid #dddd52 !important;
-}
-
-.yellowRow
-{
-	background-color: yellow !important;
 }

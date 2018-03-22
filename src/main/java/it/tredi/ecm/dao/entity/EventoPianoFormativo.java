@@ -97,7 +97,7 @@ public class EventoPianoFormativo extends BaseEntity{
 	//flag per capire se è stato caricato da csv oppure no
 	@Column(columnDefinition="boolean default false")
 	private boolean fromCsv = false;
-	
+
 	public Set<Professione> getProfessioniSelezionate(){
 		Set<Professione> professioniSelezionate = new HashSet<Professione>();
 		if(discipline != null){
@@ -118,4 +118,10 @@ public class EventoPianoFormativo extends BaseEntity{
         EventoPianoFormativo entitapiatta = (EventoPianoFormativo) o;
         return Objects.equals(id, entitapiatta.id);
     }
+
+	public boolean isFSCaScavalco(int annoPianoFormativo) {
+		if(this.attuato && this.pianoFormativo.intValue() != annoPianoFormativo && this.proceduraFormativa == ProceduraFormativa.FSC)
+			return true;
+		return false;
+	}
 }
