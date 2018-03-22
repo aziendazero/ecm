@@ -338,10 +338,10 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		Sede sedeLegale = provider.getSedeLegale();
 		Persona legaleRappresentante = provider.getLegaleRappresentante();
 
-		Corrispondente assegnatario = new Corrispondente();
-		assegnatario.setNominativo(objectFactory.createCorrispondenteNominativo(engineeringProperties.getProtocolloWebrainbowUfficioCreatoreUscita()));
-		List<Corrispondente> assegnatari = new ArrayList<>();
-		assegnatari.add(assegnatario);
+//		Corrispondente assegnatario = new Corrispondente();
+//		assegnatario.setNominativo(objectFactory.createCorrispondenteNominativo(engineeringProperties.getProtocolloWebrainbowUfficioCreatoreUscita()));
+//		List<Corrispondente> assegnatari = new ArrayList<>();
+//		assegnatari.add(assegnatario);
 
 		Corrispondente destinatario = new Corrispondente();
 		destinatario.setNominativo(objectFactory.createCorrispondenteNominativo(provider.getDenominazioneLegale()));
@@ -363,7 +363,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			fakeProtocolloInUscita(protocollo);
 		} else {
 			Risultatoprotocollo responseWRB = portWRB.creaProtocolloInUscita(oggetto, engineeringProperties.getProtocolloWebrainbowUfficioCreatoreUscita(),
-					destinatari, assegnatari, null, null, null, true, documenti);
+					destinatari, null, null, null, null, true, documenti);
 			if(responseWRB.getCodice().getValue().equals("OK")) {
 				LocalDate date = LocalDate.parse(responseWRB.getDataRegistrazione().getValue(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
