@@ -1,25 +1,38 @@
 package it.tredi.ecm.web;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.channels.Channel;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.File;
@@ -27,6 +40,7 @@ import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.service.ExportPianoFormativoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PianoFormativoService;
 import it.tredi.ecm.service.ProviderService;
@@ -35,6 +49,8 @@ import it.tredi.ecm.web.bean.AccreditamentoWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.PianoFormativoWrapper;
+
+
 
 @Controller
 public class PianoFormativoController {
@@ -45,6 +61,8 @@ public class PianoFormativoController {
 	private final String LIST = "pianoFormativo/pianoFormativoList";
 
 	@Autowired private PianoFormativoService pianoFormativoService;
+	@Autowired private ExportPianoFormativoService exportPianoFormativoService;
+	
 	@Autowired private ProviderService providerService;
 	@Autowired private FileService fileService;
 
@@ -157,6 +175,50 @@ public class PianoFormativoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /home"));
 			return "redirect:/home";
+		}
+	}	
+	
+	
+	/*
+	 * EXPORT PIANO FORMATIVO - PDF CSV
+	 * */
+	@PreAuthorize("@securityAccessServiceImpl.canShowProvider(principal,#providerId)")
+	@RequestMapping("/provider/{providerId}/pianoFormativo/{pianoFormativoId}/{exportKind}")
+	public String exportPianoFormativo(
+			@PathVariable Long providerId, 
+			@PathVariable Long pianoFormativoId,
+			@PathVariable String exportKind,
+			HttpServletResponse response,
+			Model model, RedirectAttributes redirectAttrs){
+		LOGGER.info(Utils.getLogMessage(String.format("GET /provider/%d/pianoFormativo/%d/%s", providerId, pianoFormativoId, exportKind)));
+		try{
+			PianoFormativo pf = pianoFormativoService.getPianoFormativo(pianoFormativoId);
+						
+			if(exportKind.equals("pdf")) {
+				
+				String fname = String.format("Piano_formativo_provider_%s_del_%d.pdf", pf.getProvider().getCodiceCogeaps(), pf.getAnnoPianoFormativo() );
+				response.setHeader("Content-Type", "application/pdf");
+				response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + fname  + "\""));
+				exportPianoFormativoService.creaOutputSteramPdfExportPianoFormativo(pf).writeTo(response.getOutputStream());
+			}else {
+				
+				String fname = String.format("Piano_formativo_provider_%s_del_%d.csv", pf.getProvider().getCodiceCogeaps(), pf.getAnnoPianoFormativo() );
+				response.setHeader("Content-Type", "text/csv; charset=utf-8");
+				response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + fname  + "\""));
+				exportPianoFormativoService.creaOutputSteramCsvExportPianoFormativo(pf).writeTo(response.getOutputStream());
+			}
+			
+			
+			// send it
+			response.flushBuffer();
+			
+			// signal response is done
+			return null;
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage(String.format("GET /provider/%d/pianoFormativo/%d/%s", providerId, pianoFormativoId, exportKind)),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("redirect:/provider/{providerId}/pianoFormativo/list"));
+			return "redirect:/provider/{providerId}/pianoFormativo/list";
 		}
 	}
 

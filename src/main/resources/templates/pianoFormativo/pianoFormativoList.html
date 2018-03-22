@@ -39,14 +39,41 @@
 									<!-- start accordion -->
 									<div class="accordion" role="tablist" aria-multiselectable="true">
 										<div class="panel">
-											<a class="panel-heading" role="tab" th:id="${pianoFormativo.annoPianoFormativo}"
-												data-toggle="collapse" data-parent=".accordion"
-												th:href="${'#collapse'+pianoFormativo.annoPianoFormativo}" aria-expanded="true"
-												th:attr="aria-controls=${'collapse'+pianoFormativo.annoPianoFormativo}">
-												<span class="panel-title" th:text="${pianoFormativo.annoPianoFormativo}">2016</span>
-												<span th:text="#{label.proveniente_da_accreditamento}" th:if="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
-												<span th:text="#{label.piano_formativo_modificabile_fino_a(${#temporals.format(pianoFormativo.dataFineModifca,'dd/MM/yyyy')})}" th:unless="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
-											</a>
+											<div class="row piano-year-row">
+												<a class="col-xs-4 panel-heading-export piano-year-first-col" role="tab" th:id="${pianoFormativo.annoPianoFormativo}"
+													data-toggle="collapse" data-parent=".accordion"
+													th:href="${'#collapse'+pianoFormativo.annoPianoFormativo}" aria-expanded="true"
+													th:attr="aria-controls=${'collapse'+pianoFormativo.annoPianoFormativo}">
+													<span class="panel-title" th:text="${pianoFormativo.annoPianoFormativo}">2016</span>
+													<span th:text="#{label.proveniente_da_accreditamento}" th:if="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
+													<span th:text="#{label.piano_formativo_modificabile_fino_a(${#temporals.format(pianoFormativo.dataFineModifca,'dd/MM/yyyy')})}" th:unless="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
+												</a>
+												<a class="col-xs-1 btn btn-table btn-primary btn-space" th:href="@{|${pianoFormativo.id}/pdf|}" >pdf</a>
+												<a th:if="${#authentication.principal.isSegreteria()}" class="col-xs-1 btn btn-primary btn-table" th:href="@{|${pianoFormativo.id}/csv|}" >csv</a>
+												
+												<!-- table class="table-bordered dt-responsive nowrap">
+													<tr>
+														<td>
+															<a class="panel-heading" role="tab" th:id="${pianoFormativo.annoPianoFormativo}"
+																data-toggle="collapse" data-parent=".accordion"
+																th:href="${'#collapse'+pianoFormativo.annoPianoFormativo}" aria-expanded="true"
+																th:attr="aria-controls=${'collapse'+pianoFormativo.annoPianoFormativo}">
+																<span class="panel-title" th:text="${pianoFormativo.annoPianoFormativo}">2016</span>
+																<span th:text="#{label.proveniente_da_accreditamento}" th:if="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
+																<span th:text="#{label.piano_formativo_modificabile_fino_a(${#temporals.format(pianoFormativo.dataFineModifca,'dd/MM/yyyy')})}" th:unless="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
+															</a>
+														</td>
+														<td>
+															<a class="btn btn-primary btn-table double" th:href="@{|${pianoFormativo.id}/pdf|}" >pdf</a>
+														</td>
+														<td th:if="${#authentication.principal.isSegreteria()}" >
+															<a class="btn btn-primary btn-table double" th:href="@{|${pianoFormativo.id}/csv|}" >csv</a>
+														</td>
+													</tr>
+												</table-->
+												
+												
+											</div>
 											<div th:id="${'collapse'+pianoFormativo.annoPianoFormativo}" class="panel-collapse collapse"
 												role="tabpanel" th:attr="aria-labelledby=${'heading'+pianoFormativo.annoPianoFormativo}">
 												<div class="panel-body">

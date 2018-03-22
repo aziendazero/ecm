@@ -803,6 +803,22 @@ h2 {
   width: 100%;
   display: block;
 }
+
+.panel-heading-export {
+  background: #F2F5F7;
+  margin-top: 8px;
+}
+.btn-space{
+  margin-right: 5px !important;		
+}
+.piano-year-row{
+	width: 100%;
+	display: flex;
+}
+.piano-year-first-col{
+	flex: 1;
+}
+
 .x_panel {
   position: relative;
   width: 100%;

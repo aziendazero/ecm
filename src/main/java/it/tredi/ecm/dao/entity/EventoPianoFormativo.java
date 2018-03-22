@@ -124,4 +124,9 @@ public class EventoPianoFormativo extends BaseEntity{
 			return true;
 		return false;
 	}
+	
+	
+	public String getInfoProcedureFormativa(int annoPianoFormativo) {
+		return !this.isFSCaScavalco(annoPianoFormativo) ? this.getProceduraFormativa().name() : this.getProceduraFormativa().name() + " (PFA " + this.getPianoFormativo() + ")";
+	}
 }

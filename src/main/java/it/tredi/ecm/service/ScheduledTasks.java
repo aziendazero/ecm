@@ -37,6 +37,7 @@ public class ScheduledTasks {
 
 	@Scheduled(fixedDelay=6000000)
 	public void taskExecutor() throws Exception{
+		/*
 		pagamentoTask.controllaEsitoPagamenti();
 		invioCogeapsTask.checkStatoElaborazioneCogeaps();
 		protocolloTask.controllaStatoProtocollazione();
@@ -44,5 +45,6 @@ public class ScheduledTasks {
 		updateDateProviderTask.updateDateScadenza();
 		if(ecmProperties.isTaskSendAlertEmail())
 			alertScadenzeTask.inviaAlert();
+		*/
 	}
 }
