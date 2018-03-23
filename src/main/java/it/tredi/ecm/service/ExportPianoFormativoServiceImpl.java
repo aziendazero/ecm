@@ -128,7 +128,7 @@ public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoServ
             document.addAuthor("Ecm");
             document.addCreationDate();
             document.addCreator("Ecm");
-            document.addTitle(String.format("Piano formativo: %s del %d", pf.getProvider().getDenominazioneLegale(), pf.getAnnoPianoFormativo()));
+            document.addTitle(String.format("Piano formativo %d : %s", pf.getAnnoPianoFormativo(), pf.getProvider().getDenominazioneLegale()));
         	writePdfExportPianoFormativo(document, pf);
         } catch (Exception e) {
         	LOGGER.error(String.format("Impossibile creare il PDF del piano formativo: %s del %d", pf.getProvider().getDenominazioneLegale(), pf.getAnnoPianoFormativo()), e);
@@ -149,7 +149,7 @@ public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoServ
 		Paragraph parTitolo = new Paragraph();
         parTitolo.setAlignment(Element.ALIGN_LEFT);
         parTitolo.setFont(fontTitolo);
-        parTitolo.add(String.format("Piano formativo: %s del %d", pf.getProvider().getDenominazioneLegale(), pf.getAnnoPianoFormativo()));
+        parTitolo.add(String.format("Piano formativo %d : %s", pf.getAnnoPianoFormativo(), pf.getProvider().getDenominazioneLegale()));
         document.add(parTitolo);
 
         document.add(Chunk.NEWLINE);
