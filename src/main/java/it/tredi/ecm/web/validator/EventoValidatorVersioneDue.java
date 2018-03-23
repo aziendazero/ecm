@@ -1308,8 +1308,11 @@ public class EventoValidatorVersioneDue {
 			return true;
 		if(persona.getAnagrafica().getNome() == null || persona.getAnagrafica().getNome().isEmpty())
 			return true;
-		if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
+		// @since ERM014009
+		//if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
+		if(Utils.rejectIfCodFiscIncorrect(persona.getAnagrafica().getCodiceFiscale()))
 			return true;
+		
 		if(persona.getAnagrafica().getCv() == null || persona.getAnagrafica().getCv().isNew())
 			return true;
 
@@ -1337,7 +1340,9 @@ public class EventoValidatorVersioneDue {
 			return true;
 		if(persona.getAnagrafica().getNome() == null || persona.getAnagrafica().getNome().isEmpty())
 			return true;
-		if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
+		// @since ERM014009
+		//if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
+		if(Utils.rejectIfCodFiscIncorrect(persona.getAnagrafica().getCodiceFiscale()))
 			return true;
 		if(persona.getAnagrafica().getEmail() == null || persona.getAnagrafica().getEmail().isEmpty())
 			return true;

@@ -47,8 +47,15 @@ public class ProviderRegistrationWrapperValidator{
 			errors.rejectValue("legale.anagrafica.cognome", "error.empty");
 		if(legale.getAnagrafica().getNome().isEmpty())
 			errors.rejectValue("legale.anagrafica.nome", "error.empty");
+		
+		
+		/*@since ERM014009
 		if(legale.getAnagrafica().getCodiceFiscale().isEmpty())
 			errors.rejectValue("legale.anagrafica.codiceFiscale", "error.empty");
+			*/
+		Utils.rejectIfCodFiscIncorrect(legale.getAnagrafica().getCodiceFiscale(), errors, "legale.anagrafica.codiceFiscale");
+		
+		
 		if(legale.getAnagrafica().getPec().isEmpty())
 			errors.rejectValue("legale.anagrafica.pec", "error.empty");
 		if(legale.getAnagrafica().getEmail().isEmpty())

@@ -15,8 +15,12 @@ import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.Source;
 
@@ -360,6 +364,73 @@ public class Utils {
 			throw new Exception("Impossibile generare Oggetto del file da protocollare");
 		else
 			return oggetto;
+	}
+	
+	// this should use Errors binding data for check instead of external value cf
+	public static boolean rejectIfCodFiscIncorrect(String cf, Errors errors, String field) {
+		if (cf == null || cf.isEmpty()) {
+			errors.rejectValue(field, "error.empty");
+			return true;
+		}else {
+	        // Controllo classico
+	        Pattern pater = Pattern.compile("(^[a-zA-Z]{6}\\d\\d[a-zA-Z]\\d\\d[a-zA-Z]\\d\\d\\d[a-zA-Z]$)");
+	        Matcher m = pater.matcher(cf);
+	        
+	        if (!m.find()){
+	            // Se il codice fiscale non è valido, controllo se è un caso di omocodia
+	            Pattern omocodiaP = Pattern.compile("(^[A-Z]{6}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){3}[A-Z]{1}$)");
+	            Matcher omocodiaM = omocodiaP.matcher(cf);
+	            if (!omocodiaM.find()) {
+	            	errors.rejectValue(field, "error.invalid");
+	            	return true;
+	            }
+	        }
+	    } 	
+		
+		return false;
+	}
+	
+	public static boolean rejectIfCodFiscIncorrect(String cf) {
+		if (cf == null || cf.isEmpty()) {
+			return true;
+		}else {
+	        // Controllo classico
+	        Pattern pater = Pattern.compile("(^[a-zA-Z]{6}\\d\\d[a-zA-Z]\\d\\d[a-zA-Z]\\d\\d\\d[a-zA-Z]$)");
+	        Matcher m = pater.matcher(cf);
+	        
+	        if (!m.find()){
+	            // Se il codice fiscale non è valido, controllo se è un caso di omocodia
+	            Pattern omocodiaP = Pattern.compile("(^[A-Z]{6}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){3}[A-Z]{1}$)");
+	            Matcher omocodiaM = omocodiaP.matcher(cf);
+	            if (!omocodiaM.find()) {
+	            	return true;
+	            }
+	        }
+	    } 		
+		return false;
+	}
+	
+	public static boolean rejectIfCodFiscIncorrect(String cf, Map<String, String> errMap, String field) {
+		if (cf == null || cf.isEmpty()) {
+			errMap.put(field, "error.empty");
+			return true;
+		}else {
+	        // Controllo classico
+	        Pattern pater = Pattern.compile("(^[a-zA-Z]{6}\\d\\d[a-zA-Z]\\d\\d[a-zA-Z]\\d\\d\\d[a-zA-Z]$)");
+	        Matcher m = pater.matcher(cf);
+	        
+	        if (!m.find()){
+	            // Se il codice fiscale non è valido, controllo se è un caso di omocodia
+	            Pattern omocodiaP = Pattern.compile("(^[A-Z]{6}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){3}[A-Z]{1}$)");
+	            Matcher omocodiaM = omocodiaP.matcher(cf);
+	            if (!omocodiaM.find()) {
+	            	errMap.put(field, "error.invalid");
+	            	return true;
+	            }
+	        }
+	    } 		
+		
+		return false;
 	}
 
 }
