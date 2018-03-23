@@ -36,7 +36,7 @@ public enum TipologiaEventoFSCEnum implements INomeEnum {
 			RuoloFSCEnum.COORDINATORE_GRUPPI_C,
 			RuoloFSCEnum.RESPONSABILE_PROGETTO)), //sstagni - tolto in quando non gestito dal cogeaps
 
-	ATTIVITA_DI_RICERCA(8,"Attivita di ricerca",Arrays.asList(
+	ATTIVITA_DI_RICERCA(8,"Attività di ricerca",Arrays.asList(
 			RuoloFSCEnum.PARTECIPANTE_A,
 			RuoloFSCEnum.PARTECIPANTE_B,
 			RuoloFSCEnum.PARTECIPANTE_C,
