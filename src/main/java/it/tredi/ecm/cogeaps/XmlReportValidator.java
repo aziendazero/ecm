@@ -33,11 +33,11 @@ public class XmlReportValidator {
 	    Validator validator = schema.newValidator();
 	    Source source = new StreamSource(new StringReader(new String(reportEventoXml, Helper.XML_REPORT_ENCODING)));
 		validator.validate(source);
-		
+
 		//ora siamo sicuri di avere un XML
 		Document xmlDoc = DocumentHelper.parseText(new String(reportEventoXml, Helper.XML_REPORT_ENCODING));
 		Element eventoEl = xmlDoc.getRootElement().element("evento");
-		
+
 		validateProfessioniAndDiscipline(eventoEl, Helper.createCodProfessioneSetFromEvento(evento), Helper.createCodDisciplinaSetFromEvento(evento));
 	}
 
@@ -78,23 +78,26 @@ public class XmlReportValidator {
 		}
 		validateProfessioniAndDiscipline(eventoEl, codProfessioneSetFromEvento, codDisciplinaSetFromEvento);
 	}
-	
-	private static void validateProfessioniAndDiscipline(Element eventoEl, Set<String> prof, Set<String> disc) throws Exception {
+
+	public static void validateProfessioniAndDiscipline(Element eventoEl, Set<String> prof, Set<String> disc) throws Exception {
 		List<Element> partecipanti = eventoEl.elements();
 		if(partecipanti != null) {
 			if(partecipanti.size() > 0) {
 				if(prof != null && disc != null) {
 					if(prof.size() > 0 && disc.size() > 0) {
 						for(Element partecipante : partecipanti) {
-							List<Element> professioni = partecipante.elements();
-							for(Element professione : professioni) {
-								if(!prof.contains(professione.attributeValue("cod_prof"))) {
-									throw new Exception("Le professioni dell'evento non corrispondono a quelle memorizzate nel database!");
-								}
-								List<Element> discpline = professione.elements();
-								for(Element disciplina : discpline) {
-									if(!disc.contains(disciplina.getTextTrim())) {
-										throw new Exception("Le discipline dell'evento non corrispondono a quelle memorizzate nel database!");
+							//CONTROLLO SU PROFESSIONI E DISCIPLINE SOLO SU PARTECIPANTI (ruolo=P)
+							if(partecipante.attributeValue("ruolo", "").equalsIgnoreCase("P")) {
+								List<Element> professioni = partecipante.elements();
+								for(Element professione : professioni) {
+									if(!prof.contains(professione.attributeValue("cod_prof"))) {
+										throw new Exception("Le professioni dell'evento non corrispondono a quelle memorizzate nel database!");
+									}
+									List<Element> discpline = professione.elements();
+									for(Element disciplina : discpline) {
+										if(!disc.contains(disciplina.getTextTrim())) {
+											throw new Exception("Le discipline dell'evento non corrispondono a quelle memorizzate nel database!");
+										}
 									}
 								}
 							}
@@ -111,13 +114,13 @@ public class XmlReportValidator {
 			else {
 				throw new Exception("Non si trova nessun partecipante nel XML");
 			}
-			
+
 		}
 		else {
 			throw new Exception("Errore durante la lettura dei dati dall'xml");
 		}
-		
-		
+
+
 	}
 
 	public static byte []extractXml(String fileName, byte []data) throws Exception {

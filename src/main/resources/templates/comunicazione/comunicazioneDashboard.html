@@ -76,7 +76,18 @@
 									<div class="col-xs-10">
 					                	<div class="count" th:text="${numeroComunicazioniNonRisposte}"></div>
 					                	<h3 class="tile-h3" th:text="${numeroComunicazioniNonRisposte == 1} ? #{label.comunicazione} : #{label.comunicazioni}"></h3>
-					                	<p class="count-text" th:text="${numeroComunicazioniNonRisposte == 1} ? #{label.non_risposta} : #{label.non_risposte}"></p>
+					                	<p class="count-text" th:text="${numeroComunicazioniNonRisposte == 1} ? #{label.non_letta} : #{label.non_lette}"></p>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+								<div class="tile-stats clickable" onclick="goTo('comunicazione/aperte/list')">
+									<div class="icon"><i class="fa fa-unlock"></i></div>
+									<div class="col-xs-10">
+					                	<div class="count" th:text="${numeroComunicazioniAperte}"></div>
+					                	<h3 class="tile-h3" th:text="${numeroComunicazioniAperte == 1} ? #{label.comunicazione} : #{label.comunicazioni}"></h3>
+					                	<p class="count-text" th:text="${numeroComunicazioniAperte == 1} ? #{label.aperta} : #{label.aperte}"></p>
 									</div>
 								</div>
 							</div>

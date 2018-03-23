@@ -87,6 +87,7 @@ public class ComunicazioneController {
 			model.addAttribute("numeroComunicazioniBloccate", comunicazioneService.countAllComunicazioniChiuseByAccountId(currentAccountId));
 			model.addAttribute("numeroComunicazioniAll", comunicazioneService.countAllComunicazioniStoricoByAccountId(currentAccountId));
 			model.addAttribute("numeroComunicazioniNonRisposte", comunicazioneService.countAllComunicazioniNonRisposteByAccountId(currentAccountId));
+			model.addAttribute("numeroComunicazioniAperte", comunicazioneService.countAllComunicazioniAperteByAccountId(currentAccountId));
 			model.addAttribute("ultimiMessaggiNonLetti", comunicazioneService.getUltimi10MessaggiNonLetti(currentAccountId));
 			model.addAttribute("numeroMessaggiNonLetti", comunicazioneService.countAllMessaggiNonLetti(currentAccountId));
 			model.addAttribute("idUltimoMessaggioNonLetto", comunicazioneService.getIdUltimaComunicazioneRicevuta(currentAccountId));
@@ -274,6 +275,10 @@ public class ComunicazioneController {
 				case "nonRisposte":
 					listaComunicazioni = comunicazioneService.getAllComunicazioniNonRisposteByAccount(Utils.getAuthenticatedUser().getAccount());
 					tipologiaLista = "label.non_ancora_lette";
+					break;
+				case "aperte":
+					listaComunicazioni = comunicazioneService.getAllComunicazioniAperteByAccount(Utils.getAuthenticatedUser().getAccount());
+					tipologiaLista = "label.aperte";
 					break;
 				case "cerca":
 					listaComunicazioni = (Set<Comunicazione>) model.asMap().get("listaComunicazioni");

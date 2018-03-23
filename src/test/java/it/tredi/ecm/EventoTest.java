@@ -1,20 +1,32 @@
 package it.tredi.ecm;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import it.tredi.ecm.cogeaps.Helper;
+import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.AnagraficaEvento;
 import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.Evento;
@@ -33,9 +45,8 @@ import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-//@ActiveProfiles("dev")
-@ActiveProfiles("abarducci")
-//@WithUserDetails("provider")
+@ActiveProfiles("dev")
+@WithUserDetails("test1")
 @Rollback(false)
 @Ignore
 public class EventoTest {
@@ -104,7 +115,7 @@ public class EventoTest {
 	}
 
 	@Test
-	//@Ignore
+	@Ignore
 	public void cercaEvento() throws Exception {
 		RicercaEventoWrapper wrapper = new RicercaEventoWrapper();
 		//wrapper.setCampoIdEvento("3699");
@@ -113,6 +124,27 @@ public class EventoTest {
 		List<Evento> eventi = eventoService.cerca(wrapper);
 
 		System.out.println("eventi.size(): " + eventi.size());
+	}
+
+	@Test
+	@Ignore
+	public void testValidazioneRendiconto() throws Exception {
+		Set<String> codProfessioneSetFromEvento = new HashSet<>();
+		codProfessioneSetFromEvento.add("14");
+
+		Set<String> codDisciplinaSetFromEvento = new HashSet<>();
+		codDisciplinaSetFromEvento.add("85");
+
+		String rootDir = "C:\\Users\\dpranteda\\Documents\\Progetti\\ECM\\tickets\\14391\\";
+		String fileName = "204841 - P.xml";
+
+		Path path = Paths.get(rootDir + fileName);
+		byte[] data = Files.readAllBytes(path);
+		byte[] reportEventoXml = XmlReportValidator.extractXml(fileName, data);
+
+		Document xmlDoc = DocumentHelper.parseText(new String(reportEventoXml, Helper.XML_REPORT_ENCODING));
+		Element eventoEl = xmlDoc.getRootElement().element("evento");
+		XmlReportValidator.validateProfessioniAndDiscipline(eventoEl, codProfessioneSetFromEvento, codDisciplinaSetFromEvento);
 	}
 
 }
