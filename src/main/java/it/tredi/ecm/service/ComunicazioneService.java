@@ -22,6 +22,7 @@ public interface ComunicazioneService {
 	int countAllComunicazioniInviateByAccountId(Long id);
 	int countAllComunicazioniChiuseByAccountId(Long id);
 	int countAllComunicazioniNonRisposteByAccountId(Long id);
+	int countAllComunicazioniAperteByAccountId(Long id);
 	long getIdUltimaComunicazioneRicevuta(Long id);
 	List<Comunicazione> getUltimi10MessaggiNonLetti(Long id);
 	long countAllMessaggiNonLetti(Long id);
@@ -37,6 +38,7 @@ public interface ComunicazioneService {
 	Set<Comunicazione> getAllComunicazioniChiuseByAccount(Account user);
 	Set<Comunicazione> getAllComunicazioniNonRisposteByAccount(Account account);
 	Set<Comunicazione> getAllComunicazioniNonLetteByAccount(Account user);
+	Set<Comunicazione> getAllComunicazioniAperteByAccount(Account user);
 	void chiudiComunicazioneById(Long id);
 	int countAllComunicazioniStoricoByAccountId(Long currentAccountId);
 	Set<Comunicazione> getAllComunicazioniByAccount(Account user);
