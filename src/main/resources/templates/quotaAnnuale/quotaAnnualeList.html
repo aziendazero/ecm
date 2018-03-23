@@ -24,7 +24,7 @@
 											<form id="form" method="post" th:action="@{/quotaAnnuale/scaduteENonPagate/confermaSposta}" >
 												<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('scadenzaPagamentoProviderWrapper.dataScadenzaPagamento')} ? 'bad'">
 														<input id="qa_Id" name="qa_Id" type="hidden" class="form-control" readonly="readonly"/>
-														<label class="control-label" for="date">Data</label> 
+														<label class="control-label" for="date">Data</label>
 														<div>
 															<input id="date" class="form-control" type="text" th:field="${scadenzaPagamentoProviderWrapper.dataScadenzaPagamento}" readonly="readonly"/>
 														</div>
@@ -96,8 +96,8 @@
 		</div>
 		<script th:inline="javascript">
 		/*<![CDATA[*/
-			
-				//Handle selecting events using iCheck. 
+
+				//Handle selecting events using iCheck.
 				//Target -- location of checkbox columns
 				//table -- table id or class
 				//selectAll -- Select All object
@@ -114,9 +114,9 @@
 		                		jqueryObject.find('input[type="checkbox"]').iCheck('check');
 		                		if(!jqueryObject.parent().hasClass('selected'))
 			                		jqueryObject.parent().addClass('selected');
-			            } 
+			            }
 			         });
-		         
+
 			         selectAll.on('ifUnchecked', function(event){
 				            var element;
 				            var table = tableInst.DataTable();
@@ -127,9 +127,9 @@
 				                	jqueryObject.find('input').iCheck('uncheck');
 				                	if(jqueryObject.parent().hasClass('selected'))
 				                		jqueryObject.parent().removeClass('selected');
-				            } 
+				            }
 				        });
-		         
+
 			         //Handle single iCheck change event
 			         $('.' + inputClass).on('ifUnchecked', function(event){
 			        	 		//Remove select all check if not all events are selected
@@ -138,7 +138,7 @@
 			        	 			$(this).parent().parent().parent().removeClass("selected");
 			        	  		selectAll.iCheck('update');
 			          });
-			          
+
 			         $('.' + inputClass).on('ifChecked', function(event){
 			        	 var table = tableInst.DataTable();
 		        	 	 var col = table.column( target ).nodes(); // get all events in the table
@@ -152,18 +152,18 @@
 			        	 	selectAll.iCheck('update');
 		         	 });
 				}
-	
+
 				$(document).ready(function() {
-					
+
 					if([[${scadenzaPagamentoProviderWrapper.ids}]] != "")
 						$("#myModal").find('input[id="qa_Id"]').val([[${scadenzaPagamentoProviderWrapper.ids}]]);
-				
+
 					if([[${scadenzaPagamentoProviderWrapper.submitScadenzePagamentoProviderError}]])
 						$('#myModal').modal('show');
-					
+
 					var days = getDayNamesShort();
 					var months = getMonthNames();
-					
+
 					$('#date').daterangepicker({
 						singleDatePicker : true,
 						autoApply : true,
@@ -173,9 +173,9 @@
 							daysOfWeek : days,
 							monthNames : months,
 						}
-					
+
 					});
-					
+
 					 tableA = $('#tableA').DataTable({
 						"bFilter" : true,
 						"bInfo" : false,
@@ -190,7 +190,7 @@
 		                  "aoColumnDefs": [
 		                       { 'bSortable': false, 'aTargets': [ 0 ] },
 		                       { 'sClass': "checkboxA", 'aTargets': [ 0 ] },
-		                    ]				
+		                    ]
 					});
 					tableB = $('#tableB').DataTable({
 						"bFilter" : true,
@@ -200,7 +200,7 @@
 							$('.checkboxB').iCheck({
 								checkboxClass: 'icheckbox_flat-green',
 							});
-							
+
 							initiCheckEvents(0, $("#tableB"), $("#select-allB"), 'checkboxB');
 					    },
 					    "aoColumnDefs": [
@@ -209,9 +209,9 @@
 		                    ],
 					});
 				});
-				
+
 				initSelectableDataTable();
-				
+
 				//Selectable rows
 				function initSelectableDataTable() {
 					$('#tableA tbody').on('click', 'tr', function () {
@@ -224,7 +224,7 @@
 				            $(this).iCheck("check");
 				        }
 					});
-					
+
 					$('#tableB tbody').on('click', 'tr', function () {
 				        if ($(this).hasClass('selected')) {
 				            $(this).removeClass('selected');
@@ -235,27 +235,27 @@
 				            $(this).iCheck("check");
 				        }
 					});
-				        
+
 				}
-				
-				
-					 
+
+
+
 				function openModal() {
 					var array = tableToArray();
-					
+
 					if(array.length > 0){
 						writeInput(array);
 						$('#myModal').modal('show');
 					}else{
 						$("#myModal").find('input[id="qa_Id"]').val(array);
-						alert('No Quota Annuale Selected!')
+						alert([[#{label.nessun_provider_selezionato}]])
 					}
-					
+
 				}
-				
+
 				function writeInput(array) {
 					$("#myModal").find('input[id="qa_Id"]').val(array);
-					
+
 				}
 				/*[+
 				function tableToArray() {
@@ -265,18 +265,18 @@
 						var id = Number.parseInt((($rowsA[i][0]).match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [] ).map(function (v) {return +v;}).shift());
 						ids.push(id);
 					}
-					
+
 					var $rowsB = tableB.rows('.selected').data();
 					for(var i = 0; i < $rowsB.length; i++) {
 						var id = Number.parseInt((($rowsB[i][0]).match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [] ).map(function (v) {return +v;}).shift());
 						ids.push(id);
 					}
-					
+
 					return ids;
 				}
-				
+
 			+]*/
-			
+
 	    /*]]>*/
 		</script>
 	</div>

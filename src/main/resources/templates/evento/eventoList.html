@@ -244,7 +244,7 @@ function loadScript(url, callback){
 										<div class="modal-dialog">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h4 class="modal-title" th:text="#{label.archive_selected_events}">Archive Selected Event/Events</h4>
+													<h4 class="modal-title" th:text="#{label.archivia_eventi_selezionati}">Archive Selected Event/Events</h4>
 												</div>
 												<div class="modal-body">
 													<form id="form" method="post" th:action="@{|/evento/${search}/archivia|}" >
@@ -693,7 +693,7 @@ function loadScript(url, callback){
 						$('#myModal').modal('show');
 					}else{
 						$("#myModal").find('input[id="event_Id"]').val(array);
-						alert('No Event Selected!')
+						alert([[#{label.nessun_evento_selezionato}]])
 					}
 
 				}
