@@ -388,6 +388,10 @@
 		        $.fn.dataTable.moment('DD/MM/YYYY');
 		        $.fn.dataTable.moment('hh:mm');
 		        $.fn.dataTable.moment('DD/MM/YYYY - HH:mm');
+
+		        $("form").submit(function( event ) {
+					$('form > input[type=submit]').prop("disabled", true);
+			    });
 			});
 
 			//rimuove class bad (errore validazione) dagli input (le select sono gestite su gentella.validator.validator.js unmark)
@@ -485,7 +489,7 @@
 			    	$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo (importati da csv)?</h2>");
 				else
 					$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
-				
+
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
 			}
 
@@ -495,10 +499,10 @@
 			    var prefix = [[@{/accreditamento/}]];
 			    var url = prefix + accreditamentoId + "/provider/" + providerId + "/pianoFormativo/" + pianoFormativoId + "/evento/deleteAll" + "?onlycsv=" + onlycsv;
 			    if(onlycsv)
-			    	$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo (importati da csv)?</h2>");	
+			    	$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo (importati da csv)?</h2>");
 			    else
 			    	$('#deleteMsg').html("<h2>Si desidera eliminare definitivamente tutti gli eventi dal Piano Formativo?</h2>");
-			    
+
 				$('#deleteButton').html("<a class='btn btn-danger' href='" + url + "'>Elimina</a>");
 			}
 
