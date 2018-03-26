@@ -2,17 +2,13 @@ package it.tredi.ecm.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +55,6 @@ import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AnagraficaFullEvento;
 import it.tredi.ecm.dao.entity.AnagraficaFullEventoBase;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
-import it.tredi.ecm.dao.entity.EventoListDataModel;
-import it.tredi.ecm.dao.entity.EventoListDataTableModel;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
@@ -68,6 +62,8 @@ import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
+import it.tredi.ecm.dao.entity.EventoListDataModel;
+import it.tredi.ecm.dao.entity.EventoListDataTableModel;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
@@ -78,12 +74,10 @@ import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
-import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoSearchEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
-import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaFADEnum;
@@ -2083,14 +2077,16 @@ public class EventoController {
 			if(target.equalsIgnoreCase("attivitaRES")){
 				Long programmaIndexLong = Long.valueOf(programmaIndex);
 				DettaglioAttivitaRES attivita = eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().get(elementoIndex);
+				//DettaglioAttivitaRES attivita = SerializationUtils.clone(eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().get(programmaIndexLong).getProgramma().getProgramma().get(elementoIndex));
 				eventoWrapper.setTempAttivitaRES(attivita);
 				return EDITRES + " :: #addAttivitaRES";
 			}else if(target.equalsIgnoreCase("attivitaFSC")){
-				AzioneRuoliEventoFSC azione = eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().get(elementoIndex);
+				AzioneRuoliEventoFSC azione = SerializationUtils.clone(eventoWrapper.getProgrammaEventoFSC().get(programmaIndex).getAzioniRuoli().get(elementoIndex));
 				eventoWrapper.setTempAttivitaFSC(azione);
 				return EDITFSC + " :: #addAttivitaFSC";
 			}else if(target.equalsIgnoreCase("attivitaFAD")){
 				DettaglioAttivitaFAD attivitaFAD = eventoWrapper.getProgrammaEventoFAD().get(elementoIndex);
+				//DettaglioAttivitaFAD attivitaFAD = SerializationUtils.clone(eventoWrapper.getProgrammaEventoFAD().get(elementoIndex));
 				eventoWrapper.setTempAttivitaFAD(attivitaFAD);
 				return EDITFAD + " :: #addAttivitaFAD";
 			}
