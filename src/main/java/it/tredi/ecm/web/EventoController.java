@@ -78,6 +78,7 @@ import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.EventoSearchEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MetodologiaDidatticaFADEnum;
@@ -1426,6 +1427,7 @@ public class EventoController {
 	public String addPersonaTo(@RequestParam("addPersonaTo") String target,
 								@RequestParam("fromLookUp") String fromLookUp,
 								@RequestParam(name = "modificaElemento",required=false) String modificaElemento,
+								@RequestParam("versioneEventoNum") Integer versioneEventoNum,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			//se non siamo in modifica fromLookUp = true significa che la AnagraficaEvento è stata selezionata da lookup, quindi è già esistente
@@ -1464,8 +1466,18 @@ public class EventoController {
 							errMap = anagraficaValidator.validateAnagraficaBaseEvento(anagraficaBase, providerId, "anagraficaBase_");
 					} else {
 						if(target.equalsIgnoreCase("docenti")){
-							errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getDocenti(), false, "anagraficaBase_");
-						}						
+							errMap = personaEventoValidator.validateAnagraficaBaseEventoWithRuoloAndTitolare(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getDocenti(), false, "anagraficaBase_");
+						} else if(target.equalsIgnoreCase("esperti")){
+							errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getEsperti(), false, "anagraficaBase_");
+						} else if(target.equalsIgnoreCase("coordinatori")){
+							errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getCoordinatori(), false, "anagraficaBase_");
+						} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
+							EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
+							if(curVersione == EventoVersioneEnum.DUE_DAL_2018) 
+								errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
+							else
+								errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");							
+						}
 					}
 					if(!errMap.isEmpty()) {
 						errWrapper.setMappaErrori(errMap);
@@ -1541,8 +1553,18 @@ public class EventoController {
 				ErrorsAjaxWrapper errWrapper = new ErrorsAjaxWrapper();
 				Map<String, String> errMap = new HashMap<String, String>();
 				if(target.equalsIgnoreCase("docenti")){
-					errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getDocenti(), true, "anagraficaBase_");
-				}						
+					errMap = personaEventoValidator.validateAnagraficaBaseEventoWithRuoloAndTitolare(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getDocenti(), true, "anagraficaBase_");
+				} else if(target.equalsIgnoreCase("coordinatori")){
+					errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getCoordinatori(), true, "anagraficaBase_");
+				} else if(target.equalsIgnoreCase("esperti")){
+					errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getEsperti(), true, "anagraficaBase_");
+				} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
+					EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
+					if(curVersione == EventoVersioneEnum.DUE_DAL_2018) 
+						errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");
+					else
+						errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");
+				}
 				if(!errMap.isEmpty()) {
 					errWrapper.setMappaErrori(errMap);
 					model.addAttribute("errorsAjaxWrapper", errWrapper);

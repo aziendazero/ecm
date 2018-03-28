@@ -246,6 +246,7 @@
 							<input id="typePersona" type="text" name="typePersona" style="display: none;" />
 							<input id="fromLookUp" type="text" name="fromLookUp" style="display: none;" />
 							<input id="modificaElementoPersona" type="text" name="modificaElemento" style="display: none;" />
+							<input id="versioneEventoNum" type="text" name="versioneEventoNum" style="display: none;" />
 
 						</form>
 					</div>
@@ -1122,6 +1123,7 @@
 							$('#anagraficaFull_codice_fiscale').prop("disabled", false);
 						}
 					}else{
+						$('#versioneEventoNum').val(versione);
 						$('#targetTable').val(target);
 						$('#typePersona').val(type);
 						$('#fromLookUp').val(fromLookup);
