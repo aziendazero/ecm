@@ -47,7 +47,10 @@ public class PdfExportPianoFormativoTest {
 	//@Ignore
 	@Transactional
 	public void creazionePdf() throws Exception {
-		Long pfId = 23886L;
+		//Long pfId = 23886L;
+		Long pfId = 23889L;
+		//Long pfId = 32923L;
+		
 		
 		PianoFormativo pf = pfService.getPianoFormativo(pfId);
 		
@@ -61,7 +64,9 @@ public class PdfExportPianoFormativoTest {
 	//@Ignore
 	@Transactional
 	public void creazioneCsv() throws Exception {
-		Long pfId = 23886L;
+		//Long pfId = 23886L;
+		Long pfId = 23889L;
+		//Long pfId = 32923L;
 		
 		PianoFormativo pf = pfService.getPianoFormativo(pfId);
 		

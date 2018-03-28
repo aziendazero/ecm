@@ -8,7 +8,13 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +36,11 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
+import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PianoFormativo;
+import it.tredi.ecm.dao.entity.Professione;
 
 @Service
 public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoService {
@@ -99,14 +108,34 @@ public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoServ
 		try (PrintWriter p = new PrintWriter(new OutputStreamWriter(byteArrayOutputStreamCsv, StandardCharsets.UTF_8))) {
 		    // write BOM
 			p.print('\ufeff');
-			p.println("Titolo;Codice;Tipo");
+			p.format("%s;%s;%s;%s;%s;%s;%s\r\n",					
+					messageSource.getMessage("label.titolo", null, Locale.getDefault()),
+					messageSource.getMessage("label.codice_identificativo.pdf", null, Locale.getDefault()),
+					messageSource.getMessage("label.procedure_formative_tipologia.pdf", null, Locale.getDefault()),			
+					messageSource.getMessage("label.obiettivo_strategico_nazionale.pdf", null, Locale.getDefault()),
+					messageSource.getMessage("label.obiettivo_strategico_regionale.pdf", null, Locale.getDefault()),
+					messageSource.getMessage("label.professioni_cui_evento_si_riferisce.pdf", null, Locale.getDefault()),
+					messageSource.getMessage("label.professioni_discipline.pdf", null, Locale.getDefault())		
+			);
 			int anno = pf.getAnnoPianoFormativo();
 			for(EventoPianoFormativo evt : pf.getEventiPianoFormativo()) {
 				
-				p.format("\"%s\";\"%s\";\"%s\"\r\n",
+				Obiettivo o = evt.getObiettivoNazionale();
+				Obiettivo or = evt.getObiettivoRegionale();
+				
+				p.format("\"%s\";\"%s\";\"%s\";\"%s\";\"%s\";\"%s\";\"%s\"\r\n",
 						evt.getTitolo(),
 						evt.getCodiceIdentificativo(),
-						evt.getInfoProcedureFormativa(anno)
+						evt.getInfoProcedureFormativa(anno),
+						
+						o != null ? o.getNome() : "",
+						or != null ? o.getNome() : "",
+						evt.getProfessioniEvento().equals("Settoriale") ? 
+								messageSource.getMessage("label.settoriale", null, Locale.getDefault()):
+								messageSource.getMessage("label.generale", null, Locale.getDefault()),
+						evt.getProfessioniEvento().equals("Settoriale") ?
+								formatProfessioniDisciplineStr(evt):
+								messageSource.getMessage("label.tutte_le_professioni", null, Locale.getDefault())
 				);
 			}
 			
@@ -171,14 +200,20 @@ public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoServ
 	
 
 	private PdfPTable getTableFieldsPiani() throws DocumentException {
-		PdfPTable tableFields = new PdfPTable(3);
+		PdfPTable tableFields = new PdfPTable(7);
 		tableFields.setWidthPercentage(100);
-		tableFields.setWidths(new float[]{1,0.2f,0.2f});
+		tableFields.setWidths(new float[]{1,0.4f,0.3f,1,0.5f,0.41f,1});
 		tableFields.setSpacingBefore(spacingBefore);
 		tableFields.setSpacingAfter(spacingAfter);
 		addCellIntestaSubTableByString(messageSource.getMessage("label.titolo", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
-		addCellIntestaSubTableByString(messageSource.getMessage("label.codice_identificativo", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
-		addCellIntestaSubTableByString(messageSource.getMessage("label.procedure_formative_tipologia", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.codice_identificativo.pdf", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.procedure_formative_tipologia.pdf", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		
+		addCellIntestaSubTableByString(messageSource.getMessage("label.obiettivo_strategico_nazionale.pdf", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.obiettivo_strategico_regionale.pdf", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.professioni_cui_evento_si_riferisce.pdf", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		addCellIntestaSubTableByString(messageSource.getMessage("label.professioni_discipline.pdf", null, Locale.getDefault()), tableFields, BaseColor.GRAY, true, null);
+		
 		return tableFields;
 	}
 
@@ -195,6 +230,30 @@ public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoServ
 		cell.setPadding(cellPaddingSubTable);
 		table.addCell(cell);
 	}
+	
+	private Map<Professione, List<String>> formatProfessioniDiscipline(EventoPianoFormativo evt) {
+		Map<Professione, List<String>> professioniSelezionate = new HashMap<Professione, List<String>>();
+		
+		for(Disciplina d : evt.getDiscipline()) {
+				if(!professioniSelezionate.containsKey(d.getProfessione())) {
+					professioniSelezionate.put(d.getProfessione(), new ArrayList<String>());
+				}
+				professioniSelezionate.get(d.getProfessione()).add(d.getNome());
+		}
+		return professioniSelezionate;
+	}
+	
+	private String formatProfessioniDisciplineStr(EventoPianoFormativo evt) {
+		StringBuilder sb = new StringBuilder();
+		String sep = "";
+		for(Map.Entry<Professione, List<String>> professione : formatProfessioniDiscipline(evt).entrySet()) {
+			sb.append(sep);
+			sb.append(professione.getKey().getNome()).append(" (");
+			sb.append(String.join(", ", professione.getValue())).append(")");
+			sep = ", ";
+		}
+		return sb.toString();
+	}
 
 	private void addTablePartecipanti(PianoFormativo pf, PdfPTable table) {
 		int anno = pf.getAnnoPianoFormativo();
@@ -202,6 +261,23 @@ public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoServ
 			addCellSubTable(evt.getTitolo(), table);
 			addCellSubTable(evt.getCodiceIdentificativo(), table);
 			addCellSubTable(evt.getInfoProcedureFormativa(anno), table);
+			
+			Obiettivo o = evt.getObiettivoNazionale();
+			addCellSubTable(o != null ? o.getNome() : "", table);
+			o = evt.getObiettivoRegionale();
+			addCellSubTable(o != null ? o.getNome() : "", table);
+			
+			
+			//format discipline
+			if(evt.getProfessioniEvento().equals("Settoriale")) {
+				addCellSubTable(messageSource.getMessage("label.settoriale", null, Locale.getDefault()), table);
+				addCellSubTable(formatProfessioniDiscipline(evt), table);
+			} else {
+				// tutte				
+				addCellSubTable(messageSource.getMessage("label.generale", null, Locale.getDefault()), table);
+				addCellSubTable(messageSource.getMessage("label.tutte_le_professioni", null, Locale.getDefault()), table);
+			}
+			
 		}
 	}
 
@@ -209,12 +285,11 @@ public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoServ
 		addCellSubTable(valoreCampo, table, null, true, null, false);
 	}
 
-	/*
-	private void addCellSubTableProfessioni(Set<String> professioni, PdfPTable table) {
+	
+	private void addCellSubTable(Map<Professione, List<String>> professioni, PdfPTable table) {
 		addCellSubTable(professioni, table, null, true, null, false);
 	}
-	*/
-
+	
 	private void addCellSubTable(String valoreCampo, PdfPTable table, BaseColor baseColor, boolean border, Integer elementAlign, boolean bold) {
 		PdfPCell cell = new PdfPCell(new Phrase(valoreCampo, bold ? fontValoreCampoSubTableBold : fontValoreCampoSubTable));
 		if(!border)
@@ -229,12 +304,13 @@ public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoServ
 		table.addCell(cell);
 	}
 
-	/*
-	private void addCellSubTable(Set<String> professioni, PdfPTable table, BaseColor baseColor, boolean border, Integer elementAlign, boolean bold) {
+	
+	private void addCellSubTable(Map<Professione, List<String>> professioni, PdfPTable table, BaseColor baseColor, boolean border, Integer elementAlign, boolean bold) {
 		Phrase phrase = new Phrase();
-		for(String professione : professioni) {
-			Chunk chunkProfessione = new Chunk(professione, bold ? fontValoreCampoSubTableBold : fontValoreCampoSubTable);
-			phrase.add(chunkProfessione);
+		for(Map.Entry<Professione, List<String>> professione : professioni.entrySet()) {
+			phrase.add(new Chunk(professione.getKey().getNome(), fontValoreCampoSubTableBold));
+			phrase.add(Chunk.NEWLINE);
+			phrase.add(new Chunk(String.join(", ", professione.getValue()), fontValoreCampoSubTable));
 			phrase.add(Chunk.NEWLINE);
 		}
 		PdfPCell cell = new PdfPCell();
@@ -250,8 +326,7 @@ public class ExportPianoFormativoServiceImpl implements ExportPianoFormativoServ
 		cell.setPadding(cellPaddingSubTable);
 		table.addCell(cell);
 	}
-	*/
-
+	
 	public static Image getLogoAttestato(){
 		//Creazione immagine
         Image img = null;
