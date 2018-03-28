@@ -50,5 +50,7 @@ public class Protocollo extends BaseEntityDefaultId {
 	public void setOggetto(String oggetto) {
 		if(oggetto.length() > 199)
 			this.oggetto = oggetto.substring(0, 199);
+		else
+			this.oggetto = oggetto;
 	}
 }
