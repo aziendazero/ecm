@@ -48,8 +48,8 @@
 													<span th:text="#{label.proveniente_da_accreditamento}" th:if="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
 													<span th:text="#{label.piano_formativo_modificabile_fino_a(${#temporals.format(pianoFormativo.dataFineModifca,'dd/MM/yyyy')})}" th:unless="${#lists.contains(pianiIdFromAccreditamento, pianoFormativo.id)}"></span>
 												</a>
-												<a class="col-xs-1 btn btn-table btn-primary btn-space" th:href="@{|${pianoFormativo.id}/pdf|}" >pdf</a>
-												<a th:if="${#authentication.principal.isSegreteria()}" class="col-xs-1 btn btn-primary btn-table" th:href="@{|${pianoFormativo.id}/csv|}" >csv</a>
+												<a class="col-xs-1 btn btn-table btn-primary btn-space" th:href="@{|${pianoFormativo.id}/pdf|}" ><span th:text="#{label.esporta_pdf}"></span></a>
+												<a th:if="${#authentication.principal.isSegreteria()}" class="col-xs-1 btn btn-primary btn-table" th:href="@{|${pianoFormativo.id}/csv|}" ><span th:text="#{label.esporta_csv}"></span></a>
 												
 												<!-- table class="table-bordered dt-responsive nowrap">
 													<tr>
