@@ -3,7 +3,6 @@ package it.tredi.ecm.web.validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
@@ -36,9 +35,12 @@ public class ImpostazioniProviderValidator {
 				&& impostazioni.getDataScadenzaInsertPianoFormativo() == null)
 			errors.rejectValue(prefix + "dataScadenzaInsertPianoFormativo", "error.empty");
 		if(impostazioni.getCanInsertDomandaStandard() != null
-				&& impostazioni.getCanInsertDomandaStandard() == true
-				&& impostazioni.getDataScadenzaInsertDomandaStandard() == null)
-			errors.rejectValue(prefix + "dataScadenzaInsertDomandaStandard", "error.empty");
+				&& impostazioni.getCanInsertDomandaStandard() == true) {
+			if(impostazioni.getDataScadenzaInsertDomandaStandard() == null)
+				errors.rejectValue(prefix + "dataScadenzaInsertDomandaStandard", "error.empty");
+			if(impostazioni.getDataProrogaAccreditamentoCorrente() == null)
+				errors.rejectValue(prefix + "dataProrogaAccreditamentoCorrente", "error.empty");
+		}
 		if(impostazioni.getCanInsertDomandaProvvisoria() != null
 				&& impostazioni.getCanInsertDomandaProvvisoria() == true
 				&& impostazioni.getDataRinnovoInsertDomandaProvvisoria() == null)

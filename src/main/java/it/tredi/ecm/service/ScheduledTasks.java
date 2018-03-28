@@ -35,16 +35,16 @@ public class ScheduledTasks {
 	@Autowired private EcmProperties ecmProperties;
 	@Autowired private UpdateDateProviderTask updateDateProviderTask;
 
-	@Scheduled(fixedDelay=6000000)
+	@Scheduled(fixedDelay=60000)
 	public void taskExecutor() throws Exception{
-		/*
-		pagamentoTask.controllaEsitoPagamenti();
-		invioCogeapsTask.checkStatoElaborazioneCogeaps();
-		protocolloTask.controllaStatoProtocollazione();
-		sedutaTask.bloccaSedute();
-		updateDateProviderTask.updateDateScadenza();
-		if(ecmProperties.isTaskSendAlertEmail())
-			alertScadenzeTask.inviaAlert();
-		*/
+		if(!ecmProperties.isDebugSaltaScheduledTasks()) {
+			pagamentoTask.controllaEsitoPagamenti();
+			invioCogeapsTask.checkStatoElaborazioneCogeaps();
+			protocolloTask.controllaStatoProtocollazione();
+			sedutaTask.bloccaSedute();
+			updateDateProviderTask.updateDateScadenza();
+			if(ecmProperties.isTaskSendAlertEmail())
+				alertScadenzeTask.inviaAlert();
+		}
 	}
 }
