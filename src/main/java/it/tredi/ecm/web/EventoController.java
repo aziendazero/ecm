@@ -122,6 +122,7 @@ import it.tredi.ecm.web.confirm.FSCDocentiNonUtilizzatiConfirm;
 import it.tredi.ecm.web.confirm.FSCTutorPartecipantiConfirm;
 import it.tredi.ecm.web.validator.AnagraficaValidator;
 import it.tredi.ecm.web.validator.EventoValidator;
+import it.tredi.ecm.web.validator.PersonaEventoValidator;
 import it.tredi.ecm.web.validator.RuoloOreFSCValidator;
 import it.tredi.ecm.web.validator.ScadenzeEventoValidator;
 
@@ -155,6 +156,7 @@ public class EventoController {
 	@Autowired private AlertEmailService alertEmailService;
 
 	@Autowired private ScadenzeEventoValidator scadenzeEventoValidator;
+	@Autowired private PersonaEventoValidator personaEventoValidator;
 
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;
 	@Autowired private EventoServiceController eventoServiceController;
@@ -1426,6 +1428,9 @@ public class EventoController {
 								@RequestParam(name = "modificaElemento",required=false) String modificaElemento,
 								@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
+			//se non siamo in modifica fromLookUp = true significa che la AnagraficaEvento è stata selezionata da lookup, quindi è già esistente
+			//in questo caso che devo controllare che quanto si sta salvando non esista già nella lista ed emettere errore senza salvare
+			//anche in modifica devo controllare che quanto si sta salvando non esista già nella lista, esludendo se stesso ed emettere errore senza salvare
 			if(modificaElemento == null || modificaElemento.isEmpty()){
 				//INSERIMENTO NUOVA PERSONA
 				AnagraficaEventoBase anagraficaBase = eventoWrapper.getTempPersonaEvento().getAnagrafica();
@@ -1456,7 +1461,11 @@ public class EventoController {
 						if(target.equalsIgnoreCase("esperti") || target.equalsIgnoreCase("coordinatori") || target.equalsIgnoreCase("investigatori"))
 							errMap = anagraficaValidator.validateAnagraficaBaseEvento(anagraficaBase, providerId, "anagraficaBase_", false);
 						else
-						errMap = anagraficaValidator.validateAnagraficaBaseEvento(anagraficaBase, providerId, "anagraficaBase_");
+							errMap = anagraficaValidator.validateAnagraficaBaseEvento(anagraficaBase, providerId, "anagraficaBase_");
+					} else {
+						if(target.equalsIgnoreCase("docenti")){
+							errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getDocenti(), false, "anagraficaBase_");
+						}						
 					}
 					if(!errMap.isEmpty()) {
 						errWrapper.setMappaErrori(errMap);
@@ -1527,7 +1536,19 @@ public class EventoController {
 				//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
 				int index = Integer.parseInt(modificaElemento);
 				//se la modifica avviene su una PersonEvento inserita durante la modifica all'evento salviamo l'entity su db
-				//in quanto non risultera' presente nell'evento a meno che lo stesso nono venga salvato
+				//in quanto non risultera' presente nell'evento a meno che lo stesso non venga salvato
+				
+				ErrorsAjaxWrapper errWrapper = new ErrorsAjaxWrapper();
+				Map<String, String> errMap = new HashMap<String, String>();
+				if(target.equalsIgnoreCase("docenti")){
+					errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getDocenti(), true, "anagraficaBase_");
+				}						
+				if(!errMap.isEmpty()) {
+					errWrapper.setMappaErrori(errMap);
+					model.addAttribute("errorsAjaxWrapper", errWrapper);
+					return ERROR + " :: fragmentError";
+				}
+
 
 				if(eventoWrapper.getCv() != null && !eventoWrapper.getCv().isNew()) {
 					File cv = fileService.getFile(eventoWrapper.getCv().getId());
@@ -1547,30 +1568,24 @@ public class EventoController {
 						eventoWrapper.getTempPersonaEvento().getAnagrafica().setCv(cv);
 					}
 				}
+				
+				//l'oggetto in modifica è un clone di quello presente nella lista, questo perchè le modifiche effettuate all'oggetto se non valide non devono essere applicate
+				//se siamo qui l'oggetto è valido occore riportare i dati nell'oggetto in modifica
+				if(target.equalsIgnoreCase("responsabiliScientifici")){
+					eventoWrapper.getResponsabiliScientifici().set(index, eventoWrapper.getTempPersonaEvento());
+				}else if(target.equalsIgnoreCase("docenti")){
+					eventoWrapper.getDocenti().set(index, eventoWrapper.getTempPersonaEvento());
+				}else if(target.equalsIgnoreCase("esperti")){
+					eventoWrapper.getEsperti().set(index, eventoWrapper.getTempPersonaEvento());
+				}else if(target.equalsIgnoreCase("coordinatori")){
+					eventoWrapper.getCoordinatori().set(index, eventoWrapper.getTempPersonaEvento());
+				}else if(target.equalsIgnoreCase("investigatori")){
+					eventoWrapper.getInvestigatori().set(index, eventoWrapper.getTempPersonaEvento());
+				}
 
 				if(eventoWrapper.getPersoneEventoInserite().contains(eventoWrapper.getTempPersonaEvento())) {
 					//modifica di una personaEvento inserita
-				if(target.equalsIgnoreCase("responsabiliScientifici")){
 					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
-						//eventoWrapper.getResponsabiliScientifici().set(index, eventoWrapper.getTempPersonaEvento());
-				}else if(target.equalsIgnoreCase("docenti")){
-					personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
-						//eventoWrapper.getDocenti().set(index, eventoWrapper.getTempPersonaEvento());
-					}else if(target.equalsIgnoreCase("esperti")){
-						personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
-						//eventoWrapper.getEsperti().set(index, eventoWrapper.getTempPersonaEvento());
-					}else if(target.equalsIgnoreCase("coordinatori")){
-						personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
-						//eventoWrapper.getCoordinatori().set(index, eventoWrapper.getTempPersonaEvento());
-					}else if(target.equalsIgnoreCase("investigatori")){
-						personaEventoRepository.save(eventoWrapper.getTempPersonaEvento());
-						//non occorre neppure risettare l'oggetto nella relativa lista in quanto si sta modificando proprio quello
-						//eventoWrapper.getInvestigatori().set(index, eventoWrapper.getTempPersonaEvento());
-					}
 				}
 			}
 			eventoWrapper.setTempPersonaEvento(new PersonaEvento());
@@ -2043,31 +2058,37 @@ public class EventoController {
 												@ModelAttribute("eventoWrapper") EventoWrapper eventoWrapper, Model model, RedirectAttributes redirectAttrs){
 		try{
 			if(target.equalsIgnoreCase("responsabiliScientifici")){
-				PersonaEvento p = eventoWrapper.getResponsabiliScientifici().get(modificaElemento.intValue());
+				//PersonaEvento p = eventoWrapper.getResponsabiliScientifici().get(modificaElemento.intValue());
+				PersonaEvento p = SerializationUtils.clone(eventoWrapper.getResponsabiliScientifici().get(modificaElemento.intValue()));
 				eventoWrapper.setTempPersonaEvento(p);
 				eventoWrapper.setCv(p.getAnagrafica().getCv());
 				return EDIT + " :: #addPersonaTo";
 			}else if(target.equalsIgnoreCase("docenti")){
-				PersonaEvento p = eventoWrapper.getDocenti().get(modificaElemento.intValue());
+				//PersonaEvento p = eventoWrapper.getDocenti().get(modificaElemento.intValue());
+				PersonaEvento p = SerializationUtils.clone(eventoWrapper.getDocenti().get(modificaElemento.intValue()));
 				eventoWrapper.setTempPersonaEvento(p);
 				eventoWrapper.setCv(p.getAnagrafica().getCv());
 				return EDIT + " :: #addPersonaTo";
 			}else if(target.equalsIgnoreCase("responsabileSegreteria")){
-				PersonaFullEvento p = eventoWrapper.getEvento().getResponsabileSegreteria();
+				//PersonaFullEvento p = eventoWrapper.getEvento().getResponsabileSegreteria();
+				PersonaFullEvento p = SerializationUtils.clone(eventoWrapper.getEvento().getResponsabileSegreteria());
 				eventoWrapper.setTempPersonaFullEvento(p);
 				return EDIT + " :: #addPersonaFullTo";
 			}else if(target.equalsIgnoreCase("esperti")){
-				PersonaEvento p = eventoWrapper.getEsperti().get(modificaElemento.intValue());
+				//PersonaEvento p = eventoWrapper.getEsperti().get(modificaElemento.intValue());
+				PersonaEvento p = SerializationUtils.clone(eventoWrapper.getEsperti().get(modificaElemento.intValue()));
 				eventoWrapper.setTempPersonaEvento(p);
 				eventoWrapper.setCv(null);
 				return EDIT + " :: #addPersonaTo";
 			}else if(target.equalsIgnoreCase("coordinatori")){
-				PersonaEvento p = eventoWrapper.getCoordinatori().get(modificaElemento.intValue());
+				//PersonaEvento p = eventoWrapper.getCoordinatori().get(modificaElemento.intValue());
+				PersonaEvento p = SerializationUtils.clone(eventoWrapper.getCoordinatori().get(modificaElemento.intValue()));
 				eventoWrapper.setTempPersonaEvento(p);
 				eventoWrapper.setCv(null);
 				return EDIT + " :: #addPersonaTo";
 			}else if(target.equalsIgnoreCase("investigatori")){
-				PersonaEvento p = eventoWrapper.getInvestigatori().get(modificaElemento.intValue());
+				//PersonaEvento p = eventoWrapper.getInvestigatori().get(modificaElemento.intValue());
+				PersonaEvento p = SerializationUtils.clone(eventoWrapper.getInvestigatori().get(modificaElemento.intValue()));
 				eventoWrapper.setTempPersonaEvento(p);
 				eventoWrapper.setCv(null);
 				return EDIT + " :: #addPersonaTo";
