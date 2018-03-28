@@ -28,7 +28,6 @@ import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
-import it.tredi.ecm.dao.enumlist.VariazioneDatiStatoEnum;
 import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,5 +1,6 @@
 package it.tredi.ecm.audit.entity;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 import org.javers.core.metamodel.annotation.Entity;
@@ -7,7 +8,6 @@ import org.javers.core.metamodel.annotation.Id;
 import org.javers.core.metamodel.annotation.TypeName;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +23,8 @@ public class AccreditamentoAudit {
 	private AccreditamentoTipoEnum tipoDomanda;
 
 	private DatiAccreditamentoAudit datiAccreditamento;
+	
+	private LocalDate dataFineAccreditamento;	
 
 	private PianoFormativoAudit pianoFormativo;
 
@@ -43,6 +45,7 @@ public class AccreditamentoAudit {
 	public AccreditamentoAudit(Accreditamento accreditamento){
 		this.id = accreditamento.getId();
 		this.tipoDomanda = accreditamento.getTipoDomanda();
+		this.dataFineAccreditamento = accreditamento.getDataFineAccreditamento();
 		if(accreditamento.getDatiAccreditamento() != null)
 			this.datiAccreditamento = new DatiAccreditamentoAudit(accreditamento.getDatiAccreditamento());
 		if(accreditamento.getPianoFormativo() != null)

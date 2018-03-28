@@ -30,7 +30,6 @@ import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
-import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MotivazioneProrogaEnum;
@@ -38,13 +37,13 @@ import it.tredi.ecm.dao.enumlist.ProfileEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.repository.ProviderRepository;
+import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.service.bean.CurrentUser;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 import it.tredi.ecm.web.bean.RicercaProviderWrapper;
-import javassist.bytecode.analysis.Util;
 
 @Service
 public class ProviderServiceImpl implements ProviderService {
@@ -637,6 +636,34 @@ public class ProviderServiceImpl implements ProviderService {
 						provider.getId());
 			}
 			provider.setDataScadenzaInsertAccreditamentoStandard(wrapper.getDataScadenzaInsertDomandaStandard());
+
+			//recuperare l'accreditamento corrente
+			if(wrapper.getDataProrogaAccreditamentoCorrente() != null) {
+				try {
+					Accreditamento accreditamentoAttivo = accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
+					
+					if(accreditamentoAttivo.getDataFineAccreditamento() != null &&
+							!accreditamentoAttivo.getDataFineAccreditamento().isEqual(wrapper.getDataProrogaAccreditamentoCorrente())) {
+						accreditamentoAttivo.setDataFineAccreditamento(wrapper.getDataProrogaAccreditamentoCorrente());
+						accreditamentoService.save(accreditamentoAttivo);
+						
+						//TODO
+						//controllare se va salvato questo dato per la reportiatica eng, da noi non viene mai letto 					
+	//					reportRitardiService.createReport(
+	//							MotivazioneProrogaEnum.INSERIMENTO_DOMANDA_STANDARD,
+	//							null,
+	//							provider.getDataScadenzaInsertAccreditamentoStandard(),
+	//							wrapper.getDataScadenzaInsertDomandaStandard(),
+	//							LocalDate.now(),
+	//							(provider.getInviatoAccreditamentoStandard() == null || !provider.getInviatoAccreditamentoStandard().booleanValue()),
+	//							provider.getId());
+					}
+					
+				} catch (AccreditamentoNotFoundException e) {
+					LOGGER.warn("Il provider: " + provider.getId() + " non ha accreditamenti attivi", e);
+				}
+			}
+			
 		}
 		//qua il report non serve
 		if(provider.isCanInsertAccreditamentoProvvisorio())

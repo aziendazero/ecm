@@ -3,6 +3,7 @@ package it.tredi.ecm.service;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -1948,6 +1949,16 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
+				if(accreditamento.getDataInizioAccreditamento() != null) {
+					try {
+						//se è presente un precedente accreditamento ne setto la data fine al giorno prima della data inizio dell'accreditamento corrente 
+						Accreditamento prec = getAccreditamentoAttivoForProvider(accreditamento.getProvider().getId());
+						prec.setDataFineAccreditamento(accreditamento.getDataInizioAccreditamento().minus(Period.ofDays(1)));
+						saveAndAudit(prec);
+					} catch (AccreditamentoNotFoundException e) {
+						LOGGER.warn("ChangeState ad ACCREDITATO per Accreditamento.id: " + accreditamentoId + " - Il relativo provider: " + accreditamento.getProvider().getId() + " non ha accreditamenti attivi, non verrà modificata la data fine dell'accreditamento precedente", e);
+					}
+				}
 			} else if(stato == AccreditamentoStatoEnum.INS_ODG) {
 				//Cancelliamo le Valutazioni non completate dei referee e del team leader
 				Set<Valutazione> valutazioni = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);

@@ -34,6 +34,8 @@ public class EcmAppConfiguration {
 	private boolean debugTestMode = false;
 	@Value("${debugSaltaProtocollo}")
 	private boolean debugSaltaProtocollo = false;
+	@Value("${debugSaltaScheduledTasks}")
+	private boolean debugSaltaScheduledTasks = false;
 	@Value("${giorni.integrazione.min}")
 	private int giorniIntegrazioneMin = 5;
 	@Value("${giorni.integrazione.max}")
@@ -153,6 +155,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setEmailSegreteriaEcm(emailSegreteriaEcm);
 		ecmProperties.setDebugTestMode(debugTestMode);
 		ecmProperties.setDebugSaltaProtocollo(debugSaltaProtocollo);
+		ecmProperties.setDebugSaltaScheduledTasks(debugSaltaScheduledTasks);
 		ecmProperties.setGiorniIntegrazioneMin(giorniIntegrazioneMin);
 		ecmProperties.setGiorniIntegrazioneMax(giorniIntegrazioneMax);
 		ecmProperties.setNumeroReferee(numeroReferee);
