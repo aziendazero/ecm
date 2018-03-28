@@ -65,6 +65,7 @@ public class EventoValidatorVersioneUno {
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
 	@Autowired private EventoValidator eventoValidator;
+	@Autowired private PersonaEventoValidator personaEventoValidator;
 
 	//Rimosso perche' il validatore e' un singleton e queste variabili vengono condivise da piu' tread
 //	private Set<String> risultatiAttesiUtilizzati;
@@ -257,18 +258,23 @@ public class EventoValidatorVersioneUno {
 		else if(evento.getResponsabili().size() > ecmProperties.getNumeroMassimoResponsabiliEvento())
 			errors.rejectValue(prefix + "responsabili", "error.troppi_responsabili3");
 		else {
-			int counter = 0;
-			boolean atLeastOneErrorPersonaEvento = false;
-			for(PersonaEvento p : evento.getResponsabili()) {
-				boolean hasError = validatePersonaEvento(p, "responsabile");
-				if(hasError) {
-					errors.rejectValue("responsabiliScientifici["+counter+"]", "");
-					atLeastOneErrorPersonaEvento = true;
+			boolean atLeastOneErrorPersonaEventoDuplicata = !personaEventoValidator.validateAnagraficaBaseEvento(evento.getResponsabili(), errors, "responsabiliScientifici");
+			if(atLeastOneErrorPersonaEventoDuplicata) {
+				errors.rejectValue(prefix + "responsabili", "error.responsabili_scientifici_duplicati");
+			} else {
+				int counter = 0;
+				boolean atLeastOneErrorPersonaEvento = false;
+				for(PersonaEvento p : evento.getResponsabili()) {
+					boolean hasError = validatePersonaEvento(p, "responsabile");
+					if(hasError) {
+						errors.rejectValue("responsabiliScientifici["+counter+"]", "");
+						atLeastOneErrorPersonaEvento = true;
+					}
+					counter++;
 				}
-				counter++;
+				if(atLeastOneErrorPersonaEvento)
+					errors.rejectValue(prefix + "responsabili", "error.campi_mancanti_responsabili");
 			}
-			if(atLeastOneErrorPersonaEvento)
-				errors.rejectValue(prefix + "responsabili", "error.campi_mancanti_responsabili");
 		}
 
 		/* RESPONSABILE SEGRETERIA ORGANIZZATIVA (campo obbligatorio)
