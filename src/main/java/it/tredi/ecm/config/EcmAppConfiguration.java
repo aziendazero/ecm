@@ -34,6 +34,8 @@ public class EcmAppConfiguration {
 	private boolean debugTestMode = false;
 	@Value("${debugSaltaProtocollo}")
 	private boolean debugSaltaProtocollo = false;
+	@Value("${debugBrokeProtocollo}")
+	private boolean debugBrokeProtocollo = false;
 	@Value("${debugSaltaScheduledTasks}")
 	private boolean debugSaltaScheduledTasks = false;
 	@Value("${giorni.integrazione.min}")
@@ -57,8 +59,8 @@ public class EcmAppConfiguration {
 	private int giorniMaxEventoFscVersione2 = 365;
 	@Value("${giorni.max.evento.fsc.versione2.attivitaDiRicerca}")
 	private int giorniMaxEventoFscVersione2AttivitaDiRicerca = 730;
-	
-	
+
+
 	@Value("${giorni.max.evento.fad}")
 	private int giorniMaxEventoFAD = 365;
 	@Value("${numero.minimo.partecipanti.convegno.congresso.res}")
@@ -112,7 +114,7 @@ public class EcmAppConfiguration {
 	private String proxyUsername = "";
 	@Value("${http.proxy.password}")
 	private String proxyPassword = "";
-	
+
 	@Value("${conteggioGiorniAvanzatoAbilitato}")
 	private boolean conteggioGiorniAvanzatoAbilitato;
 	@Value("${conteggioGiorniAvanzatoBeforeDayMode}")
@@ -125,7 +127,7 @@ public class EcmAppConfiguration {
 
 	@Value("#{T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).getSetByNumeroVersioni('${evento.versioni.rieditabili}'.split(','))}")
 	private Set<EventoVersioneEnum> eventoVersioniRieditabili = new HashSet<EventoVersioneEnum>(Arrays.asList(EventoVersioneEnum.DUE_DAL_2018));
-	
+
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.fad.data.fine.max.triennio}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
 	private LocalDate eventoFadDataFineMaxTriennio = LocalDate.of(2019, 12, 31);
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.fsc.data.fine.max.triennio}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
@@ -143,7 +145,7 @@ public class EcmAppConfiguration {
 	private int giorniPossibilitaPosticipoDaInizioEventoProviderA = 4;
 	@Value("${giorni.possibilita.posticipo.da.inizio.evento.provider.B}")
 	private int giorniPossibilitaPosticipoDaInizioEventoProviderB = 10;
-	
+
 	@Bean
 	public EcmProperties ecmProperties(){
 		EcmProperties ecmProperties = new EcmProperties();
@@ -155,6 +157,7 @@ public class EcmAppConfiguration {
 		ecmProperties.setEmailSegreteriaEcm(emailSegreteriaEcm);
 		ecmProperties.setDebugTestMode(debugTestMode);
 		ecmProperties.setDebugSaltaProtocollo(debugSaltaProtocollo);
+		ecmProperties.setDebugBrokeProtocollo(debugBrokeProtocollo);
 		ecmProperties.setDebugSaltaScheduledTasks(debugSaltaScheduledTasks);
 		ecmProperties.setGiorniIntegrazioneMin(giorniIntegrazioneMin);
 		ecmProperties.setGiorniIntegrazioneMax(giorniIntegrazioneMax);
@@ -201,12 +204,12 @@ public class EcmAppConfiguration {
 		ecmProperties.setEventoVersioniRieditabili(eventoVersioniRieditabili);
 		ecmProperties.setEventoFadDataFineMaxTriennio(eventoFadDataFineMaxTriennio);
 		ecmProperties.setEventoFscDataFineMaxTriennio(eventoFscDataFineMaxTriennio);
-		
+
 		ecmProperties.setNumeroMassimoEspertiEvento(numeroMassimoEspertiEvento);
 		ecmProperties.setNumeroMassimoCoordinatoriEvento(numeroMassimoCoordinatoriEvento);
 
 		ecmProperties.setNumeroGiorniUltimaModificaEvento(numeroGiorniUltimaModificaEvento);
-		
+
 		ecmProperties.setGiorniPossibilitaPosticipoDaInizioEventoProviderA(giorniPossibilitaPosticipoDaInizioEventoProviderA);
 		ecmProperties.setGiorniPossibilitaPosticipoDaInizioEventoProviderB(giorniPossibilitaPosticipoDaInizioEventoProviderB);
 		return ecmProperties;

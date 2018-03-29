@@ -429,6 +429,34 @@ public class EngineeringController {
 		}
 	}
 
+	@PreAuthorize("@securityAccessServiceImpl.canShowProtocollo(principal)")
+	@RequestMapping("/protocollo/{protocolloId}/annullaProtocollo")
+	public String annullaProtocollo(@PathVariable Long protocolloId, Model model, RedirectAttributes redirectAttrs){
+		try{
+			//protocolloService.annullaProtocollo(protocolloId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.protocollo_annullato", "success"));
+			return "redirect:/protocollo/listProtocolliError";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore recupero lista protocolli errati"));
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowProtocollo(principal)")
+	@RequestMapping("/protocollo/{protocolloId}/rieseguiProtocollo")
+	public String rieseguiProtocollo(@PathVariable Long protocolloId, Model model, RedirectAttributes redirectAttrs){
+		try{
+			//protocolloService.rieseguiProtocollo(protocolloId);
+			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.protocollo_rieseguito", "success"));
+			return "redirect:/protocollo/listProtocolliError";
+		}catch (Exception ex){
+			LOGGER.error(Utils.getLogMessage("Errore recupero lista protocolli errati"));
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/home";
+		}
+	}
+
 
 	private EngineeringWrapper prepareEngineeringWrapper(Provider provider) {
 		EngineeringWrapper wrapper = new EngineeringWrapper();

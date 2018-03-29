@@ -9,7 +9,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -52,5 +54,22 @@ public class Protocollo extends BaseEntityDefaultId {
 			this.oggetto = oggetto.substring(0, 199);
 		else
 			this.oggetto = oggetto;
+	}
+
+	//Ripristiniamo solo se la domanda ha un flusso di Accreditamento in corso ed è in uno stato di "IN_PROTOCOLLAZIONE"
+	public boolean isRieseguibile() {
+		if(accreditamento != null) {
+			if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO &&
+					(	accreditamento.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE ||
+						accreditamento.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE ||
+						accreditamento.getStato() == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE ||
+						accreditamento.getStato() == AccreditamentoStatoEnum.DINIEGO_IN_PROTOCOLLAZIONE
+						)
+				) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
