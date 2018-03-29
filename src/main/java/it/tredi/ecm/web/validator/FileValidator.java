@@ -128,7 +128,7 @@ public class FileValidator {
 //				if(!(contentType.equalsIgnoreCase("application/pdf") || contentType.equalsIgnoreCase("application/pkcs7-mime") || contentType.equalsIgnoreCase("application/x-pkcs7-mime")))
 //					error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
 				//inserito il controllo sull'estensione del file
-				if (!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".P7M") || file.getNomeFile().toUpperCase().endsWith(".P7C")))
+				if (!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".PDF.P7M") || file.getNomeFile().toUpperCase().endsWith(".PDF.P7C")))
 					error = messageSource.getMessage("error.formatNonAccepted", new Object[]{}, Locale.getDefault());
 			}
 
@@ -164,7 +164,7 @@ public class FileValidator {
 		File file = (File) target;
 		if (file == null)
 			errors.rejectValue(prefix,"error.empty");
-		else if(!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".P7M") ||	file.getNomeFile().toUpperCase().endsWith(".P7C")))
+		else if(!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".PDF.P7M") ||	file.getNomeFile().toUpperCase().endsWith(".PDF.P7C")))
 			errors.rejectValue(prefix,"error.formatNonAccepted");
 		else{
 			file = fileService.getFile(file.getId());
