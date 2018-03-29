@@ -66,6 +66,8 @@ import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
 import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
+import it.tredi.ecm.dao.enumlist.WorkflowTipoEnum;
 import it.tredi.ecm.dao.repository.ProtoBatchLogRepository;
 import it.tredi.ecm.dao.repository.ProtocolloRepository;
 import it.tredi.ecm.service.bean.EcmProperties;
@@ -487,19 +489,30 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			LocalDateTime startDT = LocalDateTime.parse(start, formatter);
 			long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
 			for (Protocollo p : protocolliInUscita) {
-				p.setData(LocalDate.now());
-				p.setNumero((int)secsFrom++);
-				protocolloRepository.save(p);
+				if(ecmProperties.isDebugBrokeProtocollo()) {
+					ProtoBatchLog plog = new ProtoBatchLog();
+					plog.setCodStato("0");
+					plog.setDtIns(null);
+					plog.setDtUpd(null);
+					plog.setLog("Inserimento in Debug Broke protocollazione");
+					plog.setProtocollo(p);
+					plog.setStato("errore");
+					protoBatchLogRepository.save(plog);
+				}else {
+					p.setData(LocalDate.now());
+					p.setNumero((int)secsFrom++);
+					protocolloRepository.save(p);
 
-				ProtoBatchLog plog = new ProtoBatchLog();
-				plog.setCodStato("0");
-				plog.setDtIns(null);
-				plog.setDtUpd(null);
-				plog.setLog("Inserimento in Debug Salta protocollazione");
-				plog.setProtocollo(p);
-				plog.setStato("debug-salta-protocollazione");
+					ProtoBatchLog plog = new ProtoBatchLog();
+					plog.setCodStato("0");
+					plog.setDtIns(null);
+					plog.setDtUpd(null);
+					plog.setLog("Inserimento in Debug Salta protocollazione");
+					plog.setProtocollo(p);
+					plog.setStato("debug-salta-protocollazione");
 
-				protoBatchLogRepository.save(plog);
+					protoBatchLogRepository.save(plog);
+				}
 			}
 		} else {
 			for (Protocollo p : protocolliInUscita) {
@@ -719,5 +732,48 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari destinatari = new it.rve.protocollo.xsd.richiesta_protocollazione.Destinatari();
 		destinatari.getDestinatario().add(destinatario);
 		protocollaInUscita(protocollo, destinatari);
+	}
+
+	@Override
+	@Transactional
+	public void annullaProtocollo(Long oldProtocolloId) throws Exception{
+		LOGGER.info(Utils.getLogMessage("Annullamento protocollo " + oldProtocolloId + " - entering"));
+		Protocollo oldProtocollo = getProtollo(oldProtocolloId);
+		Accreditamento accreditamento = oldProtocollo.getAccreditamento();
+		File oldFile = oldProtocollo.getFile();
+
+		oldProtocollo.setNumero(-99);//non viene pescato da protoBatchLog
+		oldProtocollo.setStatoSpedizione("annullato");//non viene pescato da getStatoSpedizione
+		oldProtocollo.setFile(null);//sgancio evenetuale file vecchio
+		oldProtocollo.setAccreditamento(null);//sgancio accreditamento
+		protocolloRepository.save(oldProtocollo);
+
+		ProtoBatchLog pLog = new ProtoBatchLog();
+		pLog.setCodStato("-99");
+		pLog.setDtUpd(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(LocalDateTime.now().toString()));
+		pLog.setLog("Annullato Protocollo per file: " + oldFile.getId() + " su accreditamento: " + accreditamento.getId() + " da Utente: " + Utils.getAuthenticatedUser().getAccount().getId());
+		pLog.setStato("errore");
+		protoBatchLogRepository.save(pLog);
+		LOGGER.info(Utils.getLogMessage("Annullamento protocollo " + oldProtocolloId + " - exiting"));
+	}
+
+
+	@Override
+	@Transactional
+	public void rieseguiProtocollo(Long oldProtocolloId) throws Exception {
+		LOGGER.info(Utils.getLogMessage("ReloadProtocolloInErrore " + oldProtocolloId + " - entering"));
+		Protocollo oldProtocollo = getProtollo(oldProtocolloId);
+		Accreditamento accreditamento = oldProtocollo.getAccreditamento();
+		File oldFile = oldProtocollo.getFile();
+
+		//Ripristiniamo solo se la domanda ha un flusso di Accreditamento in corso ed è in uno stato di "IN_PROTOCOLLAZIONE"
+		if(oldProtocollo.isRieseguibile()) {
+			annullaProtocollo(oldProtocolloId);
+			accreditamentoService.changeState(accreditamento.getId(), accreditamento.getStato());
+		}else {
+			LOGGER.error("Impossibile annullare e ripetere la protocollazione " + oldProtocolloId + " in quanto la domanda non ha un flusso di accreditamento in corso!");
+		}
+
+		LOGGER.info(Utils.getLogMessage("ReloadProtocolloInErrore " + oldProtocolloId + " - exiting"));
 	}
 }

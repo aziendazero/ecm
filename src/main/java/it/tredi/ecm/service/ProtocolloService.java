@@ -21,4 +21,7 @@ public interface ProtocolloService {
 	public void protocollaBloccoProviderInUscita(Long providerId, File fileDaProtocollare, MotivazioneDecadenzaEnum motivazione) throws Exception;
 	public void protocollaAllegatoFlussoDomandaInUscita(Long accreditamentoId, Long fileId, Set<Long> fileAllegatiIds)	throws Exception;
 	public void protocollaDomandaInArrivo(Long accreditamentoId, Long fileId, Set<Long> fileAllegatiIds) throws Exception;
+
+	public void annullaProtocollo(Long oldProtocolloId) throws Exception;
+	public void rieseguiProtocollo(Long oldProtocolloId)  throws Exception;
 }

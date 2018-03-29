@@ -18,6 +18,7 @@ public class EcmProperties {
 	private String emailSegreteriaEcm;
 	private boolean debugTestMode;
 	private boolean debugSaltaProtocollo;
+	private boolean debugBrokeProtocollo;
 	private boolean debugSaltaScheduledTasks;
 	private int giorniIntegrazioneMin;
 	private int giorniIntegrazioneMax;
@@ -30,7 +31,7 @@ public class EcmProperties {
 
 	private int giorniMaxEventoFscVersione2;
 	private int giorniMaxEventoFscVersione2AttivitaDiRicerca;
-	
+
 	private long giorniMaxEventoFAD;
 	private int numeroMinimoPartecipantiConvegnoCongressoRES;
 	private int numeroMassimoPartecipantiWorkshopSeminarioRES;
@@ -62,16 +63,16 @@ public class EcmProperties {
 	private EventoVersioneEnum eventoVersioneDefault;
 	private LocalDate eventoDataPassaggioVersioneDue;
 	private Set<EventoVersioneEnum> eventoVersioniRieditabili;
-	
+
 	private LocalDate eventoFadDataFineMaxTriennio;
 	private LocalDate eventoFscDataFineMaxTriennio;
-	
+
 	private int numeroMassimoEspertiEvento;
 	private int numeroMassimoCoordinatoriEvento;
-	
+
 	private int numeroGiorniUltimaModificaEvento;
-	
+
 	private int giorniPossibilitaPosticipoDaInizioEventoProviderA = 4;
 	private int giorniPossibilitaPosticipoDaInizioEventoProviderB = 10;
-	
+
 }
