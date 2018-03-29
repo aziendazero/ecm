@@ -57,7 +57,7 @@ public class Protocollo extends BaseEntityDefaultId {
 	}
 
 	public boolean isAnnullabile() {
-		if(statoSpedizione != null && !statoSpedizione.equalsIgnoreCase("annullato"))
+		if(statoSpedizione == null || !statoSpedizione.equalsIgnoreCase("annullato"))
 			return true;
 		return false;
 	}
@@ -65,7 +65,7 @@ public class Protocollo extends BaseEntityDefaultId {
 	//Ripristiniamo solo se la domanda ha un flusso di Accreditamento in corso ed è in uno stato di "IN_PROTOCOLLAZIONE"
 	public boolean isRieseguibile() {
 		if(accreditamento != null) {
-			if(accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO &&
+			if(accreditamento.getWorkflowInCorso() != null && accreditamento.getWorkflowInCorso().getTipo() == TipoWorkflowEnum.ACCREDITAMENTO &&
 					(	accreditamento.getStato() == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE ||
 						accreditamento.getStato() == AccreditamentoStatoEnum.RICHIESTA_PREAVVISO_RIGETTO_IN_PROTOCOLLAZIONE ||
 						accreditamento.getStato() == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE ||
