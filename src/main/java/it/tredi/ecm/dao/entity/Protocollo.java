@@ -57,7 +57,7 @@ public class Protocollo extends BaseEntityDefaultId {
 	}
 
 	public boolean isAnnullabile() {
-		if(!statoSpedizione.equalsIgnoreCase("annullato"))
+		if(statoSpedizione != null && !statoSpedizione.equalsIgnoreCase("annullato"))
 			return true;
 		return false;
 	}
