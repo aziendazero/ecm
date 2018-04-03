@@ -151,6 +151,12 @@
 
     <include file="20180322_002_applySQL_update_anagrafica_tipi_for_report.xml" relativeToChangelogFile="true"/>
 
+    <include file="20180329_accreditamento_add_column_massima_durata_procedimento.xml" relativeToChangelogFile="true"/>
+
+    <include file="20180329_imposto_massima_durata_procedimento.xml" relativeToChangelogFile="true"/>
+
+    <include file="20180403_imposto_data_scadenza.xml" relativeToChangelogFile="true"/>
+
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
       Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali"
       Obiettivo n. 35 "Argomenti di carattere generale: sanità digitale, informatica di livello avanzato e lingua inglese scientifica;  normativa in materia sanitaria: principi etici e civili del S.S.N.  con acquisizione di nozioni tecnico-professionali"

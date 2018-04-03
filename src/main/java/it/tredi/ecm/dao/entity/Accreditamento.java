@@ -23,12 +23,14 @@ import javax.persistence.OneToOne;
 
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.EsecutoreStatoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.StatoWorkflowEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.utils.Utils;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,19 +42,28 @@ public class Accreditamento extends BaseEntityDefaultId {
 	@Column(name = "tipo_domanda")
 	@Enumerated(EnumType.STRING)
 	private AccreditamentoTipoEnum tipoDomanda;
+	//20180403 il setter è stato fatto a mano per gestire la data scadenza correttamente
+	@Setter(AccessLevel.NONE)
 	@Enumerated(EnumType.STRING)
 	private AccreditamentoStatoEnum stato;
 	@Enumerated(EnumType.STRING)
 	private AccreditamentoStatoEnum statoVariazioneDati;
-	@Column(name = "data_invio")//invio alla segreteria (domanda non più in BOZZA)
+	@Column(name = "data_invio")//invio alla segreteria (domanda non più in BOZZA) viene settata in inviaDomandaAccreditamento
 	private LocalDate dataInvio;
 	@Column(name = "data_scadenza")//limite di 180 gg per completare il procedimento
-	private LocalDate dataScadenza;
-	@Column(name = "data_inizio_conteggio")//data fittizia utilizzata per calcolare la reale durata del procedimento
-	private LocalDate dataInizioConteggio;
+	//20180403 la data scdenza non è impostabile internamente sul cambio stato ed il suo valore calcolato ad hoc cedi getDataScadenza
+	@Setter(AccessLevel.NONE)
+	@Getter(AccessLevel.NONE)
+	private LocalDate dataScadenza;// la data scadenza entro cui il procedimento deve essere completato
+	
+	//20180403 data non più utilizzata ora viene registrata al suo posto la data scadenza
+//	@Column(name = "data_inizio_conteggio")//data fittizia utilizzata per calcolare la reale durata del procedimento
+//	private LocalDate dataInizioConteggio;
 	@Column(name = "durata_procedimento")//campo contenente la durata del procedimento espresso in giorni...nel caso in cui il timer viene messo in pausa dal flusso
 	private Integer durataProcedimento = null;
-
+	@Column(name = "massima_durata_procedimento")//campo contenente la massima durata del procedimento espresso in giorni (per il valore vedi AccreditamentoService.massimaDurataProcedimento) salvato nel caso venga modificato il valore da 180 giorni
+	private Integer massimaDurataProcedimento = null;
+	
 	@Column(name = "data_valutazione_crecm")//la data in cui il gruppo CRECM termina la valutazione e il flusso avanza
 	private LocalDate dataValutazioneCrecm;
 	@Column(name = "data_ins_odg")
@@ -338,8 +349,11 @@ public class Accreditamento extends BaseEntityDefaultId {
 		return statoVariazioneDati != null && statoVariazioneDati == AccreditamentoStatoEnum.ASSEGNAMENTO;
 	}
 
+	//prima la data scadenza veniva settata in inviaDomandaAccreditamento
 	public boolean isProcedimentoAttivo(){
-		if(dataScadenza != null && this.isStatoValido() && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
+		//if(dataScadenza != null && this.isStatoValido() && (dataScadenza.isAfter(LocalDate.now()) || dataScadenza.isEqual(LocalDate.now())) )
+		//20180403 dataScadenza non è più valorizzato quando l'accreditamento + in gestione al provider
+		if(this.isStatoValido() && getGiorniRestantiProcedimento() != null && getGiorniRestantiProcedimento() >= 0 )
 			return true;
 		return false;
 	}
@@ -356,6 +370,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 			return true;
 		}
 	}
+
 	public boolean isDomandaAttiva(){
 		if(dataFineAccreditamento != null && (dataFineAccreditamento.isAfter(LocalDate.now()) || dataFineAccreditamento.isEqual(LocalDate.now())) )
 			return true;
@@ -385,31 +400,104 @@ public class Accreditamento extends BaseEntityDefaultId {
 			return true;
 		return false;
 	}
+	
+	public LocalDate getDataScadenza() {
+		//le domande importate dal vecchio sistema non hanno la dataScadenza
+		if(dataScadenza == null) {
+			if(durataProcedimento != null) {
+				//in capo al provider
+				if(massimaDurataProcedimento == null)//uso il valore di massima durata di 180
+					return LocalDate.now().plusDays(180 - durataProcedimento);
+				else
+					return LocalDate.now().plusDays(massimaDurataProcedimento - durataProcedimento);
+			}
+		} else {
+			//in capo alla segreteria
+			return dataScadenza;
+		}
+		return null;
+	}
+	
+	/**
+	 * Restituisce i giorni restanti per completare il procedimento, calcolati considerando quelli in carico alla segreteria
+	 * per accreditamenti avviati, per accreditamenti mai avviati restituisce null 
+	 * @return
+	 */
+	private Integer getGiorniRestantiProcedimento() {
+		if(massimaDurataProcedimento == null || getDurataProcedimento() == null)
+			return null;
+		//getDurataProcedimento() restituisce il numero di giorni trascorsi dalla domanda in carico alla segreteria
+		//sono questi giorni a non poter superare AccreditamentoService.massimaDurataProcedimento (180 giorni)
+		//quindi i giorni rimanenti sono dati da getGiorniRestantiProcedimento() 
+		return massimaDurataProcedimento - getDurataProcedimento();
+	}
+	
+	public void setStato(AccreditamentoStatoEnum nuovoStato, TipoWorkflowEnum tipoWorkflow) {
+		//Gestisco la durata del procedimento
+		if(this.stato != nuovoStato) {
+			if(tipoWorkflow != null 
+					&& 
+					(tipoWorkflow == TipoWorkflowEnum.ACCREDITAMENTO || tipoWorkflow == TipoWorkflowEnum.DECADENZA) 
+					&& 
+					nuovoStato != AccreditamentoStatoEnum.BOZZA) {
+				if(nuovoStato == AccreditamentoStatoEnum.ACCREDITATO || nuovoStato == AccreditamentoStatoEnum.DINIEGO || nuovoStato == AccreditamentoStatoEnum.CANCELLATO) {
+					//gestisco gli stati di conclusione flusso
+					stopConteggioDataScadenza();
+				} else {
+					//l'esecutore dello stato è cambiato
+					if(this.stato.getEsecutoreStato() != nuovoStato.getEsecutoreStato()) {
+						//ora i possibili EsecutoreStatoEnum sono solo 2 quindi
+						if(this.stato.getEsecutoreStato() == EsecutoreStatoEnum.PROVIDER) {
+							//è passato da PROVIDER a SEGRETERIA
+							startRestartConteggio();
+						} else {
+							//è passato da SEGRETERIA a PROVIDER
+							standbyConteggio();
+						}
+					}
+				}
+			}
+		}
+		this.stato = nuovoStato;
+	}
 
-	public int getDurataProcedimento(){
-		if(durataProcedimento == null)
-			return new Long(ChronoUnit.DAYS.between(dataInizioConteggio, LocalDate.now())).intValue();
-		else
-		{
+	/**
+	 * Restituisce la durata del procedimento per accreditamenti avviati considerando solo i giorni trascorsi in carico alla segreteria
+	 * per accreditamenti mai avviati restituisce null 
+	 * @return
+	 */
+	private Integer getDurataProcedimento(){
+		if(durataProcedimento == null) {
+			if(dataScadenza == null || massimaDurataProcedimento == null)
+				return null;
+			else
+				return massimaDurataProcedimento - new Long(ChronoUnit.DAYS.between(LocalDate.now(), dataScadenza)).intValue();
+		} else {
 			return durataProcedimento;
 		}
 	}
 
+	private void stopConteggioDataScadenza(){
+		if(dataScadenza == null) {
+			startRestartConteggio();
+		}
+	}
+	
 	//nel caso in cui si stoppa il conteggio...salviamo momentaneamente la durata già trascorsa
-	public void standbyConteggio(){
+	private void standbyConteggio(){
 		durataProcedimento = getDurataProcedimento();
-		dataInizioConteggio = null;
+		dataScadenza = null;
 	}
 
 	//nel caso in cui riparte il conteggio...azzero la variabile durataProcedimento e setto una dataInizioConteggio coerente
-	public void startRestartConteggio(){
+	private void startRestartConteggio(){
 		if(durataProcedimento == null)
-			dataInizioConteggio = LocalDate.now();
+			dataScadenza = LocalDate.now().plusDays(massimaDurataProcedimento);
 		else
-			dataInizioConteggio = LocalDate.now().minusDays(durataProcedimento);
+			dataScadenza = LocalDate.now().plusDays(massimaDurataProcedimento - durataProcedimento);
 		durataProcedimento = null;
 	}
-
+	
 	public long getFileIdForProtocollo(){
 		if(isProvvisorio()){
 			for(File f : datiAccreditamento.getFiles())
@@ -525,4 +613,5 @@ public class Accreditamento extends BaseEntityDefaultId {
 
 		return false;
 	}
+	
 }
