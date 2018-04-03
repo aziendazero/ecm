@@ -64,7 +64,7 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	public Set<Provider> getAllProviderNotRelazioneAnnualeRegistrataAllaScadenza() {
 		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
 		Set<Provider> listaProvider = new HashSet<Provider>();
-		LocalDate dataScadenza = LocalDate.of(LocalDate.now().getYear(), 4, 30);
+		LocalDate dataScadenza = LocalDate.of(LocalDate.now().getYear(), ecmProperties.getRelazioneAnnualeMeseFineModifica(), ecmProperties.getRelazioneAnnualeGiornoFineModifica());
 		if(LocalDate.now().isAfter(dataScadenza)){
 			listaProvider = getAllProviderNotRelazioneAnnualeRegistrata(LocalDate.now().getYear() - 1);
 		}
