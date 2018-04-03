@@ -70,6 +70,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	private static Logger LOGGER = LoggerFactory.getLogger(AccreditamentoServiceImpl.class);
 	private static long millisecondiInGiorno = 86400000;
 	private static long millisecondiInMinuto = 60000;
+	private static int massimaDurataProcedimento = 180;
 
 	@Autowired private AccreditamentoRepository accreditamentoRepository;
 
@@ -243,7 +244,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(Long providerId, AccreditamentoTipoEnum tipoDomanda) {
 		LOGGER.debug(Utils.getLogMessage("Recupero domande di accreditamento avviate per il provider " + providerId));
 		LOGGER.debug(Utils.getLogMessage("Ricerca domande di accreditamento di tipo: " + tipoDomanda.name() + "con data di scadenza posteriore a: " + LocalDate.now()));
-		return accreditamentoRepository.findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(providerId, tipoDomanda, LocalDate.now());
+		//20180403 la dataScadenza non è più valorizzata quando l'accreditamento è in capo al provider
+		//return accreditamentoRepository.findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(providerId, tipoDomanda, LocalDate.now());
+		return accreditamentoRepository.getAccreditamentiAvviatiForProvider(providerId, tipoDomanda);
 	}
 
 	/**
@@ -378,12 +381,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
 		if(accreditamento.getDataInvio() == null)
 			accreditamento.setDataInvio(LocalDate.now());
-		accreditamento.setDataScadenza(accreditamento.getDataInvio().plusDays(180));
+		//20180403 la dataScadenza viene gestita internamente all'entity Accreditamento
+//		accreditamento.setDataScadenza(accreditamento.getDataInvio().plusDays(massimaDurataProcedimento));
+		accreditamento.setMassimaDurataProcedimento(massimaDurataProcedimento);
 
 		accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
 
 		if(accreditamento.isStandard()) {
-			//accreditamento.setStato(AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
 			accreditamento.getProvider().setCanInsertAccreditamentoStandard(false);
 			accreditamento.getProvider().setDataScadenzaInsertAccreditamentoStandard(null);
 			accreditamento.getProvider().setInviatoAccreditamentoStandard(true);
@@ -1529,18 +1533,22 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	//controlla se la data è compresa tra la data di scadenza e 30 giorni alla data di scadenza
 	@Override
 	public Set<Accreditamento> getAllAccreditamentiInScadenza() {
-		LocalDate oggi = LocalDate.now();
-		LocalDate dateScadenza = LocalDate.now().plusDays(30);
-		return accreditamentoRepository.findAllByDataScadenzaProssima(oggi, dateScadenza);
+		//20180403 la dataScadenza non è più valorizzata quando l'accreditamento è in capo al provider
+//		LocalDate oggi = LocalDate.now();
+//		LocalDate dateScadenza = LocalDate.now().plusDays(30);
+//		return accreditamentoRepository.findAllByDataScadenzaProssima(oggi, dateScadenza);
+		return accreditamentoRepository.findAllAccreditamentiInScadenzaNeiProssimiGiorni(30);
 	}
 
 	//conta tutte le domande di accreditamento in scadenza
 	//controlla se oggi + 30 giorni supera la data di scadenza
 	@Override
-	public int countAllAccreditamentiInScadenza() {
-		LocalDate oggi = LocalDate.now();
-		LocalDate dateScadenza = LocalDate.now().plusDays(30);
-		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
+	public long countAllAccreditamentiInScadenza() {
+		//20180403 la dataScadenza non è più valorizzata quando l'accreditamento è in capo al provider
+//		LocalDate oggi = LocalDate.now();
+//		LocalDate dateScadenza = LocalDate.now().plusDays(30);
+//		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
+		return accreditamentoRepository.countAllAccreditamentiInScadenzaNeiProssimiGiorni(30);
 	}
 
 	@Override
@@ -1792,12 +1800,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//Creazione pdf
 		if(workflowInCorso.getTipo() == TipoWorkflowEnum.ACCREDITAMENTO) {
 			if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) {
-				accreditamento.startRestartConteggio();
+				//20180403 ora viene gestito internamente al entity accreditamento sul cambio stato
+				//accreditamento.startRestartConteggio();
 			} else if(stato == AccreditamentoStatoEnum.INTEGRAZIONE) {
-				accreditamento.standbyConteggio();
+				//20180403 ora viene gestito internamente al entity accreditamento sul cambio stato
+				//accreditamento.standbyConteggio();
 				accreditamento.setDataIntegrazioneInizio(LocalDate.now());
 			} else if(stato == AccreditamentoStatoEnum.PREAVVISO_RIGETTO) {
-				accreditamento.standbyConteggio();
+				//20180403 ora viene gestito internamente al entity accreditamento sul cambio stato
+				//accreditamento.standbyConteggio();
 				accreditamento.setDataPreavvisoRigettoInizio(LocalDate.now());
 			} else if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_FIRMA) {
 				//Ricavo la seduta
@@ -1838,7 +1849,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			} else if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA) {
 				//mi sono spostato da INTEGRAZIONE o PREAVVISO_RIGETTO a VALUTAZIONE_SEGRETERIA quindi rimuovo i fieldEditabili
-				accreditamento.startRestartConteggio();
+				//20180403 ora viene gestito internamente al entity accreditamento sul cambio stato
+				//accreditamento.startRestartConteggio();
 				if(accreditamento.getStato() == AccreditamentoStatoEnum.INTEGRAZIONE) {
 					accreditamento.setDataIntegrazioneFine(LocalDate.now());
 					accreditamento.setIntegrazioneEseguitaDaProvider(eseguitoDaUtente);
@@ -1977,7 +1989,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			if(accreditamento.getStato() == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA && stato == AccreditamentoStatoEnum.INS_ODG) {
 				presaVisione =  true;
 			}
-			accreditamento.setStato(stato);
+			//20180403 modificato per gestire la dataScadenza
+			accreditamento.setStato(stato, workflowInCorso.getTipo());
 		} else if(workflowInCorso.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
 			if(stato == AccreditamentoStatoEnum.RICHIESTA_INTEGRAZIONE_IN_PROTOCOLLAZIONE) {
 				//Ricavo la seduta
@@ -2038,7 +2051,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
 			}
-			accreditamento.setStato(stato);
+			//ATTENZIONE in setStato viene gestita anche la durata del procedimento
+			//20180403 modificato per gestire la dataScadenza
+			accreditamento.setStato(stato, workflowInCorso.getTipo());
 		}
 
 		//indipendentemente dal tipo di workflow se vado in uno stato di integrazione creo il relativo container

@@ -1,6 +1,8 @@
 package it.tredi.ecm;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -24,10 +26,10 @@ import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.SedeService;
-import it.tredi.ecm.utils.Utils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -44,6 +46,7 @@ public class AccreditamentoTest {
 	@Autowired AccreditamentoService accreditamentoService;
 	@Autowired SedeService sedeService;
 	@Autowired FileService fileService;
+	@Autowired AccreditamentoRepository accreditamentoRepository;
 
 	private MockMvc mockMvc;
 
@@ -100,5 +103,47 @@ public class AccreditamentoTest {
 		accreditamentoService.saveAndAudit(accreditamento);
 	}
 
+	@Test
+	@Ignore
+	public void testRepositoryModificaDataScadenzaAccreditamentiAvviatiForProvider() {
 
+		System.out.println("begin");
+
+		Long providerId = 160L;
+		AccreditamentoTipoEnum tipoDomanda = AccreditamentoTipoEnum.STANDARD;
+		
+		Set<Accreditamento> accrs = accreditamentoRepository.getAccreditamentiAvviatiForProvider(providerId, tipoDomanda);
+		System.out.println("accreditamentoRepository.getAccreditamentiAvviatiForProvider size: " + accrs.size());
+		for(Accreditamento acc : accrs)
+			System.out.println("acc id: " + acc.getId());
+
+
+		System.out.println("end");
+
+	}
+
+	@Test
+	@Ignore
+	public void testRepositoryModificaDataScadenza() {
+
+		System.out.println("testRepositoryModificaDataScadenza begin");
+
+		List<Integer> listaGiorni = new ArrayList<Integer>();
+		listaGiorni.add(4);
+		listaGiorni.add(5);
+		listaGiorni.add(30);
+		
+		for(Integer giorni : listaGiorni) {
+			System.out.println("-- giorni: " + giorni + " --");
+			Set<Accreditamento> accrs = accreditamentoRepository.findAllAccreditamentiInScadenzaNeiProssimiGiorni(giorni);
+			System.out.println("\taccreditamentoRepository.findAllAccreditamentiInScadenzaNeiProssimiGiorni size: " + accrs.size());
+			for(Accreditamento acc : accrs)
+				System.out.println("\t\tacc id: " + acc.getId());
+	
+			long numAccrs = accreditamentoRepository.countAllAccreditamentiInScadenzaNeiProssimiGiorni(giorni);
+			System.out.println("\taccreditamentoRepository.countAllAccreditamentiInScadenzaNeiProssimiGiorni: " + numAccrs);
+		}
+		System.out.println("testRepositoryModificaDataScadenza end");
+
+	}
 }

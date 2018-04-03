@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20180403_imposto_data_scadenza.xml">
+    <changeSet author="abarducci" id="1">
+    	<comment>UPDATE DATA SCADENZA PROCEDIMENTO ACCREDITAMENTI</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="20180403_imposto_data_scadenza.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>
+        <rollback>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
