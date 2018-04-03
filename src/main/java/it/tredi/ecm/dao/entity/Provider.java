@@ -294,7 +294,7 @@ public class Provider extends BaseEntity{
 			return false;
 
 		//se flag attivato, controllo la data
-		if(dataScadenzaInsertRelazioneAnnuale != null && LocalDate.now().isBefore(dataScadenzaInsertRelazioneAnnuale))
+		if(dataScadenzaInsertRelazioneAnnuale != null && (LocalDate.now().isBefore(dataScadenzaInsertRelazioneAnnuale) || LocalDate.now().isEqual(dataScadenzaInsertRelazioneAnnuale)))
 			return true;
 
 		return false;
