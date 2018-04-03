@@ -104,7 +104,7 @@ public interface AccreditamentoService{
 	public int countAllTipoStandart(CurrentUser currentUser);
 	
 	public Set<Accreditamento> getAllAccreditamentiInScadenza();
-	public int countAllAccreditamentiInScadenza();
+	public long countAllAccreditamentiInScadenza();
 
 	//Vaschetta Referee
 	public Set<Accreditamento> getAllAccreditamentiByStatoAndTipoDomandaForValutatoreId(AccreditamentoStatoEnum stato,	AccreditamentoTipoEnum tipo, Long refereeId, Boolean filterDone);

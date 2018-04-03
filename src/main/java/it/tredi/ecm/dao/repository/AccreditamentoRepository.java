@@ -5,22 +5,26 @@ import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
-import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 
 //public interface AccreditamentoRepository extends CrudRepository<Accreditamento, Long> {
-public interface AccreditamentoRepository extends JpaRepository<Accreditamento, Long> {
+public interface AccreditamentoRepository extends JpaRepository<Accreditamento, Long>, AccreditamentoRepositoryCustom {
 	public Set<Accreditamento> findAllByProviderIdOrderByDataInvioDesc(Long providerId);
 	public Set<Accreditamento> findByProviderId(Long providerId);
 	public Set<Accreditamento> findAllByProviderIdAndTipoDomanda(Long providerId, AccreditamentoTipoEnum tipoDomanda);
-	public Set<Accreditamento> findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(Long providerId, AccreditamentoTipoEnum tipoDomanda, LocalDate data);
+	
+	//20180403 MODIFICA 1
+	//veniva usato cosi accreditamentoRepository.findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(providerId, tipoDomanda, LocalDate.now());
+	//public Set<Accreditamento> findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(Long providerId, AccreditamentoTipoEnum tipoDomanda, LocalDate data);
+	@Query("SELECT a FROM Accreditamento a WHERE a.provider.id = :providerId AND a.tipoDomanda = :tipoDomanda AND (dataScadenza > now() OR durataProcedimento IS NOT NULL)")
+	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(@Param("providerId") Long providerId, @Param("tipoDomanda") AccreditamentoTipoEnum tipoDomanda);
+
+	
 	//public Accreditamento findOneByProviderIdAndStatoAndDataFineAccreditamentoAfter(Long providerId, AccreditamentoStatoEnum stato, LocalDate data);
 	public Set<Accreditamento> findAllByProviderIdAndStatoAndDataFineAccreditamentoAfterOrderByDataFineAccreditamentoAsc(Long providerId, AccreditamentoStatoEnum stato, LocalDate data);
 	@Query("SELECT a.stato FROM Accreditamento a WHERE a.id = :accreditamentoId")
@@ -122,12 +126,24 @@ public interface AccreditamentoRepository extends JpaRepository<Accreditamento, 
 		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE (a.stato = :stato OR a.statoVariazioneDati = :stato) AND a.provider.id = :id")
 		public int countAllByStatoAndProviderId(@Param("stato") AccreditamentoStatoEnum stato, @Param("id") Long id);
 
+		//20180403 MODIFICA 2 e 3
 		//query e count domande accreditamento in scadenza, prende in input la data odierna e la data successiva ai giorni considerati di scadenza
 		//controlla se la data di scadenza sta in questo intervallo
-		@Query("SELECT a FROM Accreditamento a WHERE a.dataScadenza BETWEEN :oggi AND :dateScadenza")
-		public Set<Accreditamento> findAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
-		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.dataScadenza BETWEEN :oggi AND :dateScadenza")
-		public int countAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
+
+		//veniva usata cosi
+//		LocalDate oggi = LocalDate.now();
+//		LocalDate dateScadenza = LocalDate.now().plusDays(30);
+//		return accreditamentoRepository.findAllByDataScadenzaProssima(oggi, dateScadenza);
+//		@Query("SELECT a FROM Accreditamento a WHERE a.dataScadenza BETWEEN :oggi AND :dateScadenza")
+//		public Set<Accreditamento> findAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
+
+		//veniva usata cosi
+//		LocalDate oggi = LocalDate.now();
+//		LocalDate dateScadenza = LocalDate.now().plusDays(30);
+//		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);		
+//		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.dataScadenza BETWEEN :oggi AND :dateScadenza")
+//		public int countAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
+
 		public Accreditamento findFirstByProviderIdOrderByDataFineAccreditamentoDesc(Long providerId);
 		
 		//query e count domande accreditamento a seconda dello stato e del tipo
