@@ -227,10 +227,10 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		protocollo.setAccreditamento(accreditamento);
 		protocollo.setActionAfterProtocollo(null);
 
-		if (engineeringProperties.getProtocolloServiceVersione().equals("rv")) {
+		if (engineeringProperties.getProtocolloServiceVersione().equalsIgnoreCase("rv")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.RV);
 			protocollaInEntrata_RV(protocollo, fileAllegatiIds);
-		} else if (engineeringProperties.getProtocolloServiceVersione().equals("webrainbow")) {
+		} else if (engineeringProperties.getProtocolloServiceVersione().equalsIgnoreCase("webrainbow")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
 			protocollaInEntrata_WebRainbow(protocollo, fileAllegatiIds);
 		}
@@ -259,10 +259,10 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		protocollo.setAccreditamento(accreditamento);
 		protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.ESEGUI_TASK);
 
-		if(engineeringProperties.getProtocolloServiceVersione().equals("rv")) {
+		if(engineeringProperties.getProtocolloServiceVersione().equalsIgnoreCase("rv")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.RV);
 			protocollaInUscita_RV(protocollo, fileAllegatiIds);
-		} else if (engineeringProperties.getProtocolloServiceVersione().equals("webrainbow")) {
+		} else if (engineeringProperties.getProtocolloServiceVersione().equalsIgnoreCase("webrainbow")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
 			protocollaInUscita_WebRainbow(protocollo, fileAllegatiIds);
 		}
@@ -953,10 +953,10 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		else if(motivazione == MotivazioneDecadenzaEnum.RICHIESTA_PROVIDER)
 			protocollo.setActionAfterProtocollo(ActionAfterProtocollaEnum.BLOCCA_PER_RICHIESTA_PROVIDER);
 
-		if(engineeringProperties.getProtocolloServiceVersione().equals("rv")) {
+		if(engineeringProperties.getProtocolloServiceVersione().equalsIgnoreCase("rv")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.RV);
 			protocollaInUscita_RV(protocollo);
-		} else if (engineeringProperties.getProtocolloServiceVersione().equals("webrainbow")) {
+		} else if (engineeringProperties.getProtocolloServiceVersione().equalsIgnoreCase("webrainbow")) {
 			protocollo.setProtocolloServiceVersion(ProtocolloServiceVersioneEnum.WEBRAINBOW);
 			protocollaInUscita_WebRainbow(protocollo);
 		}
