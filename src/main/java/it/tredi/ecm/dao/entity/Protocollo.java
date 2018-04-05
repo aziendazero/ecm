@@ -1,6 +1,7 @@
 package it.tredi.ecm.dao.entity;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,8 @@ import javax.persistence.ManyToOne;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
 import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
+import it.tredi.ecm.dao.enumlist.ActionAfterProtocollaEnum;
+import it.tredi.ecm.dao.enumlist.ProtocolloServiceVersioneEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,6 +28,9 @@ public class Protocollo extends BaseEntityDefaultId {
 	private String idProtoBatch;
 	private String statoSpedizione;
 	private String oggetto;
+	@Enumerated(EnumType.STRING)
+	private ProtocolloServiceVersioneEnum protocolloServiceVersion;
+	private Boolean pecInviata;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name="action_after_protocollo")
@@ -77,5 +83,18 @@ public class Protocollo extends BaseEntityDefaultId {
 		}
 
 		return false;
+	}
+
+	public String getNumeroFormattedWebRainbow() {
+		String n = this.numero.toString();
+		if(n.length() < 7)
+			return ("0000000" + numero).substring(n.length());
+		else
+			return n;
+	}
+
+	public String getDataFormattedWebRainbow() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		return data.format(formatter);
 	}
 }

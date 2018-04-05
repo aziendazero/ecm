@@ -30,4 +30,7 @@ public class EngineeringProperties {
 	private String protocolloCodStruttura;
 	private String protocolloIdc;
 	private String protocolloEndpoint;
+	private String protocolloServiceVersione;
+	private String protocolloWebrainbowUfficioCreatoreEntrata;
+	private String protocolloWebrainbowUfficioCreatoreUscita;
 }
