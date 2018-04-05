@@ -343,6 +343,12 @@
 														<span th:text="#{label.conferma_variazione_dati}"></span>
 													</label>
 												</div>
+												<div class="radio" th:if="${accreditamentoWrapper.isVariazioneDatiConBiforcazioneOrdineDelGiorno()}">
+													<label>
+														<input type="radio" class="flat selezioneEsistoVariazioneDati" th:field="${accreditamentoWrapper.destinazioneVariazioneDati}" th:value="${T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INS_ODG}" />
+														<span th:text="#{label.da_inserire_nel_odg}"></span>
+													</label>
+												</div>
 												<div class="radio">
 													<label>
 														<input type="radio" class="flat selezioneEsistoVariazioneDati" th:field="${accreditamentoWrapper.destinazioneVariazioneDati}" th:value="${T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).VALUTAZIONE_CRECM}" />

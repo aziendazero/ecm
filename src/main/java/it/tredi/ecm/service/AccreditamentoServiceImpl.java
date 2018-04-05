@@ -2478,6 +2478,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 			workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, null, null, destinazioneVariazioneDati);
 		}
+		else if(destinazioneVariazioneDati == AccreditamentoStatoEnum.INS_ODG) {
+			//elimino le vecchie valutazioni
+			Set<Valutazione> valutazioniVariazioneDati = valutazioneService.getAllValutazioniCompleteForAccreditamentoIdAndNotStoricizzato(accreditamento.getId());
+			for(Valutazione v : valutazioniVariazioneDati) {
+				valutazioneService.delete(v);
+			}
+			workflowService.eseguiTaskValutazioneVariazioneDatiForCurrentUser(accreditamento, null, null, destinazioneVariazioneDati);
+		}
 		else {
 			//viene messo in una lista per sfruttare lo stesso metodo
 			List<String> valutatore = new ArrayList<String>();

@@ -13,7 +13,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
-import it.tredi.ecm.dao.entity.EventoPianoFormativo;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
@@ -24,13 +23,14 @@ import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
+import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.dao.enumlist.TipoOrganizzatore;
+import it.tredi.ecm.dao.enumlist.TipoWorkflowEnum;
 import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -928,5 +928,13 @@ public class AccreditamentoWrapper {
 		return (accreditamento.hasPianoFormativo());
 		//return (accreditamento.hasPianoFormativo() && accreditamento.isEditabile());
 		//TODO controllo FieldEditabileAccreditamento
+	}
+
+	public boolean isVariazioneDatiConBiforcazioneOrdineDelGiorno(){
+		WorkflowInfo currentWf = accreditamento.getWorkflowInCorso();
+		if(currentWf != null && currentWf.getTipo() == TipoWorkflowEnum.VARIAZIONE_DATI) {
+			return !currentWf.getProcessDefinitionVersion().equals("1.0");
+		}
+		return false;
 	}
 }
