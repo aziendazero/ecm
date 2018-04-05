@@ -669,7 +669,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			long secsFrom = ChronoUnit.SECONDS.between(startDT, LocalDateTime.now());
 			for (Protocollo p : protocolliInUscita) {
 				if(ecmProperties.isDebugBrokeProtocollo()) {
-					ProtoBatchLog plog = new ProtoBatchLog();
 					plog.setCodStato("0");
 					plog.setDtIns(null);
 					plog.setDtUpd(null);
@@ -682,7 +681,6 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 					p.setNumero((int)secsFrom++);
 					protocolloRepository.save(p);
 
-					ProtoBatchLog plog = new ProtoBatchLog();
 					plog.setCodStato("0");
 					plog.setDtIns(null);
 					plog.setDtUpd(null);
