@@ -34,7 +34,7 @@ public class AnagraficaFullEventoServiceImpl implements AnagraficaFullEventoServ
 	@Override
 	public AnagraficaFullEvento getAnagraficaFullEventoByCodiceFiscaleForProvider(String codiceFiscale, Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero AnagraficheFullEvento : " + codiceFiscale + " per provider " + providerId));
-		return anagraficaFullEventoRepository.findOneByAnagraficaCodiceFiscaleAndProviderId(codiceFiscale, providerId);
+		return anagraficaFullEventoRepository.findOneByAnagraficaCodiceFiscaleIgnoreCaseAndProviderId(codiceFiscale, providerId);
 	}
 
 	@Override

@@ -98,13 +98,13 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Provider getProviderByCodiceFiscale(String codiceFiscale) {
 		LOGGER.info("Retrieving Provider (" + codiceFiscale +")");
-		return providerRepository.findOneByCodiceFiscale(codiceFiscale);
+		return providerRepository.findOneByCodiceFiscaleIgnoreCase(codiceFiscale);
 	}
 
 	@Override
 	public Provider getProviderByPartitaIva(String partitaIva) {
 		LOGGER.info("Retrieving Provider (" + partitaIva +")");
-		return providerRepository.findOneByPartitaIva(partitaIva);
+		return providerRepository.findOneByPartitaIvaIgnoreCase(partitaIva);
 	}
 
 	@Override

@@ -13,5 +13,5 @@ public interface AnagraficaFullEventoRepository extends CrudRepository<Anagrafic
 	public Set<AnagraficaFullEvento> findAllByProviderId(Long providerId);
 	@Query("SELECT a.id, a.anagrafica.cognome, a.anagrafica.nome, a.anagrafica.codiceFiscale FROM AnagraficaFullEvento a WHERE a.provider.id = :providerId")
 	public List<Object[]> findAllByProviderIdJSONVersion(@Param("providerId") Long providerId);
-	public AnagraficaFullEvento findOneByAnagraficaCodiceFiscaleAndProviderId(String codiceFiscale, Long providerId);
+	public AnagraficaFullEvento findOneByAnagraficaCodiceFiscaleIgnoreCaseAndProviderId(String codiceFiscale, Long providerId);
 }
