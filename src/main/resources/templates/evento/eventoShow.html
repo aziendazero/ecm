@@ -151,7 +151,7 @@
 										<td th:text="${attivita.orarioFine}"></td>
 										<td th:text="${attivita.argomento}"></td>
 										<td>
-											<div th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" th:text="${docente.anagrafica?.cognome}" th:each="docente, row : ${attivita.docenti}"></div>
+											<div th:unless="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" th:text="${docente.anagrafica?.cognome}" th:each="docente, row : ${attivita.docenti}"></div>
 											<div th:if="${@eventoServiceController.isVersionDue(eventoWrapperShow.evento)}" th:text="${docente.descrizionePerAttivitaRES}" th:each="docente, row : ${attivita.docenti}"></div>
 										</td>
 										<td th:text="${attivita.risultatoAtteso}"></td>
