@@ -440,7 +440,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 			addCellLabelCampoValore("label.titolo_convegno", eventoRES.getTitoloConvegno(), tableFields);
 		}
 
-		if(eventoServiceController.isVersionDue(eventoRES) && eventoRES.getTipologiaEventoRES().equals(TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO))
+		if(eventoServiceController.isVersionDue(eventoRES) && eventoRES.getTipologiaEventoRES() != null && eventoRES.getTipologiaEventoRES().equals(TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO))
 			addCellLabelCampoValore("label.numero_partecipanti_per_corso", eventoRES.getNumeroPartecipantiPerCorso(), tableFields); 
 		
 		addCellLabelCampoValore("label.numero_partecipanti", evento.getNumeroPartecipanti(), tableFields);
