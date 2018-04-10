@@ -4,12 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import org.javers.spring.annotation.JaversSpringDataAuditable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -26,8 +24,8 @@ public interface ProviderRepository extends JpaRepository<Provider, Long> {
 	@Query("SELECT a.provider FROM Account a JOIN a.provider p WHERE a.id = :accountId")
 	public Provider getProviderByAccountId(@Param("accountId") Long accountId);
 
-	public Provider findOneByCodiceFiscale(String codiceFiscale);
-	public Provider findOneByPartitaIva(String partitaIva);
+	public Provider findOneByCodiceFiscaleIgnoreCase(String codiceFiscale);
+	public Provider findOneByPartitaIvaIgnoreCase(String partitaIva);
 
 	public List<Provider> findAll();
 

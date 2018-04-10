@@ -32,7 +32,7 @@ public class AnagraficaEventoServiceImpl implements AnagraficaEventoService {
 	@Override
 	public AnagraficaEvento getAnagraficaEventoByCodiceFiscaleForProvider(String codiceFiscale, Long providerId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero AnagraficheEvento : " + codiceFiscale + " per provider " + providerId));
-		return anagraficaEventoRepository.findOneByAnagraficaCodiceFiscaleAndProviderId(codiceFiscale, providerId);
+		return anagraficaEventoRepository.findOneByAnagraficaCodiceFiscaleIgnoreCaseAndProviderId(codiceFiscale, providerId);
 	}
 
 	@Override

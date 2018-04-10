@@ -56,7 +56,7 @@ public class ProviderLoader implements ApplicationListener<ContextRefreshedEvent
 	public void onApplicationEvent(ContextRefreshedEvent event){
 		LOGGER.info("BOOTSTRAP ECM - Inizializzazione PROVIDER...");
 
-		Provider provider = providerRepository.findOneByPartitaIva("00578261201");
+		Provider provider = providerRepository.findOneByPartitaIvaIgnoreCase("00578261201");
 
 		int numeroProvider = 5;
 

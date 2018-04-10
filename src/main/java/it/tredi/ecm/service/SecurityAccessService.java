@@ -61,4 +61,6 @@ public interface SecurityAccessService {
 	public boolean canConclusioneProcedimento(CurrentUser currentUser, Long accreditamentoId);
 
 	public boolean isUserSegreteria(CurrentUser currentUser);
+	
+	public boolean canShowRiepilogoVariazioneDati(CurrentUser currentUser, Long accreditamentoId);
 }

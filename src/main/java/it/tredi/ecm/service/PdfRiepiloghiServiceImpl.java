@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,12 +39,14 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DatiEconomici;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
+import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.INomeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -59,6 +60,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 	@Autowired private ProviderService providerService;
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private MessageSource messageSource;
+	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
 
 	//formatters
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -103,14 +105,21 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		LOGGER.debug("Inizio procedura scrittura PDF del riepilogo della Domanda: " + accreditamentoId);
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
+		Set<FieldIntegrazioneAccreditamento> fieldsIntegrazioneAccreditamento = null;
+		if("riepilogovariazionedati".equals(argument)) {
+			//NB lo stato potrebbe non essere quello corrente
+			AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
+			//AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
+			fieldsIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, accreditamento.getWorkflowInCorso().getProcessInstanceId());
+		}
 
 		ByteArrayOutputStream byteArrayOutputStreamPdf = new ByteArrayOutputStream();
-        writePdfRiepilogo(byteArrayOutputStreamPdf, accreditamento, argument, valutazioneId);
+        writePdfRiepilogo(byteArrayOutputStreamPdf, accreditamento, argument, valutazioneId, fieldsIntegrazioneAccreditamento);
 
         return byteArrayOutputStreamPdf;
 	}
 
-	private void writePdfRiepilogo(OutputStream outputStream, Accreditamento accreditamento, String argument, Long valutazioneId) throws Exception {
+	private void writePdfRiepilogo(OutputStream outputStream, Accreditamento accreditamento, String argument, Long valutazioneId, Set<FieldIntegrazioneAccreditamento> fieldsIntegrazioneAccreditamento) throws Exception {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, outputStream);
@@ -123,7 +132,11 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
             switch(argument) {
             case "domanda":
             	document.addTitle("Riepilogo della Domanda di Accreditamento " + accreditamento.getId());
-            	writePdfRiepilogoDomanda(document, accreditamento);
+            	writePdfRiepilogoDomanda(document, accreditamento, fieldsIntegrazioneAccreditamento);
+            	break;
+            case "riepilogovariazionedati":
+            	document.addTitle("Riepilogo della variazione dati della Domanda di Accreditamento " + accreditamento.getId());
+            	writePdfRiepilogoDomanda(document, accreditamento, fieldsIntegrazioneAccreditamento);
             	break;
             case "pianoFormativo":
             	document.addTitle("Riepilogo del Piano Formativo della Domanda di Accreditamento " + accreditamento.getId());
@@ -146,7 +159,14 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		}
 	}
 
-	private void writePdfRiepilogoDomanda(Document document, Accreditamento accreditamento) throws DocumentException {
+	/**
+	 * Chiamato sia per il riepilogo della domanda sia per il riepilogo della domanda in variazione dati con le info sui campi da integrare
+	 * @param document
+	 * @param accreditamento
+	 * @param fieldsIntegrazioneAccreditamento
+	 * @throws DocumentException
+	 */
+	private void writePdfRiepilogoDomanda(Document document, Accreditamento accreditamento, Set<FieldIntegrazioneAccreditamento> fieldsIntegrazioneAccreditamento) throws DocumentException {
 		Provider provider = accreditamento.getProvider();
 		DatiAccreditamento dati = accreditamento.getDatiAccreditamento();
 		DatiEconomici datiEconomici = dati.getDatiEconomici();

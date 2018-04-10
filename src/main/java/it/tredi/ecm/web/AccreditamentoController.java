@@ -39,7 +39,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
-import it.tredi.ecm.dao.entity.JsonViewModel;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.entity.Provider;
@@ -1714,6 +1713,25 @@ public class AccreditamentoController {
 				throw new Exception("Invalid argument");
 
 			ByteArrayOutputStream pdfOutputStream = pdfRiepiloghiService.creaOutputStreamPdfRiepilogoDomanda(accreditamentoId, argument, valutazioneId);
+			response.setContentLength(pdfOutputStream.size());
+			response.getOutputStream().write(pdfOutputStream.toByteArray());
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/riepilogo/domanda/pdf"),ex);
+			model.addAttribute("message",new Message("Errore", "Impossibile creare il pdf", "Errore creazione pdf riepilogo"));
+		}
+	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canShowRiepilogoVariazioneDati(principal,#accreditamentoId)")
+	@RequestMapping("/accreditamento/{accreditamentoId}/riepilogovariazionedatipdf")
+	public void pdfRiepilogoDomandaVariazioneDati(@PathVariable Long accreditamentoId,
+			Model model, RedirectAttributes redirectAttr, HttpServletResponse response) {
+		LOGGER.info(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/riepilogo/domanda/pdf"));
+		try {
+			String argument = "riepilogovariazionedati";
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"Riepilogo domanda variazione dati - Accreditamento " + accreditamentoId +".pdf\""));
+
+			ByteArrayOutputStream pdfOutputStream = pdfRiepiloghiService.creaOutputStreamPdfRiepilogoDomanda(accreditamentoId, argument, null);
 			response.setContentLength(pdfOutputStream.size());
 			response.getOutputStream().write(pdfOutputStream.toByteArray());
 		}

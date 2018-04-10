@@ -3,10 +3,10 @@ package it.tredi.ecm.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.bonita.api.model.TaskInstanceDataModel;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.dao.entity.PianoFormativo;
 import it.tredi.ecm.dao.enumlist.RoleEnum;
 import it.tredi.ecm.service.bean.CurrentUser;
 
@@ -412,5 +412,17 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 	@Override
 	public boolean isUserSegreteria(CurrentUser currentUser) {
 		return currentUser.isSegreteria();
+	}
+
+	@Override
+	public boolean canShowRiepilogoVariazioneDati(CurrentUser currentUser, Long accreditamentoId) {
+		if(canShowAllAccreditamento(currentUser))
+			return true;
+
+//		if(currentUser.hasRole(RoleEnum.ACCREDITAMENTO_SHOW)){
+//			return isAccreditamentoOwner(currentUser.getAccount().getId(), accreditamentoId);
+//		}
+
+		return false;
 	}
 }
