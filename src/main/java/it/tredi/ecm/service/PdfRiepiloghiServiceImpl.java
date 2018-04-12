@@ -540,7 +540,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         if(showIntegrazioneInfo) {
 	        PdfPTable comSciAddRemove = getTableFields(showIntegrazioneInfo);
 	        addCellLabelIntegrazioneSostAggRimoz("label.modifica_comitato", comSciAddRemove, showIntegrazioneInfo, 
-	        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__FULL, null));
+	        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL, null));
 	        document.add(comSciAddRemove);
         }
         
