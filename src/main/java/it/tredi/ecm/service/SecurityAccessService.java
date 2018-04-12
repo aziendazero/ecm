@@ -63,4 +63,5 @@ public interface SecurityAccessService {
 	public boolean isUserSegreteria(CurrentUser currentUser);
 	
 	public boolean canShowRiepilogoVariazioneDati(CurrentUser currentUser, Long accreditamentoId);
+	
 }
