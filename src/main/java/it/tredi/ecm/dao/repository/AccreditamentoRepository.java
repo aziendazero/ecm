@@ -17,14 +17,14 @@ public interface AccreditamentoRepository extends JpaRepository<Accreditamento, 
 	public Set<Accreditamento> findAllByProviderIdOrderByDataInvioDesc(Long providerId);
 	public Set<Accreditamento> findByProviderId(Long providerId);
 	public Set<Accreditamento> findAllByProviderIdAndTipoDomanda(Long providerId, AccreditamentoTipoEnum tipoDomanda);
-	
+
 	//20180403 MODIFICA 1
 	//veniva usato cosi accreditamentoRepository.findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(providerId, tipoDomanda, LocalDate.now());
 	//public Set<Accreditamento> findAllByProviderIdAndTipoDomandaAndDataScadenzaAfter(Long providerId, AccreditamentoTipoEnum tipoDomanda, LocalDate data);
 	@Query("SELECT a FROM Accreditamento a WHERE a.provider.id = :providerId AND a.tipoDomanda = :tipoDomanda AND (dataScadenza > now() OR durataProcedimento IS NOT NULL)")
 	public Set<Accreditamento> getAccreditamentiAvviatiForProvider(@Param("providerId") Long providerId, @Param("tipoDomanda") AccreditamentoTipoEnum tipoDomanda);
 
-	
+
 	//public Accreditamento findOneByProviderIdAndStatoAndDataFineAccreditamentoAfter(Long providerId, AccreditamentoStatoEnum stato, LocalDate data);
 	public Set<Accreditamento> findAllByProviderIdAndStatoAndDataFineAccreditamentoAfterOrderByDataFineAccreditamentoAsc(Long providerId, AccreditamentoStatoEnum stato, LocalDate data);
 	@Query("SELECT a.stato FROM Accreditamento a WHERE a.id = :accreditamentoId")
@@ -61,27 +61,27 @@ public interface AccreditamentoRepository extends JpaRepository<Accreditamento, 
 		public int countAllByStatoInAndTipoDomanda(@Param("stati") Set<AccreditamentoStatoEnum> stati, @Param("tipo") AccreditamentoTipoEnum tipo);
 
 		//query e count domande accreditamento a seconda dello stato, non prese in carica
-		@Query("SELECT a FROM Accreditamento a WHERE (a.stato = :stato OR a.statoVariazioneDati = :stato) AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
+		@Query("SELECT a FROM Accreditamento a WHERE (a.stato = :stato OR a.statoVariazioneDati = :stato) AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v where v.accreditamento.id is not null)")
 		public Set<Accreditamento> findAllByStatoNotTaken(@Param("stato") AccreditamentoStatoEnum stato);
-		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE (a.stato = :stato OR a.statoVariazioneDati = :stato) AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
+		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE (a.stato = :stato OR a.statoVariazioneDati = :stato) AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v where v.accreditamento.id is not null)")
 		public int countAllByStatoNotTaken(@Param("stato") AccreditamentoStatoEnum stato);
 
 		//query e count domande accreditamento a seconda dello stato, non prese in carica
-		@Query("SELECT a FROM Accreditamento a WHERE (a.stato IN (:stati) OR a.statoVariazioneDati IN (:stati)) AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
+		@Query("SELECT a FROM Accreditamento a WHERE (a.stato IN (:stati) OR a.statoVariazioneDati IN (:stati)) AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v where v.accreditamento.id is not null)")
 		public Set<Accreditamento> findAllByStatoInNotTaken(@Param("stati") Set<AccreditamentoStatoEnum> stati);
-		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE (a.stato IN (:stati) OR a.statoVariazioneDati IN (:stati)) AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
+		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE (a.stato IN (:stati) OR a.statoVariazioneDati IN (:stati)) AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v where v.accreditamento.id is not null)")
 		public int countAllByStatoInNotTaken(@Param("stati") Set<AccreditamentoStatoEnum> stati);
 
 		//query e count domande accreditamento a seconda dello stato e del tipo, non prese in carica
-		@Query("SELECT a FROM Accreditamento a WHERE (a.stato = :stato OR a.statoVariazioneDati = :stato) AND a.tipoDomanda = :tipo AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
+		@Query("SELECT a FROM Accreditamento a WHERE (a.stato = :stato OR a.statoVariazioneDati = :stato) AND a.tipoDomanda = :tipo AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v where v.accreditamento.id is not null)")
 		public Set<Accreditamento> findAllByStatoAndTipoDomandaNotTaken(@Param("stato") AccreditamentoStatoEnum stato, @Param("tipo") AccreditamentoTipoEnum tipo);
-		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE (a.stato = :stato OR a.statoVariazioneDati = :stato) AND a.tipoDomanda = :tipo AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
+		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE (a.stato = :stato OR a.statoVariazioneDati = :stato) AND a.tipoDomanda = :tipo AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v where v.accreditamento.id is not null)")
 		public int countAllByStatoAndTipoDomandaNotTaken(@Param("stato") AccreditamentoStatoEnum stato, @Param("tipo") AccreditamentoTipoEnum tipo);
 
 		//query e count domande accreditamento a seconda dello stato e del tipo, non prese in carica
-		@Query("SELECT a FROM Accreditamento a WHERE (a.stato IN (:stati) OR a.statoVariazioneDati IN (:stati)) AND a.tipoDomanda = :tipo AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
+		@Query("SELECT a FROM Accreditamento a WHERE (a.stato IN (:stati) OR a.statoVariazioneDati IN (:stati)) AND a.tipoDomanda = :tipo AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v where v.accreditamento.id is not null)")
 		public Set<Accreditamento> findAllByStatoInAndTipoDomandaNotTaken(@Param("stati") Set<AccreditamentoStatoEnum> stati, @Param("tipo") AccreditamentoTipoEnum tipo);
-		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE (a.stato IN (:stati) OR a.statoVariazioneDati IN (:stati)) AND a.tipoDomanda = :tipo AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v)")
+		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE (a.stato IN (:stati) OR a.statoVariazioneDati IN (:stati)) AND a.tipoDomanda = :tipo AND a.id NOT IN (SELECT v.accreditamento.id FROM Valutazione v where v.accreditamento.id is not null)")
 		public int countAllByStatoInAndTipoDomandaNotTaken(@Param("stati") Set<AccreditamentoStatoEnum> stati, @Param("tipo") AccreditamentoTipoEnum tipo);
 
 		//query e count domande inseribili in Seduta (in stato INS_ODG non già inserite in nessuna seduta non bloccata)
@@ -140,12 +140,12 @@ public interface AccreditamentoRepository extends JpaRepository<Accreditamento, 
 		//veniva usata cosi
 //		LocalDate oggi = LocalDate.now();
 //		LocalDate dateScadenza = LocalDate.now().plusDays(30);
-//		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);		
+//		return accreditamentoRepository.countAllByDataScadenzaProssima(oggi, dateScadenza);
 //		@Query("SELECT COUNT (a) FROM Accreditamento a WHERE a.dataScadenza BETWEEN :oggi AND :dateScadenza")
 //		public int countAllByDataScadenzaProssima(@Param("oggi") LocalDate oggi, @Param("dateScadenza") LocalDate dateScadenza);
 
 		public Accreditamento findFirstByProviderIdOrderByDataFineAccreditamentoDesc(Long providerId);
-		
+
 		//query e count domande accreditamento a seconda dello stato e del tipo
 		@Query("SELECT a FROM Accreditamento a "
 				+ "WHERE (a.tipoDomanda = 'STANDARD' AND a.stato = 'VALUTAZIONE_SUL_CAMPO') "
@@ -157,9 +157,9 @@ public interface AccreditamentoRepository extends JpaRepository<Accreditamento, 
 		public Set<Accreditamento> getAllDomandeTipoStandart(@Param("id") Long id);
 		@Query("SELECT COUNT(a) FROM Accreditamento a "
 				+ "WHERE (a.tipoDomanda = 'STANDARD' AND a.stato = 'VALUTAZIONE_SUL_CAMPO')"
-				+ "AND (a.verbaleValutazioneSulCampo.valutatore.id = :id " 
-				+ "OR a.verbaleValutazioneSulCampo.teamLeader.id = :id " 
-				+ "OR a.verbaleValutazioneSulCampo.osservatoreRegionale.id = :id " 
+				+ "AND (a.verbaleValutazioneSulCampo.valutatore.id = :id "
+				+ "OR a.verbaleValutazioneSulCampo.teamLeader.id = :id "
+				+ "OR a.verbaleValutazioneSulCampo.osservatoreRegionale.id = :id "
 				+ "OR a.verbaleValutazioneSulCampo.referenteInformatico.id = :id "
 				+ "OR :id IN (SELECT v.id FROM a.verbaleValutazioneSulCampo.componentiSegreteria v))")
 		public int countAllDomandeTipoStandart(@Param("id") Long id);
