@@ -64,7 +64,6 @@ import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.IntegrazioneService;
 import it.tredi.ecm.service.PdfRiepiloghiService;
-import it.tredi.ecm.service.PdfService;
 import it.tredi.ecm.service.PdfVerbaleService;
 import it.tredi.ecm.service.PersonaService;
 import it.tredi.ecm.service.ProviderService;
@@ -91,7 +90,6 @@ public class AccreditamentoController {
 	@Autowired private PersonaService personaService;
 	@Autowired private SedeService sedeService;
 	@Autowired private FileService fileService;
-	@Autowired private PdfService pdfService;
 	@Autowired private PdfVerbaleService pdfVerbaleService;
 	@Autowired private PdfRiepiloghiService pdfRiepiloghiService;
 	@Autowired private DatiAccreditamentoService datiAccreditamentoService;

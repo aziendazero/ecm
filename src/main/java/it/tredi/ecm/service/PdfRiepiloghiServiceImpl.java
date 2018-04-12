@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,14 +40,13 @@ import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.DatiEconomici;
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.EventoPianoFormativo;
-import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
+import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.entity.Valutazione;
-import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.INomeEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -60,7 +60,8 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 	@Autowired private ProviderService providerService;
 	@Autowired private ValutazioneService valutazioneService;
 	@Autowired private MessageSource messageSource;
-	@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+	//@Autowired private FieldIntegrazioneAccreditamentoService fieldIntegrazioneAccreditamentoService;
+	@Autowired private FieldEditabileAccreditamentoService fieldEditabileAccreditamentoService;
 
 	//formatters
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -98,6 +99,7 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
     Image imgCheck = null;
     Image imgRemove = null;
     Image imgQuestion = null;
+    Image imgIntegrazioneAbilitata = null;
 
 
 	@Override
@@ -105,21 +107,19 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		LOGGER.debug("Inizio procedura scrittura PDF del riepilogo della Domanda: " + accreditamentoId);
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
-		Set<FieldIntegrazioneAccreditamento> fieldsIntegrazioneAccreditamento = null;
+		Set<FieldEditabileAccreditamento> fieldsEditabileAccreditamento = null;
 		if("riepilogovariazionedati".equals(argument)) {
-			//NB lo stato potrebbe non essere quello corrente
-			AccreditamentoStatoEnum stato = accreditamento.getCurrentStato();
 			//AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
-			fieldsIntegrazioneAccreditamento = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(accreditamentoId, stato, accreditamento.getWorkflowInCorso().getProcessInstanceId());
+			fieldsEditabileAccreditamento = fieldEditabileAccreditamentoService.getAllFieldEditabileForAccreditamento(accreditamentoId);
 		}
 
 		ByteArrayOutputStream byteArrayOutputStreamPdf = new ByteArrayOutputStream();
-        writePdfRiepilogo(byteArrayOutputStreamPdf, accreditamento, argument, valutazioneId, fieldsIntegrazioneAccreditamento);
+        writePdfRiepilogo(byteArrayOutputStreamPdf, accreditamento, argument, valutazioneId, fieldsEditabileAccreditamento);
 
         return byteArrayOutputStreamPdf;
 	}
 
-	private void writePdfRiepilogo(OutputStream outputStream, Accreditamento accreditamento, String argument, Long valutazioneId, Set<FieldIntegrazioneAccreditamento> fieldsIntegrazioneAccreditamento) throws Exception {
+	private void writePdfRiepilogo(OutputStream outputStream, Accreditamento accreditamento, String argument, Long valutazioneId, Set<FieldEditabileAccreditamento> fieldsEditabileAccreditamento) throws Exception {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, outputStream);
@@ -132,11 +132,11 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
             switch(argument) {
             case "domanda":
             	document.addTitle("Riepilogo della Domanda di Accreditamento " + accreditamento.getId());
-            	writePdfRiepilogoDomanda(document, accreditamento, fieldsIntegrazioneAccreditamento);
+            	writePdfRiepilogoDomanda(document, accreditamento, false, fieldsEditabileAccreditamento);
             	break;
             case "riepilogovariazionedati":
             	document.addTitle("Riepilogo della variazione dati della Domanda di Accreditamento " + accreditamento.getId());
-            	writePdfRiepilogoDomanda(document, accreditamento, fieldsIntegrazioneAccreditamento);
+            	writePdfRiepilogoDomanda(document, accreditamento, true, fieldsEditabileAccreditamento);
             	break;
             case "pianoFormativo":
             	document.addTitle("Riepilogo del Piano Formativo della Domanda di Accreditamento " + accreditamento.getId());
@@ -159,18 +159,40 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		}
 	}
 
+	private boolean integrazioneAbilitata(boolean showIntegrazioneInfo, Set<FieldEditabileAccreditamento> fieldsEditabileAccreditamento, IdFieldEnum idFieldEnum, Long objectReference) {
+		if(showIntegrazioneInfo) {
+			for(FieldEditabileAccreditamento fEdit : fieldsEditabileAccreditamento) {
+				if(fEdit.getIdField() == idFieldEnum) {
+					if(objectReference == null || objectReference == fEdit.getObjectReference()) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Chiamato sia per il riepilogo della domanda sia per il riepilogo della domanda in variazione dati con le info sui campi da integrare
 	 * @param document
 	 * @param accreditamento
 	 * @param fieldsIntegrazioneAccreditamento
 	 * @throws DocumentException
+	 * @throws IOException 
+	 * @throws MalformedURLException 
 	 */
-	private void writePdfRiepilogoDomanda(Document document, Accreditamento accreditamento, Set<FieldIntegrazioneAccreditamento> fieldsIntegrazioneAccreditamento) throws DocumentException {
+	private void writePdfRiepilogoDomanda(Document document, Accreditamento accreditamento, boolean showIntegrazioneInfo, Set<FieldEditabileAccreditamento> fieldsEditabileAccreditamento) throws DocumentException, MalformedURLException, IOException {
 		Provider provider = accreditamento.getProvider();
 		DatiAccreditamento dati = accreditamento.getDatiAccreditamento();
 		DatiEconomici datiEconomici = dati.getDatiEconomici();
 
+		if(showIntegrazioneInfo) {
+	        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	        String imgPath = classLoader.getResource("IntegrazioneAbilitata.png").getPath();
+	        imgIntegrazioneAbilitata = Image.getInstance(imgPath);
+	        imgIntegrazioneAbilitata.scaleAbsolute(16f, 16f);
+		}
+		
 		//TITOLO
 		Object[] values = {accreditamento.getTipoDomanda().getNome(), provider.getDenominazioneLegale(), longFormatter.print(provider.getId(), Locale.getDefault())};
         Paragraph parTitolo = new Paragraph();
@@ -181,6 +203,8 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 
         document.add(Chunk.NEWLINE);
         document.add(Chunk.NEWLINE);
+        
+        boolean inIntegrazione = false;
 
         //INFORMAZIONI DEL PROVIDER
         Paragraph parInfoProvider = new Paragraph();
@@ -188,16 +212,24 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         parInfoProvider.setFont(fontParTitolo);
         parInfoProvider.add(messageSource.getMessage("label.info_provider", null, Locale.getDefault()));
         document.add(parInfoProvider);
-        PdfPTable providerFields = getTableFields();
-        addCellLabelCampoValore("label.tipo_organizzatore", provider.getTipoOrganizzatore().getNome(), providerFields);
-		addCellLabelCampoValore("label.denominazione_legale", provider.getDenominazioneLegale(), providerFields);
-		addCellLabelCampoValore("label.partita_iva", provider.getPartitaIva(), providerFields);
-		addCellLabelCampoValore("label.codice_fiscale", provider.getCodiceFiscale(), providerFields);
-		addCellLabelCampoValoreEnum("label.ragione_sociale", provider.getRagioneSociale(), providerFields);
-		addCellLabelCampoValore("label.email", provider.getEmailStruttura(), providerFields);
-		addCellLabelCampoValore("label.natura_organizzazione", provider.getNaturaOrganizzazione(), providerFields);
+        PdfPTable providerFields = getTableFields(showIntegrazioneInfo);
+        addCellLabelCampoValore("label.tipo_organizzatore", provider.getTipoOrganizzatore().getNome(), providerFields, showIntegrazioneInfo, 
+        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE, null));
+		addCellLabelCampoValore("label.denominazione_legale", provider.getDenominazioneLegale(), providerFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.PROVIDER__DENOMINAZIONE_LEGALE, null));
+		addCellLabelCampoValore("label.partita_iva", provider.getPartitaIva(), providerFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.PROVIDER__PARTITA_IVA, null));
+		addCellLabelCampoValore("label.codice_fiscale", provider.getCodiceFiscale(), providerFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.PROVIDER__CODICE_FISCALE, null));
+		addCellLabelCampoValoreEnum("label.ragione_sociale", provider.getRagioneSociale(), providerFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.PROVIDER__RAGIONE_SOCIALE, null));
+		addCellLabelCampoValore("label.email", provider.getEmailStruttura(), providerFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.PROVIDER__EMAIL_STRUTTURA, null));
+		addCellLabelCampoValore("label.natura_organizzazione", provider.getNaturaOrganizzazione(), providerFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.PROVIDER__NATURA_ORGANIZZAZIONE, null));
 		String noProfit = provider.isNoProfit() ? (messageSource.getMessage("label.sì", null, Locale.getDefault())) : (messageSource.getMessage("label.no", null, Locale.getDefault()));
-		addCellLabelCampoValore("label.no_profit", noProfit, providerFields);
+		addCellLabelCampoValore("label.no_profit", noProfit, providerFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.PROVIDER__NO_PROFIT, null));
 		document.add(providerFields);
 
 		document.add(Chunk.NEWLINE);
@@ -208,8 +240,10 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		parLegaleRappresentante.setFont(fontParTitolo);
 		parLegaleRappresentante.add(messageSource.getMessage("label.legale_rappresentante", null, Locale.getDefault()));
         document.add(parLegaleRappresentante);
-        PdfPTable legaleFields = getTableFields();
-        addAllCellsPersonaByRuolo(provider.getLegaleRappresentante(), legaleFields, Ruolo.LEGALE_RAPPRESENTANTE);
+        PdfPTable legaleFields = getTableFields(showIntegrazioneInfo);
+        addCellLabelIntegrazioneSostAggRimoz("label.sostituisci_anagrafica", legaleFields, showIntegrazioneInfo, 
+        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.LEGALE_RAPPRESENTANTE__FULL, null));
+        addAllCellsPersonaByRuolo(provider.getLegaleRappresentante(), legaleFields, Ruolo.LEGALE_RAPPRESENTANTE, showIntegrazioneInfo, fieldsEditabileAccreditamento);
         document.add(legaleFields);
 
         document.add(Chunk.NEWLINE);
@@ -221,9 +255,11 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         	parDelegatoLegaleRappresentante.setFont(fontParTitolo);
         	parDelegatoLegaleRappresentante.add(messageSource.getMessage("label.delegato_legale_rappresentante", null, Locale.getDefault()));
             document.add(parDelegatoLegaleRappresentante);
-            PdfPTable delegatoLegaleFields = getTableFields();
-            addAllCellsPersonaByRuolo(provider.getLegaleRappresentante(), delegatoLegaleFields, Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE);
-            document.add(legaleFields);
+            PdfPTable delegatoLegaleFields = getTableFields(showIntegrazioneInfo);
+            addCellLabelIntegrazioneSostAggRimoz("label.sostituisci_anagrafica", delegatoLegaleFields, showIntegrazioneInfo, 
+            		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE__FULL, null));
+            addAllCellsPersonaByRuolo(provider.getDelegatoLegaleRappresentante(), delegatoLegaleFields, Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, showIntegrazioneInfo, fieldsEditabileAccreditamento);
+            document.add(delegatoLegaleFields);
 
             document.add(Chunk.NEWLINE);
         }
@@ -234,14 +270,20 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         parSediProvider.setFont(fontParTitolo);
         parSediProvider.add(messageSource.getMessage("label.sedi_provider", null, Locale.getDefault()));
         document.add(parSediProvider);
+        if(showIntegrazioneInfo) {
+	        PdfPTable sediAddRemove = getTableFields(showIntegrazioneInfo);
+	        addCellLabelIntegrazioneSostAggRimoz("label.modifica_sedi", sediAddRemove, showIntegrazioneInfo, 
+	        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__FULL, null));
+	        document.add(sediAddRemove);
+        }
         //SEDE LEGALE
         Paragraph parSedeLegale = new Paragraph();
         parSedeLegale.setAlignment(Element.ALIGN_LEFT);
         parSedeLegale.setFont(fontNomeCampo);
         parSedeLegale.add(messageSource.getMessage("label.sede_legale", null, Locale.getDefault()));
         document.add(parSedeLegale);
-        PdfPTable sedeLegaleFields = getTableFields();
-        addAllCellsSede(provider.getSedeLegale(), sedeLegaleFields);
+        PdfPTable sedeLegaleFields = getTableFields(showIntegrazioneInfo);
+        addAllCellsSede(provider.getSedeLegale(), sedeLegaleFields, showIntegrazioneInfo, fieldsEditabileAccreditamento);
         document.add(sedeLegaleFields);
         //SEDI OPERATIVE
         for(Sede s : provider.getSedi()) {
@@ -251,8 +293,8 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         		parSedeOperativa.setFont(fontNomeCampo);
         		parSedeOperativa.add(messageSource.getMessage("label.sede_operativa", null, Locale.getDefault()));
                 document.add(parSedeOperativa);
-                PdfPTable sedeOperativaFields = getTableFields();
-                addAllCellsSede(s, sedeOperativaFields);
+                PdfPTable sedeOperativaFields = getTableFields(showIntegrazioneInfo);
+                addAllCellsSede(s, sedeOperativaFields, showIntegrazioneInfo, fieldsEditabileAccreditamento);
                 document.add(sedeOperativaFields);
         	}
         }
@@ -265,14 +307,21 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         parTipologiaFormativa.setFont(fontParTitolo);
         parTipologiaFormativa.add(messageSource.getMessage("label.tipologia_formativa", null, Locale.getDefault()));
         document.add(parTipologiaFormativa);
-        PdfPTable tipologiaFormativaFields = getTableFields();
-        addCellLabelCampoValore("label.tipologiaAccreditamento", dati.getTipologiaAccreditamento(), tipologiaFormativaFields);
-        addCellLabelCampoValore("label.procedure_formative_tipologia", dati.getProcedureFormative(), tipologiaFormativaFields);
-        addCellLabelCampoValore("label.professioniAccreditamento", dati.getProfessioniAccreditamento(), tipologiaFormativaFields);
-        if(dati.getProfessioniAccreditamento().equals("Generale"))
-        	addCellLabelCampoLabel("label.professioni_discipline", "label.tutte_le_professioni", tipologiaFormativaFields);
-        else
-        	addCellLabelCampoValoreDiscipline("label.professioni_discipline", dati.getDiscipline(), tipologiaFormativaFields);
+        PdfPTable tipologiaFormativaFields = getTableFields(showIntegrazioneInfo);
+        addCellLabelCampoValore("label.tipologiaAccreditamento", dati.getTipologiaAccreditamento(), tipologiaFormativaFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__TIPOLOGIA_ACCREDITAMENTO, null));
+        addCellLabelCampoValore("label.procedure_formative_tipologia", dati.getProcedureFormative(), tipologiaFormativaFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE, null));
+        addCellLabelCampoValore("label.professioniAccreditamento", dati.getProfessioniAccreditamento(), tipologiaFormativaFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO, null));
+        if(dati.getProfessioniAccreditamento().equals("Generale")) {
+        	addCellLabelCampoLabel("label.professioni_discipline", "label.tutte_le_professioni", tipologiaFormativaFields, showIntegrazioneInfo, 
+    				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__DISCIPLINE, null));
+        	
+        } else {
+        	addCellLabelCampoValoreDiscipline("label.professioni_discipline", dati.getDiscipline(), tipologiaFormativaFields, showIntegrazioneInfo, 
+    				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__DISCIPLINE, null));
+        }
         document.add(tipologiaFormativaFields);
 
         document.add(Chunk.NEWLINE);
@@ -311,23 +360,35 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         parFatturatoComplessivo.setFont(fontNomeCampo);
         parFatturatoComplessivo.add(messageSource.getMessage("label.fatturato_complessivo_title", null, Locale.getDefault()));
         document.add(parFatturatoComplessivo);
-        PdfPTable fatturatoComplessivoFields = getTableFields();
-        if(datiEconomici.getFatturatoComplessivoValoreUno() != null)
-        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoUno()), datiEconomici.getFatturatoComplessivoValoreUno(), fatturatoComplessivoFields);
-        else
-        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoUno()), "--", fatturatoComplessivoFields);
-        if(datiEconomici.getFatturatoComplessivoValoreDue() != null)
-        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoDue()), datiEconomici.getFatturatoComplessivoValoreDue(), fatturatoComplessivoFields);
-        else
-        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoDue()), "--", fatturatoComplessivoFields);
-        if(datiEconomici.getFatturatoComplessivoValoreTre() != null)
-        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoTre()), datiEconomici.getFatturatoComplessivoValoreTre(), fatturatoComplessivoFields);
-        else
-        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoTre()), "--", fatturatoComplessivoFields);
-    	if(estrattoBilancioComplessivo != null)
-			addCellLabelCampoValore("label.estrattoBilancioComplessivo", estrattoBilancioComplessivo.getNomeFile(), fatturatoComplessivoFields);
-		else
-			addCellLabelCampoValore("label.estrattoBilancioComplessivo", getLabelAllegatoNonInserito(), fatturatoComplessivoFields);
+        PdfPTable fatturatoComplessivoFields = getTableFields(showIntegrazioneInfo);
+        if(datiEconomici.getFatturatoComplessivoValoreUno() != null) {
+        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoUno()), datiEconomici.getFatturatoComplessivoValoreUno(), fatturatoComplessivoFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO, null));
+        } else {
+        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoUno()), "--", fatturatoComplessivoFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO, null));
+        }
+        if(datiEconomici.getFatturatoComplessivoValoreDue() != null) {
+        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoDue()), datiEconomici.getFatturatoComplessivoValoreDue(), fatturatoComplessivoFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE, null));
+        } else {
+        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoDue()), "--", fatturatoComplessivoFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE, null));
+        }
+        if(datiEconomici.getFatturatoComplessivoValoreTre() != null) {
+        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoTre()), datiEconomici.getFatturatoComplessivoValoreTre(), fatturatoComplessivoFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE, null));
+        } else {
+        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoComplessivoAnnoTre()), "--", fatturatoComplessivoFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE, null));
+        }
+    	if(estrattoBilancioComplessivo != null) {
+			addCellLabelCampoValore("label.estrattoBilancioComplessivo", estrattoBilancioComplessivo.getNomeFile(), fatturatoComplessivoFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO, null));
+    	} else {
+			addCellLabelCampoValore("label.estrattoBilancioComplessivo", getLabelAllegatoNonInserito(), fatturatoComplessivoFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO, null));
+    	}
     	document.add(fatturatoComplessivoFields);
     	//FATTURATO FORMAZIONE
     	Paragraph parFatturatoFormazione = new Paragraph();
@@ -335,23 +396,35 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
     	parFatturatoFormazione.setFont(fontNomeCampo);
     	parFatturatoFormazione.add(messageSource.getMessage("label.fatturato_formazione_title", null, Locale.getDefault()));
         document.add(parFatturatoFormazione);
-        PdfPTable fatturatoFormazioneFields = getTableFields();
-        if(datiEconomici.getFatturatoFormazioneValoreUno() != null)
-        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoUno()), datiEconomici.getFatturatoFormazioneValoreUno(), fatturatoFormazioneFields);
-        else
-        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoUno()), "--", fatturatoFormazioneFields);
-        if(datiEconomici.getFatturatoFormazioneValoreDue() != null)
-        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoDue()), datiEconomici.getFatturatoFormazioneValoreDue(), fatturatoFormazioneFields);
-        else
-        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoDue()), "--", fatturatoFormazioneFields);
-        if(datiEconomici.getFatturatoFormazioneValoreTre() != null)
-        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoTre()), datiEconomici.getFatturatoFormazioneValoreTre(), fatturatoFormazioneFields);
-        else
-        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoTre()), "--", fatturatoFormazioneFields);
-    	if(estrattoBilancioFormazione != null)
-			addCellLabelCampoValore("label.estrattoBilancioFormazione", estrattoBilancioFormazione.getNomeFile(), fatturatoFormazioneFields);
-		else
-			addCellLabelCampoValore("label.estrattoBilancioFormazione", getLabelAllegatoNonInserito(), fatturatoFormazioneFields);
+        PdfPTable fatturatoFormazioneFields = getTableFields(showIntegrazioneInfo);
+        if(datiEconomici.getFatturatoFormazioneValoreUno() != null) {
+        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoUno()), datiEconomici.getFatturatoFormazioneValoreUno(), fatturatoFormazioneFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO, null));
+        } else {
+        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoUno()), "--", fatturatoFormazioneFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO, null));
+        }
+        if(datiEconomici.getFatturatoFormazioneValoreDue() != null) {
+        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoDue()), datiEconomici.getFatturatoFormazioneValoreDue(), fatturatoFormazioneFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE, null));
+        } else {
+        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoDue()), "--", fatturatoFormazioneFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE, null));
+        }
+        if(datiEconomici.getFatturatoFormazioneValoreTre() != null) {
+        	addCellValoreCampoValoreValuta(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoTre()), datiEconomici.getFatturatoFormazioneValoreTre(), fatturatoFormazioneFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE, null));
+        } else {
+        	addCellValoreCampoValore(Integer.toString(datiEconomici.getFatturatoFormazioneAnnoTre()), "--", fatturatoFormazioneFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE, null));
+        }
+    	if(estrattoBilancioFormazione != null) {
+			addCellLabelCampoValore("label.estrattoBilancioFormazione", estrattoBilancioFormazione.getNomeFile(), fatturatoFormazioneFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE, null));
+    	} else {
+			addCellLabelCampoValore("label.estrattoBilancioFormazione", getLabelAllegatoNonInserito(), fatturatoFormazioneFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE, null));
+    	}
     	document.add(fatturatoFormazioneFields);
 
     	document.add(Chunk.NEWLINE);
@@ -368,23 +441,35 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         parNumeroDipendenti.setFont(fontNomeCampo);
         parNumeroDipendenti.add(messageSource.getMessage("label.numero_dipendenti_title", null, Locale.getDefault()));
         document.add(parNumeroDipendenti);
-        PdfPTable dipendentiFields = getTableFields();
-        if(dati.getNumeroDipendentiFormazioneTempoIndeterminato() != null)
-        	addCellLabelCampoValore("label.tempo_indeterminato", intFormatter.print(dati.getNumeroDipendentiFormazioneTempoIndeterminato(), Locale.getDefault()), dipendentiFields);
-        else
-        	addCellLabelCampoValore("label.tempo_indeterminato", "--", dipendentiFields);
-        if(dati.getNumeroDipendentiFormazioneAltro() != null)
-        	addCellLabelCampoValore("label.altro_personale", intFormatter.print(dati.getNumeroDipendentiFormazioneAltro(), Locale.getDefault()), dipendentiFields);
-        else
-        	addCellLabelCampoValore("label.altro_personale", "--", dipendentiFields);
-    	if(organigramma != null)
-			addCellLabelCampoValore("label.organigramma", organigramma.getNomeFile(), dipendentiFields);
-		else
-			addCellLabelCampoValore("label.organigramma", getLabelAllegatoNonInserito(), dipendentiFields);
-    	if(funzionigramma != null)
-			addCellLabelCampoValore("label.funzionigramma", funzionigramma.getNomeFile(), dipendentiFields);
-		else
-			addCellLabelCampoValore("label.funzionigramma", getLabelAllegatoNonInserito(), dipendentiFields);
+        PdfPTable dipendentiFields = getTableFields(showIntegrazioneInfo);
+        if(dati.getNumeroDipendentiFormazioneTempoIndeterminato() != null) {
+        	addCellLabelCampoValore("label.tempo_indeterminato", intFormatter.print(dati.getNumeroDipendentiFormazioneTempoIndeterminato(), Locale.getDefault()), dipendentiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO, null));
+        } else {
+        	addCellLabelCampoValore("label.tempo_indeterminato", "--", dipendentiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO, null));
+        }
+        if(dati.getNumeroDipendentiFormazioneAltro() != null) {
+        	addCellLabelCampoValore("label.altro_personale", intFormatter.print(dati.getNumeroDipendentiFormazioneAltro(), Locale.getDefault()), dipendentiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO, null));
+        } else {
+        	addCellLabelCampoValore("label.altro_personale", "--", dipendentiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO, null));
+        }
+    	if(organigramma != null) {
+			addCellLabelCampoValore("label.organigramma", organigramma.getNomeFile(), dipendentiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__ORGANIGRAMMA, null));
+    	} else {
+			addCellLabelCampoValore("label.organigramma", getLabelAllegatoNonInserito(), dipendentiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__ORGANIGRAMMA, null));
+    	}
+    	if(funzionigramma != null) {
+			addCellLabelCampoValore("label.funzionigramma", funzionigramma.getNomeFile(), dipendentiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FUNZIONIGRAMMA, null));
+    	} else {
+			addCellLabelCampoValore("label.funzionigramma", getLabelAllegatoNonInserito(), dipendentiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FUNZIONIGRAMMA, null));
+    	}
     	document.add(dipendentiFields);
 
     	document.add(Chunk.NEWLINE);
@@ -395,8 +480,10 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		parResponsabileSegreteria.setFont(fontParTitolo);
 		parResponsabileSegreteria.add(messageSource.getMessage("label.responsabile_segreteria", null, Locale.getDefault()));
         document.add(parResponsabileSegreteria);
-        PdfPTable respSegreteriaFields = getTableFields();
-        addAllCellsPersonaByRuolo(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_SEGRETERIA), respSegreteriaFields, Ruolo.RESPONSABILE_SEGRETERIA);
+        PdfPTable respSegreteriaFields = getTableFields(showIntegrazioneInfo);
+        addCellLabelIntegrazioneSostAggRimoz("label.sostituisci_anagrafica", respSegreteriaFields, showIntegrazioneInfo, 
+        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.RESPONSABILE_SEGRETERIA__FULL, null));
+        addAllCellsPersonaByRuolo(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_SEGRETERIA), respSegreteriaFields, Ruolo.RESPONSABILE_SEGRETERIA, showIntegrazioneInfo, fieldsEditabileAccreditamento);
         document.add(respSegreteriaFields);
 
         document.add(Chunk.NEWLINE);
@@ -407,8 +494,10 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		parResponsabileAmministrativo.setFont(fontParTitolo);
 		parResponsabileAmministrativo.add(messageSource.getMessage("label.responsabile_amministrativo", null, Locale.getDefault()));
 	    document.add(parResponsabileAmministrativo);
-	    PdfPTable respAmministrativoFields = getTableFields();
-	    addAllCellsPersonaByRuolo(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_AMMINISTRATIVO), respAmministrativoFields, Ruolo.RESPONSABILE_AMMINISTRATIVO);
+	    PdfPTable respAmministrativoFields = getTableFields(showIntegrazioneInfo);
+        addCellLabelIntegrazioneSostAggRimoz("label.sostituisci_anagrafica", respAmministrativoFields, showIntegrazioneInfo, 
+        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__FULL, null));
+	    addAllCellsPersonaByRuolo(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_AMMINISTRATIVO), respAmministrativoFields, Ruolo.RESPONSABILE_AMMINISTRATIVO, showIntegrazioneInfo, fieldsEditabileAccreditamento);
 	    document.add(respAmministrativoFields);
 
 	    document.add(Chunk.NEWLINE);
@@ -419,8 +508,10 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		parResponsabileSistemaInformatico.setFont(fontParTitolo);
 		parResponsabileSistemaInformatico.add(messageSource.getMessage("label.responsabile_sistema_informatico", null, Locale.getDefault()));
 	    document.add(parResponsabileSistemaInformatico);
-	    PdfPTable respSistemaInformaticoFields = getTableFields();
-	    addAllCellsPersonaByRuolo(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_SISTEMA_INFORMATICO), respSistemaInformaticoFields, Ruolo.RESPONSABILE_SISTEMA_INFORMATICO);
+	    PdfPTable respSistemaInformaticoFields = getTableFields(showIntegrazioneInfo);
+        addCellLabelIntegrazioneSostAggRimoz("label.sostituisci_anagrafica", respSistemaInformaticoFields, showIntegrazioneInfo, 
+        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__FULL, null));
+	    addAllCellsPersonaByRuolo(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_SISTEMA_INFORMATICO), respSistemaInformaticoFields, Ruolo.RESPONSABILE_SISTEMA_INFORMATICO, showIntegrazioneInfo, fieldsEditabileAccreditamento);
 	    document.add(respSistemaInformaticoFields);
 
 	    document.add(Chunk.NEWLINE);
@@ -431,8 +522,10 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		parResponsabileQualita.setFont(fontParTitolo);
 		parResponsabileQualita.add(messageSource.getMessage("label.responsabile_qualita", null, Locale.getDefault()));
 	    document.add(parResponsabileQualita);
-	    PdfPTable respQualitaFields = getTableFields();
-	    addAllCellsPersonaByRuolo(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_QUALITA), respQualitaFields, Ruolo.RESPONSABILE_QUALITA);
+	    PdfPTable respQualitaFields = getTableFields(showIntegrazioneInfo);
+        addCellLabelIntegrazioneSostAggRimoz("label.sostituisci_anagrafica", respQualitaFields, showIntegrazioneInfo, 
+        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.RESPONSABILE_QUALITA__FULL, null));
+	    addAllCellsPersonaByRuolo(provider.getPersonaByRuolo(Ruolo.RESPONSABILE_QUALITA), respQualitaFields, Ruolo.RESPONSABILE_QUALITA, showIntegrazioneInfo, fieldsEditabileAccreditamento);
 	    document.add(respQualitaFields);
 
 	    document.add(Chunk.NEWLINE);
@@ -443,14 +536,22 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         parComponenti.setFont(fontParTitolo);
         parComponenti.add(messageSource.getMessage("label.componenti_comitato_scientifico", null, Locale.getDefault()));
         document.add(parComponenti);
+        
+        if(showIntegrazioneInfo) {
+	        PdfPTable comSciAddRemove = getTableFields(showIntegrazioneInfo);
+	        addCellLabelIntegrazioneSostAggRimoz("label.modifica_comitato", comSciAddRemove, showIntegrazioneInfo, 
+	        		integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__FULL, null));
+	        document.add(comSciAddRemove);
+        }
+        
         //COORDINATORE
         Paragraph parCoordinatore = new Paragraph();
         parCoordinatore.setAlignment(Element.ALIGN_LEFT);
         parCoordinatore.setFont(fontNomeCampo);
         parCoordinatore.add(messageSource.getMessage("label.coordinatore", null, Locale.getDefault()));
         document.add(parCoordinatore);
-        PdfPTable coordinatoreFields = getTableFields();
-        addAllCellsPersonaByRuolo(provider.getCoordinatoreComitatoScientifico(), coordinatoreFields, Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
+        PdfPTable coordinatoreFields = getTableFields(showIntegrazioneInfo);
+        addAllCellsPersonaByRuolo(provider.getCoordinatoreComitatoScientifico(), coordinatoreFields, Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, showIntegrazioneInfo, fieldsEditabileAccreditamento);
         document.add(coordinatoreFields);
         //COMPONENTI
         for(Persona p : provider.getComponentiComitatoScientifico()) {
@@ -460,8 +561,8 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
         		parComponente.setFont(fontNomeCampo);
         		parComponente.add(messageSource.getMessage("label.componente", null, Locale.getDefault()));
                 document.add(parComponente);
-                PdfPTable componenteFields = getTableFields();
-                addAllCellsPersonaByRuolo(p, componenteFields, Ruolo.COMPONENTE_COMITATO_SCIENTIFICO);
+                PdfPTable componenteFields = getTableFields(showIntegrazioneInfo);
+                addAllCellsPersonaByRuolo(p, componenteFields, Ruolo.COMPONENTE_COMITATO_SCIENTIFICO, showIntegrazioneInfo, fieldsEditabileAccreditamento);
                 document.add(componenteFields);
         	}
         }
@@ -516,58 +617,87 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		parAllegati.setFont(fontParTitolo);
 		parAllegati.add(messageSource.getMessage("label.allegati", null, Locale.getDefault()));
         document.add(parAllegati);
-		PdfPTable allegatiFields = getTableFields();
-		if(attoCostitutivo != null)
-			addCellLabelCampoValore("label.attoCostitutivo", attoCostitutivo.getNomeFile(), allegatiFields);
-		else
-			addCellLabelCampoValore("label.attoCostitutivo", getLabelAllegatoNonInserito(), allegatiFields);
-		if(dichiarazioneEsclusione != null)
-			addCellLabelCampoValore("label.dichiarazioneEsclusione", dichiarazioneEsclusione.getNomeFile(), allegatiFields);
-		else
-			addCellLabelCampoValore("label.dichiarazioneEsclusione", getLabelAllegatoNonInserito(), allegatiFields);
-		if(esperienzaFormazione != null)
-			addCellLabelCampoValore("label.esperienzaFormazione", esperienzaFormazione.getNomeFile(), allegatiFields);
-		else
-			addCellLabelCampoValore("label.esperienzaFormazione", getLabelAllegatoNonInserito(), allegatiFields);
-		if(utilizzoSedi != null)
-			addCellLabelCampoValore("label.utilizzo", utilizzoSedi.getNomeFile(), allegatiFields);
-		else
-			addCellLabelCampoValore("label.utilizzo", getLabelAllegatoNonInserito(), allegatiFields);
-		if(sistemaInformatico != null)
-			addCellLabelCampoValore("label.sistemaInformatico", sistemaInformatico.getNomeFile(), allegatiFields);
-		else
-			addCellLabelCampoValore("label.sistemaInformatico", getLabelAllegatoNonInserito(), allegatiFields);
-		if(pianoQualita != null)
-			addCellLabelCampoValore("label.pianoQualita", pianoQualita.getNomeFile(), allegatiFields);
-		else
-			addCellLabelCampoValore("label.pianoQualita", getLabelAllegatoNonInserito(), allegatiFields);
-		if(dichiarazioneLegaleRappresentante != null) {
+		PdfPTable allegatiFields = getTableFields(showIntegrazioneInfo);
+		if(attoCostitutivo != null) {
+			addCellLabelCampoValore("label.attoCostitutivo", attoCostitutivo.getNomeFile(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO, null));
+		} else {
+			addCellLabelCampoValore("label.attoCostitutivo", getLabelAllegatoNonInserito(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO, null));
+		}
+		if(dichiarazioneEsclusione != null) {
+			addCellLabelCampoValore("label.dichiarazioneEsclusione", dichiarazioneEsclusione.getNomeFile(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE, null));
+		} else {
+			addCellLabelCampoValore("label.dichiarazioneEsclusione", getLabelAllegatoNonInserito(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE, null));
+		}
+		if(esperienzaFormazione != null) {
+			addCellLabelCampoValore("label.esperienzaFormazione", esperienzaFormazione.getNomeFile(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE, null));
+		} else {
+			addCellLabelCampoValore("label.esperienzaFormazione", getLabelAllegatoNonInserito(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE, null));
+		}
+		if(utilizzoSedi != null) {
+			addCellLabelCampoValore("label.utilizzo", utilizzoSedi.getNomeFile(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__UTILIZZO, null));
+		} else {
+			addCellLabelCampoValore("label.utilizzo", getLabelAllegatoNonInserito(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__UTILIZZO, null));
+		}
+		if(sistemaInformatico != null) {
+			addCellLabelCampoValore("label.sistemaInformatico", sistemaInformatico.getNomeFile(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO, null));
+		} else {
+			addCellLabelCampoValore("label.sistemaInformatico", getLabelAllegatoNonInserito(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO, null));
+		}
+		if(pianoQualita != null) {
+			addCellLabelCampoValore("label.pianoQualita", pianoQualita.getNomeFile(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA, null));
+		} else {
+			addCellLabelCampoValore("label.pianoQualita", getLabelAllegatoNonInserito(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA, null));
+		}
+		if(dichiarazioneLegaleRappresentante != null) { 
 			if(dichiarazioneLegaleRappresentante.getProtocollo() != null) {
 				Object[] valuesProtocollo = {intFormatter.print(dichiarazioneLegaleRappresentante.getProtocollo().getNumero(), Locale.getDefault()), dateTimeFormatter.format(dichiarazioneLegaleRappresentante.getProtocollo().getData())};
-				addCellLabelCampoValore("label.dichiarazioneLegale", dichiarazioneLegaleRappresentante.getNomeFile() + " - " + messageSource.getMessage("label.info_protocollo", valuesProtocollo, Locale.getDefault()), allegatiFields);
+				addCellLabelCampoValore("label.dichiarazioneLegale", dichiarazioneLegaleRappresentante.getNomeFile() + " - " + messageSource.getMessage("label.info_protocollo", valuesProtocollo, Locale.getDefault()), allegatiFields, 
+	        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE, null));
 			}
 			else {
-				addCellLabelCampoValore("label.dichiarazioneLegale", dichiarazioneLegaleRappresentante.getNomeFile(), allegatiFields);
+				addCellLabelCampoValore("label.dichiarazioneLegale", dichiarazioneLegaleRappresentante.getNomeFile(), allegatiFields, 
+	        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE, null));
 			}
 		}
-		else
-			addCellLabelCampoValore("label.dichiarazioneLegale", getLabelAllegatoNonInserito(), allegatiFields);
+		else {
+			addCellLabelCampoValore("label.dichiarazioneLegale", getLabelAllegatoNonInserito(), allegatiFields, 
+        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE, null));
+		}
 		if(accreditamento.isStandard()) {
 			if(richiestaAccreditamentoStandard != null) {
 				if(richiestaAccreditamentoStandard.getProtocollo() != null) {
 					Object[] valuesProtocollo = {intFormatter.print(richiestaAccreditamentoStandard.getProtocollo().getNumero(), Locale.getDefault()), dateTimeFormatter.format(richiestaAccreditamentoStandard.getProtocollo().getData())};
-					addCellLabelCampoValore("label.richiestaAccreditamentoStandard", richiestaAccreditamentoStandard.getNomeFile() + " - " + messageSource.getMessage("label.info_protocollo", valuesProtocollo, Locale.getDefault()), allegatiFields);
+					addCellLabelCampoValore("label.richiestaAccreditamentoStandard", richiestaAccreditamentoStandard.getNomeFile() + " - " + messageSource.getMessage("label.info_protocollo", valuesProtocollo, Locale.getDefault()), allegatiFields, 
+		        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD, null));
 				}
 				else {
-					addCellLabelCampoValore("label.richiestaAccreditamentoStandard", richiestaAccreditamentoStandard.getNomeFile(), allegatiFields);
+					addCellLabelCampoValore("label.richiestaAccreditamentoStandard", richiestaAccreditamentoStandard.getNomeFile(), allegatiFields, 
+		        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD, null));
 				}
 			}
-			else
-				addCellLabelCampoValore("label.richiestaAccreditamentoStandard", getLabelAllegatoNonInserito(), allegatiFields);
-			if(relazioneAttivitaFormativa != null)
-				addCellLabelCampoValore("label.relazioneAttivitaFormativa", relazioneAttivitaFormativa.getNomeFile(), allegatiFields);
-			else
-				addCellLabelCampoValore("label.relazioneAttivitaFormativa", getLabelAllegatoNonInserito(), allegatiFields);
+			else {
+				addCellLabelCampoValore("label.richiestaAccreditamentoStandard", getLabelAllegatoNonInserito(), allegatiFields, 
+	        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD, null));
+			}
+			if(relazioneAttivitaFormativa != null) {
+				addCellLabelCampoValore("label.relazioneAttivitaFormativa", relazioneAttivitaFormativa.getNomeFile(), allegatiFields, 
+	        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA, null));
+			} else {
+				addCellLabelCampoValore("label.relazioneAttivitaFormativa", getLabelAllegatoNonInserito(), allegatiFields, 
+	        			showIntegrazioneInfo, integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA, null));
+			}
 		}
 		document.add(allegatiFields);
 
@@ -892,9 +1022,21 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 	}
 
 	private PdfPTable getTableFields() throws DocumentException {
-		PdfPTable tableFields = new PdfPTable(2);
-		tableFields.setWidthPercentage(100);
-		tableFields.setWidths(new float[]{1, 3});
+		return getTableFields(false);
+	}
+	
+	private PdfPTable getTableFields(boolean showIntegrazioneInfo) throws DocumentException {
+		PdfPTable tableFields = null;
+		if(showIntegrazioneInfo) {
+			tableFields = new PdfPTable(3);
+			tableFields.setWidthPercentage(100);
+			tableFields.setWidths(new float[]{1, 5, 18});
+			
+		} else {
+			tableFields = new PdfPTable(2);
+			tableFields.setWidthPercentage(100);
+			tableFields.setWidths(new float[]{1, 3});			
+		}
 		tableFields.setSpacingBefore(spacingBefore);
 		tableFields.setSpacingAfter(spacingAfter);
 		return tableFields;
@@ -926,27 +1068,72 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		cell.setPadding(cellPaddingSubTable);
 		table.addCell(cell);
 	}
+	
+	private void addCellLabelIntegrazioneSostAggRimoz(String labelCampo, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
+		addCellIntegrazioneSostAggRimoz(messageSource.getMessage(labelCampo, null, Locale.getDefault()), table, showIntegrazioneInfo, inIntegrazione);
+	}
+	
+	private void addCellIntegrazioneSostAggRimoz(String nomeCampo, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
+		if(showIntegrazioneInfo) {
+			addCellShowIntegrazione(table, showIntegrazioneInfo, inIntegrazione);
+			
+			PdfPCell cell = getCellLabel(nomeCampo);
+			cell.setColspan(2);
+			cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+			table.addCell(cell);
+		}
+	}
 
+	private void addCellLabelCampoValore(String labelCampo, String valoreCampo, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
+		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table, showIntegrazioneInfo, inIntegrazione);
+	}
+	
 	private void addCellLabelCampoValore(String labelCampo, String valoreCampo, PdfPTable table) {
 		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
 	}
 
 	private void addCellLabelCampoLabel(String labelCampo, String valoreCampo, PdfPTable table) {
-		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), messageSource.getMessage(valoreCampo, null, Locale.getDefault()), table);
+		addCellLabelCampoLabel(labelCampo, valoreCampo, table, false, false);
+	}
+	
+	private void addCellLabelCampoLabel(String labelCampo, String valoreCampo, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
+		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), messageSource.getMessage(valoreCampo, null, Locale.getDefault()), table, showIntegrazioneInfo, inIntegrazione);
 	}
 
 	private void addCellValoreCampoValoreValuta(String labelCampo, BigDecimal valoreLongCampo, PdfPTable table) {
+		addCellValoreCampoValoreValuta(labelCampo, valoreLongCampo, table, false, false);
+	}
+	
+	private void addCellValoreCampoValoreValuta(String labelCampo, BigDecimal valoreLongCampo, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
 		String valoreCampo = null;
 		if(valoreLongCampo != null)
 			valoreCampo = valutaFormatter.print(valoreLongCampo, Locale.getDefault()) + "€";
-		addCellCampoValore(labelCampo, valoreCampo, table);
+		addCellCampoValore(labelCampo, valoreCampo, table, showIntegrazioneInfo, inIntegrazione);
 	}
 
-	private void addCellValoreCampoValore(String labelCampo, String valoreCampo, PdfPTable table) {
-		addCellCampoValore(labelCampo, valoreCampo, table);
+	private void addCellShowIntegrazione(PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
+		if(showIntegrazioneInfo) {
+			if(inIntegrazione) {
+				PdfPCell cellIntInfo = new PdfPCell(imgIntegrazioneAbilitata);
+				cellIntInfo.setBorder(PdfPCell.NO_BORDER);
+				cellIntInfo.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				cellIntInfo.setPadding(cellPadding);
+				table.addCell(cellIntInfo);				
+			} else {
+				PdfPCell cellIntInfo = new PdfPCell();
+				cellIntInfo.setBorder(PdfPCell.NO_BORDER);
+				table.addCell(cellIntInfo);
+			}
+		}
+	}
+	
+	private void addCellValoreCampoValore(String labelCampo, String valoreCampo, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
+		addCellCampoValore(labelCampo, valoreCampo, table, showIntegrazioneInfo, inIntegrazione);
 	}
 
-	private void addCellCampoValore(String nomeCampo, String valoreCampo, PdfPTable table) {
+	private void addCellCampoValore(String nomeCampo, String valoreCampo, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
+		addCellShowIntegrazione(table, showIntegrazioneInfo, inIntegrazione);
+		
 		PdfPCell cell = getCellLabel(nomeCampo);
 		table.addCell(cell);
 		if(valoreCampo == null || valoreCampo.isEmpty())
@@ -955,8 +1142,16 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 			cell = getCellValore(valoreCampo);
 		table.addCell(cell);
 	}
+	
+	private void addCellCampoValore(String nomeCampo, String valoreCampo, PdfPTable table) {
+		addCellCampoValore(nomeCampo, valoreCampo, table, false, false);
+	}
 
 	private void addCellLabelCampoValore(String labelCampo, Set<? extends INomeEnum> valoriEnumCampo, PdfPTable table) {
+		addCellLabelCampoValore(labelCampo, valoriEnumCampo, table, false, false);
+	}
+	
+	private void addCellLabelCampoValore(String labelCampo, Set<? extends INomeEnum> valoriEnumCampo, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
 		String valoreCampo = "";
 		if(valoriEnumCampo != null && valoriEnumCampo.size() > 0) {
 			boolean write = false;
@@ -967,10 +1162,16 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 				write = true;
 			}
 		}
-		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
+		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table, showIntegrazioneInfo, inIntegrazione);
 	}
 
 	private void addCellCampoValore(String nomeCampo, PdfPTable tableCampo, PdfPTable table, boolean tableInNewLine) {
+		addCellCampoValore(nomeCampo, tableCampo, table, tableInNewLine, false, false);
+	}
+	
+	private void addCellCampoValore(String nomeCampo, PdfPTable tableCampo, PdfPTable table, boolean tableInNewLine, boolean showIntegrazioneInfo, boolean inIntegrazione) {
+		addCellShowIntegrazione(table, showIntegrazioneInfo, inIntegrazione);
+		
 		PdfPCell cell = getCellLabel(nomeCampo);
 		table.addCell(cell);
 
@@ -990,6 +1191,10 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
     }
 
 	private void addCellLabelCampoValoreDiscipline(String labelCampo, Set<Disciplina> discipline, PdfPTable table) throws DocumentException  {
+		addCellLabelCampoValoreDiscipline(labelCampo, discipline, table, false, false);
+	}
+	
+	private void addCellLabelCampoValoreDiscipline(String labelCampo, Set<Disciplina> discipline, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) throws DocumentException  {
 		PdfPTable tableDisc = null;
 		if(discipline != null && discipline.size() > 0) {
 			Map<String, Set<String>> professioniDiscipline = new HashMap<String, Set<String>>();
@@ -1047,17 +1252,83 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
     	return cell;
     }
 
-	//Mostra il toString() dell'enum
 	private void addCellLabelCampoValoreEnum(String labelCampo, Enum valoreEnumCampo, PdfPTable table) {
+		addCellLabelCampoValoreEnum(labelCampo, valoreEnumCampo, table, false, false);
+	}
+	
+	//Mostra il toString() dell'enum
+	private void addCellLabelCampoValoreEnum(String labelCampo, Enum valoreEnumCampo, PdfPTable table, boolean showIntegrazioneInfo, boolean inIntegrazione) {
 		String valoreCampo = null;
 		if(valoreEnumCampo != null)
 			valoreCampo = valoreEnumCampo.toString();
-		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table);
+		addCellCampoValore(messageSource.getMessage(labelCampo, null, Locale.getDefault()), valoreCampo, table, showIntegrazioneInfo, inIntegrazione);
 	}
 
 	private PdfPCell getCellLabel(String nomeCampo) {
     	PdfPCell cell = new PdfPCell(new Phrase(nomeCampo, fontNomeCampo));
 		cell.setBorder(PdfPCell.NO_BORDER);
+		cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+		cell.setPadding(cellPadding);
+		return cell;
+    }
+
+	private PdfPCell getCellLabelTODELETE(String nomeCampo, boolean showIntegrazioneInfo, boolean inIntegrazione) {
+		PdfPCell cell;
+		if(showIntegrazioneInfo && inIntegrazione) {
+			//cell = new PdfPCell(imgIntegrazioneAbilitata, false);
+			
+			
+			/*
+Paragraph p = new Paragraph();
+p.Add(new Phrase("Test "));
+p.Add(new Chunk(image, 0, 0));
+p.Add(new Phrase(" more text "));
+p.Add(new Chunk(image, 0, 0));
+p.Add(new Chunk(image, 0, 0));
+p.Add(new Phrase(" end."));
+cell.AddElement(p);
+			 */
+			Paragraph p = new Paragraph();
+			p.add(new Chunk(imgIntegrazioneAbilitata, 0, 0));
+			p.add(new Phrase(" " + nomeCampo, fontNomeCampo));
+			//p.setAlignment(Element.ALIGN_MIDDLE);
+
+			cell = new PdfPCell(p);
+//			cell.addElement(imgIntegrazioneAbilitata);
+			//cell.addElement(p);
+//			cell.addElement(new Phrase(nomeCampo, fontNomeCampo));
+			/*
+PdfPCell cell = new PdfPCell();
+cell.AddElement(image128);
+Paragraph p = new Paragraph("Student name");
+p.Alignment = Element.ALIGN_CENTER;
+cell.AddElement(p);
+BarCodeTable.AddCell(cell);
+			 */
+			
+			//Con tabella ew 2 colonne
+			PdfPTable tableLabel = new PdfPTable(2);
+			tableLabel.setWidthPercentage(100);
+			try {
+				tableLabel.setWidths(new float[]{1, 5});
+			} catch (DocumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			tableLabel.setSpacingBefore(0);
+			tableLabel.setSpacingAfter(0);
+			PdfPCell cellLabel = new PdfPCell(imgIntegrazioneAbilitata);
+			cellLabel.setPadding(0);
+			tableLabel.addCell(cellLabel);
+			cellLabel = new PdfPCell(new Phrase(nomeCampo, fontNomeCampo));
+			cellLabel.setPadding(0);
+			tableLabel.addCell(cellLabel);
+			cell = new PdfPCell(tableLabel);
+			
+		} else {
+			cell = new PdfPCell(new Phrase(nomeCampo, fontNomeCampo));
+		}
+		//cell.setBorder(PdfPCell.NO_BORDER);
 		cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		cell.setPadding(cellPadding);
 		return cell;
@@ -1076,6 +1347,10 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 	}
 
 	private void addAllCellsPersonaByRuolo(Persona persona, PdfPTable tableFields, Ruolo ruolo) {
+		addAllCellsPersonaByRuolo(persona, tableFields, ruolo, false, null);
+	}
+	
+	private void addAllCellsPersonaByRuolo(Persona persona, PdfPTable tableFields, Ruolo ruolo, boolean showIntegrazioneInfo, Set<FieldEditabileAccreditamento> fieldsEditabileAccreditamento) {
 		Anagrafica anagrafica = persona.getAnagrafica();
 		File attoNomina = null;
 		File cv = null;
@@ -1095,45 +1370,109 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 				break;
 			}
 		}
-		addCellLabelCampoValore("label.cognome", anagrafica.getCognome(), tableFields);
-		addCellLabelCampoValore("label.nome", anagrafica.getNome(), tableFields);
-		addCellLabelCampoValore("label.codice_fiscale", anagrafica.getCodiceFiscale(), tableFields);
-		addCellLabelCampoValore("label.telefono", anagrafica.getTelefono(), tableFields);
-		if(ruolo == Ruolo.LEGALE_RAPPRESENTANTE || ruolo == Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE)
-			addCellLabelCampoValore("label.cellulare", anagrafica.getCellulare(), tableFields);
-		addCellLabelCampoValore("label.email", anagrafica.getEmail(), tableFields);
-		if(ruolo == Ruolo.LEGALE_RAPPRESENTANTE)
-			addCellLabelCampoValore("label.pec", anagrafica.getPec(), tableFields);
+		
+//		addCellLabelCampoValore("label.no_profit", noProfit, providerFields, showIntegrazioneInfo, 
+//				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.PROVIDER__NO_PROFIT, null));
+		
+		
+/*
+	LEGALE_RAPPRESENTANTE__FULL ("persona.anagrafica",-1,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "full", false),
+	LEGALE_RAPPRESENTANTE__COGNOME ("persona.anagrafica.cognome",9,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.cognome", true),
+	LEGALE_RAPPRESENTANTE__NOME ("persona.anagrafica.nome",10,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.nome", true),
+	LEGALE_RAPPRESENTANTE__CODICEFISCALE ("persona.anagrafica.codiceFiscale",11,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.codiceFiscale", true),
+	LEGALE_RAPPRESENTANTE__TELEFONO ("persona.anagrafica.telefono",12,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.telefono", true),
+	LEGALE_RAPPRESENTANTE__CELLULARE ("persona.anagrafica.cellulare",13,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.cellulare", true),
+	LEGALE_RAPPRESENTANTE__EMAIL ("persona.anagrafica.email",14,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.email", true),
+	LEGALE_RAPPRESENTANTE__PEC ("persona.anagrafica.pec",15,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "anagrafica.pec", true),
+	LEGALE_RAPPRESENTANTE__ATTO_NOMINA ("attoNomina",16,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "files.FILE_ATTO_NOMINA", false),
+	LEGALE_RAPPRESENTANTE__CV ("cv",17,Ruolo.LEGALE_RAPPRESENTANTE, SubSetFieldEnum.LEGALE_RAPPRESENTANTE, "files.FILE_CV", false),
+ 
+ 	DELEGATO_LEGALE_RAPPRESENTANTE__FULL ("persona.anagrafica",-1,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "full", false),
+	DELEGATO_LEGALE_RAPPRESENTANTE__COGNOME ("persona.anagrafica.cognome",18,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.cognome", true),
+	DELEGATO_LEGALE_RAPPRESENTANTE__NOME ("persona.anagrafica.nome",19,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.nome", true),
+	DELEGATO_LEGALE_RAPPRESENTANTE__CODICEFISCALE ("persona.anagrafica.codiceFiscale",20,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.codiceFiscale", true),
+	DELEGATO_LEGALE_RAPPRESENTANTE__TELEFONO ("persona.anagrafica.telefono",21,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.telefono", true),
+	DELEGATO_LEGALE_RAPPRESENTANTE__CELLULARE ("persona.anagrafica.cellulare",22,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.cellulare", true),
+	DELEGATO_LEGALE_RAPPRESENTANTE__EMAIL ("persona.anagrafica.email",23,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "anagrafica.email", true),
+	DELEGATO_LEGALE_RAPPRESENTANTE__DELEGA ("delega",24,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "files.FILE_DELEGA", false),
+	DELEGATO_LEGALE_RAPPRESENTANTE__CV ("cv",25,Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE, SubSetFieldEnum.DELEGATO_LEGALE_RAPPRESENTANTE, "files.FILE_CV", false),
+
+ */
+		Long idPersona = null;
+		if(ruolo == Ruolo.COMPONENTE_COMITATO_SCIENTIFICO)
+			idPersona = persona.getId();
+		
+		addCellLabelCampoValore("label.cognome", anagrafica.getCognome(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("persona.anagrafica.cognome", ruolo), idPersona));
+		addCellLabelCampoValore("label.nome", anagrafica.getNome(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("persona.anagrafica.nome", ruolo), idPersona));
+		addCellLabelCampoValore("label.codice_fiscale", anagrafica.getCodiceFiscale(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("persona.anagrafica.codiceFiscale", ruolo), idPersona));
+		addCellLabelCampoValore("label.telefono", anagrafica.getTelefono(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("persona.anagrafica.telefono", ruolo), idPersona));
+		if(ruolo == Ruolo.LEGALE_RAPPRESENTANTE || ruolo == Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE) {
+			addCellLabelCampoValore("label.cellulare", anagrafica.getCellulare(), tableFields, showIntegrazioneInfo, 
+					integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("persona.anagrafica.cellulare", ruolo), idPersona));
+		}
+		addCellLabelCampoValore("label.email", anagrafica.getEmail(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("persona.anagrafica.email", ruolo), idPersona));
+		if(ruolo == Ruolo.LEGALE_RAPPRESENTANTE) {
+			addCellLabelCampoValore("label.pec", anagrafica.getPec(), tableFields, showIntegrazioneInfo, 
+					integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("persona.anagrafica.pec", ruolo), idPersona));
+		}
 		if(ruolo == Ruolo.COMPONENTE_COMITATO_SCIENTIFICO) {
-			addCellLabelCampoValore("label.professione", persona.getProfessione().getNome(), tableFields);
+			addCellLabelCampoValore("label.professione", persona.getProfessione().getNome(), tableFields, showIntegrazioneInfo, 
+					integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("persona.professione", ruolo), idPersona));
 		}
 		if(ruolo != Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE) {
-			if(attoNomina != null)
-				addCellLabelCampoValore("label.attoNomina", attoNomina.getNomeFile(), tableFields);
-			else
-				addCellLabelCampoValore("label.attoNomina", getLabelAllegatoNonInserito(), tableFields);
+			if(attoNomina != null) {
+				addCellLabelCampoValore("label.attoNomina", attoNomina.getNomeFile(), tableFields, showIntegrazioneInfo, 
+						integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("attoNomina", ruolo), idPersona));
+			} else {
+				addCellLabelCampoValore("label.attoNomina", getLabelAllegatoNonInserito(), tableFields, showIntegrazioneInfo, 
+						integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("attoNomina", ruolo), idPersona));
+			}
 		}
 		else {
-			if(delega != null)
-				addCellLabelCampoValore("label.delega", delega.getNomeFile(), tableFields);
-			else
-				addCellLabelCampoValore("label.delega", getLabelAllegatoNonInserito(), tableFields);
+			if(delega != null) {
+				addCellLabelCampoValore("label.delega", delega.getNomeFile(), tableFields, showIntegrazioneInfo, 
+						integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("delega", ruolo), idPersona));
+			} else {
+				addCellLabelCampoValore("label.delega", getLabelAllegatoNonInserito(), tableFields, showIntegrazioneInfo, 
+						integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("delega", ruolo), idPersona));
+			}
 		}
-		if(cv != null)
-			addCellLabelCampoValore("label.cv", cv.getNomeFile(), tableFields);
-		else
-			addCellLabelCampoValore("label.cv", getLabelAllegatoNonInserito(), tableFields);
+		if(cv != null) {
+			addCellLabelCampoValore("label.cv", cv.getNomeFile(), tableFields, showIntegrazioneInfo, 
+					integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("cv", ruolo), idPersona));
+		} else {
+			addCellLabelCampoValore("label.cv", getLabelAllegatoNonInserito(), tableFields, showIntegrazioneInfo, 
+					integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.getIdField("cv", ruolo), idPersona));
+		}
 
 	}
 
+//	private void addAllCellsPersonaByRuolo(Persona persona, PdfPTable tableFields, Ruolo ruolo, boolean showIntegrazioneInfo, Set<FieldEditabileAccreditamento> fieldsEditabileAccreditamento) {
 	private void addAllCellsSede(Sede sede, PdfPTable tableFields) {
-		addCellLabelCampoValore("label.provincia", sede.getProvincia(), tableFields);
-		addCellLabelCampoValore("label.comune", sede.getComune(), tableFields);
-		addCellLabelCampoValore("label.indirizzo", sede.getIndirizzo(), tableFields);
-		addCellLabelCampoValore("label.cap", sede.getCap(), tableFields);
-		addCellLabelCampoValore("label.telefono", sede.getTelefono(), tableFields);
-		addCellLabelCampoValore("label.fax", sede.getFax(), tableFields);
-		addCellLabelCampoValore("label.email", sede.getEmail(), tableFields);
+		addAllCellsSede(sede, tableFields, false, null);
+	}
+
+	
+	private void addAllCellsSede(Sede sede, PdfPTable tableFields, boolean showIntegrazioneInfo, Set<FieldEditabileAccreditamento> fieldsEditabileAccreditamento) {
+		addCellLabelCampoValore("label.provincia", sede.getProvincia(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__PROVINCIA, sede.getId()));
+		addCellLabelCampoValore("label.comune", sede.getComune(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__COMUNE, sede.getId()));
+		addCellLabelCampoValore("label.indirizzo", sede.getIndirizzo(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__INDIRIZZO, sede.getId()));
+		addCellLabelCampoValore("label.cap", sede.getCap(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__CAP, sede.getId()));
+		addCellLabelCampoValore("label.telefono", sede.getTelefono(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__TELEFONO, sede.getId()));
+		addCellLabelCampoValore("label.fax", sede.getFax(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__FAX, sede.getId()));
+		addCellLabelCampoValore("label.email", sede.getEmail(), tableFields, showIntegrazioneInfo, 
+				integrazioneAbilitata(showIntegrazioneInfo, fieldsEditabileAccreditamento, IdFieldEnum.SEDE__EMAIL, sede.getId()));
 	}
 
 	private void addAllCellsEventoPF(EventoPianoFormativo evento, PdfPTable tableFields) throws DocumentException {

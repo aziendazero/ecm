@@ -24,7 +24,7 @@ public class ProviderServiceController {
 			accreditamento = accreditamentoService.getAccreditamentoAttivoForProvider(provider.getId());
 			return accreditamento.getDataFineAccreditamento();
 		} catch (AccreditamentoNotFoundException e) {
-			LOGGER.warn("Il provider: " + provider.getId() + " non ha accreditamenti attivi", e);
+			LOGGER.debug("Il provider: " + provider.getId() + " non ha accreditamenti attivi", e);
 		}
 		return null;
 	}

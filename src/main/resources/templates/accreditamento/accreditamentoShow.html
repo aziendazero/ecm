@@ -678,6 +678,15 @@
   									<li><a th:text="#{label.mostra_storico_valutazioni}" onclick="showStorico()" th:if="${accreditamentoWrapper.canShowValutazioneStorico}"></a></li>
   									<li><a th:unless="${accreditamentoWrapper.accreditamento.isStandard()}" class="ajaxCallShowAllPiano" th:text="#{label.mostra_riepilogo_piano_formativo}" data-toggle="modal" data-target=".modal-showPianoAll"></a></li>
   									<li><a th:if="${#authentication.principal.account.isSegreteria()}" th:text="#{label.mostra_registro_operazioni}" th:href="@{|/audit/entity/AccreditamentoAudit/entityId/${accreditamentoWrapper.accreditamento.id}|}"></a></li>
+
+									<li> <a th:if="${#authentication.principal.account.isSegreteria() and accreditamentoWrapper.canVariazioneDati and
+											(
+												accreditamentoWrapper.accreditamento.getStatoVariazioneDati() != null and 
+												(
+													accreditamentoWrapper.accreditamento.getStatoVariazioneDati() == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).RICHIESTA_INTEGRAZIONE
+												)
+											)}" 
+									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/riepilogovariazionedatipdf|}" th:text="#{label.mostra_riepilogo_integrazioni}"></a></li>
 								</ul>
 							</div>
 
