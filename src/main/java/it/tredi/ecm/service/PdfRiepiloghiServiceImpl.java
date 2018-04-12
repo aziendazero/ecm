@@ -1272,68 +1272,6 @@ public class PdfRiepiloghiServiceImpl implements PdfRiepiloghiService {
 		return cell;
     }
 
-	private PdfPCell getCellLabelTODELETE(String nomeCampo, boolean showIntegrazioneInfo, boolean inIntegrazione) {
-		PdfPCell cell;
-		if(showIntegrazioneInfo && inIntegrazione) {
-			//cell = new PdfPCell(imgIntegrazioneAbilitata, false);
-			
-			
-			/*
-Paragraph p = new Paragraph();
-p.Add(new Phrase("Test "));
-p.Add(new Chunk(image, 0, 0));
-p.Add(new Phrase(" more text "));
-p.Add(new Chunk(image, 0, 0));
-p.Add(new Chunk(image, 0, 0));
-p.Add(new Phrase(" end."));
-cell.AddElement(p);
-			 */
-			Paragraph p = new Paragraph();
-			p.add(new Chunk(imgIntegrazioneAbilitata, 0, 0));
-			p.add(new Phrase(" " + nomeCampo, fontNomeCampo));
-			//p.setAlignment(Element.ALIGN_MIDDLE);
-
-			cell = new PdfPCell(p);
-//			cell.addElement(imgIntegrazioneAbilitata);
-			//cell.addElement(p);
-//			cell.addElement(new Phrase(nomeCampo, fontNomeCampo));
-			/*
-PdfPCell cell = new PdfPCell();
-cell.AddElement(image128);
-Paragraph p = new Paragraph("Student name");
-p.Alignment = Element.ALIGN_CENTER;
-cell.AddElement(p);
-BarCodeTable.AddCell(cell);
-			 */
-			
-			//Con tabella ew 2 colonne
-			PdfPTable tableLabel = new PdfPTable(2);
-			tableLabel.setWidthPercentage(100);
-			try {
-				tableLabel.setWidths(new float[]{1, 5});
-			} catch (DocumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			tableLabel.setSpacingBefore(0);
-			tableLabel.setSpacingAfter(0);
-			PdfPCell cellLabel = new PdfPCell(imgIntegrazioneAbilitata);
-			cellLabel.setPadding(0);
-			tableLabel.addCell(cellLabel);
-			cellLabel = new PdfPCell(new Phrase(nomeCampo, fontNomeCampo));
-			cellLabel.setPadding(0);
-			tableLabel.addCell(cellLabel);
-			cell = new PdfPCell(tableLabel);
-			
-		} else {
-			cell = new PdfPCell(new Phrase(nomeCampo, fontNomeCampo));
-		}
-		//cell.setBorder(PdfPCell.NO_BORDER);
-		cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-		cell.setPadding(cellPadding);
-		return cell;
-    }
-
 	private PdfPCell getCellValore(String valoreCampo) {
     	PdfPCell cell = new PdfPCell(new Phrase(valoreCampo, fontValoreCampo));
 		cell.setBorder(PdfPCell.NO_BORDER);
