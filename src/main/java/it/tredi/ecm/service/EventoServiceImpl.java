@@ -46,6 +46,8 @@ import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagrafeRegionaleCrediti;
+import it.tredi.ecm.dao.entity.AnagraficaEvento;
+import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.BaseEntityDefaultId;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
@@ -597,7 +599,10 @@ public class EventoServiceImpl implements EventoService {
 					((Partner) value).setPartnerFile(fileService.copyFile(((Partner) value).getPartnerFile()));
 				}
 				else if(value instanceof PersonaEvento) {
-					((PersonaEvento)value).getAnagrafica().setCv(fileService.copyFile(((PersonaEvento)value).getAnagrafica().getCv()));
+					File f = fileService.getFile(((PersonaEvento)value).getAnagrafica().getCv().getId());
+					((PersonaEvento)value).getAnagrafica().setCv(fileService.copyFile(f));
+					//dpranteda 12/04/2018: errore lazy su getData del file durante la clonazione. Forziamo il reload del file da DB.
+					//((PersonaEvento)value).getAnagrafica().setCv(fileService.copyFile(((PersonaEvento)value).getAnagrafica().getCv()));
 				}
 				//N.B. si suppone che non ci siano altre BaseEntityDefaultId dentro l'oggetto prima di detacharlo / clonarlo
 				//o si crerebbero dei reference non voluti
@@ -784,7 +789,7 @@ public class EventoServiceImpl implements EventoService {
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "crediti"));
 			break;
-			
+
 		case 13:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "confermatiCrediti"));
@@ -890,7 +895,7 @@ public class EventoServiceImpl implements EventoService {
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "crediti"));
 			break;
-			
+
 		case 12:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "confermatiCrediti"));
@@ -1143,8 +1148,8 @@ public class EventoServiceImpl implements EventoService {
 		List<PersonaEvento> attachedListPersona = new ArrayList<PersonaEvento>();
 		while(itPersona.hasNext()){
 			PersonaEvento p = itPersona.next();
-			if(eventoWrapper.getPersoneEventoInserite().contains(p))
-			p = personaEventoRepository.findOne(p.getId());
+			if(eventoWrapper.getPersoneEventoInserite().contains(p))//if necessario per non perdere le MODIFICHE alle persone esistenti (es. qualifica, cv)
+				p = personaEventoRepository.findOne(p.getId());
 			attachedListPersona.add(p);
 		}
 		evento.setResponsabili(attachedListPersona);
