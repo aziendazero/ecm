@@ -49,6 +49,7 @@ import it.tredi.ecm.service.ValutazioneService;
 @WithUserDetails("test1")
 @FixMethodOrder(value = MethodSorters.NAME_ASCENDING) // ordina i test in base al nome crescente
 @Rollback(false)
+@Ignore
 public class ProtocolloTest {
 
 	@Autowired

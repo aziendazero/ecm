@@ -2,6 +2,7 @@ package it.tredi.ecm;
 
 import javax.transaction.Transactional;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import it.tredi.ecm.dao.repository.ProviderRepository;
 //@ActiveProfiles("dev")
 //@WithUserDetails("LBENEDETTI")
 @Rollback(false)
-//@Ignore
+@Ignore
 public class ProviderRepositoryTest {
 
 	@Autowired private ProviderRepository providerRepository;
