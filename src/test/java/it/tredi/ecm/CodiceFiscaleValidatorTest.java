@@ -25,7 +25,7 @@ import it.tredi.ecm.utils.Utils;
 @ActiveProfiles("demo")
 @WithUserDetails("test1")
 
-//@Ignore
+@Ignore
 public class CodiceFiscaleValidatorTest {
 	private static Logger LOGGER = LoggerFactory.getLogger(CodiceFiscaleValidatorTest.class);
 
@@ -40,89 +40,89 @@ public class CodiceFiscaleValidatorTest {
 		public void setCf(String cf) {
 			this.cf = cf;
 		}
-		
-		
+
+
 	}
 
 	@Test
 	public void goodCF() throws Exception {
 		CF cf = new CF("FOXDRA26C24H872Y");
 		Errors errors = new BeanPropertyBindingResult(cf, "cf");
-		
+
 		Assert.assertTrue(! Utils.rejectIfCodFiscIncorrect("FOXDRA26C24H872Y", errors, "cf"));
-		Assert.assertTrue(! errors.hasErrors());		
+		Assert.assertTrue(! errors.hasErrors());
 	}
-	
+
 	@Test
 	public void wrongCF() throws Exception {
 		CF cf = new CF("FOXDRA26C24H8721");
 		Errors errors = new BeanPropertyBindingResult(cf, "cf");
-		
+
 		Assert.assertTrue(Utils.rejectIfCodFiscIncorrect("FOXDRA26C24H8721", errors, "cf"));
-		Assert.assertTrue(errors.hasErrors());		
+		Assert.assertTrue(errors.hasErrors());
 	}
-	
+
 	@Test
 	public void omocodia() throws Exception {
 		CF cf = new CF("BNZVCNPNSMLERTPX");
 		Errors errors = new BeanPropertyBindingResult(cf, "cf");
-		
+
 		Assert.assertTrue(! Utils.rejectIfCodFiscIncorrect("BNZVCNPNSMLERTPX", errors, "cf"));
-		Assert.assertTrue(!errors.hasErrors());		
+		Assert.assertTrue(!errors.hasErrors());
 	}
-	
+
 	@Test
 	public void goodCFm() throws Exception {
 		Map<String, String> errMap = new HashMap<>();
 		Assert.assertTrue(! Utils.rejectIfCodFiscIncorrect("FOXDRA26C24H872Y", errMap, "cf"));
-		Assert.assertTrue(errMap.size() == 0);	
+		Assert.assertTrue(errMap.size() == 0);
 	}
-	
+
 	@Test
 	public void wrongCFm() throws Exception {
 		Map<String, String> errMap = new HashMap<>();
-		
+
 		Assert.assertTrue(Utils.rejectIfCodFiscIncorrect("FOXDRA26C24H8721", errMap, "cf"));
-		Assert.assertTrue(errMap.size() != 0);		
+		Assert.assertTrue(errMap.size() != 0);
 		Assert.assertTrue(errMap.get("cf").equals("error.invalid"));
 	}
-	
+
 	@Test
 	public void emptyCFm() throws Exception {
 		Map<String, String> errMap = new HashMap<>();
-		
+
 		Assert.assertTrue(Utils.rejectIfCodFiscIncorrect(null, errMap, "cf"));
-		Assert.assertTrue(errMap.size() != 0);		
+		Assert.assertTrue(errMap.size() != 0);
 		Assert.assertTrue(errMap.get("cf").equals("error.empty"));
 	}
-	
+
 	@Test
 	public void omocodiam() throws Exception {
 		Map<String, String> errMap = new HashMap<>();
-		
+
 		Assert.assertTrue(! Utils.rejectIfCodFiscIncorrect("BNZVCNPNSMLERTPX", errMap, "cf"));
-		Assert.assertTrue(errMap.size() == 0);		
+		Assert.assertTrue(errMap.size() == 0);
 	}
-	
+
 	@Test
 	public void goodCFv() throws Exception {
 		Assert.assertTrue(! Utils.rejectIfCodFiscIncorrect("FOXDRA26C24H872Y"));
 	}
-	
+
 	@Test
 	public void wrongCFv() throws Exception {
 		Assert.assertTrue(Utils.rejectIfCodFiscIncorrect("FOXDRA26C24H8721"));
 	}
-	
+
 	@Test
 	public void emptyCFv() throws Exception {
 		Assert.assertTrue(Utils.rejectIfCodFiscIncorrect(null));
 	}
-	
+
 	@Test
 	public void omocodiav() throws Exception {
 		Assert.assertTrue(! Utils.rejectIfCodFiscIncorrect("BNZVCNPNSMLERTPX"));
 	}
-	
+
 
 }
