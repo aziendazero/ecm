@@ -8,21 +8,17 @@ import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.transform.Source;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -40,12 +36,11 @@ import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
-import it.tredi.ecm.pdf.PdfRiepilogoPartecipantiInfo;
 import it.tredi.ecm.service.bean.CurrentUser;
 
 public class Utils {
 	private final static Logger LOGGER = Logger.getLogger(Utils.class);
-
+	
 	/**
 	 * Recupero dell'utente loggato
 	 * @return utente loggato oppure <code>NULL</code> se l'utente non ha fatto login
@@ -368,52 +363,55 @@ public class Utils {
 	
 	// this should use Errors binding data for check instead of external value cf
 	public static boolean rejectIfCodFiscIncorrect(String cf, Errors errors, String field) {
-		if (cf == null || cf.isEmpty()) {
+		CodiceFiscaleCheck checkCf = checkCodFisc(cf);
+		if (checkCf == CodiceFiscaleCheck.EMPTY) {
 			errors.rejectValue(field, "error.empty");
 			return true;
-		}else {
-	        // Controllo classico
-	        Pattern pater = Pattern.compile("(^[a-zA-Z]{6}\\d\\d[a-zA-Z]\\d\\d[a-zA-Z]\\d\\d\\d[a-zA-Z]$)");
-	        Matcher m = pater.matcher(cf);
-	        
-	        if (!m.find()){
-	            // Se il codice fiscale non è valido, controllo se è un caso di omocodia
-	            Pattern omocodiaP = Pattern.compile("(^[A-Z]{6}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){3}[A-Z]{1}$)");
-	            Matcher omocodiaM = omocodiaP.matcher(cf);
-	            if (!omocodiaM.find()) {
-	            	errors.rejectValue(field, "error.invalid");
-	            	return true;
-	            }
-	        }
-	    } 	
-		
+		} else if (checkCf == CodiceFiscaleCheck.INCORRECT) {
+        	errors.rejectValue(field, "error.invalid");
+        	return true;
+	    }
 		return false;
 	}
-	
+
 	public static boolean rejectIfCodFiscIncorrect(String cf) {
-		if (cf == null || cf.isEmpty()) {
+		CodiceFiscaleCheck checkCf = checkCodFisc(cf);
+		if (checkCf != CodiceFiscaleCheck.OK) {
 			return true;
-		}else {
-	        // Controllo classico
-	        Pattern pater = Pattern.compile("(^[a-zA-Z]{6}\\d\\d[a-zA-Z]\\d\\d[a-zA-Z]\\d\\d\\d[a-zA-Z]$)");
-	        Matcher m = pater.matcher(cf);
-	        
-	        if (!m.find()){
-	            // Se il codice fiscale non è valido, controllo se è un caso di omocodia
-	            Pattern omocodiaP = Pattern.compile("(^[A-Z]{6}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){3}[A-Z]{1}$)");
-	            Matcher omocodiaM = omocodiaP.matcher(cf);
-	            if (!omocodiaM.find()) {
-	            	return true;
-	            }
-	        }
-	    } 		
+		}
 		return false;
 	}
 	
 	public static boolean rejectIfCodFiscIncorrect(String cf, Map<String, String> errMap, String field) {
-		if (cf == null || cf.isEmpty()) {
+		CodiceFiscaleCheck checkCf = checkCodFisc(cf);
+		if (checkCf == CodiceFiscaleCheck.EMPTY) {
 			errMap.put(field, "error.empty");
 			return true;
+		} else if (checkCf == CodiceFiscaleCheck.INCORRECT) {
+        	errMap.put(field, "error.invalid");
+        	return true;
+	    }
+		return false;
+	}
+
+	public static boolean rejectIfCodFiscIncorrect(String cf, Boolean straniero) {
+		if(straniero == null || straniero.booleanValue() == false) {
+			CodiceFiscaleCheck checkCf = checkCodFisc(cf);
+			if(checkCf != CodiceFiscaleCheck.OK)
+				return true;
+		} else {
+			if (cf == null || cf.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private enum CodiceFiscaleCheck { OK, EMPTY, INCORRECT }
+
+	private static CodiceFiscaleCheck checkCodFisc(String cf) {
+		if (cf == null || cf.isEmpty()) {
+			return CodiceFiscaleCheck.EMPTY;
 		}else {
 	        // Controllo classico
 	        Pattern pater = Pattern.compile("(^[a-zA-Z]{6}\\d\\d[a-zA-Z]\\d\\d[a-zA-Z]\\d\\d\\d[a-zA-Z]$)");
@@ -424,13 +422,11 @@ public class Utils {
 	            Pattern omocodiaP = Pattern.compile("(^[A-Z]{6}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){2}[A-Z]{1}([0-9]|[LMNPQRSTUV]){3}[A-Z]{1}$)");
 	            Matcher omocodiaM = omocodiaP.matcher(cf);
 	            if (!omocodiaM.find()) {
-	            	errMap.put(field, "error.invalid");
-	            	return true;
+	            	return CodiceFiscaleCheck.INCORRECT;
 	            }
 	        }
 	    } 		
-		
-		return false;
+		return CodiceFiscaleCheck.OK;
 	}
-
+	
 }
