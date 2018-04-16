@@ -1267,8 +1267,9 @@ public class EventoValidatorVersioneUno {
 			return true;
 		// @since ERM014009
 		//if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
-		if(Utils.rejectIfCodFiscIncorrect(persona.getAnagrafica().getCodiceFiscale()))
+		if(Utils.rejectIfCodFiscIncorrect(persona.getAnagrafica().getCodiceFiscale(), persona.getAnagrafica().getStraniero()))
 			return true;
+		
 		if(persona.getAnagrafica().getCv() == null || persona.getAnagrafica().getCv().isNew())
 			return true;
 

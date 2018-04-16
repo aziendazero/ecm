@@ -142,7 +142,7 @@
 
 							<!-- STRANIERO -->
 							<div class="item form-group" id="container-straniero">
-								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="codice_fiscale">
+								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="straniero">
 									<span th:text="#{label.straniero}">Straniero</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
@@ -1292,7 +1292,12 @@
 			//sumbit della modale di inserimento persona
 			function sendAjaxAddPersonaTo(){
 				var target = $('#targetTable').val();
-				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}]], $('#addPersonaTo').serialize() + eventoWrapper_cId)
+				var stranieroInput = '';
+				//se fromlookup il campo straniero e' disabilitato e non viene inviato quindi se checked lo invio
+				if($('#fromLookUp').val() && $('#anagraficaBase_straniero').prop('checked')) {
+					stranieroInput = '&tempPersonaEvento.anagrafica.straniero=true';
+				}
+				$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addPersonaTo|}]], $('#addPersonaTo').serialize() + stranieroInput + eventoWrapper_cId)
 					.done(function(data) {
 						//console.log('sendAjaxAddPersonaTo - data: ' + data);
 						//errore validazione
