@@ -117,10 +117,10 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 	public static final String ERRORE = "errore";
 
 	@PostConstruct
-	public void init(){
+	public void init() throws MalformedURLException{
 		ENDPOINT_PROTOCOLLO = engineeringProperties.getProtocolloEndpoint();
 		if(engineeringProperties.getProtocolloServiceVersione().equalsIgnoreCase("webrainbow")) {
-			protocolWRB = new Protocol();
+			protocolWRB = new Protocol(new URL(engineeringProperties.getProtocolloWebrainbowEndpoint()));
 			portWRB = protocolWRB.getProtocolWebServicePort();
 		}
 	}

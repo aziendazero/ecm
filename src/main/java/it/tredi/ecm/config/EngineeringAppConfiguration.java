@@ -60,6 +60,8 @@ public class EngineeringAppConfiguration {
 	private String protocolloEndpoint = "";
 	@Value("${protocollo.service.versione}")
 	private String protocolloServiceVersione;
+	@Value("${protocollo.webrainbow.endpoint}")
+	private String protocolloWebrainbowEndpoint;
 	@Value("${protocollo.webrainbow.ufficioCreatore.entrata}")
 	private String protocolloWebrainbowUfficioCreatoreEntrata;
 	@Value("${protocollo.webrainbow.ufficioCreatore.uscita}")
@@ -95,6 +97,7 @@ public class EngineeringAppConfiguration {
 		engineeringProperties.setProtocolloEndpoint(protocolloEndpoint);
 		engineeringProperties.setProtocolloServiceVersione(protocolloServiceVersione);
 
+		engineeringProperties.setProtocolloWebrainbowEndpoint(protocolloWebrainbowEndpoint);
 		engineeringProperties.setProtocolloWebrainbowUfficioCreatoreEntrata(protocolloWebrainbowUfficioCreatoreEntrata);
 		engineeringProperties.setProtocolloWebrainbowUfficioCreatoreUscita(protocolloWebrainbowUfficioCreatoreUscita);
 
