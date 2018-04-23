@@ -1188,7 +1188,8 @@
 				if(isRes()){
 					console.log('updatePersonaEventoRuoliDisponibili: EvenoRES');
 					var selectId = '#personaevento-ruolo';
-					var versione = getVersione();
+					var versione = getVersione();					
+					var precVal = $(selectId).val(); 
 
 					$(selectId).selectpicker('val','');
 					$(selectId).prop('disabled',false);
@@ -1200,6 +1201,11 @@
 							$(this).hide();
 						}
 					});
+					
+					if(precVal !== undefined && precVal != '') {
+						if(versione === 2 || precVal != 'MODERATORE')
+							$(selectId).val(precVal);
+					}
 					$(selectId).selectpicker('refresh');
 				}
 			}
