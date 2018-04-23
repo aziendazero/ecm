@@ -1,6 +1,7 @@
 package it.tredi.ecm.web;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -107,9 +108,22 @@ public class PersonaController {
 		return personaService.getAllAnagraficheAttiveByProviderId(providerId);
 	}
 
-	@ModelAttribute("professioneList")
-	public Set<Professione> getAllProfessioni(){
-		return professioneService.getAllProfessioni();
+	@ModelAttribute("professioneListForPersona")
+	public List<Professione> getAllProfessioni(){
+		List<Professione> professioneList = new ArrayList<Professione>();
+		professioneList.addAll(professioneService.getAllProfessioni());
+		for(Professione p : professioneList) {
+			if(p.getId() == 1203) {
+				professioneList.remove(p);
+				break;
+			}
+		}
+		professioneList.sort(new Comparator<Professione>() {
+			 public int compare(Professione p1, Professione p2) {
+				 return (p1.getNome().compareTo(p2.getNome()));
+			 }
+		});
+		return professioneList;
 	}
 
 	@ModelAttribute("personaWrapper")

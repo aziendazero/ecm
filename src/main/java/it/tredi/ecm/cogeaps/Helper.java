@@ -1,6 +1,5 @@
 package it.tredi.ecm.cogeaps;
 
-import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -35,8 +32,6 @@ import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
-import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
-import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.pdf.PdfPartecipanteInfo;
 import it.tredi.ecm.pdf.PdfRiepilogoPartecipantiInfo;
 
@@ -60,7 +55,8 @@ public class Helper {
 		Set<Professione> professioni = evento.getProfessioniSelezionate();
 
 		for(Professione p : professioni) {
-			codProf.add(p.getCodiceCogeaps());
+			if(p.getCodiceCogeaps() != null && !p.getCodiceCogeaps().isEmpty())
+				codProf.add(p.getCodiceCogeaps());
 		}
 		
 		return codProf;
@@ -71,7 +67,8 @@ public class Helper {
 		Set<Disciplina> discipline = evento.getDiscipline();
 
 		for(Disciplina d : discipline) {
-			codDisc.add(d.getCodiceCogeaps());
+			if(d.getCodiceCogeaps() != null && !d.getCodiceCogeaps().isEmpty())
+				codDisc.add(d.getCodiceCogeaps());
 		}
 		
 		return codDisc;

@@ -684,7 +684,7 @@
 										th:remove="all-but-first"
 										th:field="${personaWrapper.persona.professione}"
 										th:disabled="${!editabile or !#lists.contains(personaWrapper.idEditabili, T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.professione',personaWrapper.ruolo))}">
-										<option th:each="professione, row: ${professioneList}"
+										<option th:each="professione, row: ${professioneListForPersona}"
 											th:value="${professione.id}" th:text="${professione.nome}">Professione selezionata</option>
 									</select>
 							  	</div>
