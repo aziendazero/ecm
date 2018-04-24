@@ -38,7 +38,7 @@ public class ScheduledTasks {
 	@Scheduled(fixedDelay=60000)
 	public void taskExecutor() throws Exception{
 		if(!ecmProperties.isDebugSaltaScheduledTasks()) {
-			//pagamentoTask.controllaEsitoPagamenti();
+			pagamentoTask.controllaEsitoPagamenti();
 			invioCogeapsTask.checkStatoElaborazioneCogeaps();
 			protocolloTask.controllaStatoProtocollazione();
 			sedutaTask.bloccaSedute();
