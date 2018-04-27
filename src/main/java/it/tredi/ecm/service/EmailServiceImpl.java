@@ -55,7 +55,7 @@ public class EmailServiceImpl implements EmailService {
 		context.setVariable("provider", provider);
 		String message = templateEngine.process("assegnaDomandaReferee", context);
 
-		send(ecmProperties.getEmailSegreteriaEcm(), referee, "Assegnamento Domanda da Valutare", message, true);
+		send(ecmProperties.getEmailSegreteriaEcm(), referee, "Assegnazione di incarico di valutazione della domanda di accreditamento", message, true);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class EmailServiceImpl implements EmailService {
 		String message = templateEngine.process("convocazioneCommissione", context);
 
 		for(String email : commissione){
-			send(ecmProperties.getEmailSegreteriaEcm(),email, "Convocazione Seduta", message, true);
+			send(ecmProperties.getEmailSegreteriaEcm(),email, "Convocazione seduta Commissione Regionale ECM per la valutazione delle domande di accreditamento provvisorio dei Provider", message, true);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class EmailServiceImpl implements EmailService {
 		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
 		context.setVariable("provider",provider );
 		String message = templateEngine.process("notificaSegreteriaMancataValutazioneReferee", context);
-		send(ecmProperties.getEmailSegreteriaEcm(), segreteria, "Mancata Valutazione Referee", message, true);
+		send(ecmProperties.getEmailSegreteriaEcm(), segreteria, "Scadenza termine di 15 gg per la valutazione della domanda di accreditamento provvisorio da parte dei Referee assegnatari", message, true);
 	}
 
 	@Override
@@ -93,31 +93,33 @@ public class EmailServiceImpl implements EmailService {
 	public void inviaAlertScadenzaReInvioIntegrazioneAccreditamento(AlertEmail alert) throws Exception {
 		LOGGER.info("inviaAlertScadenzaReInvioIntegrazioneAccreditamento " + alert.getTipo());
 		Context context = new Context();
-		String subject = "Avviso Scadenza Reinvio Integrazione Domanda Accreditamento";
-
+		String subject = "Avviso di scadenza termini per reinvio integrazioni richieste sulla domanda di accreditamento";
+		
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_PROVVISORIO){
 			context.setVariable("isStandard", false);
 			context.setVariable("isPreavvisoDiRigetto", false);
-			subject += " Provvisorio";
+			subject += " provvisorio";
 		}
 
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_PROVVISORIO){
 			context.setVariable("isStandard", false);
 			context.setVariable("isPreavvisoDiRigetto", true);
-			subject += " Provvisorio";
+			subject += " provvisorio";
 		}
 
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_STANDARD){
 			context.setVariable("isStandard", true);
 			context.setVariable("isPreavvisoDiRigetto", false);
-			subject += " Standard";
+			subject += " standard";
 		}
 
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_STANDARD){
 			context.setVariable("isStandard", true);
 			context.setVariable("isPreavvisoDiRigetto", true);
-			subject += " Standard";
+			subject += " standard";
 		}
+		
+		subject += " presentata";
 
 		String message = templateEngine.process("alertScadenzaReinvioIntegrazioniAccreditamento", context);
 
@@ -130,17 +132,19 @@ public class EmailServiceImpl implements EmailService {
 	public void inviaAlertScadenzaAccreditamento(AlertEmail alert) throws Exception {
 		LOGGER.info("inviaAlertScadenzaAccreditamento " + alert.getTipo());
 		Context context = new Context();
-		String subject = "Avviso Scadenza Accreditamento";
+		String subject = "Termine scadenza di accreditamento";
 
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_ACCREDITAMENTO_PROVVISORIO){
 			context.setVariable("isStandard", false);
-			subject += " Provvisorio";
+			subject += " provvisorio";
 		}
 
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_ACCREDITAMENTO_STANDARD){
 			context.setVariable("isStandard", true);
-			subject += " Standard";
+			subject += " standard";
 		}
+		
+		subject += " come Provider ECM";
 
 		String message = templateEngine.process("alertScadenzaAccreditamento", context);
 
@@ -153,14 +157,17 @@ public class EmailServiceImpl implements EmailService {
 	public void inviaConfermaReInvioIntegrazioniAccreditamento(boolean isStandard, boolean isPreavvisoRigetto, Provider provider) throws Exception {
 		LOGGER.info("inviaConfermaReInvioIntegrazioneAccreditamento (standard/preavvisoRigetto): " + isStandard + "/" + isPreavvisoRigetto);
 		Context context = new Context();
-		String subject = "Conferma Reinvio Integrazioni Domanda Accreditamento";
+		String subject = "Corretto reinvio domanda di accreditamento ";
+		
 		context.setVariable("isStandard", isStandard);
 		context.setVariable("isPreavvisoDiRigetto", isPreavvisoRigetto);
 
 		if(isStandard)
-			subject += " Standard";
+			subject += " standard";
 		else
-			subject += " Provvisorio";
+			subject += " provvisorio";
+		
+		subject += " in stato \"Richiesta di integrazioni\"";
 
 		String message = templateEngine.process("confermaInvioIntegrazioni", context);
 
@@ -234,7 +241,7 @@ public class EmailServiceImpl implements EmailService {
 	public void inviaAlertScadenzaValutazioneReferee(AlertEmail alert) throws Exception {
 		LOGGER.info("inviaAlertScadenzaValutazioneReferee");
 		Context context = new Context();
-		String subject = "Avviso Scadenza Valutazione Domanda Accreditamento";
+		String subject = "Scadenza Valutazione Domanda Accreditamento";
 
 		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
 		context.setVariable("provider", alert.getProvider());
@@ -250,7 +257,7 @@ public class EmailServiceImpl implements EmailService {
 	public void inviaAlertScadenzaInvioAccreditamentoStandard(AlertEmail alert) throws Exception {
 		LOGGER.info("inviaAlertScadenzaInvioAccreditamentoStandard");
 		Context context = new Context();
-		String subject = "Avviso Scadenza Invio Accreditamento Standard";
+		String subject = "Scadenza compilazione  domanda di accreditamento standard";
 
 		String message = templateEngine.process("inviaAlertScadenzaInvioAccreditamentoStandard", context);
 
