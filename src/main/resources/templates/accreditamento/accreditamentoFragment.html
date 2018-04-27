@@ -16,12 +16,12 @@
 			showOnly=${mode == 'show'},
 			enableField=${mode == 'enableField'}">
 
-			<!--  TODO cambiare il link con il link del vademecum -->
-			<div class="model-link with-margin-right" id="vademecum" th:if="${accreditamentoWrapper.accreditamento.isStandard() and accreditamentoWrapper.accreditamento.isBozza()
+			<!--  ERM015000 -->
+			<!-- div class="model-link with-margin-right" id="vademecum" th:if="${accreditamentoWrapper.accreditamento.isStandard() and accreditamentoWrapper.accreditamento.isBozza()
 				and (#authentication.principal.account.isSegreteria() || #authentication.principal.account.isProvider())}">
 				<i class="fa fa-file-text"></i>
 				<a id="vademecum_link" target="_blank" th:text="#{label.vademecum}" href="https://salute.regione.veneto.it/c/document_library/get_file?uuid=e91d799a-12d7-4fc1-9427-c519a2dd4565&amp;groupId=991613">Modello di esempio</a>
-			</div>
+			</div-->
 
 			<div th:if="${valutabile and accreditamentoWrapper.mappaFullModificati != null and !#maps.isEmpty(accreditamentoWrapper.mappaFullModificati)}" th:text="#{message.sono_evidenziati_gli_elementi_aggiunti_dal_ultimo_accreditamento}" class="alert alert-info"></div>
 
