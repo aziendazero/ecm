@@ -93,30 +93,30 @@ public class EmailServiceImpl implements EmailService {
 	public void inviaAlertScadenzaReInvioIntegrazioneAccreditamento(AlertEmail alert) throws Exception {
 		LOGGER.info("inviaAlertScadenzaReInvioIntegrazioneAccreditamento " + alert.getTipo());
 		Context context = new Context();
-		String subject = "Avviso di scadenza termini per reinvio integrazioni richieste sulla domanda di accreditamento";
+		String subject = "";
 		
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_PROVVISORIO){
 			context.setVariable("isStandard", false);
 			context.setVariable("isPreavvisoDiRigetto", false);
-			subject += " provvisorio";
+			subject += "Avviso di scadenza termini per reinvio integrazioni richieste sulla domanda di accreditamento provvisorio";
 		}
 
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_PROVVISORIO){
 			context.setVariable("isStandard", false);
 			context.setVariable("isPreavvisoDiRigetto", true);
-			subject += " provvisorio";
+			subject += "Avviso di scadenza termini per reinvio integrazioni relative al preavviso di rigetto richieste sulla domanda di accreditamento provvisorio";
 		}
 
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_STANDARD){
 			context.setVariable("isStandard", true);
 			context.setVariable("isPreavvisoDiRigetto", false);
-			subject += " standard";
+			subject += "Avviso di scadenza termini per reinvio integrazioni relative al preavviso di rigetto richieste sulla domanda di accreditamento standard";
 		}
 
 		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_STANDARD){
 			context.setVariable("isStandard", true);
 			context.setVariable("isPreavvisoDiRigetto", true);
-			subject += " standard";
+			subject += "Avviso di scadenza termini per reinvio integrazioni richieste sulla domanda di accreditamento standard";
 		}
 		
 		subject += " presentata";
@@ -167,7 +167,12 @@ public class EmailServiceImpl implements EmailService {
 		else
 			subject += " provvisorio";
 		
-		subject += " in stato \"Richiesta di integrazioni\"";
+		if(isPreavvisoRigetto) {
+			subject += " in stato \"Preavviso di rigetto\"";
+		}else {
+			subject += " in stato \"Richiesta di integrazioni\"";
+		}
+		
 
 		String message = templateEngine.process("confermaInvioIntegrazioni", context);
 
@@ -244,7 +249,7 @@ public class EmailServiceImpl implements EmailService {
 		String subject = "Scadenza Valutazione Domanda Accreditamento";
 
 		context.setVariable("applicationBaseUrl", ecmProperties.getApplicationBaseUrl());
-		context.setVariable("provider", alert.getProvider());
+		context.setVariable("provider", alert.getProvider().getDenominazioneLegale());
 
 		String message = templateEngine.process("alertScadenzaValutazioneReferee", context);
 
@@ -259,7 +264,7 @@ public class EmailServiceImpl implements EmailService {
 		Context context = new Context();
 		String subject = "Scadenza compilazione  domanda di accreditamento standard";
 
-		String message = templateEngine.process("inviaAlertScadenzaInvioAccreditamentoStandard", context);
+		String message = templateEngine.process("alertScadenzaInvioAccreditamentoStandard", context);
 
 		for(String dst : alert.getDestinatari()){
 			send(ecmProperties.getEmailSegreteriaEcm(), dst, subject, message, true);
