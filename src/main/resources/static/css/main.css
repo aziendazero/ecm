@@ -1534,3 +1534,6 @@ table.dataTable tbody tr.selected {
 .warning::after {
   border-top: 7px solid #dddd52 !important;
 }
+
+/* ERM015130 */
+.margin-top-22 { margin-top: 22px; }
