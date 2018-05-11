@@ -22,7 +22,7 @@ public class ComunicazioneWrapper {
 	public ComunicazioneWrapper(Comunicazione comunicazione) {
 		this.comunicazione = comunicazione;
 		this.ambitoList = ComunicazioneAmbitoEnum.values();
-		this.tipologiaList = ComunicazioneTipologiaEnum.values();
+		this.tipologiaList = ComunicazioneTipologiaEnum.getFilteredValues(); //ERM015136
 	}
 
 	private Comunicazione comunicazione;
