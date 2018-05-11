@@ -7,7 +7,7 @@ public enum MetodologiaDidatticaFADEnum {
 
 	//OBV1_1
 	_1(1,"Lettura e studio di testi scritti digitali (dispense, slide interattive, ipertesti)"),
-	_2(2,"Lettura e studio di testi cartacei (libri autorevoli, riviste scientifiche; sono escluse stampe di presentazioni e fotocopie"),
+	_2(2,"Lettura e studio di testi cartacei (libri autorevoli, riviste scientifiche; sono escluse stampe di presentazioni e fotocopie)"),
 	_3(3,"Visione e studio di lezioni magistrali videoregistrate"),
 	_4(4,"Ascolto e studio di lezioni in modalità audio"),
 	_5(5,"Fruizione e studio di tavole rotonde o grand rounds video o audio registrati"),
@@ -70,4 +70,7 @@ public enum MetodologiaDidatticaFADEnum {
 		this.id = id;
 		this.nome = nome;
 	}
+	
+	
+	
 }
