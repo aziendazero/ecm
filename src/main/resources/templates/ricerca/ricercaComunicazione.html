@@ -109,11 +109,18 @@
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
 											title="Seleziona una tipologia...">
-											<option
-												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.ComunicazioneTipologiaEnum).values()}"
-												th:value="${tipologia}"
-												th:text="${tipologia.nome}">
-											</option>
+											<optgroup class="optgroup-primary"
+												th:each="ambito, row: ${T(it.tredi.ecm.dao.enumlist.ComunicazioneAmbitoEnum).values()}"
+												th:label="${ambito.nome}"
+												th:remove="all-but-first">
+												<option
+													th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.ComunicazioneTipologiaEnum).values()}"
+													th:if="${#strings.toUpperCase(ambito.nome).equals(tipologia.ambito)}"
+													th:value="${tipologia}"
+													th:text="${tipologia.nome} ">
+												</option>
+											</optgroup>
+											
 										</select>
 									</div>
 								</div>
