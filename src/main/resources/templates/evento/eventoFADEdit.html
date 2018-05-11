@@ -1590,13 +1590,13 @@
 					}
 				}
 
-				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.
+				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.  
 				function updateMetodologieDidattiche(caller){
 					var obiettivo = $(caller).val();
 					var metodologiePicker_ref ='#addAttivitaFAD-metodolgieDidattiche';
 					var start = [[@{/listaMetodologieFAD?obiettivo=}]];
 					var end = obiettivo;
-					var url = start + end;
+					var url = start + end + '&tipologiaEvento=' + $('#tipologia_evento').val();
 
 					console.log(obiettivo);
 					console.log($(metodologiePicker_ref));

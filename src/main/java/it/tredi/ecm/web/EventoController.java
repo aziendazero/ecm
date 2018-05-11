@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -87,6 +90,7 @@ import it.tredi.ecm.dao.enumlist.ObiettiviFormativiFADEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
@@ -176,6 +180,9 @@ public class EventoController {
 	private final String ERROR = "fragments/errorsAjax";
 	private final String SPONSOR = "evento/allegaContrattiSponsor";
 	private final String PAGAMENTOQUIETANZA = "evento/pagamentoEventoList";
+	
+	// ERM014266 - set che sara usato per filtrare valori di MetodologiaDidatticaFADEnum per modifica delle metodologie FAD
+	private final Set<Integer> filterNoOnline = new HashSet<Integer>(Arrays.asList(1,2,3,4,5,6,7,11,13,15,17,18,19,20,21,22,23,32,34,42));
 
 	@InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -1411,8 +1418,10 @@ public class EventoController {
 
 	@RequestMapping("/listaMetodologieFAD")
 	@ResponseBody
-	public List<MetodologiaDidatticaFADEnum>getListaMetodologieFAD(@RequestParam ObiettiviFormativiFADEnum obiettivo){
-		return obiettivo.getMetodologieDidattiche();
+	public List<MetodologiaDidatticaFADEnum>getListaMetodologieFAD(@RequestParam ObiettiviFormativiFADEnum obiettivo, @RequestParam TipologiaEventoFADEnum tipologiaEvento){
+		return tipologiaEvento == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE ? 
+				obiettivo.getMetodologieDidattiche().stream().filter(e->filterNoOnline.contains(e.getId())).collect(Collectors.toList()):
+				obiettivo.getMetodologieDidattiche();	
 	}
 
 	@RequestMapping(value="/provider/{providerId}/createAnagraficaFullEvento", method=RequestMethod.POST)
