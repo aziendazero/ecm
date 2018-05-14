@@ -29,7 +29,7 @@ public enum ComunicazioneTipologiaEnum {
 	XML_GIA(13, "Riapertura dei termini per l'invio di un tracciato xml di un evento gia' rendicontato", "EVENTI"),
 	XML_MAI(14, "Riapertura dei termini per l'invio di un tracciato xml di un evento mai rendicontato", "EVENTI"),
 	PAGAMENTO(15, "Richiesta proroga pagamento evento", "EVENTI"),	
-	ALTRO_EVENTI(16, "Altro eventi", "EVENTI"),
+	ALTRO_EVENTI(16, "Altro [eventi]", "EVENTI"),
 	
 	// removed
 	PROGRAMMA(107, "Comunicazione relative a programma", "EVENTI"),
@@ -55,7 +55,7 @@ public enum ComunicazioneTipologiaEnum {
 	RELAZIONE_ANNUALE(25, "Relazione annuale", "PROVIDER"),
 	AMPLIAMENTO_RES_FSC_FAD(26, "Ampliamento tipologia formativa (RES, FSC, FAD)", "PROVIDER"),
 	AMPLIAMENTO_PROF_DIC(27, "Ampliamento professioni/discipline", "PROVIDER"),
-	ALTRO_PROVIDER(28, "Altro provider", "PROVIDER"),
+	ALTRO_PROVIDER(28, "Altro [provider]", "PROVIDER"),
 	
 	// REMOVED
 	CONTRIBUTO_ANNUALE(118, "Comunicazioni relative a contributo annuale", "PROVIDER"),
