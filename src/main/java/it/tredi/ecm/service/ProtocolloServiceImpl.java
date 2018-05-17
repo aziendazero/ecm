@@ -858,12 +858,22 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 						LOGGER.info(dim + " Pec trovate per il protocollo WebRainbow " + nr_spedizione + " del " + dt_spedizione);
 						if(dim > 0) {
 							stato = CONSEGNA_PEC_IN_CORSO;
-							allPecSent = true;
-							for (int i=0; (i<dim && allPecSent); i++) {
+							int pecSent = 0;
+							int pecNotSent = 0;
+
+							//allPecSent = true;
+							for (int i=0; (i<dim && pecNotSent == 0); i++) {
+								LOGGER.info("getStatoPEC: " + protocolloWR.getPecInviate().get(i).getId().getValue());
 								String status = portWRB.getStatoPEC(nr_spedizione, dt_spedizione, protocolloWR.getPecInviate().get(i).getId().getValue());
-								if(status.equals("KO"));
-									allPecSent = false;
+								LOGGER.info("getStatoPEC: " + protocolloWR.getPecInviate().get(i).getId().getValue() + " -> RESULT: " + status);
+								if(status.equalsIgnoreCase("OK"))
+									pecSent++;
+								else
+									pecNotSent++;
 							}
+
+							allPecSent = (dim == pecSent) ? true : false;
+
 						}else {
 							stato = PEC_NON_INVIATE;
 						}
@@ -883,6 +893,7 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 			}
 
 			if(p.getStatoSpedizione() == null || !p.getStatoSpedizione().equals(stato)) {
+				LOGGER.info("update statoSpedizione to: " + stato);
 				p.setStatoSpedizione(stato);
 				if(pecInviata) //Avoid adding pecInviata in protocolls with old service
 					p.setPecInviata(pecInviata);
