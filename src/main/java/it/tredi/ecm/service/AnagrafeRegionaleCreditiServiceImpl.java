@@ -76,13 +76,13 @@ public class AnagrafeRegionaleCreditiServiceImpl implements AnagrafeRegionaleCre
 	}
 
 	/*
-	 *Faccio una query per individuare tutti i ruoli che hanno ricevuto crediti contanto il numero di persone distinte.
+	 *Faccio una query per individuare tutti i ruoli che hanno ricevuto crediti contando il numero di persone distinte.
 	 *Ottengo per ciascun ruolo quante persone hanno avuto crediti
 	 *
 	 **/
 	@Override
 	public Map<String,Integer> getRuoliAventeCreditiPerAnno(Long providerId, Integer annoRiferimento) {
-		LOGGER.debug(Utils.getLogMessage("Recupero ruoli con conteggio di persone distinte che hanno avuto crediti nell'anno: " + annoRiferimento + " per il provide " + providerId));
+		LOGGER.debug(Utils.getLogMessage("Recupero ruoli con conteggio di persone distinte che hanno avuto crediti nell'anno: " + annoRiferimento + " per il provider " + providerId));
 		Map<String,Integer> ruoli = new HashMap<String, Integer>();
 
 		List<Object[]> result = anagrafeRegionaleCreditiRepository.getRuoliAventeCreditiPerAnno(providerId, LocalDate.of(annoRiferimento, 1, 1), LocalDate.of(annoRiferimento, 12, 31));
