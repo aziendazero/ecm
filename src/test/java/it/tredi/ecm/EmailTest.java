@@ -30,7 +30,7 @@ import it.tredi.ecm.service.ProviderService;
 @WithUserDetails("test1")
 @Rollback(false)
 
-//@Ignore
+@Ignore
 public class EmailTest {
 
 	@Autowired private EmailService emailService;
@@ -47,15 +47,15 @@ public class EmailTest {
 		Long acreditamentoId_S = 698415L;
 		Long providerId = 193L;
 		Long eventoId = 200381L;
-		
+
 		Set<String> s = new HashSet<String>();
 		s.add(ms);
-		//s.add(ms1);		
-		
+		//s.add(ms1);
+
 
 		// Email dritti
-		
-		
+
+
 		emailService.inviaNotificaAReferee(ms, pr);
 		emailService.inviaConvocazioneACommissioneECM(s);
 		emailService.inviaNotificaASegreteriaMancataValutazioneReferee(ms, pr);
@@ -64,46 +64,46 @@ public class EmailTest {
 		emailService.inviaConvocazioneValutazioneSulCampo(s, LocalDateTime.now(), "provider2");
 		emailService.inviaNotificaFirmaResponsabileSegreteriaEcm(s, acreditamentoId_P);
 		emailService.inviaNotificaFirmaResponsabileSegreteriaEcm(s, acreditamentoId_S);
-		
+
 		emailService.inviaConfermaReInvioIntegrazioniAccreditamento(false, true, providerService.getProvider(providerId));
 		emailService.inviaConfermaReInvioIntegrazioniAccreditamento(false, false, providerService.getProvider(providerId));
 		emailService.inviaConfermaReInvioIntegrazioniAccreditamento(true, true, providerService.getProvider(providerId));
 		emailService.inviaConfermaReInvioIntegrazioniAccreditamento(true, false, providerService.getProvider(providerId));
 		emailService.inviaNotificaNuovaComunicazioneForProvider(pr, ms);
 
-		
+
 		// alerts
 		AlertEmail a = null;
-		
+
 		a = new AlertEmail();
 		a.setDestinatari(s);
 		a.setEvento(eventoService.getEvento(eventoId));
 		a.setProvider(providerService.getProvider(providerId));
 		a.setTipo(AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_PROVVISORIO);
 		emailService.inviaAlertScadenzaReInvioIntegrazioneAccreditamento(a);
-		
+
 		a = new AlertEmail();
 		a.setDestinatari(s);
 		a.setEvento(eventoService.getEvento(eventoId));
 		a.setProvider(providerService.getProvider(providerId));
 		a.setTipo(AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_PROVVISORIO);
 		emailService.inviaAlertScadenzaReInvioIntegrazioneAccreditamento(a);
-		
+
 		a = new AlertEmail();
 		a.setDestinatari(s);
 		a.setEvento(eventoService.getEvento(eventoId));
 		a.setProvider(providerService.getProvider(providerId));
 		a.setTipo(AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_STANDARD);
 		emailService.inviaAlertScadenzaReInvioIntegrazioneAccreditamento(a);
-				
+
 		a = new AlertEmail();
 		a.setDestinatari(s);
 		a.setEvento(eventoService.getEvento(eventoId));
 		a.setProvider(providerService.getProvider(providerId));
 		a.setTipo(AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_STANDARD);
 		emailService.inviaAlertScadenzaReInvioIntegrazioneAccreditamento(a);
-		
-		
+
+
 		a = new AlertEmail();
 		a.setDestinatari(s);
 		a.setEvento(eventoService.getEvento(eventoId));
@@ -117,20 +117,20 @@ public class EmailTest {
 		a.setProvider(providerService.getProvider(providerId));
 		a.setTipo(AlertTipoEnum.SCADENZA_ACCREDITAMENTO_STANDARD);
 		emailService.inviaAlertScadenzaAccreditamento(a);
-		
-		
+
+
 		a = new AlertEmail();
 		a.setDestinatari(s);
 		a.setEvento(eventoService.getEvento(eventoId));
 		a.setProvider(providerService.getProvider(providerId));
-		
+
 		emailService.inviaAlertScadenzaPagamento(a);
 		emailService.inviaAlertScadenzaPFA(a);
-		emailService.inviaAlertScadenzaRelazioneAnnuale(a);		
-		emailService.inviaAlertScadenzaPagamentoRendicontazioneEvento(a);		
-		emailService.inviaAlertScadenzaValutazioneReferee(a);		
-		emailService.inviaAlertScadenzaInvioAccreditamentoStandard(a);		
-		
+		emailService.inviaAlertScadenzaRelazioneAnnuale(a);
+		emailService.inviaAlertScadenzaPagamentoRendicontazioneEvento(a);
+		emailService.inviaAlertScadenzaValutazioneReferee(a);
+		emailService.inviaAlertScadenzaInvioAccreditamentoStandard(a);
+
 	}
 
 }
