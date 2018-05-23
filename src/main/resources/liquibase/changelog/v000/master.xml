@@ -165,6 +165,9 @@
 	<include file="20180423_005_applySQL_update_dati_accreditamento_discipline_selezionate.xml" relativeToChangelogFile="true"/>
 
 	<include file="20180514_003_applySQL_update_professione_disciplina.xml" relativeToChangelogFile="true"/>
+	
+	<include file="20180523_002_applySQL_update_account_segreteria_fake.xml" relativeToChangelogFile="true"/>
+	
 
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
       Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali"
