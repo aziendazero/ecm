@@ -15,7 +15,7 @@ import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.service.bean.EcmProperties;
 
 @Configuration
-@EntityScan(basePackages={"it.tredi.ecm.dao.entity","it.tredi.springdatautil"})
+@EntityScan(basePackages = { "it.tredi.ecm.dao.entity", "it.tredi.springdatautil" })
 @EnableTransactionManagement
 public class EcmAppConfiguration {
 	@Value("${account.expires.days}")
@@ -29,7 +29,7 @@ public class EcmAppConfiguration {
 	@Value("${application.baseurl}")
 	private String applicationBaseUrl = "http://localhost:8080/";
 	@Value("${email.segreteriaEcm}")
-	private String emailSegreteriaEcm = "segreteria@ecm.it";
+	private String emailSegreteriaEcm = "formazione.sviluppo@azero.veneto.it";
 	@Value("${debugTestMode}")
 	private boolean debugTestMode = false;
 	@Value("${debugSaltaProtocollo}")
@@ -59,7 +59,6 @@ public class EcmAppConfiguration {
 	private int giorniMaxEventoFscVersione2 = 365;
 	@Value("${giorni.max.evento.fsc.versione2.attivitaDiRicerca}")
 	private int giorniMaxEventoFscVersione2AttivitaDiRicerca = 730;
-
 
 	@Value("${giorni.max.evento.fad}")
 	private int giorniMaxEventoFAD = 365;
@@ -126,7 +125,8 @@ public class EcmAppConfiguration {
 	private LocalDate eventoDataPassaggioVersioneDue = LocalDate.of(2018, 1, 1);
 
 	@Value("#{T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).getSetByNumeroVersioni('${evento.versioni.rieditabili}'.split(','))}")
-	private Set<EventoVersioneEnum> eventoVersioniRieditabili = new HashSet<EventoVersioneEnum>(Arrays.asList(EventoVersioneEnum.DUE_DAL_2018));
+	private Set<EventoVersioneEnum> eventoVersioniRieditabili = new HashSet<EventoVersioneEnum>(
+			Arrays.asList(EventoVersioneEnum.DUE_DAL_2018));
 
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.fad.data.fine.max.triennio}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
 	private LocalDate eventoFadDataFineMaxTriennio = LocalDate.of(2019, 12, 31);
@@ -147,11 +147,11 @@ public class EcmAppConfiguration {
 	private int giorniPossibilitaPosticipoDaInizioEventoProviderB = 10;
 
 	@Bean
-	public EcmProperties ecmProperties(){
+	public EcmProperties ecmProperties() {
 		EcmProperties ecmProperties = new EcmProperties();
 		ecmProperties.setAccountExpiresDay(accountExpiresDay);
-		ecmProperties.setMultipartMaxFileSize(multipartMaxFileSize*1024*1024);
-		ecmProperties.setMultipartMaxFileSize4MB(multipartMaxFileSize4MB*1024*1024);
+		ecmProperties.setMultipartMaxFileSize(multipartMaxFileSize * 1024 * 1024);
+		ecmProperties.setMultipartMaxFileSize4MB(multipartMaxFileSize4MB * 1024 * 1024);
 		ecmProperties.setSedutaValidationMinutes(sedutaValidationMinutes);
 		ecmProperties.setApplicationBaseUrl(applicationBaseUrl);
 		ecmProperties.setEmailSegreteriaEcm(emailSegreteriaEcm);
@@ -173,7 +173,8 @@ public class EcmAppConfiguration {
 		ecmProperties.setNumeroMinimoPartecipantiConvegnoCongressoRES(numeroMinimoPartecipantiConvegnoCongressoRES);
 		ecmProperties.setNumeroMassimoPartecipantiWorkshopSeminarioRES(numeroMassimoPartecipantiWorkshopSeminarioRES);
 		ecmProperties.setNumeroMassimoPartecipantiCorsoAggiornamentoRES(numeroMassimoPartecipantiCorsoAggiornamentoRES);
-		ecmProperties.setNumeroMassimoPartecipantiGruppiMiglioramentoFSC(numeroMassimoPartecipantiGruppiMiglioramentoFSC);
+		ecmProperties
+				.setNumeroMassimoPartecipantiGruppiMiglioramentoFSC(numeroMassimoPartecipantiGruppiMiglioramentoFSC);
 		ecmProperties.setNumeroMassimoPartecipantiAuditClinicoFSC(numeroMassimoPartecipantiAuditClinicoFSC);
 		ecmProperties.setDurataMinimaEventoRES(durataMinimaEventoRES);
 		ecmProperties.setDurataMinimaAuditClinicoFSC(durataMinimaAuditClinicoFSC);
@@ -210,8 +211,10 @@ public class EcmAppConfiguration {
 
 		ecmProperties.setNumeroGiorniUltimaModificaEvento(numeroGiorniUltimaModificaEvento);
 
-		ecmProperties.setGiorniPossibilitaPosticipoDaInizioEventoProviderA(giorniPossibilitaPosticipoDaInizioEventoProviderA);
-		ecmProperties.setGiorniPossibilitaPosticipoDaInizioEventoProviderB(giorniPossibilitaPosticipoDaInizioEventoProviderB);
+		ecmProperties.setGiorniPossibilitaPosticipoDaInizioEventoProviderA(
+				giorniPossibilitaPosticipoDaInizioEventoProviderA);
+		ecmProperties.setGiorniPossibilitaPosticipoDaInizioEventoProviderB(
+				giorniPossibilitaPosticipoDaInizioEventoProviderB);
 		return ecmProperties;
 	}
 
