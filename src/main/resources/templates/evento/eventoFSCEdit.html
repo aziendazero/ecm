@@ -217,7 +217,7 @@
 											<span th:text="#{label.tempo_dedicato}">Tempo Dedicato</span>
 										</label>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12 input-group" id="azione">
-											<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" pattern="numeric" th:step="${eventoWrapper.evento.tipologiaEventoFSC == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).GRUPPI_DI_MIGLIORAMENTO ? 2 : 1}" class="form-control"
+											<input id="eventoTempoDedicato" type="number" min="0" oninput="validity.valid||(value='0');" pattern="numeric" class="form-control"
 												th:field="${eventoWrapper.tempRuoloOreFSC.tempoDedicato}" />
 										</div>
 									</div>
@@ -1642,6 +1642,7 @@
 					$('#tipologiaEventoId').on('change', setEvResIndicatoreObbligatorio);
 					$('#tipologiaEventoId').on('change', setEvResTipologiaSperimentazione);
 					$('#tipologiaEventoId').on('change', setEspertiCoordinatori);
+					$('#tipologiaEventoId').on('change', setStepEventoTempoDedicato);
 
 					//modifica dataInizio
 					$('#dataInizio').on("apply.daterangepicker change", function() {
@@ -1650,12 +1651,14 @@
 						setEspertiCoordinatori();
 						mostraFlagCalcoloCrediti();
 						abilitaDisabilitaMotivazioneCreditiInseritiUtente();
+						setStepEventoTempoDedicato();
 					});
 					$('#dataInizio').on('change', setEvResTipologiaSperimentazione);
 					$('#dataInizio').on('change', reInitDataTableById('responsabiliScientifici'));
 					$('#dataInizio').on('change', setEspertiCoordinatori);
 					$('#dataInizio').on('change', mostraFlagCalcoloCrediti);
 					$('#dataInizio').on('change', abilitaDisabilitaMotivazioneCreditiInseritiUtente);
+					$('#dataInizio').on('change', setStepEventoTempoDedicato);
 
 					//non funziona
 					//$('#sperimentazioneClinicaSiId, #sperimentazioneClinicaNoId').on('change', setEvResOttenutoComitatoEtico);
@@ -1883,6 +1886,26 @@
 					}
 				}
 
+				function setStepEventoTempoDedicato() {
+					//sistemo lo step dell'input eventoTempoDedicato
+					var versione = getVersione();
+					if (versione === 2) {
+						//lo step è sempre 1
+						$("#eventoTempoDedicato").attr('step', '1');
+						console.log('setStepEventoTempoDedicato: versione = 2 - step = 1');
+					} else {
+						// cambia a seconda della Tipologia dell'evento
+						var val = $('#tipologiaEventoId').selectpicker('val');
+						if (val === 'GRUPPI_DI_MIGLIORAMENTO') {
+							$("#eventoTempoDedicato").attr('step', '2');
+							console.log('setStepEventoTempoDedicato: versione = 1 GRUPPI_DI_MIGLIORAMENTO - step = 2');
+						} else {
+							$("#eventoTempoDedicato").attr('step', '1');
+							console.log('setStepEventoTempoDedicato: versione = 1 - step = 1');
+						}
+					}
+				}
+				
 		/* 		function updateSelectRuoliOre(){
 					var val = $('#tipologiaEventoId').selectpicker('val');
 					var ruoliOrePicker_ref ='#addRuoloOreFSC-ruolo';
