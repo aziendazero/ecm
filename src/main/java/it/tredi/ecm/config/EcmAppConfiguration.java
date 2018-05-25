@@ -96,6 +96,13 @@ public class EcmAppConfiguration {
 	private int relazioneAnnualeGiornoFineModifica = 30;
 	@Value("${relazioneAnnuale.meseFineModifica}")
 	private int relazioneAnnualeMeseFineModifica = 4;
+
+	// ERM012514
+	@Value("${relazioneAnnuale.giornoPeriodoNuovo}")
+	private int relazioneAnnualeGiornoPeriodoNuovo = 30;
+	@Value("${relazioneAnnuale.mesePeriodoNuovo}")
+	private int relazioneAnnualeMesePeriodoNuovo = 6;
+
 	@Value("${valutazioni.non.date.limite}")
 	private int valutazioniNonDateLimit = 3;
 	@Value("${giorni.variazione.dati.accreditamento}")
@@ -188,6 +195,11 @@ public class EcmAppConfiguration {
 		ecmProperties.setPianoFormativoMeseFineModifica(pianoFormativoMeseFineModifica);
 		ecmProperties.setRelazioneAnnualeGiornoFineModifica(relazioneAnnualeGiornoFineModifica);
 		ecmProperties.setRelazioneAnnualeMeseFineModifica(relazioneAnnualeMeseFineModifica);
+
+		// ERM012514
+		ecmProperties.setRelazioneAnnualeGiornoPeriodoNuovo(relazioneAnnualeGiornoPeriodoNuovo);
+		ecmProperties.setRelazioneAnnualeMesePeriodoNuovo(relazioneAnnualeMesePeriodoNuovo);
+
 		ecmProperties.setValutazioniNonDateLimit(valutazioniNonDateLimit);
 		ecmProperties.setGiorniVariazioneDatiAccreditamento(giorniVariazioneDatiAccreditamento);
 

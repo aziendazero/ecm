@@ -50,6 +50,11 @@ public class EcmProperties {
 	private int pianoFormativoMeseFineModifica;
 	private int RelazioneAnnualeGiornoFineModifica;
 	private int RelazioneAnnualeMeseFineModifica;
+
+	// ERM012514
+	private int RelazioneAnnualeGiornoPeriodoNuovo;
+	private int RelazioneAnnualeMesePeriodoNuovo;
+
 	private int valutazioniNonDateLimit;
 	private int giorniVariazioneDatiAccreditamento;
 	private String proxyProtocol;
@@ -74,5 +79,18 @@ public class EcmProperties {
 
 	private int giorniPossibilitaPosticipoDaInizioEventoProviderA = 4;
 	private int giorniPossibilitaPosticipoDaInizioEventoProviderB = 10;
+
+	// ERM012514 - 01/01-30/06 anno scorso; 01/07 - 31/12 anno corrente
+	public int getAnnoDiRiferimentoRA_rispettoDataCorrente() {
+
+		// calcolo con anno corente poi sposto in dietro, cosi risparmio operazioni
+		int currentYear = LocalDate.now().getYear();
+		if (LocalDate.now().isAfter(LocalDate.of(currentYear, this.getRelazioneAnnualeMesePeriodoNuovo(),
+				this.getRelazioneAnnualeGiornoPeriodoNuovo()))) {
+			++currentYear;
+		}
+		// anno di riferimento va un anno in dietro
+		return currentYear - 1;
+	}
 
 }
