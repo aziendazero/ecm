@@ -22,13 +22,20 @@ import it.tredi.ecm.utils.Utils;
 public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RelazioneAnnualeServiceImpl.class);
 
-	@Autowired private ProviderService providerService;
-	@Autowired private RelazioneAnnualeRepository relazioneAnnualeRepository;
-	@Autowired private EventoPianoFormativoService eventoPianoFormativoService;
-	@Autowired private EventoService eventoService;
-	@Autowired private AnagrafeRegionaleCreditiService anagrafeRegionaleCreditiService;
-	@Autowired private FileService fileService;
-	@Autowired private EcmProperties ecmProperties;
+	@Autowired
+	private ProviderService providerService;
+	@Autowired
+	private RelazioneAnnualeRepository relazioneAnnualeRepository;
+	@Autowired
+	private EventoPianoFormativoService eventoPianoFormativoService;
+	@Autowired
+	private EventoService eventoService;
+	@Autowired
+	private AnagrafeRegionaleCreditiService anagrafeRegionaleCreditiService;
+	@Autowired
+	private FileService fileService;
+	@Autowired
+	private EcmProperties ecmProperties;
 
 	@Override
 	public RelazioneAnnuale getRelazioneAnnuale(Long relazioneAnnualeId) {
@@ -49,23 +56,30 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	}
 
 	@Override
-	public RelazioneAnnuale getRelazioneAnnualeForProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
-		LOGGER.debug(Utils.getLogMessage("Recupero la Relazione Annuale dell'anno " + annoRiferimento + " per il provider: " + providerId));
+	public RelazioneAnnuale getRelazioneAnnualeForProviderIdAndAnnoRiferimento(Long providerId,
+			Integer annoRiferimento) {
+		LOGGER.debug(Utils.getLogMessage(
+				"Recupero la Relazione Annuale dell'anno " + annoRiferimento + " per il provider: " + providerId));
 		return relazioneAnnualeRepository.findOneByProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
 	}
 
 	@Override
 	public Set<Provider> getAllProviderNotRelazioneAnnualeRegistrata(Integer annoRiferimento) {
-		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno ancora inserito la relazione Annuale per l'anno " + annoRiferimento));
+		LOGGER.debug(Utils.getLogMessage(
+				"Recupero tutti i provider che non hanno ancora inserito la relazione Annuale per l'anno "
+						+ annoRiferimento));
 		return relazioneAnnualeRepository.findAllProviderNotRelazioneAnnualeRegistrata(annoRiferimento);
 	}
 
 	@Override
 	public Set<Provider> getAllProviderNotRelazioneAnnualeRegistrataAllaScadenza() {
-		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
+		LOGGER.debug(Utils
+				.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
 		Set<Provider> listaProvider = new HashSet<Provider>();
-		LocalDate dataScadenza = LocalDate.of(LocalDate.now().getYear(), ecmProperties.getRelazioneAnnualeMeseFineModifica(), ecmProperties.getRelazioneAnnualeGiornoFineModifica());
-		if(LocalDate.now().isAfter(dataScadenza)){
+		LocalDate dataScadenza = LocalDate.of(LocalDate.now().getYear(),
+				ecmProperties.getRelazioneAnnualeMeseFineModifica(),
+				ecmProperties.getRelazioneAnnualeGiornoFineModifica());
+		if (LocalDate.now().isAfter(dataScadenza)) {
 			listaProvider = getAllProviderNotRelazioneAnnualeRegistrata(LocalDate.now().getYear() - 1);
 		}
 		return listaProvider;
@@ -73,34 +87,49 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 
 	@Override
 	public int countProviderNotRelazioneAnnualeRegistrataAllaScadenza() {
-		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
+		LOGGER.debug(Utils
+				.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
 		Set<Provider> listaProvider = getAllProviderNotRelazioneAnnualeRegistrataAllaScadenza();
-		if(listaProvider != null)
+		if (listaProvider != null)
 			return listaProvider.size();
 		return 0;
 	}
 
+	// ERM012514 - RA va creata dal 01/01-30/06 per lanno scorso, dal 01/07- 31/12
+	// per anno corrente
 	@Override
-	public RelazioneAnnuale createRelazioneAnnuale(Long providerId, Integer annoRiferimento) {
-		LOGGER.debug(Utils.getLogMessage("Recupero tutti i provider che non hanno inserito la relazione Annuale alla scadenza"));
+	public RelazioneAnnuale createRelazioneAnnuale(Long providerId) {
+		int annoRiferimento = ecmProperties.getAnnoDiRiferimentoRA_rispettoDataCorrente(); //
+		LOGGER.debug(Utils.getLogMessage("Check se esiste gia RA per annoRif : " + annoRiferimento));
 		RelazioneAnnuale r = getRelazioneAnnualeForProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
-		if(r != null){
+		if (r != null) {
 			return null;
 		}
+
+		LOGGER.debug(Utils.getLogMessage("Sto creando RA per annoRif : " + annoRiferimento
+				+ " modificabile entro 30/03 del anno " + (annoRiferimento + 1)));
 		RelazioneAnnuale relazioneAnnuale = new RelazioneAnnuale();
 		relazioneAnnuale.setAnnoRiferimento(annoRiferimento);
 		relazioneAnnuale.setProvider(providerService.getProvider(providerId));
-		//modificabile entro il 30 Aprile dell'anno di riferimento
-		relazioneAnnuale.setDataFineModifca(LocalDate.of(annoRiferimento, ecmProperties.getRelazioneAnnualeMeseFineModifica(), ecmProperties.getRelazioneAnnualeGiornoFineModifica()));
+		// modificabile entro il 30 Aprile dell'annosuccesivo al anno di riferimento
+		relazioneAnnuale.setDataFineModifca(
+				LocalDate.of(annoRiferimento + 1, ecmProperties.getRelazioneAnnualeMeseFineModifica(),
+						ecmProperties.getRelazioneAnnualeGiornoFineModifica()));
 		return relazioneAnnuale;
 	}
 
 	@Override
-	public void elaboraRelazioneAnnualeAndSave(RelazioneAnnuale relazioneAnnuale, File relazioneFinale, boolean asBozza) {
-		relazioneAnnuale.setEventiPFA(eventoPianoFormativoService.getAllEventiFromProviderInPianoFormativo(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
-		relazioneAnnuale.setEventiAttuati(eventoService.getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
-		relazioneAnnuale.setRiepilogoAnagrafeAventeCrediti(anagrafeRegionaleCreditiService.getRuoliAventeCreditiPerAnno(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
-		relazioneAnnuale.setProfessioniAventeCrediti(anagrafeRegionaleCreditiService.getProfessioniAnagrafeAventeCrediti(relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
+	public void elaboraRelazioneAnnualeAndSave(RelazioneAnnuale relazioneAnnuale, File relazioneFinale,
+			boolean asBozza) {
+		relazioneAnnuale.setEventiPFA(eventoPianoFormativoService.getAllEventiFromProviderInPianoFormativo(
+				relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
+		relazioneAnnuale.setEventiAttuati(eventoService.getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(
+				relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
+		relazioneAnnuale.setRiepilogoAnagrafeAventeCrediti(anagrafeRegionaleCreditiService.getRuoliAventeCreditiPerAnno(
+				relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
+		relazioneAnnuale
+				.setProfessioniAventeCrediti(anagrafeRegionaleCreditiService.getProfessioniAnagrafeAventeCrediti(
+						relazioneAnnuale.getProvider().getId(), relazioneAnnuale.getAnnoRiferimento()));
 		relazioneAnnuale.elabora();
 		save(relazioneAnnuale, relazioneFinale, asBozza);
 	}
@@ -108,8 +137,8 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 	@Transactional
 	private void save(RelazioneAnnuale relazioneAnnuale, File relazioneFinale, boolean asBozza) {
 		relazioneAnnuale.setBozza(asBozza);
-		//evita la TransientPropertyValueException
-		if(relazioneFinale == null || relazioneFinale.isNew())
+		// evita la TransientPropertyValueException
+		if (relazioneFinale == null || relazioneFinale.isNew())
 			relazioneAnnuale.setRelazioneFinale(null);
 		else {
 			relazioneAnnuale.setRelazioneFinale(fileService.getFile(relazioneFinale.getId()));
@@ -119,14 +148,20 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 
 	@Override
 	public boolean isLastRelazioneAnnualeInserita(Long providerId) {
-		int annoCorrente = LocalDate.now().getYear()-1;
-		//tiommi 2017-06-15
-		Set<RelazioneAnnuale> setRelazioni = relazioneAnnualeRepository.findAllByProviderIdAndAnnoRiferimento(providerId, annoCorrente);
-		for (RelazioneAnnuale ra : setRelazioni) {
-			if(!ra.isBozza())
-				return true;
+		// ERM012514 - get anno di riferimento che dipende dal periodo del anno primo /
+		// secondo semestre
+		return relazioneAnnualeRepository.findAllByProviderIdAndAnnoRiferimento(providerId,
+				ecmProperties.getAnnoDiRiferimentoRA_rispettoDataCorrente()).size() > 0;
+	}
+
+	@Transactional
+	@Override
+	public void aggiornaDataDiFineModificaPerRelazioneAnnualeForProviderIdAndAnnoRiferimento(Long providerId,
+			Integer annoRiferimento, LocalDate dataFineModifca) {
+		RelazioneAnnuale ra = getRelazioneAnnualeForProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
+		if (ra != null) {
+			ra.setDataFineModifca(dataFineModifca);
+			relazioneAnnualeRepository.save(ra);
 		}
-		//nessuna relazione annuale non in bozza trovata
-		return false;
 	}
 }

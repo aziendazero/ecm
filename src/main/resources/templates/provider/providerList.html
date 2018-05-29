@@ -110,6 +110,7 @@
 										<div class="col-xs-4"></div>
 										<div class="col-xs-8 alert" th:text="#{error.empty}"></div>
 									</th:block>
+									
 								</div>
 							</div>
 							
@@ -174,7 +175,7 @@
 									</div>
 									<th:block th:if="${#fields.hasErrors('impostazioniProviderWrapper.canInsertRelazioneAnnuale') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertRelazioneAnnuale')}">
 										<div class="col-xs-4"></div>
-										<div class="col-xs-8 alert" th:text="#{error.empty}"></div>
+										<div class="col-xs-8 alert" th:text="${#fields.errors('impostazioniProviderWrapper.dataScadenzaInsertRelazioneAnnuale')}"></div>
 									</th:block>
 								</div>
 							</div>
