@@ -16,7 +16,7 @@
 						<h2 th:unless="${relazioneAnnualeWrapper.relazioneAnnuale.isNew()}" th:text="#{label.modifica_relazione_annuale(${#numbers.formatInteger(relazioneAnnualeWrapper.relazioneAnnuale.annoRiferimento,0)})}"></h2>
 						<div class="pull-right buttons-header">
 							<div class="dropdown pull-right">
-  								<button type="button" class="btn btn-success pull-right" th:text="#{label.conferma}" onclick="confermaRelazioneAnnuale()"></button>
+								<button th:if="${canConfirmRA}" type="button" class="btn btn-success pull-right" th:text="#{label.conferma}" onclick="confermaRelazioneAnnuale()"></button>
   								<button th:if="${relazioneAnnualeWrapper.relazioneAnnuale.bozza}" type="button" class="btn btn-success pull-right" th:text="#{label.salva_bozza}" onclick="salvaBozzaRalazioneAnnuale()"></button>
   								<a class="btn btn-primary" th:href="@{|/provider/${relazioneAnnualeWrapper.providerId}/relazioneAnnuale/list|}" th:text="#{label.indietro}"></a>
 							</div>

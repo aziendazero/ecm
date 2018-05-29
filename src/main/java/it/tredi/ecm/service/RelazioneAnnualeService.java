@@ -1,5 +1,6 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
@@ -28,4 +29,7 @@ public interface RelazioneAnnualeService {
 			boolean asBozza);
 
 	public boolean isLastRelazioneAnnualeInserita(Long providerId);
+
+	public void aggiornaDataDiFineModificaPerRelazioneAnnualeForProviderIdAndAnnoRiferimento(Long providerId,
+			Integer annoRiferimento, LocalDate dataFineModifca);
 }

@@ -153,4 +153,15 @@ public class RelazioneAnnualeServiceImpl implements RelazioneAnnualeService {
 		return relazioneAnnualeRepository.findAllByProviderIdAndAnnoRiferimento(providerId,
 				ecmProperties.getAnnoDiRiferimentoRA_rispettoDataCorrente()).size() > 0;
 	}
+
+	@Transactional
+	@Override
+	public void aggiornaDataDiFineModificaPerRelazioneAnnualeForProviderIdAndAnnoRiferimento(Long providerId,
+			Integer annoRiferimento, LocalDate dataFineModifca) {
+		RelazioneAnnuale ra = getRelazioneAnnualeForProviderIdAndAnnoRiferimento(providerId, annoRiferimento);
+		if (ra != null) {
+			ra.setDataFineModifca(dataFineModifca);
+			relazioneAnnualeRepository.save(ra);
+		}
+	}
 }

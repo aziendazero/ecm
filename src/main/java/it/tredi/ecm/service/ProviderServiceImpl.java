@@ -715,6 +715,7 @@ public class ProviderServiceImpl implements ProviderService {
 		// qua il report non serve
 		if (provider.isCanInsertAccreditamentoProvvisorio())
 			provider.setDataRinnovoInsertAccreditamentoProvvisorio(wrapper.getDataRinnovoInsertDomandaProvvisoria());
+
 		if (provider.isCanInsertRelazioneAnnuale()) {
 			if (provider.getDataScadenzaInsertRelazioneAnnuale() != null && !provider
 					.getDataScadenzaInsertRelazioneAnnuale().isEqual(wrapper.getDataScadenzaInsertRelazioneAnnuale())) {
@@ -724,6 +725,27 @@ public class ProviderServiceImpl implements ProviderService {
 						!relazioneAnnualeService.isLastRelazioneAnnualeInserita(providerId), provider.getId());
 			}
 			provider.setDataScadenzaInsertRelazioneAnnuale(wrapper.getDataScadenzaInsertRelazioneAnnuale());
+			// ERM012514 - si modifica anche la RA stessa cosi abbiamo la data di fine
+			// inserimento cooerente
+			if (relazioneAnnualeService.isLastRelazioneAnnualeInserita(providerId)) {
+				relazioneAnnualeService.aggiornaDataDiFineModificaPerRelazioneAnnualeForProviderIdAndAnnoRiferimento(
+						providerId, ecmProperties.getAnnoDiRiferimentoRA_rispettoDataCorrente(),
+						wrapper.getDataScadenzaInsertRelazioneAnnuale());
+			}
+		} else {
+			// ERM012514 - set default date as data fine modifica , cosi non sara
+			// modificabile, perche icontrolli della interfaccia controlano solo la data di
+			// fine modifica
+
+			LocalDate defaultDate = LocalDate.of(LocalDate.now().getYear(),
+					ecmProperties.getRelazioneAnnualeMeseFineModifica(),
+					ecmProperties.getRelazioneAnnualeGiornoFineModifica());
+
+			provider.setDataScadenzaInsertRelazioneAnnuale(defaultDate);
+			if (relazioneAnnualeService.isLastRelazioneAnnualeInserita(providerId)) {
+				relazioneAnnualeService.aggiornaDataDiFineModificaPerRelazioneAnnualeForProviderIdAndAnnoRiferimento(
+						providerId, ecmProperties.getAnnoDiRiferimentoRA_rispettoDataCorrente(), defaultDate);
+			}
 		}
 		// status provider
 		provider.setStatus(wrapper.getStato());

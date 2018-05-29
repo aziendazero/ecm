@@ -1,5 +1,7 @@
 package it.tredi.ecm.web;
 
+import java.time.LocalDate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import it.tredi.ecm.dao.entity.RelazioneAnnuale;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.service.RelazioneAnnualeService;
+import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.RelazioneAnnualeWrapper;
@@ -44,6 +47,8 @@ public class RelazioneAnnualeController {
 	private RelazioneAnnualeValidator relazioneAnnualeValidator;
 	@Autowired
 	private FileService fileService;
+	@Autowired
+	private EcmProperties ecmProperties;
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
@@ -104,7 +109,6 @@ public class RelazioneAnnualeController {
 			RedirectAttributes redirectAttrs) {
 		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/relazioneAnnuale/insert"));
 		try {
-			// dpranteda 24/01/2018: la relazione da inserire è quella dell'anno precedente!
 			RelazioneAnnuale relazioneAnnuale = relazioneAnnualeService.createRelazioneAnnuale(providerId);
 			if (relazioneAnnuale == null) {
 				redirectAttrs.addFlashAttribute("message",
@@ -270,13 +274,21 @@ public class RelazioneAnnualeController {
 		return wrapper;
 	}
 
+	private boolean canConfirmRA() {
+		return !LocalDate.now()
+				.isAfter(LocalDate.of(LocalDate.now().getYear(), ecmProperties.getRelazioneAnnualeMesePeriodoNuovo(),
+						ecmProperties.getRelazioneAnnualeGiornoPeriodoNuovo()));
+	}
+
 	private String goToNew(Model model, RelazioneAnnualeWrapper wrapper) {
+		model.addAttribute("canConfirmRA", canConfirmRA());
 		model.addAttribute("relazioneAnnualeWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
 	}
 
 	private String goToEdit(Model model, RelazioneAnnualeWrapper wrapper) {
+		model.addAttribute("canConfirmRA", canConfirmRA());
 		model.addAttribute("relazioneAnnualeWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
 		return EDIT;
