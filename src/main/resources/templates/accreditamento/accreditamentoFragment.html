@@ -1083,6 +1083,9 @@
 											</div>
 
 											<div th:if="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf}">
+												<div>
+													<a data-toggle="modal" data-target=".modal-confirm">Conferma Valutazione</a>
+												</div>
 												<label class="control-label">
 													<span th:class="label-show" th:text="#{label.pdf_verbale_valutazione_sul_campo}">pdf_verbale_valutazione_sul_campo</span>
 												</label>
@@ -1100,6 +1103,10 @@
 												</div>
 												<div th:if="${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato3}">
 													<div class="value"><i class="fa fa-download"> </i> <a th:text="${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato3.nomeFile}" th:href="@{|/file/${accreditamentoWrapper.accreditamento.valutazioneSulCampoAllegato3.id}|}"></a></div>
+												</div>
+												<div class="item form-group">
+													<div class="col-lg-1 col-xs-12"></div>
+													<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_VALUTAZIONE_SUL_CAMPO_ALLEGATO3}', valutazioneSulCampoAllegato3, null, null, null, false, 'edit', false)" ></th:block>
 												</div>
 												<div class="divider-dashed"></div>
 											</div>
@@ -1553,6 +1560,11 @@
 		</div>
 			<script th:inline="javascript">
 			/*<![CDATA[*/
+				/*
+				function showModificaDocumenti(){
+					$('.modal-confirm').show('modal');
+				}*/
+				
 				$(document).ready(function() {
 
 					if ([[${currentTab}]] != null)

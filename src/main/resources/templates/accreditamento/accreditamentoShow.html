@@ -631,6 +631,74 @@
 						</div>
 					</div>
 				</div>
+				
+				<!-- modale conferma valutazione  -->
+				<div id="confirm-modal" class="modal fade modal-confirm"
+					data-model-index="1" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">×</span>
+								</button>
+								<h4 class="modal-title" id="myModalLabel"
+									th:text="#{label.conferma_valutazione}"></h4>
+							</div>
+							<div class="modal-body">
+								<form id="formValutazioneComplessiva" class="form-horizontal"
+									
+									method="post" enctype="multipart/form-data"
+									novalidate="novalidate">
+
+									<!-- th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/confirmEvaluation|}"  -->
+
+									
+
+									
+									<th:block th:if="${#authentication.principal.hasProfile('SEGRETERIA')
+										and accreditamentoWrapper.accreditamento.isAccreditatoInAttesaDiFirma()
+										and accreditamentoWrapper.accreditamento.isStandard()}">
+
+
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf')} ? 'bad'">
+											<div class="col-lg-1 col-xs-12"></div>
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_PDF_VERBALE_VALUTAZIONE_SUL_CAMPO}', verbalePdfFirmato, null, null, null, false, 'edit', false)" ></th:block>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf}"></div>
+										</div>
+
+										<div class="divider"></div>
+
+										<div class="item form-group">
+											<div class="col-lg-1 col-xs-12"></div>
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_VALUTAZIONE_SUL_CAMPO_ALLEGATO1}', valutazioneSulCampoAllegato1, null, null, null, false, 'edit', false)" ></th:block>
+										</div>
+
+										<div class="item form-group">
+											<div class="col-lg-1 col-xs-12"></div>
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_VALUTAZIONE_SUL_CAMPO_ALLEGATO2}', valutazioneSulCampoAllegato2, null, null, null, false, 'edit', false)" ></th:block>
+										</div>
+
+										<div class="item form-group">
+											<div class="col-lg-1 col-xs-12"></div>
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_VALUTAZIONE_SUL_CAMPO_ALLEGATO3}', valutazioneSulCampoAllegato3, null, null, null, false, 'edit', false)" ></th:block>
+										</div>
+
+									</th:block>
+
+									
+
+									<input id="submitButtonModal" type="submit" style="display: none;" />
+									<input type="hidden" th:field="${accreditamentoWrapper.verbaleValutazioneSulCampo.accreditamento}" />
+
+								</form>
+							</div>
+							<div class="modal-footer">
+          						<label for="submitButtonModal" class="btn btn-success pull-right" th:text="#{label.salva}">Salva</label>
+          						<button type="button" class="btn btn-primary pull-right" data-dismiss="modal" th:text="#{label.chiudi}">Chiudi</button>
+        					</div>
+						</div>
+					</div>
+				</div>
 
 				<div class="x_panel">
 					<div class="x_title x_menu">
