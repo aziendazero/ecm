@@ -11,7 +11,7 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">Ã—</span>
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
 						</button>
 						<h4 class="modal-title" id="myModalLabel1" th:text="#{label.richiesta_conferma}">Richiesta di conferma</h4>
 					</div>
@@ -56,7 +56,7 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">Ã—</span>
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
 						</button>
 						<h4 class="modal-title" id="myModalLabel1" th:text="#{label.cerca_persona}">Cerca anagrafica</h4>
 					</div>
@@ -88,7 +88,7 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">Ã—</span>
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
 						</button>
 						<h4 class="modal-title" id="myModalLabel2" th:text="#{label.inserisci_persona}">Inserisci persona</h4>
 					</div>
@@ -159,7 +159,7 @@
 							<!-- SOLO PER COORDINATORI - PRESENTI SOLO IN VERSIONE EVENTO 2 -->
 							<div class="item form-group" id="container-svolgeAttivitaDiDocenza">
 								<label class="control-label col-md-3 col-sm-3 col-xs-11" for="anagraficaBase_svolgeAttivitaDiDocenza">
-									<span th:text="#{label.svolge_attivita_docenza}">Svolge attivitÃ  di docenza</span>
+									<span th:text="#{label.svolge_attivita_docenza}">Svolge attività di docenza</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<div class="checkbox">
@@ -263,7 +263,7 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">Ã—</span>
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
 						</button>
 						<h4 class="modal-title" id="myModalLabel3" th:text="#{label.inserisci_persona}">Inserisci persona</h4>
 					</div>
@@ -373,7 +373,7 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">Ã—</span>
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
 						</button>
 						<h4 class="modal-title" id="myModalLabel3" th:text="#{label.inserisci_sponsor}">Inserisci sponsor</h4>
 					</div>
@@ -427,7 +427,7 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">Ã—</span>
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
 						</button>
 						<h4 class="modal-title" id="myModalLabel3" th:text="#{label.inserisci_partner}">Inserisci partner</h4>
 					</div>
@@ -495,7 +495,7 @@
 									<span th:text="#{label.menu_azioni}"></span>
 									<span class="caret"></span>
 								</button>
-								<!-- menÃ¹ raggruppato per segreteria -->
+								<!-- menù raggruppato per segreteria -->
 								<ul class="dropdown-menu actions">
 									<!-- <li><a><label class="in-dropdown" for="submitButton" th:text="#{label.salva_modifiche}"></label></a></li> -->
 									<li th:unless="${eventoWrapper.evento.isRiedizione()
@@ -740,7 +740,7 @@
 					abilitaDiscipline($("#professioni")[0]);
 				}
 
-				//decide cosa mostrare a seconda dei campi giÃ  settati dal client
+				//decide cosa mostrare a seconda dei campi già settati dal client
 				showHideCampsCommon();
 
 				//appende ai widget tutti i vari eventListener
@@ -765,7 +765,7 @@
 
 			//funzione per l'abilita / disabilita le discipline selezionabili in base alle professioni
 			function abilitaDiscipline(professioni) {
-				//flag per capire se c'Ã¨ almeno una professione
+				//flag per capire se c'è almeno una professione
 				var almenoUna = false;
 				$.each(professioni.options, function(index, item) {
 					//toglie la parte relativa al codice della professione
@@ -791,7 +791,7 @@
 				$('#discipline').selectpicker('refresh');
 			}
 
-			//implementazione della funzione che decide cosa mostrare a seconda dei campi giÃ  settati dal client per i campi in comune tra gli eventi
+			//implementazione della funzione che decide cosa mostrare a seconda dei campi già settati dal client per i campi in comune tra gli eventi
 			function showHideCampsCommon() {
 
 				//sponsor
@@ -1175,7 +1175,7 @@
 						if(fromLookup) {
 							$('#anagraficaBase_codice_fiscale').prop("disabled", true);
 							$('#anagraficaBase_straniero').iCheck("disable");
-							//abilito l'inserimento del cv se il cv Ã¨ richiesto e la PersonaEvento selezionata non lo ha
+							//abilito l'inserimento del cv se il cv è richiesto e la PersonaEvento selezionata non lo ha
 							console.log('id file: ' + $('#cv\\.id').val());
 							if($('#cv\\.id').val() != undefined && $('#cv\\.id').val() == '') {
 								console.log('file mancante abilito l\'inserimento');
@@ -1363,7 +1363,7 @@
 						else {
 							//tocca mettere empty() completamente a caso
 							//(nonostante .html() sostituisca TUTTO il contenuto)
-							//perchÃ¨ sennÃ² EXPLODER si offende malamente ( -.-)
+							//perchè sennò EXPLODER si offende malamente ( -.-)
 						  	$('#'+target).empty().html(data);
 						  	closeModaleAddPersonaFull();
 						  	reInitDataTableById(target);
@@ -1555,7 +1555,7 @@
 				}
 			}
 
-			//inserisce un docente nella lista dei disponibili (per l'attivitÃ )
+			//inserisce un docente nella lista dei disponibili (per l'attività)
 			function sendAjaxRequestDocentiAttivitaRES(){
 				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/listaDocentiAttivita|}]];
 				$.get(url, function(data){
@@ -1570,7 +1570,7 @@
 				});
 			};
 
-			//inserisce un docente nella lista dei disponibili (per l'attivitÃ )
+			//inserisce un docente nella lista dei disponibili (per l'attività)
 			function sendAjaxRequestDocentiAttivitaFAD(){
 				var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/listaDocentiAttivita|}]];
 				$.get(url, function(data){
@@ -1638,7 +1638,7 @@
 						<th th:text="#{label.cv}">CV</th>
 						<th th:text="#{label.stato_cv}">CV</th>
 						<th th:text="#{label.identificativo_persona_evento_responsabile}" th:if="${isFsc}">Identificativo</th>
-						<th th:text="#{label.svolge_attivita_docenza}" th:if="${isFsc}">Svolge attivitÃ  di docenza</th>
+						<th th:text="#{label.svolge_attivita_docenza}" th:if="${isFsc}">Svolge attività di docenza</th>
 						<th style="padding-right: 8px;">
 							<div class="evento-button-container">
 								<a th:unless="${checkEdit}" id="lookup-responsabiliScientifici" class="btn btn-primary evento-table-button" onclick="openLookupPersona('responsabiliScientifici','base')" data-toggle="modal" data-target=".modal-lookup-persona">
@@ -1676,7 +1676,7 @@
 							</th:block>
 						</td>
 						<td th:text="${persona.identificativoPersonaRuoloEvento?.nome}" th:if="${isFsc}"></td>
-						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sÃ¬} : #{label.no}" th:if="${isFsc}"></td>
+						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}" th:if="${isFsc}"></td>
 						<td>
 							<a th:unless="${checkEdit}" onclick="modificaPersonaFrom('responsabiliScientifici',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
@@ -2040,7 +2040,7 @@
 						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.sede.luogo')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.sede.luogo')}__}"></div>
 					</div>
 					<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')} ? 'bad'">
-						<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio AttivitÃ </label>
+						<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
 						<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+__${data.key}__+'].programma.programma')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('eventoRESDateProgrammiGiornalieriWrapper.sortedProgrammiGiornalieriMap['+data.key+'].programma.programma')}__}"></div>
 						<div class="item form-group" style="clear:both; padding:2px;"></div>
 						<div th:attr="data-programma-id=__${data.key}__" class="item div-programma-id form-group" style="clear:both">
@@ -2257,7 +2257,7 @@
 					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')}">
 			<div id="attivitaFAD" th:if="${eventoWrapper.programmaEventoFAD != null}">
 				<div class="col-xs-12 item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')} ? 'bad'">
-					<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio AttivitÃ </label>
+					<label class="col-lg-9 col-md-11 col-sm-11 col-xs-12" th:text="#{label.dettaglio_attivita}">Dettaglio Attività</label>
 					<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.programmaFAD')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.programmaFAD')}__}"></div>
 					<div class="item form-group" style="clear:both; padding:2px;"></div>
 					<div data-programma-id="0" class="item form-group div-programma-id" style="clear:both">
@@ -2340,7 +2340,7 @@
 						<th th:text="#{label.nome}">Nome</th>
 						<th th:text="#{label.cf}">CF</th>
 						<th th:text="#{label.identificativo_persona_evento_esperto}">Identificativo</th>
-						<th th:text="#{label.svolge_attivita_docenza}">Svolge attivitÃ  di docenza</th>
+						<th th:text="#{label.svolge_attivita_docenza}">Svolge attività di docenza</th>
 						<th style="padding-right: 8px;">
 							<div class="evento-button-container">
 								<a th:unless="${isEventoIniziato}" id="lookup-esperti" class="btn btn-primary evento-table-button" onclick="openLookupPersona('esperti','base')" data-toggle="modal" data-target=".modal-lookup-persona">
@@ -2368,7 +2368,7 @@
 						<td th:text="${persona.anagrafica.nome}"></td>
 						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
 						<td th:text="${persona.identificativoPersonaRuoloEvento?.nome}"></td>
-						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sÃ¬} : #{label.no}"></td>
+						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}"></td>
 						<td>
 							<a th:unless="${isEventoIniziato}" onclick="modificaPersonaFrom('esperti',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
@@ -2412,7 +2412,7 @@
 						<th th:text="#{label.nome}">Nome</th>
 						<th th:text="#{label.cf}">CF</th>
 						<th th:text="#{label.identificativo_persona_evento_coordinatore}">Identificativo</th>
-						<th th:text="#{label.svolge_attivita_docenza}">Svolge attivitÃ  di docenza</th>
+						<th th:text="#{label.svolge_attivita_docenza}">Svolge attività di docenza</th>
 						<th style="padding-right: 8px;">
 							<div class="evento-button-container">
 								<a th:unless="${isEventoIniziato or #lists.size(eventoWrapper.coordinatori) >= 3}" id="lookup-coordinatori" class="btn btn-primary evento-table-button" onclick="openLookupPersona('coordinatori','base')" data-toggle="modal" data-target=".modal-lookup-persona">
@@ -2440,7 +2440,7 @@
 						<td th:text="${persona.anagrafica.nome}"></td>
 						<td th:text="${persona.anagrafica.codiceFiscale}"></td>
 						<td th:text="${persona.identificativoPersonaRuoloEvento?.nome}"></td>
-						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sÃ¬} : #{label.no}"></td>
+						<td th:text="${persona.svolgeAttivitaDiDocenza} ? #{label.sì} : #{label.no}"></td>
 						<td>
 							<a th:unless="${isEventoIniziato}" onclick="modificaPersonaFrom('coordinatori',this)" class="btn btn-warning btn-table single" th:text="#{label.modifica}">
 								<span><i class="fa fa-pencil"></i></span>
