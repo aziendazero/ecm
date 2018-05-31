@@ -1207,8 +1207,9 @@ public class AccreditamentoController {
 		}
 	}
 
+	// ERM014775
 	@Transactional
-	//@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/modificaDocumentiDiValutazione", method = RequestMethod.POST)
 	public String modificaDocumentiDiValutazione(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper,
 			BindingResult result, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) {
@@ -1236,6 +1237,8 @@ public class AccreditamentoController {
 					redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato",
 							"message.documenti_valutazione_complessiva_salvati", "success"));
+					
+					redirectAttrs.addAttribute("currentTab", "tab_content5");
 				}
 			}
 		} catch (Exception ex) {
@@ -1247,7 +1250,7 @@ public class AccreditamentoController {
 					new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 		}
-		selectCorrectTab("tab4", wrapper, model);
+		
 		return "redirect:/accreditamento/{accreditamentoId}/show";
 	}
 
