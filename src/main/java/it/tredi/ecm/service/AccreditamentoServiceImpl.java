@@ -2844,6 +2844,71 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
+	@Transactional 
+	public void replaceValutazioneSulCampoFiles(Long accreditamentoId, Long pdfId, Long a1Id, Long a2Id, Long a3Id) {
+		LOGGER.debug(Utils.getLogMessage("Cambio dei allegati della valutazione sul campo del accreditamento " + accreditamentoId));
+
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		boolean isSave = false;
+		
+		if(accreditamento.getVerbaleValutazioneSulCampoPdf() == null ||  //vecchio non ce
+				!accreditamento.getVerbaleValutazioneSulCampoPdf().getId().equals(pdfId)) { // nuovo e diverso
+			if(pdfId != null) { // nuovo non e vuoto
+				LOGGER.debug(Utils.getLogMessage("Cambio pdf firmato della valutazione sul campo del accreditamento " + accreditamentoId));
+				accreditamento.setVerbaleValutazioneSulCampoPdf(fileService.getFile(pdfId));
+				isSave = true;
+			}
+		}
+		
+		if(accreditamento.getValutazioneSulCampoAllegato1() == null || // vecchio non ce
+			!accreditamento.getValutazioneSulCampoAllegato1().getId().equals(a1Id)) { // nuovo e diverso
+			
+			if(a1Id == null) {
+				// riomozione
+				LOGGER.debug(Utils.getLogMessage("Rimozione allegato1 della valutazione sul campo del accreditamento " + accreditamentoId));
+				accreditamento.setValutazioneSulCampoAllegato1(null);
+			}else {
+				// aggiornamento
+				LOGGER.debug(Utils.getLogMessage("Cambio allegato1 della valutazione sul campo del accreditamento " + accreditamentoId));
+				accreditamento.setValutazioneSulCampoAllegato1(fileService.getFile(a1Id));				
+			}
+			isSave = true;
+		}
+		
+		if(accreditamento.getValutazioneSulCampoAllegato2() == null || // vecchio non ce
+				!accreditamento.getValutazioneSulCampoAllegato2().getId().equals(a2Id)) { // nuovo e diverso
+			
+			if(a2Id == null) {
+				// riomozione
+				LOGGER.debug(Utils.getLogMessage("Rimozione allegato2 della valutazione sul campo del accreditamento " + accreditamentoId));
+				accreditamento.setValutazioneSulCampoAllegato2(null);
+			}else {
+				// aggiornamento
+				LOGGER.debug(Utils.getLogMessage("Cambio allegato2 della valutazione sul campo del accreditamento " + accreditamentoId));
+				accreditamento.setValutazioneSulCampoAllegato2(fileService.getFile(a2Id));				
+			}
+			isSave = true;
+		}
+		
+		if(accreditamento.getValutazioneSulCampoAllegato3() == null || // vecchio non ce
+				!accreditamento.getValutazioneSulCampoAllegato3().getId().equals(a3Id)) { // nuovo e diverso
+			
+			if(a3Id == null) {
+				// riomozione
+				LOGGER.debug(Utils.getLogMessage("Rimozione allegato3 della valutazione sul campo del accreditamento " + accreditamentoId));
+				accreditamento.setValutazioneSulCampoAllegato3(null);
+			}else {
+				// aggiornamento
+				LOGGER.debug(Utils.getLogMessage("Cambio allegato3 della valutazione sul campo del accreditamento " + accreditamentoId));
+				accreditamento.setValutazioneSulCampoAllegato3(fileService.getFile(a3Id));				
+			}
+			isSave = true;
+		}
+		
+		if(isSave) saveAndAudit(accreditamento);
+	}
+	
+	@Override
 	@Transactional
 	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileIdLettera, Long fileIdDecreto, LocalDate dataDelibera, String numeroDelibera) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Lettera Accompagnamento e Decreto Diniego della domanda " + accreditamentoId + " al Protocollo"));
