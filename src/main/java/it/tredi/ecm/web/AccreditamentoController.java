@@ -687,16 +687,14 @@ public class AccreditamentoController {
 				else
 					accreditamentoWrapper.setDelegaValutazioneSulCampo(null);
 			}
-
-			// add files to wrapper
-
 		}
 		
-		//carico gli eventuali verbali sul wrapper
-		accreditamentoWrapper.setVerbalePdfFirmato(accreditamento.getVerbaleValutazioneSulCampoPdf());
+		// ERM014775 - per poter editare i file e non aver eproblemi con hibernate serve
+		// avere anche i files della valutacione in wrapper
 		accreditamentoWrapper.setValutazioneSulCampoAllegato1(accreditamento.getValutazioneSulCampoAllegato1());
 		accreditamentoWrapper.setValutazioneSulCampoAllegato2(accreditamento.getValutazioneSulCampoAllegato2());
 		accreditamentoWrapper.setValutazioneSulCampoAllegato3(accreditamento.getValutazioneSulCampoAllegato3());
+		accreditamentoWrapper.setVerbalePdfFirmato(accreditamento.getVerbaleValutazioneSulCampoPdf());
 
 		LOGGER.info(Utils.getLogMessage("prepareAccreditamentoWrapperShow(" + accreditamento.getId() + ") - exiting"));
 		return accreditamentoWrapper;
@@ -1220,7 +1218,7 @@ public class AccreditamentoController {
 		try {
 			if (accreditamento.isStandard()) {
 
-				if (wrapper.getAccreditamento().getVerbaleValutazioneSulCampoPdf() == null)
+				if (wrapper.getVerbalePdfFirmato() == null)
 					result.rejectValue("accreditamento.verbaleValutazioneSulCampoPdf", "error.empty");
 
 				if (result.hasErrors()) {
@@ -1229,70 +1227,10 @@ public class AccreditamentoController {
 					model.addAttribute("confirmErrors", true);
 				} else {
 
-					boolean isSave = false;
-					if (wrapper.getVerbalePdfFirmato() != null
-							&& !wrapper.getVerbalePdfFirmato().getId().equals(accreditamento.getVerbaleValutazioneSulCampoPdf().getId())) {
-						accreditamento.setVerbaleValutazioneSulCampoPdf(wrapper.getVerbalePdfFirmato());
-						isSave = true;
-					}
-					if (
-							(wrapper.getValutazioneSulCampoAllegato1() != null && accreditamento.getValutazioneSulCampoAllegato1() == null)
-							||
-							(wrapper.getValutazioneSulCampoAllegato1() == null && accreditamento.getValutazioneSulCampoAllegato1() != null)
-							||
-							(wrapper.getValutazioneSulCampoAllegato1().getId() == null && accreditamento.getValutazioneSulCampoAllegato1() != null)
-							||
-							(
-								wrapper.getValutazioneSulCampoAllegato1() != null && accreditamento.getValutazioneSulCampoAllegato1() != null
-								&& !wrapper.getValutazioneSulCampoAllegato1().getId().equals(accreditamento.getValutazioneSulCampoAllegato1().getId())
-							)
-						) {
-						if(wrapper.getValutazioneSulCampoAllegato1() == null || wrapper.getValutazioneSulCampoAllegato1().getId() == null)
-							accreditamento.setValutazioneSulCampoAllegato1(null);
-						else
-							accreditamento.setValutazioneSulCampoAllegato1(wrapper.getValutazioneSulCampoAllegato1());
-						isSave = true;
-					}
-					if (
-							(wrapper.getValutazioneSulCampoAllegato2() != null && accreditamento.getValutazioneSulCampoAllegato2() == null)
-							||
-							(wrapper.getValutazioneSulCampoAllegato2() == null && accreditamento.getValutazioneSulCampoAllegato2() != null)
-							||
-							(wrapper.getValutazioneSulCampoAllegato2().getId() == null && accreditamento.getValutazioneSulCampoAllegato2() != null)
-							||
-							(
-								wrapper.getValutazioneSulCampoAllegato2() != null && accreditamento.getValutazioneSulCampoAllegato2() != null
-								&& !wrapper.getValutazioneSulCampoAllegato2().getId().equals(accreditamento.getValutazioneSulCampoAllegato2().getId())
-							)
-						) {
-						if(wrapper.getValutazioneSulCampoAllegato2() == null || wrapper.getValutazioneSulCampoAllegato2().getId() == null)
-							accreditamento.setValutazioneSulCampoAllegato2(null);
-						else
-							accreditamento.setValutazioneSulCampoAllegato2(wrapper.getValutazioneSulCampoAllegato2());
-						isSave = true;
-					}
-					if (
-							(wrapper.getValutazioneSulCampoAllegato3() != null && accreditamento.getValutazioneSulCampoAllegato3() == null)
-							||
-							(wrapper.getValutazioneSulCampoAllegato3() == null && accreditamento.getValutazioneSulCampoAllegato3() != null)
-							||
-							(wrapper.getValutazioneSulCampoAllegato3().getId() == null && accreditamento.getValutazioneSulCampoAllegato3() != null)
-							||
-							(
-								wrapper.getValutazioneSulCampoAllegato3() != null && accreditamento.getValutazioneSulCampoAllegato3() != null
-								&& !wrapper.getValutazioneSulCampoAllegato3().getId().equals(accreditamento.getValutazioneSulCampoAllegato3().getId())
-							)
-						) {
-						if(wrapper.getValutazioneSulCampoAllegato3() == null || wrapper.getValutazioneSulCampoAllegato3().getId() == null)
-							accreditamento.setValutazioneSulCampoAllegato3(null);
-						else
-							accreditamento.setValutazioneSulCampoAllegato3(wrapper.getValutazioneSulCampoAllegato3());
-						isSave = true;
-					}
-
-					if (isSave) {
-						accreditamentoService.save(accreditamento);
-					}
+					accreditamentoService.replaceValutazioneSulCampoFiles(accreditamentoId,
+							wrapper.getVerbalePdfFirmato().getId(), wrapper.getValutazioneSulCampoAllegato1().getId(),
+							wrapper.getValutazioneSulCampoAllegato2().getId(),
+							wrapper.getValutazioneSulCampoAllegato3().getId());
 
 					LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 					redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);

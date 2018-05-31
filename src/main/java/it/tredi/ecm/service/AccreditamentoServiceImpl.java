@@ -2844,6 +2844,34 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
+	@Transactional 
+	public void replaceValutazioneSulCampoFiles(Long accreditamentoId, Long pdfId, Long a1Id, Long a2Id, Long a3Id) {
+		LOGGER.debug(Utils.getLogMessage("Cambio dei allegati della valutazione sul campo del accreditamento " + accreditamentoId));
+
+		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
+		if(!accreditamento.getVerbaleValutazioneSulCampoPdf().getId().equals(pdfId)) {
+			LOGGER.debug(Utils.getLogMessage("Cambio pdf firmato della valutazione sul campo del accreditamento " + accreditamentoId));
+			accreditamento.setVerbaleValutazioneSulCampoPdf(fileService.getFile(pdfId));
+		}
+		
+		if(!accreditamento.getValutazioneSulCampoAllegato1().getId().equals(a1Id)) {
+			LOGGER.debug(Utils.getLogMessage("Cambio alegato1 della valutazione sul campo del accreditamento " + accreditamentoId));
+			accreditamento.setValutazioneSulCampoAllegato1(fileService.getFile(a1Id));
+		}
+		
+		if(!accreditamento.getValutazioneSulCampoAllegato2().getId().equals(a2Id)) {
+			LOGGER.debug(Utils.getLogMessage("Cambio alegato2 della valutazione sul campo del accreditamento " + accreditamentoId));
+			accreditamento.setValutazioneSulCampoAllegato1(fileService.getFile(a2Id));
+		}
+		
+		if(!accreditamento.getValutazioneSulCampoAllegato3().getId().equals(a3Id)) {
+			LOGGER.debug(Utils.getLogMessage("Cambio alegato3 della valutazione sul campo del accreditamento " + accreditamentoId));
+			accreditamento.setValutazioneSulCampoAllegato3(fileService.getFile(a3Id));
+		}
+		saveAndAudit(accreditamento);
+	}
+	
+	@Override
 	@Transactional
 	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileIdLettera, Long fileIdDecreto, LocalDate dataDelibera, String numeroDelibera) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Lettera Accompagnamento e Decreto Diniego della domanda " + accreditamentoId + " al Protocollo"));

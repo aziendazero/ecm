@@ -27,7 +27,7 @@
 	<script th:inline="javascript">
 	/*<![CDATA[*/
 		function setAllegatoExt(idInput) {
-			$(idInput).click();
+			$(idInput.replace(/\./g, '\\.')).click();
 		}
 
 		function submitFirma(propertyName) {
@@ -38,6 +38,7 @@
 		}
 
 		function rimuoviFile(propertyName){
+			propertyName = propertyName.replace(/\./g, '\\.');
 			$("#"+propertyName+"\\.id").val('');
 			$("#"+propertyName+"\\.nomeFile").val('');
 			$("#"+propertyName+"\\_label").text([[#{label.nessun_file_selezionato}]]).removeAttr('href');
@@ -46,7 +47,7 @@
 
 		function submitFileExt(element){
 			var tipoAllegato = $(element).attr("typefile");
-			var propertyName = $(element).attr("propertyName");
+			var propertyName = $(element).attr("propertyName").replace(/\./g, '\\.'); // properties can have '.' then jquery nont function well
 			var fileId = $("#"+propertyName+"\\.id").attr('value');
 
 			var stato = [[${__${wrapper}__ != comunicazioneWrapper and __${wrapper}__ != accreditamentoWrapper and __${wrapper}__ != eventoWrapper and __${wrapper}__ != eventoWrapper?.tempPersonaEvento?.anagrafica  and __${wrapper}__ != providerForm  and __${wrapper}__ != relazioneAnnualeWrapper and __${wrapper}__ != engineeringWrapper} ? ${__${wrapper}__.statoAccreditamento?.name()}]];
@@ -80,6 +81,8 @@
 		}
 
 		function setFileExt(response, propertyName){
+				// this is call back propertyName is already sanitized for '.'s eventually present in	
+			
 				if(response.id != null && response.id != 0) {
 					var prefixUrl = [[@{/file/}]];
 					$("#"+propertyName+"_label").text(response.nomeFile);
@@ -99,6 +102,8 @@
 				var prefixUrl = [[@{/file/}]];
 				var propertyName = $('body').find('input[type=file][typefile=' + response.tipo + ']').attr('propertyname');
 
+				propertyName = propertyName.replace(/\./g, '\\.');
+				
 				if(propertyName != null){
 					console.log('setFileExtForSignatureResponse() -> ' + propertyName);
 					$("#"+propertyName+"_label").text(response.nomeFile);

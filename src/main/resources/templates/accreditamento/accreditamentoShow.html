@@ -655,10 +655,10 @@
 										and accreditamentoWrapper.accreditamento.isStandard()}">
 										<!-- and accreditamentoWrapper.accreditamento.isAccreditatoInAttesaDiFirma() -->
 
-										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf')} ? 'bad'">
+										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.VerbalePdfFirmato')} ? 'bad'">
 											<div class="col-lg-1 col-xs-12"></div>
-											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_PDF_VERBALE_VALUTAZIONE_SUL_CAMPO}', verbalePdfFirmato, null, null, null, false, 'edit', true)" ></th:block>
-											<div th:if="${#fields.hasErrors('accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampoPdf}"></div>
+											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_PDF_VERBALE_VALUTAZIONE_SUL_CAMPO}', VerbalePdfFirmato, null, null, null, false, 'edit', true)" ></th:block>
+											<div th:if="${#fields.hasErrors('accreditamentoWrapper.VerbalePdfFirmato')} ? 'bad'" class="alert" th:errors="${accreditamentoWrapper.VerbalePdfFirmato}"></div>
 										</div>
 
 										<div class="divider"></div>

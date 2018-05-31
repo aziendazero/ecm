@@ -152,4 +152,7 @@ public interface AccreditamentoService{
 	public Accreditamento getAccreditamentoAttivoOppureUltimoForProvider(Long providerId) throws AccreditamentoNotFoundException;
 
 	public void createAccreditamentoDiff(Long providerId) throws Exception;
+	
+	// ERM014775
+	public void replaceValutazioneSulCampoFiles(Long accreditamentoId, Long pdfId, Long a1Id, Long a2Id, Long a3Id);
 }
