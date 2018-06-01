@@ -62,7 +62,7 @@ public class EventoValidatorVersioneDue {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventoValidatorVersioneDue.class);
 
 	@Autowired private EcmProperties ecmProperties;
-	@Autowired private FileValidator fileValidator;
+	//@Autowired private FileValidator fileValidator; // ERM014045 - no firm
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
 	@Autowired private EventoValidator eventoValidator;
@@ -353,6 +353,8 @@ public class EventoValidatorVersioneDue {
 			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
 		}
 
+		// ERM014045 - no firma
+		/*
 		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
 				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
@@ -360,6 +362,7 @@ public class EventoValidatorVersioneDue {
 			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()))
 				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
 		}
+		*/
 
 		/* AUTOCERTIFICAZIONE DI AUTORIZZAZIONE DEL MINISTERO
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
@@ -374,6 +377,8 @@ public class EventoValidatorVersioneDue {
 			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
 		}
 
+		// ERM014045 - no firma
+		/*
 		if(evento.getEventoSponsorizzato() != null
 				&& evento.getEventoSponsorizzato() == true
 				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
@@ -383,6 +388,7 @@ public class EventoValidatorVersioneDue {
 				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
 					errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
 		}
+		*/
 
 
 		/* RADIO ALTRE FORME FINANZIAMENTO (campo obbligatorio)
@@ -401,6 +407,8 @@ public class EventoValidatorVersioneDue {
 			errors.rejectValue("contrattiAccordiConvenzioni", "error.empty");
 		}
 
+		// ERM014045 - no firma
+		/*
 		if(evento.getAltreFormeFinanziamento() != null
 				&& evento.getAltreFormeFinanziamento() == true
 				&& evento.getContrattiAccordiConvenzioni() != null)
@@ -408,6 +416,7 @@ public class EventoValidatorVersioneDue {
 			if(!fileValidator.validateFirmaCF(evento.getContrattiAccordiConvenzioni(), evento.getProvider().getId()))
 				errors.rejectValue("contrattiAccordiConvenzioni", "error.codiceFiscale.firmatario");
 		}
+		*/
 
 		/* AUTOCERTIFICAZIONE ASSENZA FINANZIAMENTI (facoltativo solo per i provider del gruppo A)
 		 * (campo obbligatorio se altreFormeFinanziamento == false)
@@ -420,6 +429,8 @@ public class EventoValidatorVersioneDue {
 				errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.empty");
 			}
 
+			// ERM014045 - no firma
+			/*
 			if(evento.getAltreFormeFinanziamento() != null
 					&& evento.getAltreFormeFinanziamento() == false
 					&& evento.getAutocertificazioneAssenzaFinanziamenti() != null)
@@ -427,6 +438,7 @@ public class EventoValidatorVersioneDue {
 				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaFinanziamenti(), evento.getProvider().getId()))
 					errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.codiceFiscale.firmatario");
 			}
+			*/
 		}
 
 		/* RADIO EVENTO PARTNER (campo obbligatorio)
@@ -462,11 +474,15 @@ public class EventoValidatorVersioneDue {
 		/* DICHIARAZIONE ASSENZA CONFLITTO DI INTERESSE (campo obbligatorio)
 		 * file allegato
 		 * */
+		
 		if(evento.getDichiarazioneAssenzaConflittoInteresse() == null){
 			errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.empty");
 		}else{
+			// ERM014045 - no firma
+			/*
 			if(!fileValidator.validateFirmaCF(evento.getDichiarazioneAssenzaConflittoInteresse(), evento.getProvider().getId()))
 				errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.codiceFiscale.firmatario");
+				*/
 		}
 
 		/* PROCEDURA VERIFICA QUALITÀ (campo obbligatorio)
@@ -847,10 +863,13 @@ public class EventoValidatorVersioneDue {
 		/* DOCUMENTO VERIICA RICADUTE FORMATIVE (campo FACOLTATIVO, MA SE C'E' CONTROLLO SULLA FIRMA DIGITALE)
 		 * file allegato
 		 * */
+		// ERM014045 - no firm
+		/*
 		if(evento.getDocumentoVerificaRicaduteFormative() != null && !evento.getDocumentoVerificaRicaduteFormative().isNew()){
 			if(!fileValidator.validateFirmaCF(evento.getDocumentoVerificaRicaduteFormative(), evento.getProvider().getId()))
 				errors.rejectValue("documentoVerificaRicaduteFormative", "error.codiceFiscale.firmatario");
 		}
+		*/
 	}
 
 	//validate FSC
@@ -1288,8 +1307,11 @@ public class EventoValidatorVersioneDue {
 		if(evento.getRequisitiHardwareSoftware() == null || evento.getRequisitiHardwareSoftware().isNew()){
 			errors.rejectValue("requisitiHardwareSoftware", "error.empty");
 		}else{
+			// ERM014045 - no firm
+			/*
 			if(!fileValidator.validateFirmaCF(evento.getRequisitiHardwareSoftware(), evento.getProvider().getId()))
 				errors.rejectValue("requisitiHardwareSoftware", "error.codiceFiscale.firmatario");
+				*/
 		}
 
 		/* ACCESSO PIATTAFORMA (serie di campi obbligatori)
@@ -1380,8 +1402,11 @@ public class EventoValidatorVersioneDue {
 			return true;
 		if(partner.getPartnerFile() == null || partner.getPartnerFile().isNew())
 			return true;
+		// ERM014045 - no firm
+		/*
 		if(!fileValidator.validateFirmaCF(partner.getPartnerFile(), providerId))
 			return true;
+		*/
 
 		return false;
 	}

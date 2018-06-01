@@ -72,18 +72,26 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AccreditamentoAlleg
 
 		Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 
-		fileValidator.validate(attoCostitutivo, errors, prefix + "attoCostitutivo", providerId);
-		fileValidator.validateWithCondition(esperienzaFormazione, errors, prefix + "esperienzaFormazione", accreditamento.getDatiAccreditamento().getDatiEconomici().hasFatturatoFormazione(), providerId);
-		fileValidator.validate(utilizzo, errors, prefix + "utilizzo", providerId);
-		fileValidator.validate(sistemaInformatico, errors, prefix + "sistemaInformatico", providerId);
-		fileValidator.validate(pianoQualita, errors, prefix + "pianoQualita", providerId);
+		// ERM014045 no firma
+		fileValidator.validate(attoCostitutivo, errors, prefix + "attoCostitutivo", providerId, false);
+		// ERM014045 no firma
+		fileValidator.validateWithCondition(esperienzaFormazione, errors, prefix + "esperienzaFormazione", accreditamento.getDatiAccreditamento().getDatiEconomici().hasFatturatoFormazione(), providerId, false);
+		// ERM014045 no firma
+		fileValidator.validate(utilizzo, errors, prefix + "utilizzo", providerId, false);
+		// ERM014045 no firma
+		fileValidator.validate(sistemaInformatico, errors, prefix + "sistemaInformatico", providerId, false);
+		// ERM014045 no firma
+		fileValidator.validate(pianoQualita, errors, prefix + "pianoQualita", providerId, false);
 		fileValidator.validate(dichiarazioneLegale, errors, prefix + "dichiarazioneLegale", providerId);
 		if(accreditamento.isStandard()) {
 			fileValidator.validate(richiestaAccreditamentoStandard, errors, prefix + "richiestaAccreditamentoStandard", providerId);
-			fileValidator.validate(relazioneAttivitaFormativa, errors, prefix + "relazioneAttivitaFormativa", providerId);
+			// ERM014045 no firma
+			fileValidator.validate(relazioneAttivitaFormativa, errors, prefix + "relazioneAttivitaFormativa", providerId, false);
 		}
 
+		/* ERM014045 no firma
 		if(dichiarazioneEsclusione != null && !dichiarazioneEsclusione.getNomeFile().isEmpty())
 			fileValidator.validateFirma(dichiarazioneEsclusione, errors, prefix + "dichiarazioneEsclusione", providerId);
+		*/
 	}
 }

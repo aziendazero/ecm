@@ -150,12 +150,16 @@ public class AnagraficaValidator {
 			errMap.put(prefix + "nome", "error.empty");
 		if(anagrafica.getCognome() ==  null || anagrafica.getCognome().isEmpty())
 			errMap.put(prefix + "cognome", "error.empty");
+		
+		// ERM014045 - no firma check on anagrafiche leggate ai eventi
+		/*
 		if(checkCV) {
 			if(anagrafica.getCv() == null || anagrafica.getCv().isNew())
 				errMap.put("file_cv_button", "error.empty");
 			else if(!fileValidator.validateFirmaCF(anagrafica.getCv(), providerId))
 				errMap.put("file_cv_button", "error.codiceFiscale.firmatario");
 		}
+		*/
 		/* @since ERM014009
 		if(anagrafica.getCodiceFiscale() == null || anagrafica.getCodiceFiscale().isEmpty())
 			errMap.put(prefix + "codice_fiscale", "error.empty");
