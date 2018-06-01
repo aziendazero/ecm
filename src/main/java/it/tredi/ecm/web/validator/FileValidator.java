@@ -30,10 +30,14 @@ public class FileValidator {
 
 	//validator per file salvati su db
 	public void validate(Object target, Errors errors, String prefix, Long providerId) throws Exception{
-		validateData(target, errors, prefix);
-		validateFirma(target, errors, prefix, providerId);
+		validate(target, errors, prefix, providerId, true);
 	}
-
+	
+	public void validate(Object target, Errors errors, String prefix, Long providerId, boolean doFirmCheck) throws Exception{
+		validateData(target, errors, prefix);
+		if(doFirmCheck) validateFirma(target, errors, prefix, providerId);
+	}
+	
 	public void validateData(Object target, Errors errors, String prefix) {
 		LOGGER.info(Utils.getLogMessage("Validazione File"));
 		File file = (File)target;
@@ -84,8 +88,10 @@ public class FileValidator {
 
 			//20170103 - dpranteda: se il provider è di tipo AZIENDE_SANITARIE, non bisogna fare il controllo sul CF in quanto ci sono provider unificati
 			Provider provider = providerService.getProvider(providerId);
+			/*
 			if(provider.getTipoOrganizzatore() == TipoOrganizzatore.AZIENDE_SANITARIE)
 				return true;
+			*/
 
 			VerificaFirmaDigitale verificaFirmaDigitale = new VerificaFirmaDigitale(file.getNomeFile(), file.getData());
 			String cfLegaleRappresentante = providerService.getCodiceFiscaleLegaleRappresentantePerVerificaFirmaDigitale(providerId);
@@ -147,15 +153,19 @@ public class FileValidator {
 		}
 		return error;
 	}
-
+	
 	public void validateWithCondition(Object target, Errors errors, String prefix, Boolean condition, Long providerId) throws Exception{
+		validateWithCondition(target, errors, prefix, condition, providerId, true);
+	}
+
+	public void validateWithCondition(Object target, Errors errors, String prefix, Boolean condition, Long providerId, boolean doFirmCheck) throws Exception{
 		LOGGER.info(Utils.getLogMessage("Validazione File required su condizione"));
 		File file = (File)target;
 		if(condition == true)
-			validate(target, errors, prefix, providerId);
+			validate(target, errors, prefix, providerId, doFirmCheck);
 		else {
 			if(file != null && !file.isNew() && !file.getNomeFile().isEmpty())
-				validate(file, errors, prefix, providerId);
+				validate(file, errors, prefix, providerId, doFirmCheck);
 		}
 	}
 

@@ -46,7 +46,7 @@
 
 						<!-- allegato 1 (atto costitutivo e statuto) -->
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, attoCostitutivo,  ${!showOnly ? 'attoCostitutivo' : null}, null, null, true, ${mode}, true)" ></th:block> -->
-						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ATTO_COSTITUTIVO}', attoCostitutivo,  ${!showOnly ? 'attoCostitutivo' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ATTO_COSTITUTIVO}', attoCostitutivo,  ${!showOnly ? 'attoCostitutivo' : null}, null, null, false, ${mode}, true)" ></th:block>
 
 						<!-- allegato 7 (dichiarazione esclusione) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -55,17 +55,17 @@
 							<a id="dichiarazioneEsclusione_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=1536571&amp;name=DLFE-33812.docx"></a>
 						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, dichiarazioneEsclusione,  ${!showOnly ? 'dichiarazioneEsclusione' : null}, null, null, true, ${mode}, false)" ></th:block> -->
-						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ESCLUSIONE}', dichiarazioneEsclusione,  ${!showOnly ? 'dichiarazioneEsclusione' : null}, null, null, true, ${mode}, false)" ></th:block>
+						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ESCLUSIONE}', dichiarazioneEsclusione,  ${!showOnly ? 'dichiarazioneEsclusione' : null}, null, null, false, ${mode}, false)" ></th:block>
 
 						<!-- allegato 2 (esperienza formazione in ambito sanitario) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, esperienzaFormazione,  ${!showOnly ? 'esperienzaFormazione' : null}, null, ${editabile ? #messages.msg('label.required_fatturato_personale_sanitario') : null}, true, ${mode}, false)" ></th:block> -->
-						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ESPERIENZA_FORMAZIONE}', esperienzaFormazione,  ${!showOnly ? 'esperienzaFormazione' : null}, null, ${editabile ? #messages.msg('label.required_fatturato_personale_sanitario') : null}, true, ${mode}, false)" ></th:block>
+						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_ESPERIENZA_FORMAZIONE}', esperienzaFormazione,  ${!showOnly ? 'esperienzaFormazione' : null}, null, ${editabile ? #messages.msg('label.required_fatturato_personale_sanitario') : null}, false, ${mode}, false)" ></th:block>
 
 						<!-- allegato 3 (utilizzo di sedi, strutture ed attrezzature di altro soggetto) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, utilizzo,  ${!showOnly ? 'utilizzo' : null}, null, null, true, ${mode}, true)" ></th:block> -->
-						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_UTILIZZO}', utilizzo,  ${!showOnly ? 'utilizzo' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_UTILIZZO}', utilizzo,  ${!showOnly ? 'utilizzo' : null}, null, null, false, ${mode}, true)" ></th:block>
 
 						<!-- allegato 4 (sistema informatico dedicato alla formazione in ambito sanitario) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -74,12 +74,12 @@
 							<a id="sistemaInformatico_esempio_link" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=1536571&amp;name=DLFE-33814.docx"></a>
 						</div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, sistemaInformatico,  ${!showOnly ? 'sistemaInformatico' : null}, null, null, true, ${mode}, true)" ></th:block> -->
-						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_SISTEMA_INFORMATICO}', sistemaInformatico,  ${!showOnly ? 'sistemaInformatico' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_SISTEMA_INFORMATICO}', sistemaInformatico,  ${!showOnly ? 'sistemaInformatico' : null}, null, null, false, ${mode}, true)" ></th:block>
 
 						<!-- allegato 5 (piano di qualità) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
 						<!-- <th:block th:include="fragments/allegati :: allegati(accreditamentoAllegatiWrapper, true, pianoQualita,  ${!showOnly ? 'pianoQualita' : null}, null, null, true, ${mode}, true)" ></th:block> -->
-						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_PIANO_QUALITA}', pianoQualita,  ${!showOnly ? 'pianoQualita' : null}, null, null, true, ${mode}, true)" ></th:block>
+						<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_PIANO_QUALITA}', pianoQualita,  ${!showOnly ? 'pianoQualita' : null}, null, null, false, ${mode}, true)" ></th:block>
 
 						<!-- allegato 6 (dichiarazione del legale rappresentante) -->
 						<div th:class="${valutabile ? 'divider' : 'divider-dashed'}"></div>
@@ -103,7 +103,7 @@
 								<i class="fa fa-file-text"></i>
 								<a id="esempio_relazione_attivita_formativa_link" target="_blank" th:text="#{label.esempio_modello}" href="https://salute.regione.veneto.it/c/document_library/get_file?p_l_id=991804&amp;folderId=1536572&amp;name=DLFE-33816.docx"></a>
 							</div>
-							<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_RELAZIONE_ATTIVITA_FORMATIVA}', relazioneAttivitaFormativa,  ${!showOnly ? 'relazioneAttivitaFormativa' : null}, null, null, true, ${mode}, true)" ></th:block>
+							<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoAllegatiWrapper, true, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_RELAZIONE_ATTIVITA_FORMATIVA}', relazioneAttivitaFormativa,  ${!showOnly ? 'relazioneAttivitaFormativa' : null}, null, null, false, ${mode}, true)" ></th:block>
 						</th:block>
 
 						<input id="submitButton" type="submit" style="display: none;" />

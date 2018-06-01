@@ -237,7 +237,7 @@
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 									<!--  th:block th:include="fragments/allegati :: allegati(eventoWrapper.tempPersonaEvento.anagrafica, false, cv, null, null, null, false, null, false)" ></th:block -->
-									<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}', cv, null, null, null, true, 'edit', false)" ></th:block>
+									<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}', cv, null, null, null, false, 'edit', false)" ></th:block>
 								</div>
 							</div>
 
@@ -460,7 +460,7 @@
 									<span class="required">*</span>
 								</label>
 								<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-									<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTO_PARTNER}', partnerFile, null, null, null, true, 'edit', false)" ></th:block>
+									<th:block th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTO_PARTNER}', partnerFile, null, null, null, false, 'edit', false)" ></th:block>
 								</div>
 							</div>
 

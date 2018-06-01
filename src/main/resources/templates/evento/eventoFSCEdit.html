@@ -1268,7 +1268,7 @@
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, null, false)" ></th:block> -->
-												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE}', autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, true, 'edit', false)" ></th:block>
+												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_AUTORIZZAZIONE_MINISTERO_SALUTE}', autocertificazioneAutorizzazioneMinisteroSalute, null, null, null, false, 'edit', false)" ></th:block>
 												<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 													<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute.id}|}"></a></div>
 													<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAutorizzazioneMinisteroSalute != null}" th:text="#{label.allegato_non_inserito}"></div>
@@ -1291,7 +1291,7 @@
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, null, false)" ></th:block> -->
-												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA}', autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, true, 'edit', false)" ></th:block>
+												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_PARTECIPAZIONE_SPONSOR_INFANZIA}', autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia, null, null, null, false, 'edit', false)" ></th:block>
 												<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 													<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia.id}|}"></a></div>
 													<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia != null}" th:text="#{label.allegato_non_inserito}"></div>
@@ -1344,7 +1344,7 @@
 										</div-->
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, contrattiAccordiConvenzioni, null, null, null, true, null, false)" ></th:block> -->
-												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTI_ACCORDI_CONVENZIONI}', contrattiAccordiConvenzioni, null, null, null, true, 'edit', false)" ></th:block>
+												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CONTRATTI_ACCORDI_CONVENZIONI}', contrattiAccordiConvenzioni, null, null, null, false, 'edit', false)" ></th:block>
 												<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 													<div class="value-edit" th:if="${eventoWrapper.evento.contrattiAccordiConvenzioni != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.contrattiAccordiConvenzioni.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.contrattiAccordiConvenzioni.id}|}"></a></div>
 													<div class="value-edit danger" th:unless="${eventoWrapper.evento.contrattiAccordiConvenzioni != null}" th:text="#{label.allegato_non_inserito}"></div>
@@ -1367,7 +1367,7 @@
 										</div>
 										<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 											<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, autocertificazioneAssenzaFinanziamenti, null, null, null, true, null, false)" ></th:block> -->
-												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_FINANZIAMENTI}', autocertificazioneAssenzaFinanziamenti, null, null, null, true, 'edit', false)" ></th:block>
+												<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_AUTOCERTIFICAZIONE_ASSENZA_FINANZIAMENTI}', autocertificazioneAssenzaFinanziamenti, null, null, null, false, 'edit', false)" ></th:block>
 												<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 													<div class="value-edit" th:if="${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti.id}|}"></a></div>
 													<div class="value-edit danger" th:unless="${eventoWrapper.evento.autocertificazioneAssenzaFinanziamenti != null}" th:text="#{label.allegato_non_inserito}"></div>
@@ -1436,7 +1436,7 @@
 									</div>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 										<!-- <th:block th:include="fragments/allegati :: allegati(eventoWrapper, false, dichiarazioneAssenzaConflittoInteresse, null, null, null, false, null, false)" ></th:block> -->
-											<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, true, 'edit', false)" ></th:block>
+											<th:block th:unless="${isRiedizione or isEditSemiBloccato}" th:include="fragments/allegatiext :: allegatiext(eventoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_DICHIARAZIONE_ASSENZA_CONFLITTO_INTERESSE}', dichiarazioneAssenzaConflittoInteresse, null, null, null, false, 'edit', false)" ></th:block>
 											<th:block th:if="${isRiedizione or isEditSemiBloccato}">
 												<div class="value-edit" th:if="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}"><i class="fa fa-download"> </i> <a th:text="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.nomeFile}" th:href="@{|/file/${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse.id}|}"></a></div>
 												<div class="value-edit danger" th:unless="${eventoWrapper.evento.dichiarazioneAssenzaConflittoInteresse != null}" th:text="#{label.allegato_non_inserito}"></div>
