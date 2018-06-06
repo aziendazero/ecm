@@ -655,7 +655,7 @@
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
-											onchange="updateRuoliCoinvolti()"
+											onchange="updateRuoliCoinvolti(); updateVerificaAprendimento()"
 												title="Seleziona una tipologia FSC..." th:disabled="${isRiedizione or isEditSemiBloccato or hasRiedizioni}">
 											<option
 												th:each="tipologia, row: ${T(it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum).values()}"
@@ -1112,7 +1112,7 @@
 										<span class="required">*</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-										<div class="checkbox" th:each="modalita, row : ${T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum).values()}">
+										<div class="checkbox" th:each="modalita, row : ${T(it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum).getValues(eventoWrapper.evento.getVersione())}">
 												<label th:class="${isRiedizione or isEditSemiBloccato} ? 'label-disabled' : ''">
 													<input type="checkbox" class="flat" th:field="${eventoWrapper.evento.verificaApprendimento}" th:value="${modalita}" th:disabled="${isRiedizione or isEditSemiBloccato}" />
 												<span th:text="${modalita.nome}"></span>
@@ -1933,6 +1933,19 @@
 				var ruoliEsperti = [[${eventoWrapper.getListRuoloFSCEnumPerEspertiDocenti()}]];
 				var ruoliCoordinatori = [[${eventoWrapper.getListRuoloFSCEnumPerCoordinatori()}]];
 
+				function updateVerificaAprendimento(){
+					var tipologiaEvento = $('#tipologiaEventoId').selectpicker('val');
+					if(tipologiaEvento != null && tipologiaEvento != undefined){
+						if (getVersione() === 2) {
+							if(tipologiaEvento === 'TRAINING_INDIVIDUALIZZATO'){
+								$("input[value='RELAZIONE_FIRMATA']").iCheck('check');
+							}else{
+								$("input[value='RAPPORTO_CONCLUSIVO']").iCheck('check');
+							}
+						}
+					}
+				}
+				
 				function updateRuoliCoinvolti(){
 					var tipologiaEvento = $('#tipologiaEventoId').selectpicker('val');
 					if(tipologiaEvento != null && tipologiaEvento != undefined){
@@ -1967,6 +1980,9 @@
 							}
 
 							if (versione === 2) {
+								
+								
+								
 								//devo integrare il dato con gli eventuali RESPONSABILE_SCIENTIFICO_X
 								$.each(ruoliRespScient, function() {
 									//console.log('ruoliRespScient: ' + $(this).attr("$name"));

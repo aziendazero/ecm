@@ -45,6 +45,7 @@ import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
@@ -1119,15 +1120,29 @@ public class EventoValidatorVersioneDue {
 		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
 		 * checkbox
 		 * */
-		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty())
+		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty()) {
 			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
+		} else {
 
-		/* INDICATORE EFFICACIA FORMATIVA (campo obbligatorio se tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO)
-		 * campo testuale
-		 * almeno 1 char
-		 * */
-		if(evento.getTipologiaEventoFSC() != null
-				&& evento.getTipologiaEventoFSC() ==  TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+			if (evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+					&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoFSCEnum.RELAZIONE_FIRMATA)) {
+				errors.rejectValue(prefix + "verificaApprendimento",
+						"error.evento_tipo_TRAINING_INDIVIDUALIZZATO_manca_RELAZIONE_FIRMATA");
+			}
+
+			if (evento.getTipologiaEventoFSC() != TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+					&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoFSCEnum.RAPPORTO_CONCLUSIVO)) {
+				errors.rejectValue(prefix + "verificaApprendimento",
+						"error.evento_tipo_NON_TRAINING_INDIVIDUALIZZATO_manca_RAPPORTO_CONCLUSIVO");
+			}
+		}
+
+		/*
+		 * INDICATORE EFFICACIA FORMATIVA (campo obbligatorio se tipologiaEvento ==
+		 * PROGETTI_DI_MIGLIORAMENTO) campo testuale almeno 1 char
+		 */
+		if (evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
 				&& (evento.getIndicatoreEfficaciaFormativa() == null
 				|| evento.getIndicatoreEfficaciaFormativa().isEmpty()))
 			errors.rejectValue(prefix + "indicatoreEfficaciaFormativa", "error.empty");
