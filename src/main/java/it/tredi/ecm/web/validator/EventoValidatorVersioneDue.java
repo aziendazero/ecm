@@ -34,6 +34,7 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
+import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
@@ -336,60 +337,73 @@ public class EventoValidatorVersioneDue {
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA)
 		 * radio
 		 * */
-		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
-			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
-		else if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-					&& (evento.getEventoSponsorizzato() == null || evento.getEventoSponsorizzato() == false)
-				)
-			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.evento_deve_essere_sponsorizzato");
+		// ERM014977 - getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia va testato solo se sponsorizato 
+		// e contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+		if(evento.getContenutiEvento() != null 
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA 
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true) {
+			
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
+				errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
+			else if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+						&& (evento.getEventoSponsorizzato() == null || evento.getEventoSponsorizzato() == false)
+					)
+				errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.evento_deve_essere_sponsorizzato");
+			
+			
+			/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
+			 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+			 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
+			 * file allegato
+			 * */
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
+					&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
+				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
+			}
+			
+			// ERM014045 - no firma
+			/*
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
+					&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
+			{
+				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()))
+					errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
+			}
+			*/
 
-		/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
-		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
-		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
-		 * file allegato
-		 * */
-		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
-				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
-			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
+			/* AUTOCERTIFICAZIONE DI AUTORIZZAZIONE DEL MINISTERO
+			 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+			 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == false)
+			 * file allegato
+			 * */
+			if(evento.getEventoSponsorizzato() != null
+					&& evento.getEventoSponsorizzato() == true
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+					&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null){
+				errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
+			}
+
+			// ERM014045 - no firma
+			/*
+			if(evento.getEventoSponsorizzato() != null
+					&& evento.getEventoSponsorizzato() == true
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+					&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() != null)
+			{
+					if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
+						errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
+			}
+			*/
 		}
 
-		// ERM014045 - no firma
-		/*
-		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
-				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
-		{
-			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()))
-				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
-		}
-		*/
+		
 
-		/* AUTOCERTIFICAZIONE DI AUTORIZZAZIONE DEL MINISTERO
-		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
-		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == false)
-		 * file allegato
-		 * */
-		if(evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null){
-			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
-		}
-
-		// ERM014045 - no firma
-		/*
-		if(evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() != null)
-		{
-				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
-					errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
-		}
-		*/
+		
 
 
 		/* RADIO ALTRE FORME FINANZIAMENTO (campo obbligatorio)
