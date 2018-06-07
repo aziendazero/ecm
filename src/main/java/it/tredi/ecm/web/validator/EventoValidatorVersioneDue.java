@@ -34,6 +34,7 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
+import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
@@ -45,6 +46,7 @@ import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
@@ -335,60 +337,73 @@ public class EventoValidatorVersioneDue {
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA)
 		 * radio
 		 * */
-		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
-			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
-		else if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-					&& (evento.getEventoSponsorizzato() == null || evento.getEventoSponsorizzato() == false)
-				)
-			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.evento_deve_essere_sponsorizzato");
+		// ERM014977 - getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia va testato solo se sponsorizato 
+		// e contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+		if(evento.getContenutiEvento() != null 
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA 
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == true) {
+			
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
+				errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
+			else if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+						&& (evento.getEventoSponsorizzato() == null || evento.getEventoSponsorizzato() == false)
+					)
+				errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.evento_deve_essere_sponsorizzato");
+			
+			
+			/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
+			 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+			 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
+			 * file allegato
+			 * */
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
+					&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
+				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
+			}
+			
+			// ERM014045 - no firma
+			/*
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
+					&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
+			{
+				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()))
+					errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
+			}
+			*/
 
-		/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
-		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
-		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
-		 * file allegato
-		 * */
-		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
-				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
-			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
+			/* AUTOCERTIFICAZIONE DI AUTORIZZAZIONE DEL MINISTERO
+			 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+			 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == false)
+			 * file allegato
+			 * */
+			if(evento.getEventoSponsorizzato() != null
+					&& evento.getEventoSponsorizzato() == true
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+					&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null){
+				errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
+			}
+
+			// ERM014045 - no firma
+			/*
+			if(evento.getEventoSponsorizzato() != null
+					&& evento.getEventoSponsorizzato() == true
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+					&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() != null)
+			{
+					if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
+						errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
+			}
+			*/
 		}
 
-		// ERM014045 - no firma
-		/*
-		if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
-				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
-		{
-			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()))
-				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
-		}
-		*/
+		
 
-		/* AUTOCERTIFICAZIONE DI AUTORIZZAZIONE DEL MINISTERO
-		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
-		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == false)
-		 * file allegato
-		 * */
-		if(evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null){
-			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
-		}
-
-		// ERM014045 - no firma
-		/*
-		if(evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() != null)
-		{
-				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
-					errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
-		}
-		*/
+		
 
 
 		/* RADIO ALTRE FORME FINANZIAMENTO (campo obbligatorio)
@@ -1119,15 +1134,29 @@ public class EventoValidatorVersioneDue {
 		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
 		 * checkbox
 		 * */
-		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty())
+		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty()) {
 			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
+		} else {
 
-		/* INDICATORE EFFICACIA FORMATIVA (campo obbligatorio se tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO)
-		 * campo testuale
-		 * almeno 1 char
-		 * */
-		if(evento.getTipologiaEventoFSC() != null
-				&& evento.getTipologiaEventoFSC() ==  TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+			if (evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+					&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoFSCEnum.RELAZIONE_FIRMATA)) {
+				errors.rejectValue(prefix + "verificaApprendimento",
+						"error.evento_tipo_TRAINING_INDIVIDUALIZZATO_manca_RELAZIONE_FIRMATA");
+			}
+
+			if (evento.getTipologiaEventoFSC() != TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+					&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoFSCEnum.RAPPORTO_CONCLUSIVO)) {
+				errors.rejectValue(prefix + "verificaApprendimento",
+						"error.evento_tipo_NON_TRAINING_INDIVIDUALIZZATO_manca_RAPPORTO_CONCLUSIVO");
+			}
+		}
+
+		/*
+		 * INDICATORE EFFICACIA FORMATIVA (campo obbligatorio se tipologiaEvento ==
+		 * PROGETTI_DI_MIGLIORAMENTO) campo testuale almeno 1 char
+		 */
+		if (evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
 				&& (evento.getIndicatoreEfficaciaFormativa() == null
 				|| evento.getIndicatoreEfficaciaFormativa().isEmpty()))
 			errors.rejectValue(prefix + "indicatoreEfficaciaFormativa", "error.empty");

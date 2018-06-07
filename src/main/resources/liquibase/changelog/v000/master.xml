@@ -168,6 +168,7 @@
 	
 	<include file="20180523_002_applySQL_update_account_segreteria_fake.xml" relativeToChangelogFile="true"/>
 	
+	<include file="20180607_002_applySQL_modifica_verifica_apprendimento_evento_v1.xml" relativeToChangelogFile="true"/>
 
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
       Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali"
