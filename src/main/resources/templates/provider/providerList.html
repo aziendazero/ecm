@@ -72,7 +72,7 @@
 							<div class="divider"></div>
 							
 							
-							<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.canInsertDomandaStandard') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertDomandaStandard')} ? 'bad'">
+							<div class="item form-group modalAlert" th:classappend="${#fields.hasErrors('impostazioniProviderWrapper.canInsertDomandaStandard') or #fields.hasErrors('impostazioniProviderWrapper.dataScadenzaInsertDomandaStandard') or #fields.hasErrors('impostazioniProviderWrapper.dataProrogaAccreditamentoCorrente')} ? 'bad'">
 								<label class="label-show col-lg-4 col-md-4 col-sm-4 col-xs-12" th:text="#{label.posticipo_inserimento_domanda_accreditamento_standard}"></label>
 								<div class="col-lg-2 col-md-2 col-sm-2 col-xs-4">
 									<div class="radio">
