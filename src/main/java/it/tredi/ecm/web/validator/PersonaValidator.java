@@ -111,15 +111,15 @@ public class PersonaValidator {
 
 		if(ruolo.equals(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE)){
 			//l'unico che ha l'atto di delega
-			fileValidator.validate(delega, errors, prefix + "delega", providerId);
+			fileValidator.validate(delega, errors, prefix + "delega", providerId, false); // ERM014045 no firma
 		}
 
 		if(!ruolo.equals(Ruolo.DELEGATO_LEGALE_RAPPRESENTANTE)){
 			//solo il DLR NON ha l'atto di nomina
-			fileValidator.validate(attoNomina, errors, prefix + "attoNomina", providerId);
+			fileValidator.validate(attoNomina, errors, prefix + "attoNomina", providerId, false); // ERM014045 no firma
 		}
 
 		//tutti hanno il cv
-		fileValidator.validate(cv, errors, prefix + "cv", providerId);
+		fileValidator.validate(cv, errors, prefix + "cv", providerId, false); // ERM014045 no firma
 	}
 }
