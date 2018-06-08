@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Obiettivo;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.repository.ObiettivoRepository;
 
 @Service
@@ -26,9 +27,19 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 	}
 	
 	@Override
-	public Set<Obiettivo> getObiettiviNazionali() {
+	public Set<Obiettivo> getObiettiviNazionali(EventoVersioneEnum versione) {
 		LOGGER.debug("Recupero tutti gli Obiettivi Nazionali");
-		return obiettivoRepository.findAllByNazionale(true); 
+		if(versione == null || versione == EventoVersioneEnum.DUE_DAL_2018) {
+			return obiettivoRepository.findAllByNazionaleAndVersioneNot(true, 1); 
+		}else {
+			return obiettivoRepository.findAllByNazionaleAndVersione(true, 1); 
+		}
+		
+	}
+		
+	@Override
+	public Set<Obiettivo> getObiettiviNazionali() {
+		return getObiettiviNazionali(EventoVersioneEnum.DUE_DAL_2018);
 	}
 	
 	@Override
@@ -65,5 +76,6 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 			return null;
 		return obiettivi.iterator().next();
 	}
+
 	
 }

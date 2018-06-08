@@ -21,6 +21,9 @@ public class Obiettivo extends BaseEntityDefaultId{
 	private boolean nazionale;
 	@Enumerated(EnumType.STRING)
 	private CategoriaObiettivoNazionale categoria;
+	
+	// ERM015189
+	private int versione;
 
 	@Column(name ="codice_cogeaps")
 	private String codiceCogeaps;
