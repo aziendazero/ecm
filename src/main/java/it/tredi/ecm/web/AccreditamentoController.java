@@ -1209,7 +1209,7 @@ public class AccreditamentoController {
 
 	// ERM014775
 	@Transactional
-	@PreAuthorize("@securityAccessServiceImpl.canValidateAccreditamento(principal,#accreditamentoId)")
+	@PreAuthorize("@securityAccessServiceImpl.isUserSegreteria(principal)")
 	@RequestMapping(value = "/accreditamento/{accreditamentoId}/modificaDocumentiDiValutazione", method = RequestMethod.POST)
 	public String modificaDocumentiDiValutazione(@ModelAttribute("accreditamentoWrapper") AccreditamentoWrapper wrapper,
 			BindingResult result, @PathVariable Long accreditamentoId, Model model, RedirectAttributes redirectAttrs) {
