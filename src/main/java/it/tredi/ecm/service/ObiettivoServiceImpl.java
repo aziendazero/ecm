@@ -30,9 +30,9 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 	public Set<Obiettivo> getObiettiviNazionali(EventoVersioneEnum versione) {
 		LOGGER.debug("Recupero tutti gli Obiettivi Nazionali");
 		if(versione == null || versione == EventoVersioneEnum.DUE_DAL_2018) {
-			return obiettivoRepository.findAllByNazionaleAndVersioneNot(true, 1); 
+			return obiettivoRepository.findAllByNazionaleAndVersioneNotOrderByCodiceCogeapsAsc(true, 1); 
 		}else {
-			return obiettivoRepository.findAllByNazionaleAndVersione(true, 1); 
+			return obiettivoRepository.findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(true, 1); 
 		}
 		
 	}
