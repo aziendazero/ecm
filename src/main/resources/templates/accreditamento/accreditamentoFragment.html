@@ -1086,7 +1086,7 @@
 												
 												<label class="control-label">
 													<span th:class="label-show" th:text="#{label.pdf_verbale_valutazione_sul_campo}">pdf_verbale_valutazione_sul_campo</span>
-													&nbsp;&nbsp;<a class="btn btn-primary" data-toggle="modal" data-target=".modal-confirm">Modifica documenti</a>
+													&nbsp;&nbsp;<a th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" class="btn btn-primary" data-toggle="modal" data-target=".modal-confirm">Modifica documenti</a>
 												</label>
 												
 												<div>
