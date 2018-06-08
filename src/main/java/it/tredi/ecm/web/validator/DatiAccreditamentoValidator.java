@@ -25,10 +25,10 @@ public class DatiAccreditamentoValidator {
 		validateDatiAccreditamento(target, errors, prefix, sezione);
 
 		if(sezione == 2)
-		validateFilesConCondizione(files, errors, "", dati, providerId);
+		validateFilesConCondizione(files, errors, "", dati, providerId, false); // ERM014045 - no firm
 
 		if(sezione == 2 || sezione ==3)
-			validateFilesObbligatori(files, errors, "", providerId, sezione);
+			validateFilesObbligatori(files, errors, "", providerId, sezione, false); // ERM014045 - no firm
 
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
@@ -86,9 +86,14 @@ public class DatiAccreditamentoValidator {
 				errors.rejectValue(prefix + "numeroDipendentiFormazioneAltro", "error.empty");
 		}
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private void validateFilesConCondizione(Object target, Errors errors, String prefix, DatiAccreditamento dati, Long providerId) throws Exception{
+		validateFilesConCondizione(target, errors, prefix, dati, providerId, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void validateFilesConCondizione(Object target, Errors errors, String prefix, DatiAccreditamento dati, Long providerId, boolean doFirmCheck) throws Exception{
 		LOGGER.debug("VALIDAZIONE ALLEGATI CON CONDIZIONE");
 		Set<File> files = null;
 		if(target != null)
@@ -103,11 +108,15 @@ public class DatiAccreditamentoValidator {
 					estrattoBilancioComplessivo = file;
 			}
 		}
-		fileValidator.validateWithCondition(estrattoBilancioComplessivo, errors, prefix + "estrattoBilancioComplessivo", dati.getDatiEconomici().hasFatturatoComplessivo(), providerId);
+		fileValidator.validateWithCondition(estrattoBilancioComplessivo, errors, prefix + "estrattoBilancioComplessivo", dati.getDatiEconomici().hasFatturatoComplessivo(), providerId, doFirmCheck);
+	}
+	@SuppressWarnings("unchecked")
+	private void validateFilesObbligatori(Object target, Errors errors, String prefix, Long providerId, int sezione) throws Exception{
+		validateFilesObbligatori(target, errors, prefix, providerId, sezione, true);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void validateFilesObbligatori(Object target, Errors errors, String prefix, Long providerId, int sezione) throws Exception{
+	private void validateFilesObbligatori(Object target, Errors errors, String prefix, Long providerId, int sezione, boolean doFirmCheck) throws Exception{
 		LOGGER.debug("VALIDAZIONE ALLEGATI OBBLIGATORI");
 		Set<File> files = null;
 		if(target != null)
@@ -130,10 +139,10 @@ public class DatiAccreditamentoValidator {
 		}
 
 		if(sezione == 2){
-			fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione", providerId);
+			fileValidator.validate(estrattoBilancioFormazione, errors, prefix + "estrattoBilancioFormazione", providerId, doFirmCheck);
 		}else if(sezione == 3){
-		fileValidator.validate(funzionigramma, errors, prefix + "funzionigramma",providerId);
-		fileValidator.validate(organigramma, errors, prefix + "organigramma", providerId);
+		fileValidator.validate(funzionigramma, errors, prefix + "funzionigramma",providerId, doFirmCheck);
+		fileValidator.validate(organigramma, errors, prefix + "organigramma", providerId, doFirmCheck);
 	}
 }
 }
