@@ -1238,6 +1238,10 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
+		
+		// ERM015189
+		eventoWrapper.setObiettiviNazionali(obiettivoService.getObiettiviNazionali(evento.getVersione()));
+		
 		eventoWrapper.initProgrammi();
 		if(reloadWrapperFromDB)
 			eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);

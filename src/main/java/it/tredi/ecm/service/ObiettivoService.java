@@ -5,11 +5,13 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.PianoFormativo;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.utils.Utils;
 
 public interface ObiettivoService {
 	public Set<Obiettivo> getAllObiettivi();
 	public Set<Obiettivo> getObiettiviNazionali();
+	public Set<Obiettivo> getObiettiviNazionali(EventoVersioneEnum versione);
 	public Set<Obiettivo> getObiettiviRegionali();
 	public void save(Obiettivo obiettivo);
 	public void save(Set<Obiettivo> obiettivi);
