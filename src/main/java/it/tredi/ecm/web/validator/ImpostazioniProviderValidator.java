@@ -55,6 +55,10 @@ public class ImpostazioniProviderValidator {
 
 		if (impostazioni.getCanInsertRelazioneAnnuale() != null && impostazioni.getCanInsertRelazioneAnnuale() == true
 				&& impostazioni.getDataScadenzaInsertRelazioneAnnuale() != null
+				// se siamo in periodo I (max 30/06) la data di proroga non deve esere oltre
+				&& !LocalDate.now().isAfter(LocalDate.of(LocalDate.now().getYear(),
+								ecmProperties.getRelazioneAnnualeMesePeriodoNuovo(),
+								ecmProperties.getRelazioneAnnualeGiornoPeriodoNuovo()))
 				&& impostazioni.getDataScadenzaInsertRelazioneAnnuale()
 						.isAfter(LocalDate.of(LocalDate.now().getYear(),
 								ecmProperties.getRelazioneAnnualeMesePeriodoNuovo(),
