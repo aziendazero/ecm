@@ -1139,15 +1139,15 @@ public class EventoValidatorVersioneDue {
 		} else {
 
 			if (evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
-					&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoFSCEnum.RELAZIONE_FIRMATA)) {
-				errors.rejectValue(prefix + "verificaApprendimento",
-						"error.evento_tipo_TRAINING_INDIVIDUALIZZATO_manca_RELAZIONE_FIRMATA");
-			}
-
-			if (evento.getTipologiaEventoFSC() != TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
 					&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoFSCEnum.RAPPORTO_CONCLUSIVO)) {
 				errors.rejectValue(prefix + "verificaApprendimento",
 						"error.evento_tipo_NON_TRAINING_INDIVIDUALIZZATO_manca_RAPPORTO_CONCLUSIVO");
+			}
+
+			if (evento.getTipologiaEventoFSC() != TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+					&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoFSCEnum.RELAZIONE_FIRMATA)) {
+				errors.rejectValue(prefix + "verificaApprendimento",
+						"error.evento_tipo_TRAINING_INDIVIDUALIZZATO_manca_RELAZIONE_FIRMATA");
 			}
 		}
 
