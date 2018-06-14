@@ -180,7 +180,7 @@ public class EventoController {
 	private final String ERROR = "fragments/errorsAjax";
 	private final String SPONSOR = "evento/allegaContrattiSponsor";
 	private final String PAGAMENTOQUIETANZA = "evento/pagamentoEventoList";
-	
+
 	// ERM014266 - set che sara usato per filtrare valori di MetodologiaDidatticaFADEnum per modifica delle metodologie FAD
 	private final Set<Integer> filterNoOnline = new HashSet<Integer>(Arrays.asList(1,2,3,4,5,6,7,11,13,15,17,18,19,20,21,22,23,32,34,42));
 
@@ -756,7 +756,7 @@ public class EventoController {
 				eventoWrapper.getEventoConfirmWrapper().addConfirm(new CreditiModificatiConfirm(eventoWrapper));
 				eventoWrapper.getEventoConfirmWrapper().addConfirm(new FSCTutorPartecipantiConfirm(eventoWrapper.getEvento()));
 				eventoWrapper.getEventoConfirmWrapper().addConfirm(new FSCDocentiNonUtilizzatiConfirm(eventoWrapper));
-				
+
 				/*
 				if(Utils.getAuthenticatedUser().isSegreteria() &&
 						evento.isValidatorCheck() &&
@@ -784,10 +784,10 @@ public class EventoController {
 					return EDIT;
 				}
 				*/
-				
+
 				if(eventoWrapper.getEventoConfirmWrapper().isConfirmRequired()) {
 					LOGGER.info(Utils.getLogMessage("VIEW: " + EDIT));
-					return EDIT;					
+					return EDIT;
 				}
 				else {
 					evento.setStato(EventoStatoEnum.VALIDATO);
@@ -829,6 +829,10 @@ public class EventoController {
 			Evento evento = eventoService.handleRipetibiliAndAllegati(eventoWrapper);
 
 			evento.setStato(EventoStatoEnum.VALIDATO);
+			if(evento.getVersione() == null) {
+				//imposto la versione in modo che non venga piu' modificata
+				evento.setVersione(eventoService.versioneEvento(evento));
+			}
 			evento.setValidatorCheck(true);
 			eventoService.save(evento);
 			updateEventoList(evento.getId(), session, false, true);
@@ -1238,10 +1242,10 @@ public class EventoController {
 		LOGGER.info(Utils.getLogMessage("prepareEventoWrapperEdit(" + evento.getId() + ") - entering"));
 		EventoWrapper eventoWrapper = prepareCommonEditWrapper(evento.getProceduraFormativa(), evento.getProvider().getId());
 		eventoWrapper.setEvento(evento);
-		
+
 		// ERM015189
 		eventoWrapper.setObiettiviNazionali(obiettivoService.getObiettiviNazionali(evento.getVersione()));
-		
+
 		eventoWrapper.initProgrammi();
 		if(reloadWrapperFromDB)
 			eventoWrapper = eventoService.prepareRipetibiliAndAllegati(eventoWrapper);
@@ -1423,9 +1427,9 @@ public class EventoController {
 	@RequestMapping("/listaMetodologieFAD")
 	@ResponseBody
 	public List<MetodologiaDidatticaFADEnum>getListaMetodologieFAD(@RequestParam ObiettiviFormativiFADEnum obiettivo, @RequestParam TipologiaEventoFADEnum tipologiaEvento){
-		return tipologiaEvento == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE ? 
+		return tipologiaEvento == TipologiaEventoFADEnum.APPRENDIMENTO_INDIVIDUALE_NO_ONLINE ?
 				obiettivo.getMetodologieDidattiche().stream().filter(e->filterNoOnline.contains(e.getId())).collect(Collectors.toList()):
-				obiettivo.getMetodologieDidattiche();	
+				obiettivo.getMetodologieDidattiche();
 	}
 
 	@RequestMapping(value="/provider/{providerId}/createAnagraficaFullEvento", method=RequestMethod.POST)
@@ -1486,10 +1490,10 @@ public class EventoController {
 							errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getCoordinatori(), false, "anagraficaBase_");
 						} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
 							EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
-							if(curVersione == EventoVersioneEnum.DUE_DAL_2018) 
+							if(curVersione == EventoVersioneEnum.DUE_DAL_2018)
 								errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
 							else
-								errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");							
+								errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
 						}
 					}
 					if(!errMap.isEmpty()) {
@@ -1562,7 +1566,7 @@ public class EventoController {
 				int index = Integer.parseInt(modificaElemento);
 				//se la modifica avviene su una PersonEvento inserita durante la modifica all'evento salviamo l'entity su db
 				//in quanto non risultera' presente nell'evento a meno che lo stesso non venga salvato
-				
+
 				ErrorsAjaxWrapper errWrapper = new ErrorsAjaxWrapper();
 				Map<String, String> errMap = new HashMap<String, String>();
 				if(target.equalsIgnoreCase("docenti")){
@@ -1573,7 +1577,7 @@ public class EventoController {
 					errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getEsperti(), true, "anagraficaBase_");
 				} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
 					EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
-					if(curVersione == EventoVersioneEnum.DUE_DAL_2018) 
+					if(curVersione == EventoVersioneEnum.DUE_DAL_2018)
 						errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");
 					else
 						errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");
@@ -1603,7 +1607,7 @@ public class EventoController {
 						eventoWrapper.getTempPersonaEvento().getAnagrafica().setCv(cv);
 					}
 				}
-				
+
 				//l'oggetto in modifica è un clone di quello presente nella lista, questo perchè le modifiche effettuate all'oggetto se non valide non devono essere applicate
 				//se siamo qui l'oggetto è valido occore riportare i dati nell'oggetto in modifica
 				if(target.equalsIgnoreCase("responsabiliScientifici")){
