@@ -79,6 +79,7 @@ public class AnagrafeRegionaleCreditiServiceImpl implements AnagrafeRegionaleCre
 	 *Faccio una query per individuare tutti i ruoli che hanno ricevuto crediti contando il numero di persone distinte.
 	 *Ottengo per ciascun ruolo quante persone hanno avuto crediti
 	 *
+	 * dpranteda 18/06/2018: rimossa clausula distinct
 	 **/
 	@Override
 	public Map<String,Integer> getRuoliAventeCreditiPerAnno(Long providerId, Integer annoRiferimento) {

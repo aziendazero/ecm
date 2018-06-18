@@ -25,7 +25,8 @@ public interface AnagrafeRegionaleCreditiRepository extends CrudRepository<Anagr
 	public BigDecimal getSumCreditiByCodiceFiscale(@Param("codiceFiscale") String codiceFiscale, @Param("dataInizio") LocalDate dataInizio, @Param("dataFine") LocalDate dataFine);
 
 	/* Relazione annuale elenco ruoli per contare numero di partecipanti che hanno avuto crediti */
-	@Query("SELECT a.ruolo, count(DISTINCT a.codiceFiscale) from AnagrafeRegionaleCrediti a JOIN a.evento e WHERE e.provider.id = :providerId AND (a.data BETWEEN :dataInizio AND :dataFine) GROUP BY a.ruolo")
+	/* dpranteda 18/06/2018: rimossa clausula distinct */
+	@Query("SELECT a.ruolo, count(a.codiceFiscale) from AnagrafeRegionaleCrediti a JOIN a.evento e WHERE e.provider.id = :providerId AND (a.data BETWEEN :dataInizio AND :dataFine) GROUP BY a.ruolo")
 	public List<Object[]> getRuoliAventeCreditiPerAnno(@Param("providerId") Long providerId, @Param("dataInizio") LocalDate dataInizio, @Param("dataFine") LocalDate dataFine);
 
 	/* Relazione annuale numero di professioni (con discipline selezionate) che hanno avuto crediti */
