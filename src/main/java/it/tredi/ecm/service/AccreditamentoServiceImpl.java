@@ -1041,12 +1041,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		boolean conteggioGiorniAvanzatoAbilitato = ecmProperties.isConteggioGiorniAvanzatoAbilitato();
 		boolean conteggioGiorniAvanzatoBeforeDayMode = ecmProperties.isConteggioGiorniAvanzatoBeforeDayMode();
-		
+
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
-		
+
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
-		
+
 		if (conteggioGiorniAvanzatoAbilitato && !conteggioGiorniAvanzatoBeforeDayMode) {
 			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
 		}
@@ -1063,7 +1063,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		}
 		accreditamentoRepository.save(accreditamento);
 		//saveAndAudit(accreditamento);
-		
+
 		if(ecmProperties.isDebugTestMode() && giorniTimer < 0) {
 			//Per efffettuare i test si da la possibilità di inserire il tempo in minuti
 			timerIntegrazioneRigetto = (-giorniTimer) * millisecondiInMinuto;
@@ -1072,9 +1072,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//rilascio semaforo bonita
 		tokenService.removeBonitaSemaphore(accreditamentoId);
-		
+
 	}
-	
+
 	public Long millisecondsToAdd(Long giorniTimer) {
 		long millisecondiInGiorno = 86400000;
 		long millisecondiInMinuto = 60000;
@@ -1083,11 +1083,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		Long currentHourInMilliseconds = (currentTime.getHour()*60)*millisecondiInMinuto;
 		Long currentMinuteInMilliseconds = currentTime.getMinute()*millisecondiInMinuto;
 		Long currentTimeInMillisecods = currentHourInMilliseconds + currentMinuteInMilliseconds;
-		
+
 		//we calculate the added time so that the timer in bonita stops at 23:59
 		Long milliseconds2359 = millisecondiInGiorno - millisecondiInMinuto;
 		Long addedTimeInMilliseconds = milliseconds2359 - currentTimeInMillisecods;
-		
+
 		//returns giorniTimer + added time from the moment the method is called till 23:59 in milliseconds
 		return (giorniTimer * millisecondiInGiorno) + addedTimeInMilliseconds;
 	}
@@ -1119,15 +1119,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Transactional
 	public void inviaRichiestaPreavvisoRigetto(Long accreditamentoId, Long giorniTimer) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Invio Richiesta Preavviso Rigetto della domanda " + accreditamentoId + " alla Firma"));
-		
+
 		boolean conteggioGiorniAvanzatoAbilitato = ecmProperties.isConteggioGiorniAvanzatoAbilitato();
 		boolean conteggioGiorniAvanzatoBeforeDayMode = ecmProperties.isConteggioGiorniAvanzatoBeforeDayMode();
 
 		//semaforo bonita
 		tokenService.createBonitaSemaphore(accreditamentoId);
-		
+
 		Long timerIntegrazioneRigetto = giorniTimer * millisecondiInGiorno;
-		
+
 		if (conteggioGiorniAvanzatoAbilitato && !conteggioGiorniAvanzatoBeforeDayMode) {
 			timerIntegrazioneRigetto = millisecondsToAdd(giorniTimer);
 		}
@@ -1199,7 +1199,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		//se ci sono state delle modifiche ri-abilito la valutazione cancellando la data
 		//altrimenti non faccio nulla perche' si passa per forza dal PRESA VISIONE
-		if(fieldModificati != null && !fieldModificati.isEmpty()){
+		//dpranteda 18/06/2018: se il flusso è di tipo VARIAZIONI DATI ri-abilito comunque per evidenziare i campi non modificati
+		if((fieldModificati != null && !fieldModificati.isEmpty()) || accreditamento.isVariazioneDati()){
 			//elimina data valutazione se flusso di accreditamento
 			if(!accreditamento.isVariazioneDati()) {
 				Valutazione valutazione = valutazioneService.getValutazioneSegreteriaForAccreditamentoIdNotStoricizzato(accreditamentoId);
@@ -1963,7 +1964,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
 				if(accreditamento.getDataInizioAccreditamento() != null) {
 					try {
-						//se è presente un precedente accreditamento ne setto la data fine al giorno prima della data inizio dell'accreditamento corrente 
+						//se è presente un precedente accreditamento ne setto la data fine al giorno prima della data inizio dell'accreditamento corrente
 						Accreditamento prec = getAccreditamentoAttivoForProvider(accreditamento.getProvider().getId());
 						prec.setDataFineAccreditamento(accreditamento.getDataInizioAccreditamento().minus(Period.ofDays(1)));
 						saveAndAudit(prec);
@@ -2844,13 +2845,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	}
 
 	@Override
-	@Transactional 
+	@Transactional
 	public void replaceValutazioneSulCampoFiles(Long accreditamentoId, Long pdfId, Long a1Id, Long a2Id, Long a3Id) {
 		LOGGER.debug(Utils.getLogMessage("Cambio dei allegati della valutazione sul campo del accreditamento " + accreditamentoId));
 
 		Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 		boolean isSave = false;
-		
+
 		if(accreditamento.getVerbaleValutazioneSulCampoPdf() == null ||  //vecchio non ce
 				!accreditamento.getVerbaleValutazioneSulCampoPdf().getId().equals(pdfId)) { // nuovo e diverso
 			if(pdfId != null) { // nuovo non e vuoto
@@ -2859,10 +2860,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				isSave = true;
 			}
 		}
-		
+
 		if(accreditamento.getValutazioneSulCampoAllegato1() == null || // vecchio non ce
 			!accreditamento.getValutazioneSulCampoAllegato1().getId().equals(a1Id)) { // nuovo e diverso
-			
+
 			if(a1Id == null) {
 				// riomozione
 				LOGGER.debug(Utils.getLogMessage("Rimozione allegato1 della valutazione sul campo del accreditamento " + accreditamentoId));
@@ -2870,14 +2871,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}else {
 				// aggiornamento
 				LOGGER.debug(Utils.getLogMessage("Cambio allegato1 della valutazione sul campo del accreditamento " + accreditamentoId));
-				accreditamento.setValutazioneSulCampoAllegato1(fileService.getFile(a1Id));				
+				accreditamento.setValutazioneSulCampoAllegato1(fileService.getFile(a1Id));
 			}
 			isSave = true;
 		}
-		
+
 		if(accreditamento.getValutazioneSulCampoAllegato2() == null || // vecchio non ce
 				!accreditamento.getValutazioneSulCampoAllegato2().getId().equals(a2Id)) { // nuovo e diverso
-			
+
 			if(a2Id == null) {
 				// riomozione
 				LOGGER.debug(Utils.getLogMessage("Rimozione allegato2 della valutazione sul campo del accreditamento " + accreditamentoId));
@@ -2885,14 +2886,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}else {
 				// aggiornamento
 				LOGGER.debug(Utils.getLogMessage("Cambio allegato2 della valutazione sul campo del accreditamento " + accreditamentoId));
-				accreditamento.setValutazioneSulCampoAllegato2(fileService.getFile(a2Id));				
+				accreditamento.setValutazioneSulCampoAllegato2(fileService.getFile(a2Id));
 			}
 			isSave = true;
 		}
-		
+
 		if(accreditamento.getValutazioneSulCampoAllegato3() == null || // vecchio non ce
 				!accreditamento.getValutazioneSulCampoAllegato3().getId().equals(a3Id)) { // nuovo e diverso
-			
+
 			if(a3Id == null) {
 				// riomozione
 				LOGGER.debug(Utils.getLogMessage("Rimozione allegato3 della valutazione sul campo del accreditamento " + accreditamentoId));
@@ -2900,14 +2901,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}else {
 				// aggiornamento
 				LOGGER.debug(Utils.getLogMessage("Cambio allegato3 della valutazione sul campo del accreditamento " + accreditamentoId));
-				accreditamento.setValutazioneSulCampoAllegato3(fileService.getFile(a3Id));				
+				accreditamento.setValutazioneSulCampoAllegato3(fileService.getFile(a3Id));
 			}
 			isSave = true;
 		}
-		
+
 		if(isSave) saveAndAudit(accreditamento);
 	}
-	
+
 	@Override
 	@Transactional
 	public void inviaDiniegoInAttesaDiFirma(Long accreditamentoId, Long fileIdLettera, Long fileIdDecreto, LocalDate dataDelibera, String numeroDelibera) throws Exception {
@@ -2958,5 +2959,5 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamentoRepository.countAllDomandeTipoStandart(currentUser.getAccount().getId());
 	}
 
-	
+
 }
