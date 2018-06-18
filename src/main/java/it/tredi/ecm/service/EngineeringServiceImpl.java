@@ -189,7 +189,18 @@ public class EngineeringServiceImpl implements EngineeringService {
 
 	public String pagaQuotaProvider(Long pagamentoId, String backURL) throws Exception {
 		Pagamento p = pagamentoService.getPagamentoById(pagamentoId);
-		String url = prepareDatiPagamentoPerQuotaAnnuale(p, p.getQuotaAnnuale(), backURL);
+
+		//dpranteda 18/06/2018: gestione per evitare doppio pagamento
+		QuotaAnnuale qA = p.getQuotaAnnuale();
+		if(qA.getPagInCorso() != null && qA.getPagInCorso().booleanValue()) {
+			throw new PagInCorsoException("Il pagamento risulta già in corso!");
+		}
+
+		if(qA.getPagato() != null && qA.getPagato().booleanValue()) {
+			throw new PagInCorsoException("Il pagamento risulta già effettuato!");
+		}
+
+		String url = prepareDatiPagamentoPerQuotaAnnuale(p, qA, backURL);
 		return url;
 	}
 
