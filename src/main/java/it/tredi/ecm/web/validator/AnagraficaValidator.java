@@ -107,8 +107,10 @@ public class AnagraficaValidator {
 				errors.rejectValue(prefix + "codiceFiscale", "error.cf_duplicated");
 			}
 		}
+		/* @since ERM014045 - removed check 
 		if(!fileValidator.validateFirmaCF(anagraficaEvento.getAnagrafica().getCv(), providerId))
 			errors.rejectValue(prefix + "cv", "error.codiceFiscale.firmatario");
+			*/
 	}
 
 	//validator anagrafica docenti/tutor e responsabili evento (Gestione Anagrafiche Ruoli Evento)
