@@ -401,7 +401,15 @@ public class EventoValidatorVersioneDue {
 			*/
 		}
 
-		
+		// ERM014977-2  getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia va testato solo se sponsorizato 
+		// e contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA e se no sponsorizato
+		if(evento.getContenutiEvento() != null 
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA 
+				&& evento.getEventoSponsorizzato() != null
+				&& evento.getEventoSponsorizzato() == false
+				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
+			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
+		}
 
 		
 
