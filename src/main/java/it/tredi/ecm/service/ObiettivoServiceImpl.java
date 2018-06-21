@@ -1,6 +1,9 @@
 package it.tredi.ecm.service;
 
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -30,9 +33,9 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 	public Set<Obiettivo> getObiettiviNazionali(EventoVersioneEnum versione) {
 		LOGGER.debug("Recupero tutti gli Obiettivi Nazionali");
 		if(versione == null || versione == EventoVersioneEnum.DUE_DAL_2018) {
-			return obiettivoRepository.findAllByNazionaleAndVersioneNotOrderByCodiceCogeapsAsc(true, 1); 
+			return obiettivoRepository.findAllByNazionaleAndVersioneNotOrderByCodiceCogeapsAsc(true, 1).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new)); 
 		}else {
-			return obiettivoRepository.findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(true, 1); 
+			return obiettivoRepository.findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(true, 1).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new)); 
 		}
 		
 	}
