@@ -276,7 +276,7 @@ function loadScript(url, callback){
 							<table id="eventiListTable" th:if="${(eventoList != null and !#lists.isEmpty(eventoList)) and (showAllList == null or showAllList == false) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<thead style = "word-break: keep-all !important;">
 									<tr>
-										<th class="text-full-length" th:if="${search != null and (archiviaEvento != null and archiviaEvento == true)}"><input name="select_all" value="1" id="select-all" type="checkbox"/> Archive</th>
+										<th class="text-full-length" th:if="${search != null and (archiviaEvento != null and archiviaEvento == true)}"><input name="select_all" value="1" id="select-all" type="checkbox"/> Archivia</th>
 										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 										<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
 										<th th:text="#{label.edizione_short}">label.edizione_short</th>

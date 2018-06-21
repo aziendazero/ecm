@@ -27,7 +27,5 @@ public interface AccountService {
 	public Set<Account> getAllSegreteria();
 	public Set<Account> getAllUsersNotFake();
 	public Set<Account> getAllUsersNotFakeByProviderId(Long providerId);
-	//test branch
-	//test branch again 
-	//just for test1
+	
 }
