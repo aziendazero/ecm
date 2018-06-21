@@ -241,44 +241,50 @@ public class IntegrazioneServiceImpl implements IntegrazioneService {
 	 * Applica le integrazioni all'oggetto passato
 	 * la lista di integrazioni deve contenere SOLO i FIELD appartenenti all'oggetto
 	 * le integrazioni di tipo ELIMINAZIONE vengono ignorate
+	 * dpranteda 21/06/2018: applico solo i fieldIntegrazione NON FITTIZI, perch' quelli fittizi NON hanno il campo newValue valorizzato
 	 * */
 	@Override
 	public void applyIntegrazioneObject(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList) throws Exception{
 		for(FieldIntegrazioneAccreditamento field : fieldIntegrazioneList){
-			if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE || (field.getTipoIntegrazioneEnum() == TipoIntegrazioneEnum.ELIMINAZIONE && field.getIdField().getNameRef().startsWith("files.")))
-				try{
-					if(field.getIdField().getGruppo().isEmpty())
-						setField(dst,field.getIdField().getNameRef(),field.getNewValue());
-					LOGGER.debug(Utils.getLogMessage("Applicazione integrazione su entity -> " + field.getIdField().getNameRef() + " a " + dst.getClass()));
-				}catch (Exception ex){
-					LOGGER.debug(Utils.getLogMessage("Impossibile applicare integrazione su entity -> " + field.getIdField().getNameRef() + " su " + dst.getClass()));
-				}
+			if(!field.isFittizio()) {
+				if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE || (field.getTipoIntegrazioneEnum() == TipoIntegrazioneEnum.ELIMINAZIONE && field.getIdField().getNameRef().startsWith("files.")))
+					try{
+						if(field.getIdField().getGruppo().isEmpty())
+							setField(dst,field.getIdField().getNameRef(),field.getNewValue());
+						LOGGER.debug(Utils.getLogMessage("Applicazione integrazione su entity -> " + field.getIdField().getNameRef() + " a " + dst.getClass()));
+					}catch (Exception ex){
+						LOGGER.debug(Utils.getLogMessage("Impossibile applicare integrazione su entity -> " + field.getIdField().getNameRef() + " su " + dst.getClass()));
+					}
+			}
 		}
 	}
 
 	//applyIntegrazione + Salva oggetto su DB
+	//dpranteda 21/06/2018: applico solo i fieldIntegrazione NON FITTIZI, perch' quelli fittizi NON hanno il campo newValue valorizzato
 	private void applyIntegrazioneAndSave(Object dst, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioni) throws Exception{
 		for(FieldIntegrazioneAccreditamento field :  fieldIntegrazioni){
 			try{
-				if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE){
-					setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
-				}else{
-					if(field.getNewValue() != null){
-						//se mi trovo nella valutazione di un accreditamento standard la sede potrebbe essere referenziata
-						//nel verbale e gestisco il caso a parte
-						Accreditamento accreditamento = accreditamentoService.getAccreditamento(field.getAccreditamento().getId());
-						if(field.getIdField() == IdFieldEnum.SEDE__FULL &&
-								accreditamento.isStandard() &&
-								accreditamento.getVerbaleValutazioneSulCampo().getSede().getId() == field.getObjectReference())
-							sganciaSede(field.getObjectReference());
-						else
-							removeEntityFromRepo(dst.getClass(), field.getNewValue());
-					}else{
+				if(!field.isFittizio()) {
+					if(field.getTipoIntegrazioneEnum() != TipoIntegrazioneEnum.ELIMINAZIONE){
 						setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
+					}else{
+						if(field.getNewValue() != null){
+							//se mi trovo nella valutazione di un accreditamento standard la sede potrebbe essere referenziata
+							//nel verbale e gestisco il caso a parte
+							Accreditamento accreditamento = accreditamentoService.getAccreditamento(field.getAccreditamento().getId());
+							if(field.getIdField() == IdFieldEnum.SEDE__FULL &&
+									accreditamento.isStandard() &&
+									accreditamento.getVerbaleValutazioneSulCampo().getSede().getId() == field.getObjectReference())
+								sganciaSede(field.getObjectReference());
+							else
+								removeEntityFromRepo(dst.getClass(), field.getNewValue());
+						}else{
+							setFieldAndSave(dst, field.getIdField().getNameRef(), field.getNewValue());
 
+						}
 					}
+					LOGGER.debug(Utils.getLogMessage("Applicazione integrazione su DB -> " + field.getIdField().getNameRef() + " a " + dst.getClass()));
 				}
-				LOGGER.debug(Utils.getLogMessage("Applicazione integrazione su DB -> " + field.getIdField().getNameRef() + " a " + dst.getClass()));
 			}catch (Exception ex){
 				LOGGER.debug(Utils.getLogMessage("Impossibile applicare integrazione su DB -> " + field.getIdField().getNameRef() + " a " + dst.getClass()));
 			}
