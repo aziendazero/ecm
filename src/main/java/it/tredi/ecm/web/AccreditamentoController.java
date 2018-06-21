@@ -39,6 +39,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Professione;
@@ -578,7 +579,7 @@ public class AccreditamentoController {
 
 	/***
 	 * METODI PRIVATI PER IL SUPPORTO
-	 * 
+	 *
 	 * @throws Exception
 	 ***/
 	private AccreditamentoWrapper prepareAccreditamentoWrapperEdit(Accreditamento accreditamento) throws Exception {
@@ -688,7 +689,7 @@ public class AccreditamentoController {
 					accreditamentoWrapper.setDelegaValutazioneSulCampo(null);
 			}
 		}
-		
+
 		// ERM014775 - per poter editare i file e non aver eproblemi con hibernate serve
 		// avere anche i files della valutacione in wrapper
 		accreditamentoWrapper.setValutazioneSulCampoAllegato1(accreditamento.getValutazioneSulCampoAllegato1());
@@ -930,15 +931,19 @@ public class AccreditamentoController {
 				((accreditamento.isValutazioneCrecm() || accreditamento.isValutazioneCrecmVariazioneDati()
 						|| accreditamento.isValutazioneTeamLeader())
 						&& accreditamento.getStatoUltimaIntegrazione() != null)) {
-			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso().getProcessInstanceId();
+			Long workFlowProcessInstanceId = accreditamento.getWorkflowInCorso() != null ? accreditamento.getWorkflowInCorso().getProcessInstanceId() : null;
 			AccreditamentoStatoEnum stato = accreditamento.getStatoUltimaIntegrazione();
+
+			Set<FieldIntegrazioneAccreditamento> fittizi = fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneFittiziForAccreditamentoByContainer(
+					accreditamento.getId(), stato, workFlowProcessInstanceId);
+
 			accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie,
 					elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode,
 					fieldIntegrazioneAccreditamentoService.getAllFieldIntegrazioneForAccreditamentoByContainer(
-							accreditamento.getId(), stato, workFlowProcessInstanceId));
+							accreditamento.getId(), stato, workFlowProcessInstanceId), fittizi);
 		} else
 			accreditamentoWrapper.checkStati(numeroComponentiComitatoScientifico, numeroProfessionistiSanitarie,
-					elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode, null);
+					elencoProfessioniDeiComponenti, professioniDeiComponentiAnaloghe, filesDelProvider, mode, null, null);
 
 	}
 
@@ -1237,7 +1242,7 @@ public class AccreditamentoController {
 					redirectAttrs.addAttribute("accreditamentoId", accreditamentoId);
 					redirectAttrs.addFlashAttribute("message", new Message("message.completato",
 							"message.documenti_valutazione_complessiva_salvati", "success"));
-					
+
 					redirectAttrs.addAttribute("currentTab", "tab_content5");
 				}
 			}
@@ -1250,7 +1255,7 @@ public class AccreditamentoController {
 					new Message("message.errore", "message.errore_eccezione", "error"));
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 		}
-		
+
 		return "redirect:/accreditamento/{accreditamentoId}/show";
 	}
 
