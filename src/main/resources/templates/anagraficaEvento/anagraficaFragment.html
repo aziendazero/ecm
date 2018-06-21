@@ -79,7 +79,7 @@
 								<!-- CV -->
 								<div class="item form-group" th:classappend="${#fields.hasErrors('anagraficaEventoWrapper.anagraficaEvento.anagrafica.cv')} ? 'bad'">
 									<div class="col-sm-1 col-xs-12"></div>
-									<th:block th:include="fragments/allegatiext :: allegatiext(anagraficaEventoWrapper,false,'*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}',cv, null,null,null,true,${mode},true)" />
+									<th:block th:include="fragments/allegatiext :: allegatiext(anagraficaEventoWrapper,false,'*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_CV}',cv, null,null,null,false,${mode},true)" />
 								</div>
 							</th:block>
 
