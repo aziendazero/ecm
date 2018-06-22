@@ -631,7 +631,7 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- modale modifica documenti di valutazione  -->
 				<div id="confirm-modal" class="modal fade modal-confirm"
 					data-model-index="1" role="dialog">
@@ -648,9 +648,9 @@
 								<form id="modificaDocumentiDiValutazione" class="form-horizontal"
 									th:action="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/modificaDocumentiDiValutazione|}"
 									method="post" enctype="multipart/form-data"
-									novalidate="novalidate">								
+									novalidate="novalidate">
 
-									
+
 									<th:block th:if="${#authentication.principal.hasProfile('SEGRETERIA')
 										and accreditamentoWrapper.accreditamento.isStandard()}">
 										<!-- and accreditamentoWrapper.accreditamento.isAccreditatoInAttesaDiFirma() -->
@@ -678,7 +678,7 @@
 											<th:block th:include="fragments/allegatiext :: allegatiext(accreditamentoWrapper, false, '*{T(it.tredi.ecm.dao.enumlist.FileEnum).FILE_VALUTAZIONE_SUL_CAMPO_ALLEGATO3}', valutazioneSulCampoAllegato3, null, null, null, false, 'edit', false)" ></th:block>
 										</div>
 
-									</th:block>						
+									</th:block>
 
 									<input id="submitButtonModalModificaDocumenti" type="submit" style="display: none;" />
 									<input type="hidden" th:field="${accreditamentoWrapper.accreditamento}" />
@@ -742,11 +742,12 @@
 
 									<li> <a th:if="${#authentication.principal.account.isSegreteria() and accreditamentoWrapper.canVariazioneDati and
 											(
-												accreditamentoWrapper.accreditamento.getStatoVariazioneDati() != null and 
+												accreditamentoWrapper.accreditamento.getStatoVariazioneDati() != null and
 												(
-													accreditamentoWrapper.accreditamento.getStatoVariazioneDati() == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).RICHIESTA_INTEGRAZIONE
+													accreditamentoWrapper.accreditamento.getStatoVariazioneDati() == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).RICHIESTA_INTEGRAZIONE OR
+													accreditamentoWrapper.accreditamento.getStatoVariazioneDati() == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE
 												)
-											)}" 
+											)}"
 									th:href="@{|/accreditamento/${accreditamentoWrapper.accreditamento.id}/riepilogovariazionedatipdf|}" th:text="#{label.mostra_riepilogo_integrazioni}"></a></li>
 								</ul>
 							</div>
