@@ -373,6 +373,7 @@ public class AccreditamentoWrapper {
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__NOME) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__NOME).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__CODICEFISCALE) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__CODICEFISCALE).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__CELLULARE) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__CELLULARE).getEsito() != null) &&
+					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__TELEFONO) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__TELEFONO).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__EMAIL) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__EMAIL).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__PEC) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__PEC).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__ATTO_NOMINA) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__ATTO_NOMINA).getEsito() != null) &&
