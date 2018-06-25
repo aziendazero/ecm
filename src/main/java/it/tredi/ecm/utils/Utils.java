@@ -44,7 +44,7 @@ public class Utils {
 
 	/**
 	 * Recupero dell'utente loggato
-	 * 
+	 *
 	 * @return utente loggato oppure <code>NULL</code> se l'utente non ha fatto
 	 *         login
 	 */
@@ -214,10 +214,13 @@ public class Utils {
 	 * Controllo se un determinato IdFieldEnum è presente nella lista di record
 	 */
 	public static <T extends Field> T getField(Set<T> src, IdFieldEnum idEnum) {
-		for (T f : src) {
-			if (f.getIdField() == idEnum)
-				return f;
+		if(src != null) {
+			for (T f : src) {
+				if (f.getIdField() == idEnum)
+					return f;
+			}
 		}
+
 		return null;
 	}
 
