@@ -155,4 +155,7 @@ public interface AccreditamentoService{
 	
 	// ERM014775
 	public void replaceValutazioneSulCampoFiles(Long accreditamentoId, Long pdfId, Long a1Id, Long a2Id, Long a3Id);
+	
+	// ERM014776
+	public void chiudiAccreditamentoEPulisciEventi(Accreditamento acc);
 }

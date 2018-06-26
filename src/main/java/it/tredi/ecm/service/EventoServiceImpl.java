@@ -2881,4 +2881,25 @@ public class EventoServiceImpl implements EventoService {
 			}
 
 	}
+
+	@Override
+	public void eliminaEventiPerChiusuraAccreditamento(Accreditamento acc, LocalDate dataCut) throws Exception {
+		LocalDate dateConGiorniAggiuntivi = ecmProperties.espandiDataPerGiorniChiusura(dataCut);
+		Set<Evento> events = eventoRepository.findAllByProviderIdAndDataInizioAfter(acc.getProvider().getId(), dataCut);
+		
+		// tutti eventi con data inizio maggiore della data limite vano rimossi
+		for(Evento event : events) {
+			if(event.getStato() == EventoStatoEnum.BOZZA){
+				// bozze vanno eliminate tutte quante che hano data inizio oltre la data di chiusura del accreditamento
+				delete(event.getId());
+			}else if(event.getDataInizio().isAfter(dateConGiorniAggiuntivi)){
+				// non bozza ma inizia oltre intervallo di N (7) giorni dopo la chiusura del accreditamento
+				event.setStato(EventoStatoEnum.CANCELLATO);
+				save(event);
+			}
+		}
+		
+	}
+
+	
 }

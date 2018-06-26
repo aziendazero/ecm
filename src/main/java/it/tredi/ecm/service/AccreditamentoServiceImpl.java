@@ -113,6 +113,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private AuditReportProviderService auditReportProviderService;
 	@Autowired private AccountService accountService;
+	
+	@Autowired private EventoService eventoService;
 
 
 	@Override
@@ -1787,11 +1789,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return false;
 	}
 
+	@Transactional
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception  {
 		changeState(accreditamentoId, stato, null);
 	}
 
+	@Transactional
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception  {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
@@ -1929,6 +1933,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				fileAllegatiIds.add(decreto.getId());
 				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, lettera.getId(), fileAllegatiIds);
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+				
+				// ERM014776
+				chiudiAccreditamentoEPulisciEventi(accreditamento);
+				
 			} else if(stato == AccreditamentoStatoEnum.DINIEGO) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
@@ -2055,6 +2063,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			if(stato == AccreditamentoStatoEnum.CANCELLATO) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
+				
+				// ERM014776
+				chiudiAccreditamentoEPulisciEventi(accreditamento);
 			}
 			//ATTENZIONE in setStato viene gestita anche la durata del procedimento
 			//20180403 modificato per gestire la dataScadenza
@@ -2961,6 +2972,15 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public int countAllTipoStandart(CurrentUser currentUser) {
 		return accreditamentoRepository.countAllDomandeTipoStandart(currentUser.getAccount().getId());
+	}
+
+	@Override
+	public void chiudiAccreditamentoEPulisciEventi(Accreditamento acc) {
+		// accreditamento deve essere salvato da chiamante
+		acc.setDataChiusuraAcc(LocalDate.now());
+		
+		// ellimina tutti eventi in bozza
+		eventoService.eliminaEventiPerChiusuraAccreditamento(acc, LocalDate.now());
 	}
 
 
