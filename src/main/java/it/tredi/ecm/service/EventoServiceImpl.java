@@ -902,6 +902,20 @@ public class EventoServiceImpl implements EventoService {
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "confermatiCrediti"));
 			break;
+			
+		case 13:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "versione"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "versione"));
+			break;
+			
+		case 14:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "versione"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "versione"));
+			break;
 
 		default:
 			request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
