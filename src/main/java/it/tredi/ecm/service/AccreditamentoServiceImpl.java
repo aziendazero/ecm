@@ -28,6 +28,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AccreditamentoDiff;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneHistoryContainer;
@@ -2974,14 +2975,28 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamentoRepository.countAllDomandeTipoStandart(currentUser.getAccount().getId());
 	}
 
+	// ERM014776
 	@Override
-	public void chiudiAccreditamentoEPulisciEventi(Accreditamento acc) {
+	public void chiudiAccreditamentoEPulisciEventi(Accreditamento acc) throws Exception {
 		// accreditamento deve essere salvato da chiamante
 		acc.setDataChiusuraAcc(LocalDate.now());
 		
 		// ellimina tutti eventi in bozza
-		eventoService.eliminaEventiPerChiusuraAccreditamento(acc, LocalDate.now());
+		eventoService.eliminaEventiPerChiusuraAccreditamento(acc, LocalDate.now()); 
 	}
 
+	// ERM014776
+	@Override
+	public boolean canProviderWorkWithEvent(Long providerId, Evento evt) {
+		LocalDate dataChiusuraAcc = getLastAccreditamentoForProviderId(providerId).getDataChiusuraAcc();
+		if(dataChiusuraAcc == null) return true; // no check needed
+		LocalDate dd = ecmProperties.espandiDataPerGiorniChiusura(dataChiusuraAcc);
+		
+		// se evento e precedente data chiusura e editabile
+		if(evt.getDataInizio().isBefore(dd)) return true; 
+		
+		// current date is in interval
+		return !LocalDate.now().isAfter(dd); // controllo del intevallo 
+	}
 
 }

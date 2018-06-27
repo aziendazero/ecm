@@ -326,7 +326,7 @@ public class EventoController {
 		//Build the Azioni Buttons
 		String buttons = "";
 		if(Utils.getAuthenticatedUser().isSegreteria() || Utils.getAuthenticatedUser().isProvider()) {
-			if(event.canEdit() || Utils.getAuthenticatedUser().isSegreteria()) {
+			if(eventoServiceController.canEdit(event) || Utils.getAuthenticatedUser().isSegreteria()) {
 				buttons += "	<a class=\"btn btn-primary min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/edit\" title=\""
 								+ messageSource.getMessage("label.modifica", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-pencil\"></i></a>";
 			}
@@ -336,7 +336,7 @@ public class EventoController {
 						", '" + event.getDataScadenzaPagamento() + "', '" + event.getDataScadenzaInvioRendicontazione() + "')\" title=\"" + messageSource.getMessage("label.abilita", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-unlock-alt\"> </i></button>";
 			}
 
-			if(event.canDoPagamento()) {
+			if(eventoServiceController.canDoPagamento(event)) {
 				if((event.getProvider().getMyPay() != null && event.getProvider().getMyPay()) || (event.getProvider().getMyPay() == null && event.getProvider().isGruppoB())) {
 					buttons += "<a class=\"btn btn-success btn-min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" +
 									event.getId() + "/paga\" title=\"" + messageSource.getMessage("label.paga", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-euro\"></i></a>";
@@ -358,17 +358,17 @@ public class EventoController {
 										"\" th:title=\"" + messageSource.getMessage("label.registro_operazioni", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-book\"></i></a>";
 			}
 
-			if (event.canDoRendicontazione()) {
+			if (eventoServiceController.canDoRendicontazione(event)) {
 				buttons += "<a class=\"btn btn-warning min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/rendiconto\" title=\"" +
 																messageSource.getMessage("label.rendiconto", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file-text\"></i></a>";
 			}
 
-			if (event.canDoUploadSponsor()) {
+			if (eventoServiceController.canDoUploadSponsor(event)) {
 				buttons += "<a class=\"btn btn-primary min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/allegaContrattiSponsor\" title=\"" +
 														messageSource.getMessage("label.allega_contratti_sponsor", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file\"></i></a>";
 			}
 
-			if (event.canEdit()) {
+			if (eventoServiceController.canEdit(event)) {
 				buttons += "<button class=\"btn btn-danger min-icon-width\" onclick=\"confirmDeleteEventoModal('" + event.getProvider().getId() + "','" +
 														event.getId() + "','" + event.getProceduraFormativa() + "','" + event.getCodiceIdentificativo() + "','" + event.getStato() + "')\" title=\"" +
 														(event.getStato() == EventoStatoEnum.BOZZA ? messageSource.getMessage("label.elimina", null, LocaleContextHolder.getLocale()) : messageSource.getMessage("label.annulla", null, LocaleContextHolder.getLocale())) + "\"><i class=\"fa fa-trash\"></i></button>";

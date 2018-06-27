@@ -112,5 +112,4 @@ public interface EventoService {
 	
 	// ERM014776
 	public void eliminaEventiPerChiusuraAccreditamento(Accreditamento acc, LocalDate dataCut) throws Exception;
-	
 }
