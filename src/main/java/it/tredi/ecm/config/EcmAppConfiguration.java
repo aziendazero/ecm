@@ -102,6 +102,10 @@ public class EcmAppConfiguration {
 	private int relazioneAnnualeGiornoPeriodoNuovo = 30;
 	@Value("${relazioneAnnuale.mesePeriodoNuovo}")
 	private int relazioneAnnualeMesePeriodoNuovo = 6;
+	
+	// ERM014776
+	@Value("${accreditamento.numeroGiorniDopoChiusura}")
+	private int accreditamentoNumeroGiorniDopoChiusura = 7;
 
 	@Value("${valutazioni.non.date.limite}")
 	private int valutazioniNonDateLimit = 3;
@@ -199,6 +203,9 @@ public class EcmAppConfiguration {
 		// ERM012514
 		ecmProperties.setRelazioneAnnualeGiornoPeriodoNuovo(relazioneAnnualeGiornoPeriodoNuovo);
 		ecmProperties.setRelazioneAnnualeMesePeriodoNuovo(relazioneAnnualeMesePeriodoNuovo);
+		
+		// ERM014776
+		ecmProperties.setAccreditamentoNumeroGiorniDopoChiusura(accreditamentoNumeroGiorniDopoChiusura);
 
 		ecmProperties.setValutazioniNonDateLimit(valutazioniNonDateLimit);
 		ecmProperties.setGiorniVariazioneDatiAccreditamento(giorniVariazioneDatiAccreditamento);

@@ -162,6 +162,11 @@ public class Accreditamento extends BaseEntityDefaultId {
 
 	@OneToOne
 	private File fileDecadenza;
+	
+	// ERM014776
+	// domanda chiusa DINIEGO/SOSPENSIONE/DECADENZA
+	@Column(name = "data_chiusura_accreditamento")
+	private LocalDate dataChiusuraAcc; 
 
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){

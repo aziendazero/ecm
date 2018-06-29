@@ -1,11 +1,13 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.File;
@@ -107,4 +109,7 @@ public interface EventoService {
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento);
 	
 	public void archiveEventoInPrimaInfanziaOrMedNonConv(List<Long> ids);
+	
+	// ERM014776
+	public void eliminaEventiPerChiusuraAccreditamento(Accreditamento acc, LocalDate dataCut) throws Exception;
 }

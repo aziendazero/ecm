@@ -849,6 +849,7 @@ public class ProviderServiceImpl implements ProviderService {
 		return providerRepository.getAllProviderInadempienti();
 	}
 
+	@Transactional
 	@Override
 	public void bloccaProvider(Long providerId, ImpostazioniProviderWrapper wrapper) throws Exception {
 
@@ -863,6 +864,7 @@ public class ProviderServiceImpl implements ProviderService {
 		// allega il file di decadenza
 		Accreditamento accreditamento = accreditamentoService.getLastAccreditamentoForProviderId(providerId);
 		accreditamento.setFileDecadenza(allegatoDecadenza);
+		accreditamentoService.chiudiAccreditamentoEPulisciEventi(accreditamento);
 		accreditamentoService.save(accreditamento);
 
 		protocolloService.protocollaBloccoProviderInUscita(providerId, allegatoDecadenza,

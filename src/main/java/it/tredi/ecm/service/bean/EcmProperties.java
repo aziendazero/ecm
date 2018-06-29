@@ -54,6 +54,9 @@ public class EcmProperties {
 	// ERM012514
 	private int RelazioneAnnualeGiornoPeriodoNuovo;
 	private int RelazioneAnnualeMesePeriodoNuovo;
+	
+	// ERM014776
+	private int AccreditamentoNumeroGiorniDopoChiusura;
 
 	private int valutazioniNonDateLimit;
 	private int giorniVariazioneDatiAccreditamento;
@@ -93,4 +96,9 @@ public class EcmProperties {
 		return currentYear - 1;
 	}
 
+	// ERM014776
+	public LocalDate espandiDataPerGiorniChiusura(LocalDate d) {
+		return d.plusDays(getAccreditamentoNumeroGiorniDopoChiusura());
+	}
+	
 }
