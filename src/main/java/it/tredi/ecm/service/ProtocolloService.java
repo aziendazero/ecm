@@ -4,6 +4,7 @@ import java.util.Set;
 
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Protocollo;
+import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
 
 public interface ProtocolloService {
@@ -24,4 +25,7 @@ public interface ProtocolloService {
 
 	public void annullaProtocollo(Long oldProtocolloId) throws Exception;
 	public void rieseguiProtocollo(Long oldProtocolloId)  throws Exception;
+	
+	// ERM014776
+	public void bloccaProvider(Provider provider);
 }

@@ -944,7 +944,8 @@ public class ProtocolloServiceImpl implements ProtocolloService {
 		}
 	}
 
-	private void bloccaProvider(Provider provider) {
+	@Override
+	public void bloccaProvider(Provider provider) {
 		provider.setCanInsertAccreditamentoProvvisorio(false);
 		provider.setCanInsertAccreditamentoStandard(false);
 		provider.setCanInsertEvento(false);

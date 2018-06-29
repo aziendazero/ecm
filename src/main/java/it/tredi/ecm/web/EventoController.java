@@ -598,16 +598,20 @@ public class EventoController {
 	private String goToList(Model model, Long providerId, HttpServletRequest request) throws AccreditamentoNotFoundException {
 		String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
 		model.addAttribute("eventoAttuazioneList", eventoPianoFormativoService.getAllEventiAttuabiliForProviderId(providerId));
-		model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
 		model.addAttribute("denominazioneProvider", denominazioneProvider);
 		model.addAttribute("providerId", providerId);
 		try {
+			
+			model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
+			
 			Accreditamento accreditamento =  accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
 			model.addAttribute("proceduraFormativaList", accreditamento.getDatiAccreditamento().getProcedureFormative());
 			model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
 			model.addAttribute("canRieditEvento", eventoService.canRieditEvento(Utils.getAuthenticatedUser().getAccount()));
 		}
 		catch (Exception ex) {
+			model.addAttribute("eventoRiedizioneList", null);
+			
 			model.addAttribute("proceduraFormativaList", null);
 			model.addAttribute("canCreateEvento", false);
 			model.addAttribute("canRieditEvento", false);

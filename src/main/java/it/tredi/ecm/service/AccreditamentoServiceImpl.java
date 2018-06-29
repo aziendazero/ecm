@@ -2978,6 +2978,11 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	// ERM014776
 	@Override
 	public void chiudiAccreditamentoEPulisciEventi(Accreditamento acc) throws Exception {
+		// Blocco del provider
+		Provider provider = acc.getProvider();
+		protocolloService.bloccaProvider(provider); 
+		providerService.save(provider);		
+		
 		// accreditamento deve essere salvato da chiamante
 		acc.setDataChiusuraAcc(LocalDate.now());
 		
