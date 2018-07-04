@@ -36,6 +36,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.MapBindingResult;
 
 import it.tredi.ecm.cogeaps.CogeapsCaricaResponse;
 import it.tredi.ecm.cogeaps.CogeapsStatoElaborazioneResponse;
@@ -1234,10 +1235,19 @@ public class EventoServiceImpl implements EventoService {
 				throw new Exception("error.file_non_firmato");
 			}
 
-			//il file deve essere firmato digitalmente e con un certificato appartenente al Legale Rappresentante o al suo Delegato
+			
+			// ERM015894 - si valida solo firma
+			/*
+			 //il file deve essere firmato digitalmente e con un certificato appartenente al Legale Rappresentante o al suo Delegato
 			boolean validateCFFirma = fileValidator.validateFirmaCF(evento.getReportPartecipantiXML(), evento.getProvider().getId());
 			if(!validateCFFirma)
-				throw new Exception("error.codiceFiscale.firmatario");
+				throw new Exception("error.codiceFiscale.firmatario"); 
+			 */
+			MapBindingResult err = new MapBindingResult(new HashMap<String, Object>(), "inviaRendicontoACogeaps");
+			fileValidator.validateIsSigned(evento.getReportPartecipantiXML(), err, "prefix");
+			if(err.hasErrors()) {
+				throw new Exception("error.file_non_firmato");
+			}
 
 			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(reportFileName, evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
 
