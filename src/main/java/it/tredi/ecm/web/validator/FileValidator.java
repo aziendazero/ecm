@@ -72,9 +72,14 @@ public class FileValidator {
 		}
 		if(!(file == null || file.isNew() || file.getNomeFile().isEmpty() || file.getData().length == 0)){
 
+			//ERM015894 - si valida solo firma ma non piu CF
+			validateIsSigned(target, errors, prefix);
+			
+			/*
 			//se il cf della firma non appartiene al legale rappresentane o al delegato del legale rappresentante, allora non è valido
 			if(!validateFirmaCF(file, providerId))
 				errors.rejectValue(prefix, "error.codiceFiscale.firmatario");
+				*/
 		}
 	}
 
