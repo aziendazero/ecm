@@ -2998,7 +2998,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LocalDate dd = ecmProperties.espandiDataPerGiorniChiusura(dataChiusuraAcc);
 		
 		// se evento e precedente data chiusura e editabile
-		if(evt.getDataInizio().isBefore(dd)) return true; 
+		if(evt.getDataInizio() != null && evt.getDataInizio().isBefore(dd)) return true; 
 		
 		// current date is in interval
 		return !LocalDate.now().isAfter(dd); // controllo del intevallo 
