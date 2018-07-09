@@ -1244,8 +1244,9 @@ public class EventoServiceImpl implements EventoService {
 				throw new Exception("error.codiceFiscale.firmatario"); 
 			 */
 			MapBindingResult err = new MapBindingResult(new HashMap<String, Object>(), "inviaRendicontoACogeaps");
-			fileValidator.validateIsSigned(evento.getReportPartecipantiXML(), err, "prefix");
+			fileValidator.validateIsSigned(evento.getReportPartecipantiXML(), err, "prefix", ".XML");
 			if(err.hasErrors()) {
+				// qui non puo arrivare formato sbagliato, allora si considera che solo firma puo dare errore
 				throw new Exception("error.file_non_firmato");
 			}
 

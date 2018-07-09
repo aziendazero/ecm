@@ -174,12 +174,15 @@ public class FileValidator {
 		}
 	}
 
-	public void validateIsSigned(Object target, Errors errors, String prefix) throws Exception{
+	// ERM015894 - dal invio a cogeaps serve possibilita controlare ".xml.p7m" allora si agiunge variante con extension
+	// default rimane ".pdf"
+	public void validateIsSigned(Object target, Errors errors, String prefix, String extension) throws Exception{
+		String ext = extension.toUpperCase();
 		LOGGER.info(Utils.getLogMessage("Validazione File is Signed"));
 		File file = (File) target;
 		if (file == null)
 			errors.rejectValue(prefix,"error.empty");
-		else if(!(file.getNomeFile().toUpperCase().endsWith(".PDF") || file.getNomeFile().toUpperCase().endsWith(".PDF.P7M") ||	file.getNomeFile().toUpperCase().endsWith(".PDF.P7C")))
+		else if(!(file.getNomeFile().toUpperCase().endsWith(ext) || file.getNomeFile().toUpperCase().endsWith(ext + ".P7M") ||	file.getNomeFile().toUpperCase().endsWith(ext + ".P7C")))
 			errors.rejectValue(prefix,"error.formatNonAccepted");
 		else{
 			file = fileService.getFile(file.getId());
@@ -188,5 +191,9 @@ public class FileValidator {
 			if(lastSignerCF == null || lastSignerCF.isEmpty())
 				errors.rejectValue(prefix,"error.file_non_firmato");
 		}
+	}
+	
+	public void validateIsSigned(Object target, Errors errors, String prefix) throws Exception{
+		validateIsSigned(target, errors, prefix, ".PDF");
 	}
 }
