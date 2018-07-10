@@ -40,12 +40,12 @@ public class EventoValidator {
 			eventoValidatorVersioneUno.validate(target, wrapper, errors, prefix);
 			break;
 		case DUE_DAL_2018:
-			eventoValidatorVersioneDue.validate(target, wrapper, errors, prefix);			
+			eventoValidatorVersioneDue.validate(target, wrapper, errors, prefix);
 			break;
 		default:
 			throw new Exception("Evento versione: " + eventoVersione + " non gestita");
 		}
-		
+
 //		validateCommon(evento, errors, prefix);
 //
 //		if (evento instanceof EventoRES)
@@ -64,8 +64,8 @@ public class EventoValidator {
 
 		if(sponsorFile == null || sponsorFile.isNew())
 			errMap.put("file_"+prefix+"_button", "error.empty");
-		else if(!fileValidator.validateFirmaCF(sponsorFile, providerId))
-			errMap.put("file_"+prefix+"_button", "error.codiceFiscale.firmatario");
+//		else if(!fileValidator.validateFirmaCF(sponsorFile, providerId))
+//			errMap.put("file_"+prefix+"_button", "error.codiceFiscale.firmatario");
 
 		return errMap;
 	}
@@ -79,7 +79,7 @@ public class EventoValidator {
 		if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.RESPONSABILE_SCIENTIFICO) {
 			//potrebbe non essere valido
 			if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
-				// vengono settati tutti a null perche' nella versione 1 non esistevano 
+				// vengono settati tutti a null perche' nella versione 1 non esistevano
 				validateFasiAzioniRuoliFSCInfo.setInvalidResponsabileScientifico(true);
 			} else {
 				if(!listRuoloFSCEnumPerResponsabiliScientifici.contains(ruoloOre.getRuolo()))
@@ -88,7 +88,7 @@ public class EventoValidator {
 		} else if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE_X) {
 			//potrebbe non essere valido
 			if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
-				// vengono settati tutti a null perche' nella versione 1 non esistevano 
+				// vengono settati tutti a null perche' nella versione 1 non esistevano
 				validateFasiAzioniRuoliFSCInfo.setInvalidCoordinatore(true);
 			} else {
 				if(!listRuoloFSCEnumPerCoordinatori.contains(ruoloOre.getRuolo()))
@@ -98,7 +98,7 @@ public class EventoValidator {
 			//potrebbe non essere valido
 			if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
 				//vengono accettati solo quelli validi per la tipologia corrente
-				if(tipologiaEvento != null && !tipologiaEvento.getRuoliCoinvolti().contains(ruoloOre.getRuolo())) { 
+				if(tipologiaEvento != null && !tipologiaEvento.getRuoliCoinvolti().contains(ruoloOre.getRuolo())) {
 					validateFasiAzioniRuoliFSCInfo.setInvalidEsperto(true);
 				}
 			} else {
