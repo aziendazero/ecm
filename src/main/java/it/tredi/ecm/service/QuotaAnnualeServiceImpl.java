@@ -75,7 +75,7 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 					//Provider tipo A -> anni successivi pagano in funzione degli eventi realizzati
 					int numeroEventi = 0;
 
-					Set<Evento> listaEventi = eventoService.getEventiRendicontatiByProviderIdAndAnnoRiferimento(providerId, annoRiferimento - 1);
+					Set<Evento> listaEventi = eventoService.getEventiRendicontatiByProviderIdAndAnnoRiferimento(providerId, annoRiferimento - 1, false);
 					if(listaEventi != null)
 						numeroEventi = listaEventi.size();
 

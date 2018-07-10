@@ -1235,13 +1235,13 @@ public class EventoServiceImpl implements EventoService {
 				throw new Exception("error.file_non_firmato");
 			}
 
-			
+
 			// ERM015894 - si valida solo firma
 			/*
 			 //il file deve essere firmato digitalmente e con un certificato appartenente al Legale Rappresentante o al suo Delegato
 			boolean validateCFFirma = fileValidator.validateFirmaCF(evento.getReportPartecipantiXML(), evento.getProvider().getId());
 			if(!validateCFFirma)
-				throw new Exception("error.codiceFiscale.firmatario"); 
+				throw new Exception("error.codiceFiscale.firmatario");
 			 */
 			MapBindingResult err = new MapBindingResult(new HashMap<String, Object>(), "inviaRendicontoACogeaps");
 			fileValidator.validateIsSigned(evento.getReportPartecipantiXML(), err, "prefix", ".XML");
@@ -2144,12 +2144,16 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAllByProviderIdAndDataFineBetween(providerId, leftDate, rightDate);
 	}
 
-	/* Eventi Rendicontati. Utilizzato per determinare la fascia di pagamento per la quota annuale */
+	/* Eventi Rendicontati. Utilizzato per determinare la fascia di pagamento per la quota annuale escluse le riedizioni */
 	@Override
-	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
+	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento, boolean withRiedizioni) {
 		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
 		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
-		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
+
+		if(withRiedizioni)
+			return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
+		else
+			return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStatoAndEventoPadreNull(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
 	}
 
 	/* Eventi Attuati nell'anno annoRiferimento dal provider */
@@ -2899,10 +2903,10 @@ public class EventoServiceImpl implements EventoService {
 		// prima tutti bozza
 		eventoRepository.findAllByProviderIdAndStato(acc.getProvider().getId(), EventoStatoEnum.BOZZA)
 			.stream().forEach((e)->delete(e.getId()));
-		
+
 		// tutti altri oltre data cut
 		LocalDate dateConGiorniAggiuntivi = ecmProperties.espandiDataPerGiorniChiusura(dataCut);
-		
+
 		for(Evento e : eventoRepository.findAllByProviderIdAndDataInizioAfter(acc.getProvider().getId(), dataCut)) {
 			if(e.getDataInizio().isAfter(dateConGiorniAggiuntivi)) {
 				// non bozza ma inizia oltre intervallo di N (7) giorni dopo la chiusura del accreditamento
@@ -2910,10 +2914,10 @@ public class EventoServiceImpl implements EventoService {
 				save(e);
 			}
 		}
-	}	
-	
-	
-	
-	
-	
+	}
+
+
+
+
+
 }

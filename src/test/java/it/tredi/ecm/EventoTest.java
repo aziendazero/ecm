@@ -45,7 +45,7 @@ import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
+@ActiveProfiles("demo")
 @WithUserDetails("test1")
 @Rollback(false)
 @Ignore
@@ -145,6 +145,19 @@ public class EventoTest {
 		Document xmlDoc = DocumentHelper.parseText(new String(reportEventoXml, Helper.XML_REPORT_ENCODING));
 		Element eventoEl = xmlDoc.getRootElement().element("evento");
 		XmlReportValidator.validateProfessioniAndDiscipline(eventoEl, codProfessioneSetFromEvento, codDisciplinaSetFromEvento);
+	}
+
+	@Test
+	@Ignore
+	public void testCountEventiRendicontati() throws Exception {
+		Long providerId = 195L;
+		int annoRiferimento = 2018;
+
+		Set<Evento> withRiedizioni = eventoService.getEventiRendicontatiByProviderIdAndAnnoRiferimento(providerId, annoRiferimento, true);
+		Set<Evento> noRiedizioni = eventoService.getEventiRendicontatiByProviderIdAndAnnoRiferimento(providerId, annoRiferimento, false);
+
+		System.out.println("Eventi Rendicontati con riedizioni: " + withRiedizioni.size());
+		System.out.println("Eventi Rendicontati senza riedizioni: " + noRiedizioni.size());
 	}
 
 }
