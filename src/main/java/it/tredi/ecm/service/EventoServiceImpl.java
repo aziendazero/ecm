@@ -2312,7 +2312,10 @@ public class EventoServiceImpl implements EventoService {
 
 			//PROFESSIONI SELEZIONATE
 			if(wrapper.getProfessioniSelezionate() != null && !wrapper.getProfessioniSelezionate().isEmpty()){
+				
+				
 				Set<Professione> professioniFromDiscipline = new HashSet<Professione>();
+				
 				if(wrapper.getDisciplineSelezionate() != null){
 					for(Disciplina d : wrapper.getDisciplineSelezionate())
 						professioniFromDiscipline.add(d.getProfessione());
@@ -2321,11 +2324,21 @@ public class EventoServiceImpl implements EventoService {
 				//vedo se ci sono professioni selezionate senza alcuna disciplina specificata
 				wrapper.getProfessioniSelezionate().removeAll(professioniFromDiscipline);
 				if(!wrapper.getProfessioniSelezionate().isEmpty()){
-					for(Disciplina d : wrapper.getDisciplineList()){
-						if(wrapper.getProfessioniSelezionate().contains(d.getProfessione()))
-							wrapper.getDisciplineSelezionate().add(d);
+					
+					if (wrapper.getDisciplineList()!=null){
+						for(Disciplina d : wrapper.getDisciplineList()){
+							if(wrapper.getProfessioniSelezionate().contains(d.getProfessione()))
+								wrapper.getDisciplineSelezionate().add(d);
+						}
 					}
+					
+					//select by professioni
+					query = Utils.QUERY_AND(query, "d.professione IN (:professioniSelezionate)");
+					params.put("professioniSelezionate", wrapper.getProfessioniSelezionate());	
+					
 				}
+				
+												
 			}
 
 			//DISCIPLINE SELEZIONATE
