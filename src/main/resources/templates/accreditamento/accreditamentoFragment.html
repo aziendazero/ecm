@@ -202,6 +202,7 @@
 											<div th:if="${editabile}" th:text="#{label.inserire_almeno_sede_legale}" class="alert alert-warning"></div>
 											<div th:if="${editabile and accreditamentoWrapper.accreditamento.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" th:text="#{message.sono_evidenziati_gli_elementi_aggiunti_e_rimossi_in_attesa_di_approvazione}" class="alert alert-info"></div>
 											<div th:if="${#lists.isEmpty(accreditamentoWrapper.sedi) and (accreditamentoWrapper.sedeLegale == null)}" th:text="#{label.nessuna_sede}"></div>
+											<div th:if="${valutabile and accreditamentoWrapper.fullSediNonModificateInIntegrazione}" th:text="#{label.fullSediNonModificateInIntegrazione}" class="alert alert-warning"></div>
 											<table th:unless="${#lists.isEmpty(accreditamentoWrapper.sedi) and (accreditamentoWrapper.sedeLegale == null)}" id="sedi-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${'datatable-responsive-sedi-'+mode}">
 												<thead>
 													<tr>
@@ -425,6 +426,11 @@
 											<div class="clearfix"></div>
 										</div>
 										<div class="x_content">
+											<div th:if="${valutabile and accreditamentoWrapper.fullResponsabileAmministrativoNonModificatoInIntegrazione}" th:text="#{label.fullResponsabileAmministrativoNonModificatoInIntegrazione}" class="alert alert-warning"></div>
+											<div th:if="${valutabile and accreditamentoWrapper.fullResponsabileSegreteriaNonModificatoInIntegrazione}" th:text="#{label.fullResponsabileSegreteriaNonModificatoInIntegrazione}" class="alert alert-warning"></div>
+											<div th:if="${valutabile and accreditamentoWrapper.fullResponsabileSistemaInformaticoNonModificatoInIntegrazione}" th:text="#{label.fullResponsabileSistemaInformaticoNonModificatoInIntegrazione}" class="alert alert-warning"></div>
+											<div th:if="${valutabile and accreditamentoWrapper.fullResponsabileQualitaNonModificatoInIntegrazione}" th:text="#{label.fullResponsabileQualitaNonModificatoInIntegrazione}" class="alert alert-warning"></div>
+
 											<table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${'datatable-responsive-accreditamento-'+mode}">
 												<thead>
 													<tr>
@@ -572,6 +578,7 @@
 											<div th:if="${editabile and accreditamentoWrapper.accreditamento.stato == T(it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum).INTEGRAZIONE}" th:text="#{message.sono_evidenziati_gli_elementi_aggiunti_e_rimossi_in_attesa_di_approvazione}" class="alert alert-info"></div>
 											<div th:if="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico) and (accreditamentoWrapper.coordinatoreComitatoScientifico == null)}" th:text="#{label.nessun_componente_comitato}"></div>
 											<table th:unless="${#lists.isEmpty(accreditamentoWrapper.componentiComitatoScientifico) and (accreditamentoWrapper.coordinatoreComitatoScientifico == null)}" id="comitato-table" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%" th:classappend="${'datatable-responsive-comitato-'+mode}">
+												<div th:if="${valutabile and accreditamentoWrapper.fullComponentiNonModificateInIntegrazione}" th:text="#{label.fullComponentiNonModificateInIntegrazione}" class="alert alert-warning"></div>
 												<thead>
 													<tr>
 														<th th:text="#{label.componenti_comitato_scientifico}">Componenti Comitato Scientifico</th>

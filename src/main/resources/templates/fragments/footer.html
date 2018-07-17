@@ -455,6 +455,46 @@
 						$element.iCheck('check');
 				});
 			}
+			
+			//no active other fields when [Sostituzione Intera Anagrafica] is checked 
+			function selezionaTuttiDisabled(){
+				//disabled checkboxs
+				$.each($('input[name=selected]') && $('input[id!=selected1]'), function(i, element){
+					$element = $(element);
+					$element.iCheck('disable');
+					$element.iCheck('unCheck');
+					    
+				});
+				
+				//disabled textareas
+				$("textarea").each(function(){
+					//FULL is the string included in id of textarea for [Sostituzione Intera Anagrafica] 
+					if (!($(this).attr("id").includes("FULL"))){
+						$(this).attr('disabled', 'disabled');
+						$(this).val('');
+					}
+				}); 
+			}
+			
+			//active other fields when [Sostituzione Intera Anagrafica] is unchecked 
+			function selezionaTuttiEnabled(){
+				//enabled checkboxes
+				$.each($('input[name=selected]') && $('input[id!=selected1]'), function(i, element){
+					$element = $(element);
+					$element.iCheck('enable');
+				});
+				
+				//enabled textareas
+				$("textarea").each(function(){
+					//FULL is the string included in id of textarea for [Sostituzione Intera Anagrafica]
+					if (!($(this).attr("id").includes("FULL"))){
+						$(this).attr("disabled", false);
+						
+					}
+				}); 
+			}
+			
+			
 
 			function confirmDeleteEventoModal(providerId,eventoId,tipo,codiceIdentificativo,stato){
 			    $('#deleteModal').modal();

@@ -38,7 +38,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccreditamentoWrapper {
-		
+
 	//dati domanda di accreditamento
 	private Accreditamento accreditamento;
 
@@ -255,6 +255,14 @@ public class AccreditamentoWrapper {
 	//info di destinazione della variazione dati
 	private AccreditamentoStatoEnum destinazioneVariazioneDati;
 
+	//flag per evidenziare mediante fieldIntegrazione fittizi che il provider non ha modificato i campi aperti
+	private boolean fullSediNonModificateInIntegrazione;
+	private boolean fullComponentiNonModificateInIntegrazione;
+	private boolean fullResponsabileSegreteriaNonModificatoInIntegrazione;
+	private boolean fullResponsabileAmministrativoNonModificatoInIntegrazione;
+	private boolean fullResponsabileSistemaInformaticoNonModificatoInIntegrazione;
+	private boolean fullResponsabileQualitaNonModificatoInIntegrazione;
+
 	public AccreditamentoWrapper(){};
 	public AccreditamentoWrapper(Accreditamento accreditamento){
 		setAllAccreditamento(accreditamento);
@@ -300,7 +308,7 @@ public class AccreditamentoWrapper {
 	}
 
 
-	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider, AccreditamentoWrapperModeEnum mode, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList){
+	public void checkStati(int numeroComponentiComitatoScientifico, int numeroProfessionistiSanitarie, Set<Professione> elencoProfessioniDeiComponenti, int professioniDeiComponentiAnaloghe,Set<String> filesDelProvider, AccreditamentoWrapperModeEnum mode, Set<FieldIntegrazioneAccreditamento> fieldIntegrazioneList, Set<FieldIntegrazioneAccreditamento> fittizi){
 		//TODO migliorare la logica per evitare di fare troppi if
 		// ad esempio inizializzare gli stati a true e poi ad ogni controllo se fallisce si mette il false sia allo stato che al valid
 		// cosi facendo valid è settato in automatico senza rifare tutti i controlli
@@ -365,6 +373,7 @@ public class AccreditamentoWrapper {
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__NOME) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__NOME).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__CODICEFISCALE) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__CODICEFISCALE).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__CELLULARE) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__CELLULARE).getEsito() != null) &&
+					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__TELEFONO) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__TELEFONO).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__EMAIL) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__EMAIL).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__PEC) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__PEC).getEsito() != null) &&
 					(mappa.containsKey(IdFieldEnum.LEGALE_RAPPRESENTANTE__ATTO_NOMINA) && mappa.get(IdFieldEnum.LEGALE_RAPPRESENTANTE__ATTO_NOMINA).getEsito() != null) &&
@@ -486,6 +495,26 @@ public class AccreditamentoWrapper {
 				else
 					sottoscriventeStato = false;
 			}
+
+			//flag per evidenziare mediante fieldIntegrazione fittizi che il provider non ha modificato i campi aperti
+			if(Utils.getField(fittizi, IdFieldEnum.SEDE__FULL) != null)
+				fullSediNonModificateInIntegrazione = true;
+
+			if(Utils.getField(fittizi, IdFieldEnum.COMPONENTE_COMITATO_SCIENTIFICO__FULL) != null)
+				fullComponentiNonModificateInIntegrazione = true;
+
+			if(Utils.getField(fittizi, IdFieldEnum.RESPONSABILE_AMMINISTRATIVO__FULL) != null)
+				fullResponsabileAmministrativoNonModificatoInIntegrazione = true;
+
+			if(Utils.getField(fittizi, IdFieldEnum.RESPONSABILE_SEGRETERIA__FULL) != null)
+				fullResponsabileSegreteriaNonModificatoInIntegrazione = true;
+
+			if(Utils.getField(fittizi, IdFieldEnum.RESPONSABILE_SISTEMA_INFORMATICO__FULL) != null)
+				fullResponsabileSistemaInformaticoNonModificatoInIntegrazione = true;
+
+			if(Utils.getField(fittizi, IdFieldEnum.RESPONSABILE_QUALITA__FULL) != null)
+				fullResponsabileQualitaNonModificatoInIntegrazione = true;
+
 
 			//check valutazione dei multistanza
 			for (Persona p : componentiComitatoScientifico) {

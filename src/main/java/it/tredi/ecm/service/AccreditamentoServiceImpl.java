@@ -1250,11 +1250,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 						}
 						//fieldIntegrazione.setId(id--);
 						fieldIntegrazione.setFittizio(true);
-						//dpranteda 18/06/2018: per i full devo creare il field non fittizio altrimenti spacca tutto il resto
-						//testare tutto il giro in accreditamento...perchè qualcosa non mi torna...xkè non lo facevamo prima??
+						//dpranteda 18/06/2018: per i full devo creare il field non fittizio altrimenti non riesco ad abilitare le valutazioni
 						//abilitando delle valutazioni con field non fittizi che non hanno valori...come si comporta l'applyintegrazione????
-						if(IdFieldEnum.isFull(fieldIntegrazione.getIdField()))
-							fieldIntegrazione.setFittizio(false);
+//						if(IdFieldEnum.isFull(fieldIntegrazione.getIdField()))
+//							fieldIntegrazione.setFittizio(false);
 						fieldIntegrazioneListFITTIZIA.add(fieldIntegrazione);
 					}
 				}

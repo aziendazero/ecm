@@ -205,7 +205,10 @@ public class FieldIntegrazioneAccreditamentoServiceImpl implements FieldIntegraz
 	@Override
 	public Set<FieldIntegrazioneAccreditamento> getAllFieldIntegrazioneFittiziForAccreditamentoByContainer(Long accreditamentoId, AccreditamentoStatoEnum stato, Long workFlowProcessInstanceId) {
 		LOGGER.debug(Utils.getLogMessage("Recupero Field Integrazione FITTIZI dal container relativo all'accreditamento " + accreditamentoId + " in stato " + stato));
-		return fieldIntegrazioneAccreditamentoRepository.findAllFittiziByContainer(accreditamentoId, stato.name(), workFlowProcessInstanceId);
+		Set<FieldIntegrazioneAccreditamento> fittizi = fieldIntegrazioneAccreditamentoRepository.findAllFittiziByContainer(accreditamentoId, stato.name(), workFlowProcessInstanceId);
+		if(fittizi == null)
+			fittizi = new HashSet<FieldIntegrazioneAccreditamento>();
+		return fittizi;
 	}
 
 	@Override

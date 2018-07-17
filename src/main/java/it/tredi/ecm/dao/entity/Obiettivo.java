@@ -46,4 +46,8 @@ public class Obiettivo extends BaseEntityDefaultId{
 		}
 		return false;
 	}
+	
+	public int getIntCogeaps() {
+		return Integer.parseInt(codiceCogeaps);
+	}
 }
