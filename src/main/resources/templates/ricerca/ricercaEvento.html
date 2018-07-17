@@ -275,7 +275,9 @@
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="evento_professioni-select">
 										<select id="professioni" class="selectpicker multi"
-											multiple="multiple" data-width="100%"
+											multiple="multiple"
+											th:field="${ricercaEventoWrapper.professioniSelezionate}"
+											data-width="100%"
 											data-style="btn-primary" data-actions-box="true"
 											data-size="10" title="Seleziona una professione..."
 											onchange="abilitaDiscipline(this)"

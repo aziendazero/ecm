@@ -28,6 +28,7 @@ import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AccreditamentoDiff;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneHistoryContainer;
@@ -113,6 +114,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private AuditReportProviderService auditReportProviderService;
 	@Autowired private AccountService accountService;
+	
+	@Autowired private EventoService eventoService;
 
 
 	@Override
@@ -1787,11 +1790,13 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return false;
 	}
 
+	@Transactional
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception  {
 		changeState(accreditamentoId, stato, null);
 	}
 
+	@Transactional
 	@Override
 	public void changeState(Long accreditamentoId, AccreditamentoStatoEnum stato, Boolean eseguitoDaUtente) throws Exception  {
 		Accreditamento accreditamento = accreditamentoRepository.findOne(accreditamentoId);
@@ -1929,6 +1934,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				fileAllegatiIds.add(decreto.getId());
 				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, lettera.getId(), fileAllegatiIds);
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
+				
+				// ERM014776
+				chiudiAccreditamentoEPulisciEventi(accreditamento);
+				
 			} else if(stato == AccreditamentoStatoEnum.DINIEGO) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
@@ -2055,6 +2064,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			if(stato == AccreditamentoStatoEnum.CANCELLATO) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
+				
+				// ERM014776
+				chiudiAccreditamentoEPulisciEventi(accreditamento);
 			}
 			//ATTENZIONE in setStato viene gestita anche la durata del procedimento
 			//20180403 modificato per gestire la dataScadenza
@@ -2963,5 +2975,33 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		return accreditamentoRepository.countAllDomandeTipoStandart(currentUser.getAccount().getId());
 	}
 
+	// ERM014776
+	@Override
+	public void chiudiAccreditamentoEPulisciEventi(Accreditamento acc) throws Exception {
+		// Blocco del provider
+		Provider provider = acc.getProvider();
+		protocolloService.bloccaProvider(provider); 
+		providerService.save(provider);		
+		
+		// accreditamento deve essere salvato da chiamante
+		acc.setDataChiusuraAcc(LocalDate.now());
+		
+		// ellimina tutti eventi in bozza
+		eventoService.eliminaEventiPerChiusuraAccreditamento(acc, LocalDate.now()); 
+	}
+
+	// ERM014776
+	@Override
+	public boolean canProviderWorkWithEvent(Long providerId, Evento evt) {
+		LocalDate dataChiusuraAcc = getLastAccreditamentoForProviderId(providerId).getDataChiusuraAcc();
+		if(dataChiusuraAcc == null) return true; // no check needed
+		LocalDate dd = ecmProperties.espandiDataPerGiorniChiusura(dataChiusuraAcc);
+		
+		// se evento e precedente data chiusura e editabile
+		if(evt.getDataInizio() != null && evt.getDataInizio().isBefore(dd)) return true; 
+		
+		// current date is in interval
+		return !LocalDate.now().isAfter(dd); // controllo del intevallo 
+	}
 
 }

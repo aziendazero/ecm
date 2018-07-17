@@ -7,6 +7,7 @@ import java.util.Set;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Seduta;
 import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
@@ -155,4 +156,10 @@ public interface AccreditamentoService{
 	
 	// ERM014775
 	public void replaceValutazioneSulCampoFiles(Long accreditamentoId, Long pdfId, Long a1Id, Long a2Id, Long a3Id);
+	
+	// ERM014776
+	public void chiudiAccreditamentoEPulisciEventi(Accreditamento acc)  throws Exception;
+	
+	// ERM014776
+	public boolean canProviderWorkWithEvent(Long providerId, Evento e);
 }

@@ -5,7 +5,7 @@
 
 	<groupId>it.tredi</groupId>
 	<artifactId>ecm</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>2.0.14-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>it.tredi.ecm</name>
@@ -301,36 +301,6 @@
 				</resources>
 			</build>
 		</profile>
-		
-		<profile>
-			<id>alma</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<spring.profile>alma</spring.profile>
-			</properties>
-			<build>
-				<resources>
-					<resource>
-						<directory>src/main/resources</directory>
-						<excludes>
-							<exclude>application*.properties</exclude>
-						</excludes>
-						<filtering>false</filtering>
-					</resource>
-					<resource>
-						<directory>src/main/resources</directory>
-						<includes>
-							<include>application*.properties</include>
-						</includes>
-						<filtering>true</filtering>
-					</resource>
-				</resources>
-			</build>
-		</profile>
-		
-		
 		<profile>
 			<id>dev</id>
 			<activation>
@@ -358,14 +328,13 @@
 				</resources>
 			</build>
 		</profile>
-		
 		<profile>
 			<id>alma</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<spring.profile>alma</spring.profile>
+				<spring.profile>dev</spring.profile>
 			</properties>
 			<build>
 				<resources>
@@ -386,7 +355,6 @@
 				</resources>
 			</build>
 		</profile>
-		
 		<profile>
 			<id>Ameljo</id>
 			<activation>

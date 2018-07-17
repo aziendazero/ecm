@@ -740,7 +740,7 @@
   									<li><a th:unless="${accreditamentoWrapper.accreditamento.isStandard()}" class="ajaxCallShowAllPiano" th:text="#{label.mostra_riepilogo_piano_formativo}" data-toggle="modal" data-target=".modal-showPianoAll"></a></li>
   									<li><a th:if="${#authentication.principal.account.isSegreteria()}" th:text="#{label.mostra_registro_operazioni}" th:href="@{|/audit/entity/AccreditamentoAudit/entityId/${accreditamentoWrapper.accreditamento.id}|}"></a></li>
 
-									<li> <a th:if="${#authentication.principal.account.isSegreteria() and accreditamentoWrapper.canVariazioneDati and
+									<li> <a th:if="${#authentication.principal.account.isSegreteria() and
 											(
 												accreditamentoWrapper.accreditamento.getStatoVariazioneDati() != null and
 												(

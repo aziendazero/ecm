@@ -403,8 +403,19 @@ public class Evento extends BaseEntity {
 		}
 	}
 
+	/*
+	 * ERM014776
+	 * 	1)  se accreditamento e chiuso si puo modificare 
+	 * 		solo se data corrente non e maggiore di data chiusura 
+	 * 		del acc + un intervallo dei giorni
+	 */
 	public boolean canEdit(){
-		if(provider.isBloccato() && !Utils.getAuthenticatedUser().isSegreteria())
+		return canEdit(false);
+	}
+	public boolean canEdit(boolean skipProviderBlockato){
+		
+		// se skipProviderBlockato e vero salta primo test
+		if(!skipProviderBlockato && provider.isBloccato() && !Utils.getAuthenticatedUser().isSegreteria())
 			return false;
 		if(stato == EventoStatoEnum.BOZZA)
 			return true;

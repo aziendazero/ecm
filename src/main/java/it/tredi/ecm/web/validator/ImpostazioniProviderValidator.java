@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.enumlist.MotivazioneDecadenzaEnum;
+import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
@@ -19,6 +21,10 @@ public class ImpostazioniProviderValidator {
 
 	@Autowired
 	private EcmProperties ecmProperties;
+	@Autowired 
+	private FileValidator fileValidator;
+	@Autowired
+	private FileService fileService;
 
 	public void validate(Object target, Errors errors, String prefix) throws Exception {
 		ImpostazioniProviderWrapper impostazioni = (ImpostazioniProviderWrapper) target;
@@ -80,6 +86,17 @@ public class ImpostazioniProviderValidator {
 			errors.rejectValue(prefix + "motivazioneDecadenza", "error.empty");
 		if (impostazioni.getAllegatoDecadenza() == null || impostazioni.getAllegatoDecadenza().isNew())
 			errors.rejectValue(prefix + "allegatoDecadenza", "error.empty");
+		
+		// ERM015896 - aggiunto controllo della firma
+		File allegatoDecadenza = fileService.getFile(impostazioni.getAllegatoDecadenza().getId());
+		if (allegatoDecadenza == null) {
+			errors.rejectValue(prefix + "allegatoDecadenza", "error.empty");
+		}
+		try {
+			fileValidator.validateIsSigned(allegatoDecadenza, errors, prefix + "allegatoDecadenza");
+		} catch (Exception e) {
+			errors.rejectValue(prefix + "allegatoDecadenza", "error.file_non_firmato");
+		}
 
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}

@@ -36,6 +36,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.MapBindingResult;
 
 import it.tredi.ecm.cogeaps.CogeapsCaricaResponse;
 import it.tredi.ecm.cogeaps.CogeapsStatoElaborazioneResponse;
@@ -1248,10 +1249,20 @@ public class EventoServiceImpl implements EventoService {
 				throw new Exception("error.file_non_firmato");
 			}
 
-			//il file deve essere firmato digitalmente e con un certificato appartenente al Legale Rappresentante o al suo Delegato
+
+			// ERM015894 - si valida solo firma
+			/*
+			 //il file deve essere firmato digitalmente e con un certificato appartenente al Legale Rappresentante o al suo Delegato
 			boolean validateCFFirma = fileValidator.validateFirmaCF(evento.getReportPartecipantiXML(), evento.getProvider().getId());
 			if(!validateCFFirma)
 				throw new Exception("error.codiceFiscale.firmatario");
+			 */
+			MapBindingResult err = new MapBindingResult(new HashMap<String, Object>(), "inviaRendicontoACogeaps");
+			fileValidator.validateIsSigned(evento.getReportPartecipantiXML(), err, "prefix", ".XML");
+			if(err.hasErrors()) {
+				// qui non puo arrivare formato sbagliato, allora si considera che solo firma puo dare errore
+				throw new Exception("error.file_non_firmato");
+			}
 
 			CogeapsCaricaResponse cogeapsCaricaResponse = cogeapsWsRestClient.carica(reportFileName, evento.getReportPartecipantiXML().getData(), evento.getProvider().getCodiceCogeaps());
 
@@ -2147,12 +2158,16 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAllByProviderIdAndDataFineBetween(providerId, leftDate, rightDate);
 	}
 
-	/* Eventi Rendicontati. Utilizzato per determinare la fascia di pagamento per la quota annuale */
+	/* Eventi Rendicontati. Utilizzato per determinare la fascia di pagamento per la quota annuale escluse le riedizioni */
 	@Override
-	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento) {
+	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento, boolean withRiedizioni) {
 		LocalDate leftDate = LocalDate.of(annoRiferimento, 1, 1);
 		LocalDate rightDate = LocalDate.of(annoRiferimento, 12, 31);
-		return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
+
+		if(withRiedizioni)
+			return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStato(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
+		else
+			return eventoRepository.findAllByProviderIdAndDataFineBetweenAndStatoAndEventoPadreNull(providerId, leftDate, rightDate, EventoStatoEnum.RAPPORTATO);
 	}
 
 	/* Eventi Attuati nell'anno annoRiferimento dal provider */
@@ -2311,7 +2326,10 @@ public class EventoServiceImpl implements EventoService {
 
 			//PROFESSIONI SELEZIONATE
 			if(wrapper.getProfessioniSelezionate() != null && !wrapper.getProfessioniSelezionate().isEmpty()){
+				
+				
 				Set<Professione> professioniFromDiscipline = new HashSet<Professione>();
+				
 				if(wrapper.getDisciplineSelezionate() != null){
 					for(Disciplina d : wrapper.getDisciplineSelezionate())
 						professioniFromDiscipline.add(d.getProfessione());
@@ -2320,11 +2338,21 @@ public class EventoServiceImpl implements EventoService {
 				//vedo se ci sono professioni selezionate senza alcuna disciplina specificata
 				wrapper.getProfessioniSelezionate().removeAll(professioniFromDiscipline);
 				if(!wrapper.getProfessioniSelezionate().isEmpty()){
-					for(Disciplina d : wrapper.getDisciplineList()){
-						if(wrapper.getProfessioniSelezionate().contains(d.getProfessione()))
-							wrapper.getDisciplineSelezionate().add(d);
+					
+					if (wrapper.getDisciplineList()!=null){
+						for(Disciplina d : wrapper.getDisciplineList()){
+							if(wrapper.getProfessioniSelezionate().contains(d.getProfessione()))
+								wrapper.getDisciplineSelezionate().add(d);
+						}
 					}
+					
+					//select by professioni
+					query = Utils.QUERY_AND(query, "d.professione IN (:professioniSelezionate)");
+					params.put("professioniSelezionate", wrapper.getProfessioniSelezionate());	
+					
 				}
+				
+												
 			}
 
 			//DISCIPLINE SELEZIONATE
@@ -2895,4 +2923,28 @@ public class EventoServiceImpl implements EventoService {
 			}
 
 	}
+
+	// ERM014776
+	@Override
+	public void eliminaEventiPerChiusuraAccreditamento(Accreditamento acc, LocalDate dataCut) throws Exception {
+		// prima tutti bozza
+		eventoRepository.findAllByProviderIdAndStato(acc.getProvider().getId(), EventoStatoEnum.BOZZA)
+			.stream().forEach((e)->delete(e.getId()));
+
+		// tutti altri oltre data cut
+		LocalDate dateConGiorniAggiuntivi = ecmProperties.espandiDataPerGiorniChiusura(dataCut);
+
+		for(Evento e : eventoRepository.findAllByProviderIdAndDataInizioAfter(acc.getProvider().getId(), dataCut)) {
+			if(e.getDataInizio().isAfter(dateConGiorniAggiuntivi)) {
+				// non bozza ma inizia oltre intervallo di N (7) giorni dopo la chiusura del accreditamento
+				e.setStato(EventoStatoEnum.CANCELLATO);
+				save(e);
+			}
+		}
+	}
+
+
+
+
+
 }

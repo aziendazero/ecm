@@ -1,11 +1,13 @@
 package it.tredi.ecm.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.File;
@@ -52,7 +54,7 @@ public interface EventoService {
 	public int getLastEdizioneEventoByPrefix(String prefix);
 	public Evento getEventoForRiedizione(Long eventoId);
 	public Set<Evento> getEventiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
-	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
+	public Set<Evento> getEventiRendicontatiByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento, boolean withRiedizioni);
 	public Set<Evento> getEventiForRelazioneAnnualeByProviderIdAndAnnoRiferimento(Long providerId, Integer annoRiferimento);
 
 	// detacha e clona l'Evento Padre da rieditare
@@ -105,6 +107,9 @@ public interface EventoService {
 	public 	List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(EventoFSC evento);
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti(EventoFSC evento);
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento);
-	
+
 	public void archiveEventoInPrimaInfanziaOrMedNonConv(List<Long> ids);
+
+	// ERM014776
+	public void eliminaEventiPerChiusuraAccreditamento(Accreditamento acc, LocalDate dataCut) throws Exception;
 }

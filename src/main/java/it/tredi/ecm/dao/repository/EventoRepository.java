@@ -27,7 +27,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public Page<Evento> findAllByProviderId(Long providerId, Pageable pageable);
 	public Page<Evento> findAllByProviderIdAndDataUltimaModificaAfter(Long providerId, LocalDateTime ultimaModifica, Pageable pageable);
 	public Page<Evento> findAllByDataUltimaModificaAfter(LocalDateTime ultimaModifica, Pageable pageable);
-	
+
 	public Set<Evento> findAllByProviderIdOrderByDataUltimaModificaDesc(Long providerId);
 
 	public Set<Evento> findAllByProviderIdAndStatoNotAndDataInizioBefore(Long providerId, EventoStatoEnum stato, LocalDate now);
@@ -37,6 +37,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
 	public Set<Evento> findAllByProviderIdAndDataFineBetween(Long providerId, LocalDate start, LocalDate end);
 	public Set<Evento> findAllByProviderIdAndDataFineBetweenAndStato(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum stato);
+	public Set<Evento> findAllByProviderIdAndDataFineBetweenAndStatoAndEventoPadreNull(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum stato);
 	public Set<Evento> findAllByProviderIdAndDataFineBetweenAndStatoNot(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum stato);
 
 	@Query("SELECT e FROM Evento e WHERE e.id = :id")
@@ -62,10 +63,10 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
 	//MEV RIEDIZIONI 04/2017
 	public Set<Evento> findAllByProviderIdAndStatoNotAndStatoNotAndProceduraFormativaInAndDataFineAfter(Long providerId, EventoStatoEnum bozza, EventoStatoEnum cancellato, Set<ProceduraFormativa> procedureFormative, LocalDate fineAnnoScorso);
-	
+
 	@Query("Select e FROM Evento e WHERE e.archiviatoMedicinali <> true AND (e.contenutiEvento = :medicineNonConvenzionale OR e.obiettivoNazionale = :nonConvenzionale)")
 	public Set<Evento> findAllByArchiviatoMedicinaliFalseAndContenutiEventoOrObiettivoNazionale(@Param("medicineNonConvenzionale") ContenutiEventoEnum medicineNonConvenzionale, @Param("nonConvenzionale") Obiettivo nonConvenzionale);
-	
+
 	@Query("Select COUNT (e) FROM Evento e WHERE e.archiviatoMedicinali <> true AND (e.contenutiEvento = :medicineNonConvenzionale OR e.obiettivoNazionale = :nonConvenzionale)")
 	public int countAllByArchiviatoMedicinaliFalseAndContenutiEventoOrObiettivoNazionale(@Param("medicineNonConvenzionale") ContenutiEventoEnum medicineNonConvenzionale, @Param("nonConvenzionale") Obiettivo nonConvenzionale);
 
@@ -76,4 +77,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	public int countRiedizioniOfEventoId(@Param("id") Long id);
 	@Query("SELECT e FROM Evento e WHERE e.eventoPadre.id = :id AND e.stato <> 'CANCELLATO'")
 	public Set<Evento> getRiedizioniOfEventoId(@Param("id") Long id);
+
+	// ERM014776
+	public Set<Evento> findAllByProviderIdAndDataInizioAfter(Long providerId, LocalDate dataCut);
 }
