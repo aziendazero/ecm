@@ -718,7 +718,7 @@ function loadScript(url, callback){
 					var ids = [];
 					var $rows = $(".datatable-responsive-eventi-provider").DataTable().rows('.selected').data();
 					for(var i = 0; i < $rows.length; i++) {
-						var id = Number.parseInt((($rows[i][0]).match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [] ).map(function (v) {return +v;}).shift());
+						var id = parseInt((($rows[i][0]).match(/\d+\.\d+|\d+\b|\d+(?=\w)/g) || [] ).map(function (v) {return +v;}).shift());
 						ids.push(id);
 					}
 
