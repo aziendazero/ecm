@@ -195,7 +195,7 @@
 			           			<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" th:if="${enableField}">
 			                    	<div class="row">
 				                    	<div class="col-xs-1">
-				                    		<input class="flat" type="checkbox" th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica',personaWrapper.ruolo)}" />
+				                    		<input  class="flat all" type="checkbox"  th:field="${richiestaIntegrazioneWrapper.selected}" th:value="${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica',personaWrapper.ruolo)}" />
 				                    	</div>
 										<div class="col-xs-11">
 											<textarea th:field="${richiestaIntegrazioneWrapper.mappaNoteFieldEditabileAccreditamento[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica',personaWrapper.ruolo)}__]}"></textarea>
@@ -249,12 +249,12 @@
 		                    	</div>
 		                    	<div class="col-lg-1 col-md-2 col-sm-2 col-xs-3">
 									<div class="radio">
-										<label th:class="${!canValutaDomanda} or ${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__]?.enabled == false} ? 'label-disabled'">
+									 	<label th:class="${!canValutaDomanda} or ${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__]?.enabled == false} ? 'label-disabled'">
 											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or ${isFULL} or
 											${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__]?.enabled == false}" />
 											<span th:text="#{label.sì}">Sì</span>
 										</label>
-									</div>
+									</div> 
 									<div class="radio">
 										<label th:class="${!canValutaDomanda or !personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__].enabled} ? 'label-disabled'">
 											<input type="radio" class="flat" th:field="${personaWrapper.mappa[__${T(it.tredi.ecm.dao.enumlist.IdFieldEnum).getIdField('persona.anagrafica.cognome',personaWrapper.ruolo)}__].esito}" th:value="false" th:disabled="${!canValutaDomanda or isFULL or
@@ -793,6 +793,31 @@
 					else if($(".full:checked").val() == 'false')
 						selezionaTuttiNo();
 				}
+				
+				//controll checkbox for disables and enabled when [Sostituzione Intera Anagrafica] is checked or unchecked
+				$(document).ready(function() {
+					$(".all").on("ifChecked", function() {
+						selezionaTuttiDisabled();
+												
+					});
+
+				}); 
+				
+				$(document).ready(function() {
+					$(".all").on("ifUnchecked", function() {
+						selezionaTuttiEnabled();
+					});
+
+				}); 
+				
+				
+				
+				
+				
+
+				
+				
+				
 			</script>
 		</th:block>
 	</th:block>

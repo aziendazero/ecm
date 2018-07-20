@@ -276,7 +276,7 @@ function loadScript(url, callback){
 							<table id="eventiListTable" th:if="${(eventoList != null and !#lists.isEmpty(eventoList)) and (showAllList == null or showAllList == false) }" class="datatable-responsive-eventi-provider table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
 								<thead style = "word-break: keep-all !important;">
 									<tr>
-										<th class="text-full-length" th:if="${search != null and (archiviaEvento != null and archiviaEvento == true)}"><input name="select_all" value="1" id="select-all" type="checkbox"/> Archive</th>
+										<th class="text-full-length" th:if="${search != null and (archiviaEvento != null and archiviaEvento == true)}"><input name="select_all" value="1" id="select-all" type="checkbox"/> Archivia</th>
 										<th th:text="#{label.codice_identificativo}">label.codice_identificativo</th>
 										<th th:if="${#authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.denominazione_legale}">label.denominazione_legale</th>
 										<th th:text="#{label.edizione_short}">label.edizione_short</th>
@@ -291,7 +291,7 @@ function loadScript(url, callback){
 										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 										<th th:text="#{label.flag_crediti}">label.flag_crediti</th>
 										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
-										<th th:text="#{label.versione}">Versione</th>
+										<th th:text="#{label.versione}">label.versione</th>
 										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 										<th></th>
 									</tr>
@@ -376,7 +376,7 @@ function loadScript(url, callback){
 										<th th:text="#{label.data_scadenza_rendiconto}">label.data_scadenza_pagamento</th>
 										<th th:text="#{label.flag_crediti}">label.flag_crediti</th>
 										<th th:text="#{label.flag_crediti_confermati}">label.flag_crediti_confermati</th>
-										<th th:text="#{label.versione}">Versione</th>
+										<th th:text="#{label.versione}"></th>
 										<th th:text="#{label.azioni}" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">label.azioni</th>
 										<th></th>
 								</thead>
@@ -406,12 +406,14 @@ function loadScript(url, callback){
 				}
 
 				if([[${#authentication.principal.isSegreteria()}]]) {
+					
 					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13,14]
 					confermati = 13
 					azioni = 15
 					titolo = 4
 					date = [6,7,11]
 					url = [[${providerId == null}]] ? [[@{|/evento/eventoListPaginated|}]] : [[@{|/provider/${providerId}/evento/eventoListPaginated|}]];
+					
 
 					dataColumns = [
 				            { "data": "codiceIdent", "sWidth" : "10%"},
@@ -434,6 +436,7 @@ function loadScript(url, callback){
 			        		]
 				}
 				else if([[${#authentication.principal.isProvider()}]]){
+					
 					colonne = [0,1,2,4,5,6,7,8,9,10,11,12,13]
 					confermati = 12
 					date = [5,6,10]
@@ -460,15 +463,19 @@ function loadScript(url, callback){
 			            ]
 				}
 				else {
+					
 					colonne = [0,1,2,4,5,6,7,8,9,10,11,12]
 					confermati = 12
 					date = [5,6,10]
+					
 				}
 				var days;
 				var months;
+				
+				
 
 				$(document).ready(function() {
-
+					
 			        $.fn.dataTable.moment('DD/MM/YYYY');
 			        if(![[${showAllList}]]){
 						 $(".datatable-responsive-eventi-provider").DataTable({
@@ -559,6 +566,7 @@ function loadScript(url, callback){
 						}
 			        }
 			        if([[${showAllList}]]){
+			        	
 						$(".datatable-responsive-eventi-provider").DataTable({
 							"bFilter" : false,
 							"bInfo" : false,
@@ -572,7 +580,7 @@ function loadScript(url, callback){
 						      "columnDefs": [
 				                     {"targets": colonne, "width": "1px"},
 				                     {"targets": confermati, "sClass": "center"},
-			                     {"targets": titolo, "sClass": "wordwrap"},
+			                    {"targets": titolo, "sClass": "wordwrap"},
 				                     {"targets": azioni, "sClass": "text-full-length"},
 			                     { "bSortable": false, "targets": [ -1 ], "sClass": "control", },
 
@@ -593,13 +601,16 @@ function loadScript(url, callback){
 		               		}
 						});
 
-						$(".datatable-responsive-eventi-provider").DataTable().on( 'responsive-display', function ( e, datatable, row, showHide, update ) {
+						 $(".datatable-responsive-eventi-provider").DataTable().on( 'responsive-display', function ( e, datatable, row, showHide, update ) {
 							    	$(".linkButton").each(function(index){
 				                		var tempLink = [[@{/}]] + $(this).attr('href');
 				                	   		$(this).attr('href', tempLink);
 				                	});
 						} );
-			        }
+			        } 
+			        
+						
+			        
 				 $(".datatable-responsive-eventi-attuazione").DataTable({
 						"bInfo" : false,
 						"bPaginate" : false,

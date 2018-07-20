@@ -903,6 +903,20 @@ public class EventoServiceImpl implements EventoService {
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "confermatiCrediti"));
 			break;
+			
+		case 13:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "versione"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "versione"));
+			break;
+			
+		case 14:
+			if(order.equals("asc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "versione"));
+			else if(order.equals("desc"))
+				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "versione"));
+			break;
 
 		default:
 			request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "dataUltimaModifica"));
@@ -2312,7 +2326,10 @@ public class EventoServiceImpl implements EventoService {
 
 			//PROFESSIONI SELEZIONATE
 			if(wrapper.getProfessioniSelezionate() != null && !wrapper.getProfessioniSelezionate().isEmpty()){
+				
+				
 				Set<Professione> professioniFromDiscipline = new HashSet<Professione>();
+				
 				if(wrapper.getDisciplineSelezionate() != null){
 					for(Disciplina d : wrapper.getDisciplineSelezionate())
 						professioniFromDiscipline.add(d.getProfessione());
@@ -2321,11 +2338,21 @@ public class EventoServiceImpl implements EventoService {
 				//vedo se ci sono professioni selezionate senza alcuna disciplina specificata
 				wrapper.getProfessioniSelezionate().removeAll(professioniFromDiscipline);
 				if(!wrapper.getProfessioniSelezionate().isEmpty()){
-					for(Disciplina d : wrapper.getDisciplineList()){
-						if(wrapper.getProfessioniSelezionate().contains(d.getProfessione()))
-							wrapper.getDisciplineSelezionate().add(d);
+					
+					if (wrapper.getDisciplineList()!=null){
+						for(Disciplina d : wrapper.getDisciplineList()){
+							if(wrapper.getProfessioniSelezionate().contains(d.getProfessione()))
+								wrapper.getDisciplineSelezionate().add(d);
+						}
 					}
+					
+					//select by professioni
+					query = Utils.QUERY_AND(query, "d.professione IN (:professioniSelezionate)");
+					params.put("professioniSelezionate", wrapper.getProfessioniSelezionate());	
+					
 				}
+				
+												
 			}
 
 			//DISCIPLINE SELEZIONATE

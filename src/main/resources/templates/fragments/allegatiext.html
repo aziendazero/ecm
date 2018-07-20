@@ -89,6 +89,7 @@
 							<input type="radio" class="flat" th:field="${__${wrapper}__.mappa[__${idField}__].esito}" th:value="true" th:disabled="${!canValutaDomanda} or ${__${wrapper}__.mappa[__${idField}__]?.enabled == false} or ${isFULL}"  />
 							<span th:text="#{label.sì}">Sì</span>
 						</label>
+						
 					</div>
 					<div class="radio">
 						<label th:class="${!canValutaDomanda or !__${wrapper}__.mappa[__${idField}__].enabled} ? 'label-disabled'">
