@@ -12,4 +12,5 @@ public interface ObiettivoRepository extends CrudRepository<Obiettivo, Long> {
 	Set<Obiettivo> findAllByCodiceCogeapsAndNazionale(String codiceCogeaps, boolean nazionale);
 	Set<Obiettivo> findAllByNazionaleAndVersioneNotOrderByCodiceCogeapsAsc(boolean nazionale, int Versione);
 	Set<Obiettivo> findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(boolean nazionale, int Versione);
+	Obiettivo findOneByCodiceCogeapsAndNazionaleAndVersione(String codiceCogeaps, boolean nazionale,int Versione);
 }

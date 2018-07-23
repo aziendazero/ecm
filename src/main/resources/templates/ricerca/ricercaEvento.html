@@ -61,6 +61,31 @@
 								</th:block>
 
 								<h2 th:text="#{label.info_evento}"></h2>
+								
+								<!-- VERSIONE -->
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11">
+										<h2 th:text="#{label.versione_evento}"></h2>
+									</label>
+								</div>
+
+								<div class="item form-group">
+									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="versione"></label>
+									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="versione">
+										<div class="checkbox">
+											<label>
+												<input type="radio" class="flat versione" th:field="${ricercaEventoWrapper.versione}" th:value="1"/>
+												<span th:text="#{label.uno}"></span>
+											</label>
+											<label>
+												<input type="radio" class="flat versione" th:field="${ricercaEventoWrapper.versione}" th:value="2"/>
+												<span th:text="#{label.due}"></span>
+											</label>
+										</div>
+									</div>
+								</div>
+								
+								<div class="divider-dashed"></div>
 
 								<!-- TIPO EVENTO -->
 								<div class="item form-group">
@@ -152,6 +177,8 @@
 										</div>
 									</div>
 								</div>
+								
+								
 
 								<!-- TIPOLOGIA DELL'EVENTO FAD-->
 								<div class="item form-group select-tipologia-FAD" style="display: none">
@@ -587,31 +614,6 @@
 											<label>
 												<input type="radio" class="flat altreFormeFinanziamento" th:field="${ricercaEventoWrapper.altreFormeFinanziamento}" th:value="${false}"/>
 												<span th:text="#{label.no}"></span>
-											</label>
-										</div>
-									</div>
-								</div>
-
-								<div class="divider-dashed"></div>
-
-								<!-- VERSIONE -->
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11">
-										<h2 th:text="#{label.versione_evento}"></h2>
-									</label>
-								</div>
-
-								<div class="item form-group">
-									<label class="control-label col-md-3 col-sm-3 col-xs-11" for="versione"></label>
-									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="versione">
-										<div class="checkbox">
-											<label>
-												<input type="radio" class="flat versione" th:field="${ricercaEventoWrapper.versione}" th:value="1"/>
-												<span th:text="#{label.uno}"></span>
-											</label>
-											<label>
-												<input type="radio" class="flat versione" th:field="${ricercaEventoWrapper.versione}" th:value="2"/>
-												<span th:text="#{label.due}"></span>
 											</label>
 										</div>
 									</div>
