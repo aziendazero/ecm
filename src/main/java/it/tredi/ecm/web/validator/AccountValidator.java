@@ -99,5 +99,16 @@ public class AccountValidator{
 				}
 			}
 		}
+		
+		//Presenza dello cognome
+		if(account.getCognome() == null || account.getCognome().isEmpty()){
+			errors.rejectValue(prefix + "cognome", "error.empty");
+		}
+		
+		//Presenza dello nome
+		if(account.getNome() == null || account.getNome().isEmpty()){
+			errors.rejectValue(prefix + "nome", "error.empty");
+		}
+		
 	}
 }
