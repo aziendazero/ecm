@@ -1535,5 +1535,12 @@ table.dataTable tbody tr.selected {
   border-top: 7px solid #dddd52 !important;
 }
 
+.logo-provider {
+	color: #d9534f;
+	
+	
+}
+
+
 /* ERM015130 */
 .margin-top-22 { margin-top: 22px; }

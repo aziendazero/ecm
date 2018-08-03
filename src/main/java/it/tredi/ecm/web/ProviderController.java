@@ -33,17 +33,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
+import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
+import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
@@ -55,6 +60,7 @@ import it.tredi.ecm.service.RelazioneAnnualeService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
+import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
@@ -75,6 +81,8 @@ public class ProviderController {
 	private final String VALIDATE = "provider/providerValidate";
 	private final String ENABLEFIELD = "provider/providerEnableField";
 	private final String RICERCA = "ricerca/ricercaProvider";
+	
+	@Autowired private EventoService eventoService;
 
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
@@ -637,6 +645,52 @@ public class ProviderController {
 			return "redirect:/provider/list";
 		}
 	}
+	
+	
+	//---under construction
+		
+	//goto inserimento logo del Provider
+	@RequestMapping("/provider/logo/insert")
+	public String inserisciLogoForProvider(Model model, RedirectAttributes redirectAttrs) {
+			LOGGER.info(Utils.getLogMessage("GET /provider/logo/insert"));
+			try {
+				Provider currentProvider = providerService.getProvider();
+				long providerId = currentProvider.getId();
+				return "redirect:/provider/" + providerId + "/logo/insert";
+			} catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/logo/insert"), ex);
+				redirectAttrs.addFlashAttribute("message",
+						new Message("message.errore", "message.errore_eccezione", "error"));
+				return "redirect:/home";
+			}
+		}
+		
+	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
+	@RequestMapping("/provider/{providerId}/logo/insert")
+		public String showLogoForProvider(@PathVariable Long providerId, Model model,
+				RedirectAttributes redirectAttrs) {
+			
+			try{
+				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/logo/insert"));
+				//String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
+				//model.addAttribute("denominazioneProvider", denominazioneProvider);
+				//model.addAttribute("providerId", providerId);
+				//long a=200000;
+				//eshte perdorur tabela evento derisa te ndertohet tabela provider me idfile per logo
+				//return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
+				return goToProviderLogo(model, prepareProviderWrapperLogo(providerService.getProvider(providerId)));
+			}
+			catch (Exception ex) {
+				LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/logo/insert"),ex);
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/logo/insert"));
+				return "redirect:/home";
+			}
+			
+	}
+	//---under construction
+	
+	
 
 //TODO	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping(value = "/provider/{providerId}/blocca", method = RequestMethod.POST)
@@ -702,5 +756,24 @@ public class ProviderController {
 			session.setAttribute("providerList", providerList);
 		}
 	}
+	
+	//---under construction
+	private ProviderWrapper prepareProviderWrapperLogo(Provider provider) {
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperLogo(" + provider.getId() + ") - entering"));
+		ProviderWrapper providerWrapper = new ProviderWrapper();
+		providerWrapper.setProvider(provider); 
+		providerWrapper.setProviderFile(new File(FileEnum.FILE_POVIDER_LOGO));
+		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperLogo(" + provider.getId() + ") - exiting"));
+		return providerWrapper;
+	}
+	
+	private String goToProviderLogo(Model model, ProviderWrapper wrapper) {
+		model.addAttribute("providerWrapper", wrapper);
+		LOGGER.info(Utils.getLogMessage("VIEW: provider/logoinsert" ));
+		//return "logoProvider/logoProviderShow";
+		return "provider/logoinsert";
+	}
+	//---under construction
+
 
 }

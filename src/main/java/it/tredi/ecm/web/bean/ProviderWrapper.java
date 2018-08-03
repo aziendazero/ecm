@@ -1,6 +1,7 @@
 package it.tredi.ecm.web.bean;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,7 @@ public class ProviderWrapper extends Wrapper{
 	private Provider provider;
 	private Long accreditamentoId;
 	private Accreditamento accreditamento;
+	private File providerFile;
 
 	public ProviderWrapper(){};
 

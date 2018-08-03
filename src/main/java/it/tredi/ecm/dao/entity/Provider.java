@@ -17,6 +17,7 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.Where;
@@ -77,6 +78,9 @@ public class Provider extends BaseEntity {
 	private String partitaIva;
 	private String codiceFiscale;
 	private String emailStruttura;
+	
+	@OneToOne
+	private File providerFile;
 
 	// boolean che serve ai provider di tipo A per decidere se possono pagare con
 	// myPay
