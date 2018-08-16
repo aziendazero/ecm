@@ -33,7 +33,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
-import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldIntegrazioneAccreditamento;
 import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
@@ -42,13 +41,11 @@ import it.tredi.ecm.dao.entity.Valutazione;
 import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoWrapperModeEnum;
-import it.tredi.ecm.dao.enumlist.EventoWrapperModeEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.SubSetFieldEnum;
 import it.tredi.ecm.dao.enumlist.TipoIntegrazioneEnum;
 import it.tredi.ecm.service.AccreditamentoService;
-import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FieldEditabileAccreditamentoService;
 import it.tredi.ecm.service.FieldIntegrazioneAccreditamentoService;
 import it.tredi.ecm.service.FieldValutazioneAccreditamentoService;
@@ -60,7 +57,7 @@ import it.tredi.ecm.service.RelazioneAnnualeService;
 import it.tredi.ecm.service.TokenService;
 import it.tredi.ecm.service.ValutazioneService;
 import it.tredi.ecm.utils.Utils;
-import it.tredi.ecm.web.bean.EventoWrapper;
+import it.tredi.ecm.web.bean.ErrorsAjaxWrapper;
 import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
 import it.tredi.ecm.web.bean.Message;
 import it.tredi.ecm.web.bean.ProviderWrapper;
@@ -71,8 +68,10 @@ import it.tredi.ecm.web.validator.ImpostazioniProviderValidator;
 import it.tredi.ecm.web.validator.ProviderValidator;
 import it.tredi.ecm.web.validator.ValutazioneValidator;
 
+import it.tredi.ecm.service.FileService;
+
 @Controller
-@SessionAttributes("providerList")
+@SessionAttributes({"providerList","providerId","providerWrapper"})
 public class ProviderController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Provider.class);
 
@@ -81,8 +80,10 @@ public class ProviderController {
 	private final String VALIDATE = "provider/providerValidate";
 	private final String ENABLEFIELD = "provider/providerEnableField";
 	private final String RICERCA = "ricerca/ricercaProvider";
+	private final String ERROR = "fragments/errorsAjax";
+	private final String PROVIDER = "provider/logoInsert";
 	
-	@Autowired private EventoService eventoService;
+	@Autowired private FileService fileService;
 
 	@Autowired private ProviderService providerService;
 	@Autowired private ProviderValidator providerValidator;
@@ -123,7 +124,7 @@ public class ProviderController {
 		}
 		return new ProviderWrapper();
 	}
-
+	
 	//Distinguo il prepareWrapper dalla verisione chiamata in caricamento della View da quella chiamata per il reload e merge con il form
 	//nel secondo caso non riapplico le eventuali integrazioni altrimenti mi ritroverei delle entity attached me mi danno errore.
 	//Distinguo inoltre il prepareWrapper in funzione dello stato della domanda
@@ -645,11 +646,8 @@ public class ProviderController {
 			return "redirect:/provider/list";
 		}
 	}
-	
-	
-	//---under construction
-		
-	//goto inserimento logo del Provider
+			
+	//insert logo of Provider
 	@RequestMapping("/provider/logo/insert")
 	public String inserisciLogoForProvider(Model model, RedirectAttributes redirectAttrs) {
 			LOGGER.info(Utils.getLogMessage("GET /provider/logo/insert"));
@@ -672,12 +670,6 @@ public class ProviderController {
 			
 			try{
 				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/logo/insert"));
-				//String denominazioneProvider = providerService.getProvider(providerId).getDenominazioneLegale();
-				//model.addAttribute("denominazioneProvider", denominazioneProvider);
-				//model.addAttribute("providerId", providerId);
-				//long a=200000;
-				//eshte perdorur tabela evento derisa te ndertohet tabela provider me idfile per logo
-				//return goToRendiconto(model, prepareEventoWrapperRendiconto(eventoService.getEvento(eventoId), providerId));
 				return goToProviderLogo(model, prepareProviderWrapperLogo(providerService.getProvider(providerId)));
 			}
 			catch (Exception ex) {
@@ -686,13 +678,67 @@ public class ProviderController {
 				LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/" + providerId + "/logo/insert"));
 				return "redirect:/home";
 			}
-			
-	}
-	//---under construction
+		}
 	
-	
+	//save logo of provider 
+	@RequestMapping("/provider/{providerId}/logo/saveLogo")
+	public String salvaLogoProvider(@PathVariable Long providerId,
+			@RequestParam(name = "idModalProvider", required=false) Long idModalProvider,
+			@RequestParam(name = "modeModalProvider") String modeModalProvider,
+			@ModelAttribute ("providerWrapper") ProviderWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
+		
+		try{
+			LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/logo/save"));
 
-//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
+			File f = wrapper.getProviderFile();
+			if(f!= null && !f.isNew())
+				wrapper.setProviderFile(fileService.getFile(f.getId()));
+
+			Map<String, String> errMap = providerValidator.validateProviderLogo(wrapper.getProviderFile(), providerId, "providerFile");
+			if(!errMap.isEmpty()) {
+				ErrorsAjaxWrapper errWrapper = new ErrorsAjaxWrapper();
+				errWrapper.setMappaErrori(errMap);
+				model.addAttribute("errorsAjaxWrapper", errWrapper);
+				return ERROR + " :: fragmentError";
+			}
+			else {
+				
+				Provider provider = providerService.getProvider(providerId);
+				providerService.saveProviderLogo(wrapper.getProviderFile(), provider, modeModalProvider);
+				wrapper.setProvider(provider);
+				wrapper.setProviderFile(provider.getProviderFile());
+				model.addAttribute("providerWrapper", wrapper);
+				return PROVIDER + ":: allegatoProviderLogoTable";
+				
+				
+			}
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/logo/saveLogo"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/provider/"+ providerId + "/logo/insert";
+		}
+	}
+	
+	//modify logo of provider
+	@RequestMapping("/provider/{providerId}/logo/loadModaleProvider")
+	public String caricaModaleProvider(@PathVariable Long providerId,
+			@ModelAttribute ("providerWrapper") ProviderWrapper wrapper, Model model, RedirectAttributes redirectAttrs) {
+		try{
+			LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId +  "/logo/loadModaleProvider"));
+			Provider provider = providerService.getProvider(providerId);
+			wrapper.setProviderFile(provider.getProviderFile());
+			model.addAttribute("providerWrapper", wrapper);
+			return PROVIDER + ":: allegatoLogoProviderModal";
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("GET /provider/" + providerId + "/logo/loadModaleProvider"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			return "redirect:/provider/"+ providerId + "/logo/insert";
+		}
+	}
+	
+	//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping(value = "/provider/{providerId}/blocca", method = RequestMethod.POST)
 	public String bloccaProvider(@PathVariable Long providerId, @ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper,
 			BindingResult result, HttpSession session, RedirectAttributes redirectAttrs, Model model,
@@ -757,7 +803,6 @@ public class ProviderController {
 		}
 	}
 	
-	//---under construction
 	private ProviderWrapper prepareProviderWrapperLogo(Provider provider) {
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperLogo(" + provider.getId() + ") - entering"));
 		ProviderWrapper providerWrapper = new ProviderWrapper();
@@ -769,11 +814,9 @@ public class ProviderController {
 	
 	private String goToProviderLogo(Model model, ProviderWrapper wrapper) {
 		model.addAttribute("providerWrapper", wrapper);
-		LOGGER.info(Utils.getLogMessage("VIEW: provider/logoinsert" ));
-		//return "logoProvider/logoProviderShow";
-		return "provider/logoinsert";
+		LOGGER.info(Utils.getLogMessage("VIEW: provider/logoInsert" ));
+		return "provider/logoInsert";
 	}
-	//---under construction
-
+	
 
 }

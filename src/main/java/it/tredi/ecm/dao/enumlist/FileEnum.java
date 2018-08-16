@@ -85,6 +85,7 @@ public enum FileEnum {
 	//ENGINEERING TEST FILE
 	FILE_DA_FIRMARE(99, ""),
 	
+	//type of file in the file table of database
 	FILE_POVIDER_LOGO(100, "Provider Logo");
 
 	private int id;

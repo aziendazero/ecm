@@ -213,7 +213,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        document.add(par1);
 
 	        document.add(Chunk.NEWLINE);
-System.out.println("xxxxxxxx");
+
 	        //SECONDO PARAGRAFO
 	        Paragraph par2 = new Paragraph();
 	        Chunk c4 = new Chunk("Premesso che il Provider ha organizzato l’evento formativo n. " + evento.getCodiceIdentificativo(), fontNomeCampo);

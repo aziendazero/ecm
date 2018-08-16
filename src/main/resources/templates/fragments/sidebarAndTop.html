@@ -55,6 +55,7 @@
 									<li><a th:href="@{/provider/user/list}" th:text="#{label.utenti}" th:if="${#authentication.principal.account.isProviderUserAdmin()}">label.utenti</a></li>
 									<li><a th:href="@{/provider/pagamento/list}" th:text="#{label.contributo_annuale}">label.contributo_annuale</a></li>
 									<li><a th:href="@{/provider/relazioneAnnuale/list}"  th:text="#{label.relazione_annuale}">label.relazione_annuale</a></li>
+									<!-- insert logo of provider  -->
 									<li><a th:href="@{/provider/logo/insert}"  th:text="#{label.logo_provider}">label.logo_provider</a></li>
 								</ul>
 							</li>

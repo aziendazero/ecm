@@ -176,6 +176,7 @@
 	
 	<include file="20180626_001_agiunta_data_chiusura_accreditamento.xml" relativeToChangelogFile="true"/>
 	
+	<!-- include xml file to add new field in provider table to save logo  -->
 	<include file="20180803_001_add_column_logo_of_provider.xml" relativeToChangelogFile="true"/>
 
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali

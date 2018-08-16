@@ -12,6 +12,7 @@ public class ProviderWrapper extends Wrapper{
 	private Provider provider;
 	private Long accreditamentoId;
 	private Accreditamento accreditamento;
+	//logo of provider
 	private File providerFile;
 
 	public ProviderWrapper(){};

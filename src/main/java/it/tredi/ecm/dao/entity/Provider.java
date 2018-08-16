@@ -79,6 +79,7 @@ public class Provider extends BaseEntity {
 	private String codiceFiscale;
 	private String emailStruttura;
 	
+	//for saving logo of provider
 	@OneToOne
 	private File providerFile;
 
