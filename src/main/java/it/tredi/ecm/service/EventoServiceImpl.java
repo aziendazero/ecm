@@ -75,6 +75,7 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.entity.RuoloOreFSC;
 import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
+import it.tredi.ecm.dao.enumlist.AlertTipoEnum;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
@@ -149,6 +150,8 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private EventoCrediti eventoCrediti;
 
 	@Autowired private EventoServiceController eventoServiceController;
+
+	@Autowired private AlertEmailService alertEmailService;
 
 	@Override
 	public Evento getEvento(Long id) {
@@ -903,14 +906,14 @@ public class EventoServiceImpl implements EventoService {
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "confermatiCrediti"));
 			break;
-			
+
 		case 13:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "versione"));
 			else if(order.equals("desc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.DESC, "versione"));
 			break;
-			
+
 		case 14:
 			if(order.equals("asc"))
 				request = new PageRequest(pageNumber, numOfPages, new Sort(Direction.ASC, "versione"));
@@ -1322,6 +1325,8 @@ public class EventoServiceImpl implements EventoService {
 						evento.setStato(EventoStatoEnum.RAPPORTATO);
 						evento.setAnagrafeRegionaleCrediti(anagrafeRegionaleCreditiService.extractAnagrafeRegionaleCreditiPartecipantiFromXml(ultimaRendicontazioneInviata.getFileName(), ultimaRendicontazioneInviata.getFileRendicontazione().getData()));//extract info AnagrafeRegionaleCrediti
 						save(evento);
+
+						alertEmailService.annullaIfExistForEventoNotInviato(AlertTipoEnum.SCADENZA_PAGAMENTO_E_RENDICONTAZIONE_EVENTO, id);
 					}
 					ultimaRendicontazioneInviata.setStato(RendicontazioneInviataStatoEnum.COMPLETED);
 					rendicontazioneInviataService.save(ultimaRendicontazioneInviata);
@@ -2326,10 +2331,10 @@ public class EventoServiceImpl implements EventoService {
 
 			//PROFESSIONI SELEZIONATE
 			if(wrapper.getProfessioniSelezionate() != null && !wrapper.getProfessioniSelezionate().isEmpty()){
-				
-				
+
+
 				Set<Professione> professioniFromDiscipline = new HashSet<Professione>();
-				
+
 				if(wrapper.getDisciplineSelezionate() != null){
 					for(Disciplina d : wrapper.getDisciplineSelezionate())
 						professioniFromDiscipline.add(d.getProfessione());
@@ -2338,21 +2343,21 @@ public class EventoServiceImpl implements EventoService {
 				//vedo se ci sono professioni selezionate senza alcuna disciplina specificata
 				wrapper.getProfessioniSelezionate().removeAll(professioniFromDiscipline);
 				if(!wrapper.getProfessioniSelezionate().isEmpty()){
-					
+
 					if (wrapper.getDisciplineList()!=null){
 						for(Disciplina d : wrapper.getDisciplineList()){
 							if(wrapper.getProfessioniSelezionate().contains(d.getProfessione()))
 								wrapper.getDisciplineSelezionate().add(d);
 						}
 					}
-					
+
 					//select by professioni
 					query = Utils.QUERY_AND(query, "d.professione IN (:professioniSelezionate)");
-					params.put("professioniSelezionate", wrapper.getProfessioniSelezionate());	
-					
+					params.put("professioniSelezionate", wrapper.getProfessioniSelezionate());
+
 				}
-				
-												
+
+
 			}
 
 			//DISCIPLINE SELEZIONATE
