@@ -278,4 +278,24 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 		if(!checkIfExistForProvider(tipo, provider.getId(), dataScadenza))
 			creaAlertForProvider(tipo, provider, dataScadenza);
 	}
+
+	@Override
+	public void annullaIfExistForProviderNotInviato(AlertTipoEnum tipo, Long providerId) {
+		LOGGER.info("Verifica se Alert già registrato ma non ancora inviato");
+		AlertEmail alert = alertMailRepository.findByTipoAndProviderIdAndDataInvioIsNull(tipo, providerId);
+		if(alert != null) {
+			alert.setDataInvio(LocalDateTime.now());
+			save(alert);
+		}
+	}
+
+	@Override
+	public void annullaIfExistForEventoNotInviato(AlertTipoEnum tipo, Long eventoId) {
+		LOGGER.info("Verifica se Alert già registrato ma non ancora inviato");
+		AlertEmail alert = alertMailRepository.findByTipoAndEventoIdAndDataInvioIsNull(tipo, eventoId);
+		if(alert != null) {
+			alert.setDataInvio(LocalDateTime.now());
+			save(alert);
+		}
+	}
 }

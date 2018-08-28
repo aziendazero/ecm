@@ -10,6 +10,7 @@ import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.QuotaAnnuale;
 import it.tredi.ecm.dao.entity.WorkflowInfo;
+import it.tredi.ecm.dao.enumlist.AlertTipoEnum;
 
 public interface AlertEmailService {
 	public Set<AlertEmail> getAll();
@@ -25,5 +26,8 @@ public interface AlertEmailService {
 
 	public void creaAlertRipetibiliAnnuali();
 	public void inviaAlertsEmail() throws Exception;
+
+	public void annullaIfExistForProviderNotInviato(AlertTipoEnum tipo, Long providerId);
+	public void annullaIfExistForEventoNotInviato(AlertTipoEnum tipo, Long eventoId);
 
 }

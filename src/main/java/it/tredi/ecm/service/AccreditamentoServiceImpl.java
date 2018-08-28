@@ -27,6 +27,7 @@ import it.tredi.ecm.audit.entity.AccreditamentoAudit;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AccreditamentoDiff;
+import it.tredi.ecm.dao.entity.AlertEmail;
 import it.tredi.ecm.dao.entity.DatiAccreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.FieldEditabileAccreditamento;
@@ -45,6 +46,7 @@ import it.tredi.ecm.dao.entity.VerbaleValutazioneSulCampo;
 import it.tredi.ecm.dao.entity.WorkflowInfo;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
+import it.tredi.ecm.dao.enumlist.AlertTipoEnum;
 import it.tredi.ecm.dao.enumlist.IdFieldEnum;
 import it.tredi.ecm.dao.enumlist.ProviderStatoEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
@@ -114,7 +116,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 	@Autowired private AuditReportProviderService auditReportProviderService;
 	@Autowired private AccountService accountService;
-	
+
 	@Autowired private EventoService eventoService;
 
 
@@ -416,6 +418,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		//rilascio semaforo bonita
 		tokenService.removeBonitaSemaphore(accreditamentoId);
 
+		//annulla invio alert se non è stato ancora inviato
+		alertEmailService.annullaIfExistForProviderNotInviato(AlertTipoEnum.SCADENZA_COMPILAZIONE_DOMANDA_ACCREDITAMENTO_STANDARD,  accreditamento.getProvider().getId());
 	}
 
 	@Override
@@ -1934,10 +1938,10 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				fileAllegatiIds.add(decreto.getId());
 				protocolloService.protocollaAllegatoFlussoDomandaInUscita(accreditamentoId, lettera.getId(), fileAllegatiIds);
 				accreditamento.setDataoraInvioProtocollazione(LocalDateTime.now());
-				
+
 				// ERM014776
 				chiudiAccreditamentoEPulisciEventi(accreditamento);
-				
+
 			} else if(stato == AccreditamentoStatoEnum.DINIEGO) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
@@ -2064,7 +2068,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			if(stato == AccreditamentoStatoEnum.CANCELLATO) {
 				//Setto il flusso come concluso
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
-				
+
 				// ERM014776
 				chiudiAccreditamentoEPulisciEventi(accreditamento);
 			}
@@ -2980,14 +2984,14 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	public void chiudiAccreditamentoEPulisciEventi(Accreditamento acc) throws Exception {
 		// Blocco del provider
 		Provider provider = acc.getProvider();
-		protocolloService.bloccaProvider(provider); 
-		providerService.save(provider);		
-		
+		protocolloService.bloccaProvider(provider);
+		providerService.save(provider);
+
 		// accreditamento deve essere salvato da chiamante
 		acc.setDataChiusuraAcc(LocalDate.now());
-		
+
 		// ellimina tutti eventi in bozza
-		eventoService.eliminaEventiPerChiusuraAccreditamento(acc, LocalDate.now()); 
+		eventoService.eliminaEventiPerChiusuraAccreditamento(acc, LocalDate.now());
 	}
 
 	// ERM014776
@@ -2996,12 +3000,12 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LocalDate dataChiusuraAcc = getLastAccreditamentoForProviderId(providerId).getDataChiusuraAcc();
 		if(dataChiusuraAcc == null) return true; // no check needed
 		LocalDate dd = ecmProperties.espandiDataPerGiorniChiusura(dataChiusuraAcc);
-		
+
 		// se evento e precedente data chiusura e editabile
-		if(evt.getDataInizio() != null && evt.getDataInizio().isBefore(dd)) return true; 
-		
+		if(evt.getDataInizio() != null && evt.getDataInizio().isBefore(dd)) return true;
+
 		// current date is in interval
-		return !LocalDate.now().isAfter(dd); // controllo del intevallo 
+		return !LocalDate.now().isAfter(dd); // controllo del intevallo
 	}
 
 }
