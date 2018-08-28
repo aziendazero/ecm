@@ -226,7 +226,7 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 					alert.setDataInvio(LocalDateTime.now());
 					save(alert);
 				}else if(alert.getTipo() == AlertTipoEnum.SCADENZA_COMPILAZIONE_DOMANDA_ACCREDITAMENTO_STANDARD){
-					emailService.inviaAlertScadenzaValutazioneReferee(alert);
+					emailService.inviaAlertScadenzaInvioAccreditamentoStandard(alert);
 					alert.setDataInvio(LocalDateTime.now());
 					save(alert);
 				}else{
