@@ -336,7 +336,7 @@ function loadScript(url, callback){
 												<i class="fa table-icon fa-question grey" th:title="#{label.non_specificato}"></i>
 											</div>
 										</td>
-										<!-- td th:text="${@eventoServiceController.versioneEvento(evento).numeroVersione}"></td>-->
+										<!--<td th:text="${@eventoServiceController.versioneEvento(evento).numeroVersione}"></td>-->
 										<td th:text="${evento.versione != null ? evento.versione.numeroVersione : ''}"></td>
 										<td class="text-full-length" th:if="${#authentication.principal.account.isProvider() or #authentication.principal.account.isSegreteria()}">
 											<a class="btn btn-primary min-icon-width" th:if="${@eventoServiceController.canEdit(evento) or #authentication.principal.isSegreteria()}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/edit|}" th:title="#{label.modifica}"><i class="fa fa-pencil"></i></a>
