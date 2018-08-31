@@ -1,11 +1,15 @@
 package it.tredi.ecm.web.validator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.service.ProviderService;
 import it.tredi.ecm.utils.Utils;
@@ -24,6 +28,16 @@ public class ProviderValidator {
 			errors.rejectValue(prefix + "tipoOrganizzatore", "error.empty");
 		if(providerForm.getEmailStruttura() != null && providerForm.getEmailStruttura().isEmpty())
 			errors.rejectValue(prefix + "emailStruttura", "error.empty");
+	}
+	
+	//check if the logo of provider is empty or null
+	public Map<String, String> validateProviderLogo(File providerFile, Long providerId, String prefix) throws Exception {
+		Map<String, String> errMap = new HashMap<String, String>();
+
+		if(providerFile == null || providerFile.isNew())
+			errMap.put("file_"+prefix+"_button", "error.empty");
+
+		return errMap;
 	}
 
 	public void validateForRegistrazione(Object target, Errors errors, String prefix) {

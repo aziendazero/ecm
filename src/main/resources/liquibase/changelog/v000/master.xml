@@ -175,6 +175,9 @@
 	<include file="20180613_003_applySQL_insert_obiettivi_versione_2.xml" relativeToChangelogFile="true"/>
 	
 	<include file="20180626_001_agiunta_data_chiusura_accreditamento.xml" relativeToChangelogFile="true"/>
+	
+	<!-- include xml file to add new field in provider table to save logo  -->
+	<include file="20180803_001_add_column_logo_of_provider.xml" relativeToChangelogFile="true"/>
 
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
       Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali"

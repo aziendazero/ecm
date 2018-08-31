@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.service.bean.ProviderRegistrationWrapper;
 import it.tredi.ecm.web.bean.ImpostazioniProviderWrapper;
@@ -25,7 +27,8 @@ public interface ProviderService {
 
 	public ProviderRegistrationWrapper getProviderRegistrationWrapper();
 	public void saveProviderRegistrationWrapper(ProviderRegistrationWrapper providerWrapper) throws Exception;
-
+	public void saveProviderLogo(File providerFile, Provider provider, String mode) throws Exception;
+	
 	public Long getProviderIdByAccountId(Long accountId);
 	public boolean canInsertPianoFormativo(Long providerId);
 	public boolean canInsertEvento(Long providerId);

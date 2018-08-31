@@ -25,11 +25,13 @@ import it.tredi.ecm.audit.entity.ProviderAudit;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.BaseEntity;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.Persona;
 import it.tredi.ecm.dao.entity.Profile;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.dao.entity.Sede;
+import it.tredi.ecm.dao.entity.Sponsor;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.MotivazioneProrogaEnum;
@@ -157,6 +159,22 @@ public class ProviderServiceImpl implements ProviderService {
 		auditService.commitForCurrentUser(new ProviderAudit(provider));
 		auditReportProviderService.auditAccreditamentoProvider(provider);
 
+	}
+	
+	@Override
+	public void saveProviderLogo(File providerFile, Provider provider, String mode) throws Exception {
+		
+		if(mode.equals("edit")) {
+			Long fileId = provider.getProviderFile().getId();
+
+			if(fileId != providerFile.getId()){
+				provider.setProviderFile(null);
+				providerRepository.save(provider);
+				
+			}
+		}
+		provider.setProviderFile(providerFile);
+		providerRepository.save(provider);
 	}
 
 	@Override

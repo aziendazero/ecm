@@ -83,7 +83,10 @@ public enum FileEnum {
 	FILE_LETTERA_ACCOMPAGNATORIA_STANDARD_DINIEGO(63, "Lettera Accompagnatoria Standard Diniego"),
 
 	//ENGINEERING TEST FILE
-	FILE_DA_FIRMARE(99, "");
+	FILE_DA_FIRMARE(99, ""),
+	
+	//type of file in the file table of database
+	FILE_POVIDER_LOGO(100, "Provider Logo");
 
 	private int id;
 	private String nome;

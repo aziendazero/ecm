@@ -133,6 +133,11 @@ public class FileValidator {
 				if (!file.getNomeFile().toUpperCase().endsWith(".CSV"))
 					error = messageSource.getMessage("error.formatNonAcceptedCSV", new Object[]{}, Locale.getDefault());
 			}
+			//validation file jpg/png for logo of provider
+			else if(file.getTipo() == FileEnum.FILE_POVIDER_LOGO) {
+				if ((!file.getNomeFile().toUpperCase().endsWith(".JPG")) && (!file.getNomeFile().toUpperCase().endsWith(".PNG")))
+					error = messageSource.getMessage("error.formatNonAcceptedJPG", new Object[]{}, Locale.getDefault());
+			}
 			//validazione file pdf/pdf.p7m
 			else {
 				//rimosso controllo sul MIME per motivi di compatibilità con le configurazioni browser dei vari utenti
