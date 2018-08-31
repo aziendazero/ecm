@@ -229,7 +229,7 @@
 									<span th:text="#{label.risultato}"></span>
 								</label>
 								<div class="col-lg-7 col-md-7 col-sm-7 col-xs-11">
-									<div class="value">
+									<div class="value" th:classappend="${eventoWrapperRendiconto.evento.ultimaRendicontazioneInviata.result.nome=='Negativo'} ? negativo-result">
 										<span th:text="${eventoWrapperRendiconto.evento.ultimaRendicontazioneInviata.result.nome}"/>
 										<input type="hidden" id="statoElaborazioneJsonResponse" th:value="${eventoWrapperRendiconto.evento.ultimaRendicontazioneInviata.response}"/>
 										<i th:if="${eventoWrapperRendiconto.evento.ultimaRendicontazioneInviata.result == T(it.tredi.ecm.dao.enumlist.RendicontazioneInviataResultEnum).ERROR}" class="fa fa-list-alt" id="statoElaborazioneErroreBloccante"></i>
