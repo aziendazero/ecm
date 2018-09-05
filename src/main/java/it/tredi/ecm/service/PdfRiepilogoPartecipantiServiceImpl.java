@@ -182,15 +182,34 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 
 			//IMMAGINE
 			Paragraph parImage = new Paragraph();
+			
+	        
 			parImage.setAlignment(Element.ALIGN_CENTER);
 			Image logoProvider=null;
 			Image img1 = getLogoAziendaZero();
 			if ((evento.getProvider().getProviderFile() !=null)) {
 				logoProvider = getLogoProvider(evento.getProvider().getProviderFile().getData());
 			}
-			parImage.add(img1);
-			parImage.add(logoProvider);
-			document.add(parImage);
+			
+			PdfPTable table = new PdfPTable(2);
+			table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+		    table.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
+			//table.setWidthPercentage(100);
+	        //table.setWidths(new int[]{1, 2});
+			PdfPCell cellOne = new PdfPCell(img1);
+			PdfPCell cellTwo = new PdfPCell(logoProvider);
+			cellOne.setBorder(0);
+			cellTwo.setBorder(0);
+	        table.addCell(cellOne);
+	        table.addCell(cellTwo);
+	       
+			//parImage.add(img1);
+			//parImage.add(logoProvider);
+			//img1.setAlignment(Image.LEFT);
+			//logoProvider.setAlignment(Image.RIGHT);
+			
+			document.add(table);
+			document.add(Chunk.NEWLINE);
 
 			//TITOLO
 	        //Paragraph parTitolo = new Paragraph();
@@ -319,8 +338,8 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Paragraph par6 = new Paragraph();
 	        Chunk c22 = new Chunk(partecipante.getNumeroCrediti()+" (" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "/" + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
 	        Chunk c27 = new Chunk("(secondo i parametri stabiliti dai " + "‘‘" +  "Criteri per l’assegnazione dei crediti\n" +
-	        " alle attivita ECM " + "’’" + " Allegati all’Accordo Stato Regioni del 02/02/2017)", fontNomeCampo);
-	        Chunk c28 = new Chunk("Nella professione: ", fontNomeCampo);
+	        " alle attivita ECM" + "’’" + " Allegati all’Accordo Stato Regioni del 02/02/2017)", fontNomeCampo);
+	        Chunk c28 = new Chunk("Nella professione ", fontNomeCampo);
 
 //	        Phrase phrase = new Phrase();
 //	        for(String professione : partecipante.getProfessioni()) {
@@ -347,7 +366,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	            Chunk chunkProfessione = new Chunk(professione, fontNomeCampo);
 				phrase.add(chunkProfessione);
 
-				Chunk c29 = new Chunk(" discipline: " , fontNomeCampo);
+				Chunk c29 = new Chunk(" disciplina " , fontNomeCampo);
 				phrase.add(c29);
 				Set<String> discipline = entry.getValue();
 	            for(String disciplina :  discipline) {
