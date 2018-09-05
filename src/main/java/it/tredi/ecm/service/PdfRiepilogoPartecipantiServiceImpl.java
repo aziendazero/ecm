@@ -318,7 +318,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        //CREDITI PARTECIPANTE
 	        Paragraph par6 = new Paragraph();
 	        Chunk c22 = new Chunk(partecipante.getNumeroCrediti()+" (" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "/" + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
-	        Chunk c27 = new Chunk("(secondo i parametri stabiliti dai " + "’’" +  "Criteri per l’assegnazione dei crediti\n" +
+	        Chunk c27 = new Chunk("(secondo i parametri stabiliti dai " + "‘‘" +  "Criteri per l’assegnazione dei crediti\n" +
 	        " alle attivita ECM " + "’’" + " Allegati all’Accordo Stato Regioni del 02/02/2017)", fontNomeCampo);
 	        Chunk c28 = new Chunk("Nella professione: ", fontNomeCampo);
 
