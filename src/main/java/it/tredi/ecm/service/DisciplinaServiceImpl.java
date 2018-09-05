@@ -1,5 +1,7 @@
 package it.tredi.ecm.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -13,25 +15,37 @@ import it.tredi.ecm.dao.repository.DisciplinaRepository;
 @Service
 public class DisciplinaServiceImpl implements DisciplinaService {
 	private static Logger LOGGER = LoggerFactory.getLogger(DisciplinaServiceImpl.class);
-	
+
 	@Autowired
 	private DisciplinaRepository disciplinaRepository;
-	
+
 	@Override
 	public Set<Disciplina> getAllDiscipline() {
 		LOGGER.debug("Recupero lista discipline");
 		return disciplinaRepository.findAll();
 	}
-	
+
 	@Override
 	public void save(Disciplina disciplina) {
 		LOGGER.debug("Salvataggio disciplina");
 		disciplinaRepository.save(disciplina);
 	}
-	
+
 	@Override
 	public void saveAll(Set<Disciplina> disciplinaList) {
 		LOGGER.debug("Salvataggio lista disciplina");
 		disciplinaRepository.save(disciplinaList);
+	}
+
+	@Override
+	public Map<String, String> getDisciplineMap() {
+		Map<String, String> mappa = new HashMap<>();
+
+		Set<Disciplina> discipline = getAllDiscipline();
+		for(Disciplina d : discipline) {
+			mappa.put(d.getCodiceCogeaps(), d.getNome());
+		}
+
+		return mappa;
 	}
 }

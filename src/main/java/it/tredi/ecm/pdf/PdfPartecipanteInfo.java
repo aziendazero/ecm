@@ -1,8 +1,11 @@
 package it.tredi.ecm.pdf;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import it.tredi.ecm.dao.entity.Disciplina;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,4 +21,6 @@ public class PdfPartecipanteInfo {
 	private String numeroCrediti = null;
 	private String dataCreditiAcquisiti = null;
 	private Set<String> professioni = new HashSet<String>();
+
+	private Map<String,Set<String>> professioni_discipline = new HashMap<String,Set<String>>();
 }

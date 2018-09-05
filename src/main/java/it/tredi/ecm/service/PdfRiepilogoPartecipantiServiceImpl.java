@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -190,7 +191,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 			parImage.add(img1);
 			parImage.add(logoProvider);
 			document.add(parImage);
-			
+
 			//TITOLO
 	        //Paragraph parTitolo = new Paragraph();
 	        //Chunk title = new Chunk(messageSource.getMessage("label.sistema_regionale_ecm", null, Locale.getDefault()).toUpperCase(), blueFont);
@@ -288,7 +289,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Chunk c17 = new Chunk("che il/la", fontNomeCampo);
 	        Chunk c18 = new Chunk("Prof./Prof.ssa/Dott./Dott.ssa/Sig./Sig.ra " + partecipante.getNome() + " " + partecipante.getCognome(), fontNomeCampo);
 	        Chunk c20 = new Chunk("C.F. " + partecipante.getCodiceFiscale() + ", ", fontNomeCampo);
-	        Chunk c21 = new Chunk("in qualita di " + partecipante.getTipologiaPartecipante() + " il " + partecipante.getDataCreditiAcquisiti() + "\n" 
+	        Chunk c21 = new Chunk("in qualita di " + partecipante.getTipologiaPartecipante() + " il " + partecipante.getDataCreditiAcquisiti() + "\n"
 	        			+ " come " + partecipante.getReclutato() + " ha acquisito.", fontNomeCampo);
 	        par5.setAlignment(Element.ALIGN_CENTER);
 	        par5.add(c16);
@@ -305,33 +306,48 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        document.add(Chunk.NEWLINE);
 
 	        String[] listNumeroCrediti = splitNumeroCrediti(partecipante.getNumeroCrediti());
-	        
+
 	        //CREDITI PARTECIPANTE
 	        Paragraph par6 = new Paragraph();
 	        Chunk c22 = new Chunk(partecipante.getNumeroCrediti()+"(" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "/" + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
-	        Chunk c27 = new Chunk("(secondo i parametri stabiliti dai " + "'" +  "Criteri per l'assegnazione dei crediti\n" + 
+	        Chunk c27 = new Chunk("(secondo i parametri stabiliti dai " + "'" +  "Criteri per l'assegnazione dei crediti\n" +
 	        " alle attivita ECM " + "'" + " Allegati all'Accordo Stato Regioni del 02/02/2017)", fontNomeCampo);
 	        Chunk c28 = new Chunk("Nella professione ", fontNomeCampo);
-	        
-	        Phrase phrase = new Phrase();
-	        for(String professione : partecipante.getProfessioni()) {
-				Chunk chunkProfessione = new Chunk(professione, fontNomeCampo);
-				phrase.add(chunkProfessione);
-				phrase.add(",");
-			}
-	        //document.add(phrase);
-	        
-	        Chunk c29 = new Chunk(" disciplina" + "xxx", fontNomeCampo);
-	        
-	        
+
+//	        Phrase phrase = new Phrase();
+//	        for(String professione : partecipante.getProfessioni()) {
+//				Chunk chunkProfessione = new Chunk(professione, fontNomeCampo);
+//				phrase.add(chunkProfessione);
+//				phrase.add(",");
+//			}
+//	        //document.add(phrase);
+//
+//	        Chunk c29 = new Chunk(" disciplina" + "xxx", fontNomeCampo);
+//
 	        par6.setAlignment(Element.ALIGN_CENTER);
 	        par6.add(c22);
 	        par6.add(Chunk.NEWLINE);
 	        par6.add(c27);
 	        par6.add(Chunk.NEWLINE);
 	        par6.add(c28);
-	        par6.add(phrase);
-	        par6.add(c29);
+
+	        for (Map.Entry<String, Set<String>> entry : partecipante.getProfessioni_discipline().entrySet()) {
+	            String professione = entry.getKey();
+
+	            Phrase phrase = new Phrase();
+	            Chunk chunkProfessione = new Chunk(professione, fontNomeCampo);
+				phrase.add(chunkProfessione);
+
+				Chunk c29 = new Chunk(" discipline: " , fontNomeCampo);
+				phrase.add(c29);
+				Set<String> discipline = entry.getValue();
+	            for(String disciplina :  discipline) {
+	            	Chunk d = new Chunk(disciplina + " ", fontNomeCampo);
+	            	phrase.add(d);
+	            }
+	            par6.add(phrase);
+	        }
+
 	        document.add(par6);
 
 	        document.add(Chunk.NEWLINE);
@@ -345,9 +361,9 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Chunk c24 = new Chunk("__________________, lì _______________", fontNomeCampo);
 	        par8.add(c24);
 	        container.add(par8);
-	        
+
 	        container.add(Chunk.NEWLINE);
-	        
+
 	        //LEGALE RAPPRESENTANTE
 	        Paragraph par7 = new Paragraph();
 	        Chunk c23 = new Chunk("Il RAPPRESENTANTE LEGALE\n" +
@@ -358,9 +374,9 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        par7.add(Chunk.NEWLINE);
 	        par7.add(c25);
 	        container.add(par7);
-	        
+
 	        container.add(Chunk.NEWLINE);
-	        
+
 	        //IMMAGINE
 	        Paragraph par9 = new Paragraph();
 			Image img2 = getLogoFooter();
@@ -500,8 +516,8 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 		}
 		return img;
 	}
-	
-	//get logo of Provider to display in to .pdf document 
+
+	//get logo of Provider to display in to .pdf document
 	public static Image getLogoProvider(byte[] imgb){
 		//Creazione immagine
 		Image img = null;
@@ -517,8 +533,8 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 		}
 		return img;
 	}
-	
-	//get image of LogoAziendaZero to display in to .pdf document 
+
+	//get image of LogoAziendaZero to display in to .pdf document
 	public static Image getLogoAziendaZero(){
 		//Creazione immagine
         Image img = null;
@@ -535,15 +551,15 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 		}
 		return img;
 	}
-	
+
 	private String[] splitNumeroCrediti(String numeroCrediti)
 	{
 		numeroCrediti=numeroCrediti.replace(".", " ");
 		String[] nCrediti = numeroCrediti.split(" ");
 		return nCrediti;
 	}
-	
-	
-	
-	
+
+
+
+
 }
