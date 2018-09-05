@@ -38,6 +38,7 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.pdf.PdfPartecipanteInfo;
 import it.tredi.ecm.pdf.PdfRiepilogoPartecipantiInfo;
+import it.tredi.ecm.utils.Utils;
 
 @Service
 public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecipantiService {
@@ -179,22 +180,30 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 			document.newPage();
 
 			//IMMAGINE
-			Image img1 = getLogoAttestato();
-			document.add(img1);
-
+			Paragraph parImage = new Paragraph();
+			parImage.setAlignment(Element.ALIGN_CENTER);
+			Image logoProvider=null;
+			Image img1 = getLogoAziendaZero();
+			if ((evento.getProvider().getProviderFile() !=null)) {
+				logoProvider = getLogoProvider(evento.getProvider().getProviderFile().getData());
+			}
+			parImage.add(img1);
+			parImage.add(logoProvider);
+			document.add(parImage);
+			
 			//TITOLO
-	        Paragraph parTitolo = new Paragraph();
-	        Chunk title = new Chunk(messageSource.getMessage("label.sistema_regionale_ecm", null, Locale.getDefault()).toUpperCase(), blueFont);
-	        parTitolo.setAlignment(Element.ALIGN_CENTER);
-	        parTitolo.add(title);
-	        document.add(parTitolo);
+	        //Paragraph parTitolo = new Paragraph();
+	        //Chunk title = new Chunk(messageSource.getMessage("label.sistema_regionale_ecm", null, Locale.getDefault()).toUpperCase(), blueFont);
+	        //parTitolo.setAlignment(Element.ALIGN_CENTER);
+	        //parTitolo.add(title);
+	        //document.add(parTitolo);
 
 	        document.add(Chunk.NEWLINE);
 	        //document.add(Chunk.NEWLINE);
 
 	        //SOTTOTITOLO
 	        Paragraph parSubTitle = new Paragraph();
-	        Chunk subtitle = new Chunk("Programma regionale per la formazione continua dei Professionisti della Salute", greyItalicFont);
+	        Chunk subtitle = new Chunk("Programma regionale per la formazione continua dei Professionisti della Sanita", greyItalicFont);
 	        parSubTitle.setAlignment(Element.ALIGN_CENTER);
 	        parSubTitle.add(subtitle);
 	        document.add(parSubTitle);
@@ -205,7 +214,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Paragraph par1 = new Paragraph();
 	        Chunk c1 = new Chunk("Premesso che la ", fontNomeCampo);
 	        Chunk c2 = new Chunk("Commissione Regionale per l’Educazione Continua in Medicina ", fontNomeCampoBoldItalic);
-	        Chunk c3 = new Chunk("ha accreditato il Provider " + provider.getDenominazioneLegale() + ".", fontNomeCampo);
+	        Chunk c3 = new Chunk("ha accreditato il Provider " + provider.getDenominazioneLegale() + " con accreditamento n.(" + provider.getId() + ").", fontNomeCampo);
 	        par1.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par1.add(c1);
 	        par1.add(c2);
@@ -218,38 +227,41 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Paragraph par2 = new Paragraph();
 	        Chunk c4 = new Chunk("Premesso che il Provider ha organizzato l’evento formativo n. " + evento.getCodiceIdentificativo(), fontNomeCampo);
 	        Chunk c5 = new Chunk(" edizione n. " + evento.getEdizione(), fontNomeCampo);
-	        Chunk c6 = new Chunk(" denominato " + evento.getTitolo(), fontNomeCampo);
+	        Chunk c6 = new Chunk(" dal titolo " , fontNomeCampo);
+	        Chunk c61 = new Chunk(evento.getTitolo(), fontNomeCampo);
 	        Chunk c7 = new Chunk("", fontNomeCampo);
-	        if(!(evento instanceof EventoFAD)) {
+	        //if(!(evento instanceof EventoFAD)) {
 	        	if(evento instanceof EventoRES)
 	        		c7.append(" e tenutosi a " + ((EventoRES) evento).getSedeEvento().getLuogo());
 	        	else if(evento instanceof EventoFSC)
 	        		c7.append(" e tenutosi a " + ((EventoFSC) evento).getSedeEvento().getLuogo());
-	        }
-	        Chunk c8 = new Chunk( " dal " + dateTimeFormatter.format(evento.getDataInizio()) + " al " + dateTimeFormatter.format(evento.getDataFine()), fontNomeCampo);
-	        Chunk c9 = new Chunk(" avente come obiettivo didattico/formativo generale: " + evento.getObiettivoNazionale().getNome(), fontNomeCampo);
-	        Chunk c10 = new Chunk("assegnando all'evento stesso:", fontNomeCampo);
+	        //}
+	        Chunk c8 = new Chunk( " dal " + dateTimeFormatter.format(evento.getDataInizio()) + " al " , fontNomeCampo);
+	        Chunk c81 = new Chunk(dateTimeFormatter.format(evento.getDataFine()), fontNomeCampo);
+	        Chunk c9 = new Chunk(" avente come obiettivo formativo: " + evento.getObiettivoNazionale().getNome(), fontNomeCampo);
 	        par2.setAlignment(Element.ALIGN_JUSTIFIED);
 	        par2.add(c4);
 	        par2.add(c5);
 	        par2.add(c6);
+	        par2.add(Chunk.NEWLINE);
+	        par2.add(c61);
 	        par2.add(c7);
 	        par2.add(c8);
+	        par2.add(Chunk.NEWLINE);
+	        par2.add(c81);
 	        par2.add(c9);
 	        par2.add(Chunk.NEWLINE);
-	        par2.add(c10);
 	        document.add(par2);
 
 	        document.add(Chunk.NEWLINE);
 
 	        //CREDITI EVENTO
-	        Paragraph par3 = new Paragraph();
-	        Chunk c11 = new Chunk("N. " + evento.getCrediti() + " Crediti Formativi E.C.M.", fontNomeCampo);
-	        par3.setAlignment(Element.ALIGN_CENTER);
-	        par3.add(c11);
-	        document.add(par3);
-
-	       // document.add(Chunk.NEWLINE);
+	        //Paragraph par3 = new Paragraph();
+	        //Chunk c11 = new Chunk("N. " + evento.getCrediti() + " Crediti Formativi E.C.M.", fontNomeCampo);
+	        //par3.setAlignment(Element.ALIGN_CENTER);
+	        //par3.add(c11);
+	        //document.add(par3);
+	        //document.add(Chunk.NEWLINE);
 	        document.add(Chunk.NEWLINE);
 
 	        //VERIFICA RAPPRESENTANTE
@@ -257,7 +269,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Chunk c12 = new Chunk("il/la sottoscritto/a", fontNomeCampo);
 	        Chunk c13 = new Chunk(provider.getLegaleRappresentante().getAnagrafica().getFullName(), fontNomeCampo);
 	        Chunk c14 = new Chunk("Rappresentante Legale del Provider", fontNomeCampo);
-	        Chunk c15 = new Chunk("Verificato l’apprendimento e la presenza del partecipante", fontNomeCampo);
+	        Chunk c15 = new Chunk("(o suo delegato ovvero Responsabile scientifico dell'evento,su delega del Rappresentante Legale del Provider)", fontNomeCampo);
 	        par4.setAlignment(Element.ALIGN_CENTER);
 	        par4.add(c12);
 	        par4.add(Chunk.NEWLINE);
@@ -265,10 +277,8 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        par4.add(Chunk.NEWLINE);
 	        par4.add(c14);
 	        par4.add(Chunk.NEWLINE);
-	        par4.add(Chunk.NEWLINE);
 	        par4.add(c15);
 	        document.add(par4);
-
 	        document.add(Chunk.NEWLINE);
 	        document.add(Chunk.NEWLINE);
 
@@ -276,20 +286,16 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Paragraph par5 = new Paragraph();
 	        Chunk c16 = new Chunk("ATTESTA", fontBigBold);
 	        Chunk c17 = new Chunk("che il/la", fontNomeCampo);
-	        Chunk c18 = new Chunk("Dott/Dott.ssa/Sig.ra/Sig " + partecipante.getNome() + " " + partecipante.getCognome(), fontNomeCampo);
-	        Chunk c19 = new Chunk(" in qualità di ", fontNomeCampo);
-	        for(String professione : partecipante.getProfessioni()) {
-	        	c19.append(professione.toLowerCase() + ", ");
-	        }
+	        Chunk c18 = new Chunk("Prof./Prof.ssa/Dott./Dott.ssa/Sig./Sig.ra " + partecipante.getNome() + " " + partecipante.getCognome(), fontNomeCampo);
 	        Chunk c20 = new Chunk("C.F. " + partecipante.getCodiceFiscale() + ", ", fontNomeCampo);
-	        Chunk c21 = new Chunk("ha conseguito:", fontNomeCampo);
+	        Chunk c21 = new Chunk("in qualita di " + partecipante.getTipologiaPartecipante() + " il " + partecipante.getDataCreditiAcquisiti() + "\n" 
+	        			+ " come " + partecipante.getReclutato() + " ha acquisito.", fontNomeCampo);
 	        par5.setAlignment(Element.ALIGN_CENTER);
 	        par5.add(c16);
 	        par5.add(Chunk.NEWLINE);
 	        par5.add(c17);
 	        par5.add(Chunk.NEWLINE);
 	        par5.add(c18);
-	        par5.add(c19);
 	        par5.add(Chunk.NEWLINE);
 	        par5.add(c20);
 	        par5.add(c21);
@@ -298,44 +304,63 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        document.add(Chunk.NEWLINE);
 	        document.add(Chunk.NEWLINE);
 
+	        String[] listNumeroCrediti = splitNumeroCrediti(partecipante.getNumeroCrediti());
+	        
 	        //CREDITI PARTECIPANTE
 	        Paragraph par6 = new Paragraph();
-	        Chunk c22 = new Chunk("N. " + partecipante.getNumeroCrediti() + " Crediti Formativi per l'anno " + evento.getDataFine().getYear(), fontNomeCampo);
+	        Chunk c22 = new Chunk(partecipante.getNumeroCrediti()+"(" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "/" + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
+	        Chunk c27 = new Chunk("(secondo i parametri stabiliti dai " + "'" +  "Criteri per l'assegnazione dei crediti\n" + 
+	        " alle attivita ECM " + "'" + " Allegati all'Accordo Stato Regioni del 02/02/2017)", fontNomeCampo);
+	        Chunk c28 = new Chunk("Nella professione ", fontNomeCampo);
+	        
+	        Phrase phrase = new Phrase();
+	        for(String professione : partecipante.getProfessioni()) {
+				Chunk chunkProfessione = new Chunk(professione, fontNomeCampo);
+				phrase.add(chunkProfessione);
+				phrase.add(",");
+			}
+	        //document.add(phrase);
+	        
+	        Chunk c29 = new Chunk(" disciplina" + "xxx", fontNomeCampo);
+	        
+	        
 	        par6.setAlignment(Element.ALIGN_CENTER);
 	        par6.add(c22);
+	        par6.add(Chunk.NEWLINE);
+	        par6.add(c27);
+	        par6.add(Chunk.NEWLINE);
+	        par6.add(c28);
+	        par6.add(phrase);
+	        par6.add(c29);
 	        document.add(par6);
 
-	       // document.add(Chunk.NEWLINE);
 	        document.add(Chunk.NEWLINE);
 
 	        //FOOTER CONTAINER
 	        Paragraph container = new Paragraph();
 	        container.setKeepTogether(true);
 
-	        //LEGALE RAPPRESENTANTE
-	        Paragraph par7 = new Paragraph();
-	        Chunk c23 = new Chunk("Il RAPPRESENTANTE LEGALE DEL PROVIDER\n" +
-	        		"(ovvero il Responsabile scientifico o Responsabile di formazione,\n" +
-	        		"su delega del Rappresentante Legale del Provider)", fontNomeCampo);
-	        par7.setAlignment(Element.ALIGN_RIGHT);
-	        par7.add(c23);
-	        container.add(par7);
-
-	        container.add(Chunk.NEWLINE);
-	        container.add(Chunk.NEWLINE);
-
 	        //LUOGO DATA FIRMA
 	        Paragraph par8 = new Paragraph();
 	        Chunk c24 = new Chunk("__________________, lì _______________", fontNomeCampo);
-	        Chunk glue = new Chunk(new VerticalPositionMark());
-	        Chunk c25 = new Chunk("___________________________", fontNomeCampo);
 	        par8.add(c24);
-	        par8.add(glue);
-	        par8.add(c25);
 	        container.add(par8);
-
+	        
 	        container.add(Chunk.NEWLINE);
-
+	        
+	        //LEGALE RAPPRESENTANTE
+	        Paragraph par7 = new Paragraph();
+	        Chunk c23 = new Chunk("Il RAPPRESENTANTE LEGALE\n" +
+	        		"(o suo delegato ovvero il Responsabile scientifico dell'evento,su delega del Rappresentante Legale del Provider)", fontNomeCampo);
+	        Chunk c25 = new Chunk("FIRMA___________________________", fontNomeCampo);
+	        par7.setAlignment(Element.ALIGN_LEFT);
+	        par7.add(c23);
+	        par7.add(Chunk.NEWLINE);
+	        par7.add(c25);
+	        container.add(par7);
+	        
+	        container.add(Chunk.NEWLINE);
+	        
 	        //IMMAGINE
 	        Paragraph par9 = new Paragraph();
 			Image img2 = getLogoFooter();
@@ -475,4 +500,50 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 		}
 		return img;
 	}
+	
+	//get logo of Provider to display in to .pdf document 
+	public static Image getLogoProvider(byte[] imgb){
+		//Creazione immagine
+		Image img = null;
+		try {
+			img = Image.getInstance(imgb);
+			Float scala = 1.2F;
+			Float width = 400F/scala;
+			Float height = 85F/scala;
+			img.scaleToFit(width, height);
+            img.setAlignment(Element.ALIGN_CENTER);
+		} catch(Exception e) {
+			//Non mostro l'immagine
+		}
+		return img;
+	}
+	
+	//get image of LogoAziendaZero to display in to .pdf document 
+	public static Image getLogoAziendaZero(){
+		//Creazione immagine
+        Image img = null;
+		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoAziendaZero.png");
+		try {
+			img = Image.getInstance(url);
+			Float scala = 1.2F;
+			Float width = 400F/scala;
+			Float height = 85F/scala;
+			img.scaleToFit(width, height);
+            img.setAlignment(Element.ALIGN_CENTER);
+		} catch(Exception e) {
+			//Non mostro l'immagine
+		}
+		return img;
+	}
+	
+	private String[] splitNumeroCrediti(String numeroCrediti)
+	{
+		numeroCrediti=numeroCrediti.replace(".", " ");
+		String[] nCrediti = numeroCrediti.split(" ");
+		return nCrediti;
+	}
+	
+	
+	
+	
 }

@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -41,6 +42,42 @@ import it.tredi.ecm.service.bean.CurrentUser;
 public class Utils {
 
 	private final static Logger LOGGER = Logger.getLogger(Utils.class);
+	
+	//var to convert numero credito in digit and letter in pdf document
+	private static final String[] tensNames = {
+				    "",
+				    "dieci",
+				    "venti",
+				    "trenta",
+				    "quaranta",
+				    "cinquanta"
+				    
+				  };
+
+	private static final String[] numNames = {
+				    "",
+				    "uno",
+				    "due",
+				    "tre",
+				    "quattro",
+				    "cinque",
+				    "sei",
+				    "sette",
+				    "otto",
+				    "nove",
+				    "dieci",
+				    "undici",
+				    "dodici",
+				    "tredici",
+				    "quattordici",
+				    "quindici",
+				    "sedici",
+				    "diciassette",
+				    "diciotto",
+				    "diciannove"
+				  };
+				  
+				
 
 	/**
 	 * Recupero dell'utente loggato
@@ -483,5 +520,46 @@ public class Utils {
 		}
 		return CodiceFiscaleCheck.OK;
 	}
+	
+	
+	//method to convert numero crediti into digit and letter format for .pdf document
+	private static String convertLessThanOneThousand(int number) {
+		
+		String soFar;
+
+	    if (number % 100 < 20){
+	      soFar = numNames[number % 100];
+	      number /= 100;
+	    }
+	    else {
+	      soFar = numNames[number % 10];
+	      number /= 10;
+
+	      soFar = tensNames[number % 10] + soFar;
+	      number /= 10;
+	    }
+	    if (number == 0) return soFar;
+	    return numNames[number] + " hundred" + soFar;
+	  }
+	
+	public static String convert(long number) {
+	    
+	    if (number == 0) { return "zero"; }
+
+	    String snumber = Long.toString(number);
+	    
+	    String mask = "000000000000";
+	    DecimalFormat df = new DecimalFormat(mask);
+	    snumber = df.format(number);
+	    String result="";
+	    int thousands = Integer.parseInt(snumber.substring(9,12));
+
+	    String tradThousand;
+	    tradThousand = convertLessThanOneThousand(thousands);
+	    result =  result + tradThousand;
+
+	    // remove extra spaces!
+	    return result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");
+	  }	
 
 }
