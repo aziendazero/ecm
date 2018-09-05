@@ -376,7 +376,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        //LEGALE RAPPRESENTANTE
 	        Paragraph par7 = new Paragraph();
 	        Chunk c23 = new Chunk("Il RAPPRESENTANTE LEGALE\n" +
-	        		"(o suo delegato ovvero il Responsabile scientifico dell’evento,su delega del Rappresentante Legale del Provider)", fontNomeCampo);
+	        		"(o suo delegato ovvero il Responsabile scientifico dell’evento, su delega del Rappresentante Legale del Provider)", fontNomeCampo);
 	        Chunk c25 = new Chunk("FIRMA___________________________", fontNomeCampo);
 	        par7.setAlignment(Element.ALIGN_CENTER);
 	        par7.add(c23);
