@@ -191,24 +191,21 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 				logoProvider = getLogoProvider(evento.getProvider().getProviderFile().getData());
 			}
 			
-			PdfPTable table = new PdfPTable(2);
-			table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+			PdfPTable table = new PdfPTable(3);
+			table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 		    table.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
 			//table.setWidthPercentage(100);
 	        //table.setWidths(new int[]{1, 2});
 			PdfPCell cellOne = new PdfPCell(img1);
+			PdfPCell cellx = new PdfPCell();
 			PdfPCell cellTwo = new PdfPCell(logoProvider);
 			cellOne.setBorder(0);
 			cellTwo.setBorder(0);
+			cellx.setBorder(0);
 	        table.addCell(cellOne);
+	        table.addCell(cellx);
 	        table.addCell(cellTwo);
-	       
-			//parImage.add(img1);
-			//parImage.add(logoProvider);
-			//img1.setAlignment(Image.LEFT);
-			//logoProvider.setAlignment(Image.RIGHT);
-			
-			document.add(table);
+	       	document.add(table);
 			document.add(Chunk.NEWLINE);
 
 			//TITOLO
@@ -267,7 +264,6 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        par2.add(c61);
 	        par2.add(c7);
 	        par2.add(c8);
-	        par2.add(Chunk.NEWLINE);
 	        par2.add(c81);
 	        par2.add(c9);
 	        par2.add(Chunk.NEWLINE);
