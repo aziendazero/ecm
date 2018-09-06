@@ -371,6 +371,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 				Set<String> discipline = entry.getValue();
 				nrDiscipline=discipline.size();
 	            for(String disciplina :  discipline) {
+	            	nrDiscipline=nrDiscipline-1;
 	            	Chunk d = new Chunk(disciplina + "", fontNomeCampo);
 	            	phrase.add(d);
 	            	if (nrDiscipline >0)
