@@ -353,22 +353,41 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        par6.add(c27);
 	        par6.add(Chunk.NEWLINE);
 	        par6.add(Chunk.NEWLINE);
-	        par6.add(c28);
-
+	        //par6.add(c28);
+	        
+	        int nrProfessioni = partecipante.getProfessioni_discipline().entrySet().size();
+	        int nrDiscipline;
 	        for (Map.Entry<String, Set<String>> entry : partecipante.getProfessioni_discipline().entrySet()) {
+	        	nrProfessioni=nrProfessioni-1;
+	        	
 	            String professione = entry.getKey();
 
 	            Phrase phrase = new Phrase();
-	            Chunk chunkProfessione = new Chunk(professione, fontNomeCampo);
+	            Chunk chunkProfessione = new Chunk("Nella professione " + professione, fontNomeCampo);
 				phrase.add(chunkProfessione);
 
 				Chunk c29 = new Chunk(" disciplina " , fontNomeCampo);
 				phrase.add(c29);
 				Set<String> discipline = entry.getValue();
+				nrDiscipline=discipline.size();
 	            for(String disciplina :  discipline) {
-	            	Chunk d = new Chunk(disciplina + " ", fontNomeCampo);
+	            	nrDiscipline=nrDiscipline-1;
+	            	Chunk d = new Chunk(disciplina + "", fontNomeCampo);
 	            	phrase.add(d);
+	            	if (nrDiscipline >0)
+	            	{
+	            		Chunk virgola = new Chunk(", ", fontNomeCampo);
+	            		phrase.add(virgola);
+	            	}
 	            }
+	            
+	            if (nrProfessioni >0){
+	            	Chunk chunkPuntoVirgola = new Chunk(";", fontNomeCampo);
+	            	phrase.add(chunkPuntoVirgola);
+	            }
+	            
+	            
+	            
 	            par6.add(phrase);
 	        }
 

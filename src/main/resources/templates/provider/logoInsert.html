@@ -63,7 +63,7 @@
 							
 							<thead>
 								<tr>
-									<th th:text="#{label.provider_logo_dimensione}" style="width:92%;" class="logo-provider">Logo Provider (dimensione massime 2mb,formato consentito JPG o PNG)</th>
+									<th th:text="#{label.provider_logo_dimensione}" style="width:92%;" class="logo-provider">Logo Provider (dimensione massima 2mb,formato consentito JPG o PNG)</th>
 									<th th:text="#{label.azioni}" style="width:8%;"></th>
 								</tr>
 							</thead>
@@ -74,7 +74,7 @@
 									<th:block  th:fragment="allegatoProviderLogoTable">
 										<td>
 											<a th:if="${providerWrapper.provider.providerFile != null}" th:href="@{|/file/${providerWrapper.provider.providerFile.id}|}" th:text="${providerWrapper.provider.providerFile.nomeFile}"></a>
-											<div th:unless="${providerWrapper.provider.providerFile != null}" th:text="#{label.logo_provider_da_inserire}" class="danger"></div>
+											<div th:unless="${providerWrapper.provider.providerFile != null}" th:text="#{label.logo_provider_da_inserire}" class="black-danger"></div>
 									
 										</td>
 										<td>

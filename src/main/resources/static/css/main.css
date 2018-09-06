@@ -672,6 +672,11 @@ h2 {
 	text-decoration: underline;
 }
 
+.black-danger {
+	color: #000000;
+	text-decoration: underline;
+}
+
 .row-group {
 	background-color: #337ab7 !important;
 	color: #fff;
@@ -1542,7 +1547,7 @@ table.dataTable tbody tr.selected {
 }
 
 .logo-provider {
-	color: #d9534f;
+	color: #000000;
 }
 
 /* ERM015130 */
