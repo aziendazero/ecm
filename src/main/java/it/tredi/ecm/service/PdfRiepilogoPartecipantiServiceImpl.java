@@ -381,7 +381,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	            }
 	            
 	            if (nrProfessioni >0){
-	            	Chunk chunkPuntoVirgola = new Chunk(";" + professione, fontNomeCampo);
+	            	Chunk chunkPuntoVirgola = new Chunk(";", fontNomeCampo);
 	            	phrase.add(chunkPuntoVirgola);
 	            }
 	            
