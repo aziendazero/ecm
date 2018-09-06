@@ -3,6 +3,9 @@ package it.tredi.ecm.web;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,10 +25,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.tredi.ecm.cogeaps.Helper;
+import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
+import it.tredi.ecm.service.DisciplinaService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.PdfRiepilogoPartecipantiService;
+import it.tredi.ecm.service.ProfessioneService;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.Message;
 
@@ -37,6 +43,8 @@ public class XSLTController {
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
 	@Autowired private PdfRiepilogoPartecipantiService pdfRiepilogoPartecipantiService;
+	@Autowired private DisciplinaService disciplinaService;
+	@Autowired private ProfessioneService professioneService;
 
 	@RequestMapping(value="/provider/{providerId}/evento/{eventoId}/viewXSLT/{fileId}")
     public ModelAndView viewXSLT(RedirectAttributes redirectAttrs, HttpServletRequest request, HttpServletResponse response,
@@ -69,7 +77,10 @@ public class XSLTController {
 	        Evento evento = eventoService.getEvento(eventoId);
 	        response.setHeader("Content-Disposition", String.format("attachment; filename=\"Riepilogo Partecipanti inviato al CO.Ge.A.P.S. Evento: " + evento.getCodiceIdentificativo() + ".pdf\""));
 
-			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfRiepilogoPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc,true), evento.getCodiceIdentificativo());
+	        Map<String,String> professioniMap = professioneService.getProfessioniMap();
+			Map<String,String> disciplineMap = disciplinaService.getDisciplineMap();
+
+			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfRiepilogoPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc,true,professioniMap,disciplineMap), evento.getCodiceIdentificativo());
 			response.setContentLength(pdfOutputStream.size());
 			response.getOutputStream().write(pdfOutputStream.toByteArray());
 		}
@@ -89,7 +100,10 @@ public class XSLTController {
 	        Evento evento = eventoService.getEvento(eventoId);
 	        response.setHeader("Content-Disposition", String.format("attachment; filename=\"Attestati per i Partecipanti " + evento.getCodiceIdentificativo() + ".pdf\""));
 
-			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfAttestatiPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc,false), evento);
+	    	Map<String,String> professioniMap = professioneService.getProfessioniMap();
+			Map<String,String> disciplineMap = disciplinaService.getDisciplineMap();
+
+			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfAttestatiPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc,false,professioniMap,disciplineMap), evento);
 			response.setContentLength(pdfOutputStream.size());
 			response.getOutputStream().write(pdfOutputStream.toByteArray());
 		}

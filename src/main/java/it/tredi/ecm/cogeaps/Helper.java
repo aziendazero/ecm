@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import javax.xml.validation.SchemaFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import it.tredi.ecm.dao.entity.Disciplina;
 import it.tredi.ecm.dao.entity.Evento;
@@ -34,6 +36,7 @@ import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.pdf.PdfPartecipanteInfo;
 import it.tredi.ecm.pdf.PdfRiepilogoPartecipantiInfo;
+import it.tredi.ecm.service.DisciplinaService;
 
 public class Helper {
 
@@ -47,9 +50,12 @@ public class Helper {
 
 	public final static String PARTECIPANTE_NODE_NAME = "partecipante";
 	public final static String PROFESSIONE_NODE_NAME = "professione";
+	public final static String DISCIPLINE_NODE_NAME = "disciplina";
+
+	@Autowired private DisciplinaService disciplinaService;
 
 	//TODO - gestire eccezioni
-	
+
 	public static Set<String> createCodProfessioneSetFromEvento(Evento evento){
 		Set<String> codProf = new HashSet<String>();
 		Set<Professione> professioni = evento.getProfessioniSelezionate();
@@ -58,10 +64,10 @@ public class Helper {
 			if(p.getCodiceCogeaps() != null && !p.getCodiceCogeaps().isEmpty())
 				codProf.add(p.getCodiceCogeaps());
 		}
-		
+
 		return codProf;
 	}
-	
+
 	public static Set<String> createCodDisciplinaSetFromEvento(Evento evento){
 		Set<String> codDisc = new HashSet<String>();
 		Set<Disciplina> discipline = evento.getDiscipline();
@@ -70,7 +76,7 @@ public class Helper {
 			if(d.getCodiceCogeaps() != null && !d.getCodiceCogeaps().isEmpty())
 				codDisc.add(d.getCodiceCogeaps());
 		}
-		
+
 		return codDisc;
 	}
 
@@ -134,7 +140,7 @@ public class Helper {
 	}
 
 	//crea la lista di oggetti utilizzati per estrapolare i dati relativi al partecipante
-	public static PdfRiepilogoPartecipantiInfo extractRiepilogoPartecipantiFromXML(Document xmlDoc, boolean withDocenti) throws Exception {
+	public static PdfRiepilogoPartecipantiInfo extractRiepilogoPartecipantiFromXML(Document xmlDoc, boolean withDocenti, Map<String,String> professioniMap, Map<String,String> disciplineMap) throws Exception {
 		PdfRiepilogoPartecipantiInfo pdfInfo = new PdfRiepilogoPartecipantiInfo();
 		Element eventoEl = xmlDoc.getRootElement().element("evento");
 		List<Element> partecipantiEl = eventoEl.elements(PARTECIPANTE_NODE_NAME);
@@ -142,14 +148,14 @@ public class Helper {
 		if(withDocenti){
 			//prendo tutti
 			for(Element partecipanteEl : partecipantiEl) {
-				PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl);
+				PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl, professioniMap, disciplineMap);
 				pdfInfo.getPartecipanti().add(pdfPartecipanteInfo);
 			}
 		}else{
 			//prendo solo i partecipanti e non i docenti
 			for(Element partecipanteEl : partecipantiEl) {
 				if(partecipanteEl.attributeValue("ruolo", "").equalsIgnoreCase("P")){
-					PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl);
+					PdfPartecipanteInfo pdfPartecipanteInfo = extractPartecipanteFromXML(partecipanteEl, professioniMap, disciplineMap);
 					pdfInfo.getPartecipanti().add(pdfPartecipanteInfo);
 				}
 			}
@@ -159,7 +165,7 @@ public class Helper {
 	}
 
 	//crea l'oggetto utilizzato per stampare i dati del partecipante nel pdf
-	private static PdfPartecipanteInfo extractPartecipanteFromXML(Element partecipanteEl) throws Exception {
+	private static PdfPartecipanteInfo extractPartecipanteFromXML(Element partecipanteEl, Map<String,String> professioniMap, Map<String,String> disciplineMap) throws Exception {
 		PdfPartecipanteInfo partecipante = new PdfPartecipanteInfo();
 		partecipante.setNome(partecipanteEl.attributeValue("nome"));
 		partecipante.setCognome(partecipanteEl.attributeValue("cognome"));
@@ -178,6 +184,8 @@ public class Helper {
 		partecipante.setNumeroCrediti(partecipanteEl.attributeValue("cred_acq"));
 		partecipante.setDataCreditiAcquisiti(partecipanteEl.attributeValue("data_acq"));
 		List<Element> professioniEl = partecipanteEl.elements(PROFESSIONE_NODE_NAME);
+
+		/*
 		//prende il nome della professione dal file professioni.xml come l'XSLT resolver e lo salvo in una mappa
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 	    String xmlFileUri = classLoader.getResource("xsltResolver/professioni.xml").getPath();
@@ -195,6 +203,24 @@ public class Helper {
 			if(nomeProfessione != null)
 				partecipante.getProfessioni().add(nomeProfessione.toUpperCase());
 		}
+		*/
+
+		/* nuovo metodo che tiene conto anche delle discipline */
+		for(Element professioneEl : professioniEl) {
+			String nomeProfessione = professioniMap.get(professioneEl.attributeValue("cod_prof"));
+			if(nomeProfessione != null) {
+				List<Element> disciplineEl = professioneEl.elements(DISCIPLINE_NODE_NAME);
+				Set<String> disciplineList = new HashSet();
+				for(Element disciplinaEl : disciplineEl) {
+					disciplineList.add(disciplineMap.get(disciplinaEl.getText()));
+				}
+
+				partecipante.getProfessioni_discipline().put(nomeProfessione, disciplineList);
+			}else {
+				throw new Exception("Professione non trovata!");
+			}
+		}
+
 		return partecipante;
 	}
 
