@@ -46,6 +46,11 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 	}
 	
 	@Override
+	public Set<Obiettivo> getObiettiviNazionaliVersione1() {
+		return getObiettiviNazionali(EventoVersioneEnum.UNO_PRIMA_2018);
+	}
+
+	@Override
 	public Set<Obiettivo> getObiettiviRegionali() {
 		LOGGER.debug("Recupero tutti gli Obiettivi Regionali");
 		return obiettivoRepository.findAllByNazionale(false);

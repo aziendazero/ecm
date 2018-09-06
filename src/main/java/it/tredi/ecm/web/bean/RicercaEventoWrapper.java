@@ -29,6 +29,7 @@ public class RicercaEventoWrapper {
 	private String titoloEvento;
 
 	private Set<Obiettivo> obiettiviNazionaliSelezionati;
+	private Set<Obiettivo> obiettiviNazionaliSelezionatiVersione1;
 	private Set<Obiettivo> obiettiviRegionaliSelezionati;
 	private Set<Professione> professioniSelezionate;
 	private Set<Disciplina> disciplineSelezionate;
@@ -61,6 +62,7 @@ public class RicercaEventoWrapper {
 	private Set<TipologiaEventoFADEnum> tipologieFAD;
 
 	private Set<Obiettivo> obiettiviNazionaliList;
+	private Set<Obiettivo> obiettiviNazionaliListVersione1;
 	private Set<Obiettivo> obiettiviRegionaliList;
 	private Set<Professione> professioniList;
 	private Set<Disciplina> disciplineList;

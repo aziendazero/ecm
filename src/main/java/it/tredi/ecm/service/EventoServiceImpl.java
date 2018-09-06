@@ -47,8 +47,6 @@ import it.tredi.ecm.cogeaps.XmlReportValidator;
 import it.tredi.ecm.dao.entity.Account;
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.AnagrafeRegionaleCrediti;
-import it.tredi.ecm.dao.entity.AnagraficaEvento;
-import it.tredi.ecm.dao.entity.AnagraficaEventoBase;
 import it.tredi.ecm.dao.entity.AzioneRuoliEventoFSC;
 import it.tredi.ecm.dao.entity.BaseEntityDefaultId;
 import it.tredi.ecm.dao.entity.DettaglioAttivitaFAD;
@@ -95,10 +93,10 @@ import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.dao.enumlist.VerificaPresenzaPartecipantiEnum;
 import it.tredi.ecm.dao.repository.EventoPianoFormativoRepository;
 import it.tredi.ecm.dao.repository.EventoRepository;
+import it.tredi.ecm.dao.repository.ObiettivoRepository;
 import it.tredi.ecm.dao.repository.PartnerRepository;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
-import it.tredi.ecm.dao.repository.ObiettivoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
 import it.tredi.ecm.service.bean.EcmProperties;
@@ -2326,25 +2324,20 @@ public class EventoServiceImpl implements EventoService {
 			}
 
 			//OBIETTIVI NAZIONALI
-			if(wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty()){
+			if(
+				(wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty())
+					||
+				(wrapper.getObiettiviNazionaliSelezionatiVersione1() != null && !wrapper.getObiettiviNazionaliSelezionatiVersione1().isEmpty())
+				){
 				
-				//Get old list of obiettivo nazionali from new list of obiettivo nazionali which is selected from selectbox
-				obiettiviNazionaliOldList.clear();
-				for(Obiettivo obiettiviNazionali : wrapper.getObiettiviNazionaliSelezionati()){
-					Obiettivo o = new Obiettivo();
-					o = obiettivoRepository.findOneByCodiceCogeapsAndNazionaleAndVersione(obiettiviNazionali.getCodiceCogeaps(),true,1);
-					obiettiviNazionaliOldList.add(o);
-				}
-				
-				//Use old list of obiettiovo Nazionali if versione 1 is checked 			
-				if ((wrapper.getVersione() != null) && (wrapper.getVersione() == 1)){
-					query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN (:obiettiviNazionaliOldList)");
-					params.put("obiettiviNazionaliOldList", obiettiviNazionaliOldList);
-				}else {
+				if ((wrapper.getVersione() != null) && (wrapper.getVersione() == 1)
+						&& wrapper.getObiettiviNazionaliSelezionatiVersione1() != null && !wrapper.getObiettiviNazionaliSelezionatiVersione1().isEmpty()){
+					query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN (:obiettiviNazionaliSelezionati)");
+					params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionatiVersione1());
+				} else if (wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty()) {
 					query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN (:obiettiviNazionaliSelezionati)");
 					params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionati());
 				}
-			
 			}
 			
 			//OBIETTIVI REGIONALI

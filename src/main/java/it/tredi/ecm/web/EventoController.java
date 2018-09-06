@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -2378,6 +2377,7 @@ public class EventoController {
 		wrapper.setProfessioniList(professioneService.getAllProfessioni());
 		wrapper.setDisciplineList(disciplinaService.getAllDiscipline());
 		wrapper.setObiettiviNazionaliList(obiettivoService.getObiettiviNazionali());
+		wrapper.setObiettiviNazionaliListVersione1(obiettivoService.getObiettiviNazionaliVersione1());
 		wrapper.setObiettiviRegionaliList(obiettivoService.getObiettiviRegionali());
 		return wrapper;
 	}
