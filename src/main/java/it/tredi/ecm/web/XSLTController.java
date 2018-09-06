@@ -103,7 +103,7 @@ public class XSLTController {
 	    	Map<String,String> professioniMap = professioneService.getProfessioniMap();
 			Map<String,String> disciplineMap = disciplinaService.getDisciplineMap();
 
-			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfAttestatiPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc,false,professioniMap,disciplineMap), evento);
+			ByteArrayOutputStream pdfOutputStream = pdfRiepilogoPartecipantiService.creaOutputSteramPdfAttestatiPartecipanti(Helper.extractRiepilogoPartecipantiFromXML(xmlDoc,true,professioniMap,disciplineMap), evento);
 			response.setContentLength(pdfOutputStream.size());
 			response.getOutputStream().write(pdfOutputStream.toByteArray());
 		}
