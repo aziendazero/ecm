@@ -185,7 +185,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 			
 	        
 			parImage.setAlignment(Element.ALIGN_CENTER);
-			Image logoProvider=null;
+			Image logoProvider=getLogoProviderFromPath();
 			Image img1 = getLogoAziendaZero();
 			if ((evento.getProvider().getProviderFile() !=null)) {
 				logoProvider = getLogoProvider(evento.getProvider().getProviderFile().getData());
@@ -582,6 +582,22 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 		//Creazione immagine
         Image img = null;
 		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoAziendaZero.png");
+		try {
+			img = Image.getInstance(url);
+			Float scala = 1.2F;
+			Float width = 400F/scala;
+			Float height = 85F/scala;
+			img.scaleToFit(width, height);
+            img.setAlignment(Element.ALIGN_CENTER);
+		} catch(Exception e) {
+			//Non mostro l'immagine
+		}
+		return img;
+	}
+	public static Image getLogoProviderFromPath(){
+		//Creazione immagine
+        Image img = null;
+		URL url = Thread.currentThread().getContextClassLoader().getResource("LogoProvider.png");
 		try {
 			img = Image.getInstance(url);
 			Float scala = 1.2F;
