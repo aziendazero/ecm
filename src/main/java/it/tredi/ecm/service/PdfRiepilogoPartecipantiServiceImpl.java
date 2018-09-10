@@ -182,15 +182,19 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 
 			//IMMAGINE
 			Paragraph parImage = new Paragraph();
-			
-	        
+
+
 			parImage.setAlignment(Element.ALIGN_CENTER);
-			Image logoProvider=getLogoProviderFromPath();
 			Image img1 = getLogoAziendaZero();
+
+			Image logoProvider = null;
 			if ((evento.getProvider().getProviderFile() !=null)) {
 				logoProvider = getLogoProvider(evento.getProvider().getProviderFile().getData());
 			}
-			
+
+			if(logoProvider == null)
+				logoProvider=getLogoProviderFromPath();
+
 			PdfPTable table = new PdfPTable(3);
 			table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 		    table.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -304,7 +308,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        	varShow="Partecipante Reclutato";
 	        }
 	        if (partecipante.getReclutato()=="NO"){
-	        
+
 	        	varShow="Partecipante non reclutato";
 	        }
 	        Paragraph par5 = new Paragraph();
@@ -354,12 +358,12 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        par6.add(Chunk.NEWLINE);
 	        par6.add(Chunk.NEWLINE);
 	        //par6.add(c28);
-	        
+
 	        int nrProfessioni = partecipante.getProfessioni_discipline().entrySet().size();
 	        int nrDiscipline;
 	        for (Map.Entry<String, Set<String>> entry : partecipante.getProfessioni_discipline().entrySet()) {
 	        	nrProfessioni=nrProfessioni-1;
-	        	
+
 	            String professione = entry.getKey();
 
 	            Phrase phrase = new Phrase();
@@ -380,14 +384,14 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	            		phrase.add(virgola);
 	            	}
 	            }
-	            
+
 	            if (nrProfessioni >0){
 	            	Chunk chunkPuntoVirgola = new Chunk("; ", fontNomeCampo);
 	            	phrase.add(chunkPuntoVirgola);
 	            }
-	            
-	            
-	            
+
+
+
 	            par6.add(phrase);
 	        }
 
