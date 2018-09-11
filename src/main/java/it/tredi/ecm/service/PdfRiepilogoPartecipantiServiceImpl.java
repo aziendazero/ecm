@@ -4,8 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -173,7 +176,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
         document.add(table);
 	}
 
-	private void writePdfAttestatiPartecipanti(Document document, PdfRiepilogoPartecipantiInfo pdfRiepilogoPartecipantiInfo, Evento evento) throws DocumentException {
+	private void writePdfAttestatiPartecipanti(Document document, PdfRiepilogoPartecipantiInfo pdfRiepilogoPartecipantiInfo, Evento evento) throws DocumentException, ParseException {
 
 		Provider provider = evento.getProvider();
 
@@ -311,12 +314,20 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 
 	        	varShow="Partecipante non reclutato";
 	        }
+	        
+	      
+	        
+	        SimpleDateFormat formatConvertStringToDate = new SimpleDateFormat("yyyy-MM-dd");
+	        Date partecipanteDateCreditiAcquisiti = formatConvertStringToDate.parse(partecipante.getDataCreditiAcquisiti());
+	        String DATE_FORMAT = "dd/MM/yyyy";
+	        SimpleDateFormat formatConvert = new SimpleDateFormat(DATE_FORMAT);
+	        	        
 	        Paragraph par5 = new Paragraph();
 	        Chunk c16 = new Chunk("ATTESTA", fontBigBold);
 	        Chunk c17 = new Chunk("che il/la", fontNomeCampo);
 	        Chunk c18 = new Chunk("Prof./Prof.ssa/Dott./Dott.ssa/Sig./Sig.ra " + partecipante.getNome() + " " + partecipante.getCognome(), fontNomeCampo);
 	        Chunk c20 = new Chunk("C.F. " + partecipante.getCodiceFiscale(), fontNomeCampo);
-	        Chunk c21 = new Chunk(" in qualità di " + partecipante.getTipologiaPartecipante() + " il " + partecipante.getDataCreditiAcquisiti() + "\n"
+	        Chunk c21 = new Chunk(" in qualità di " + partecipante.getTipologiaPartecipante() + " il " + formatConvert.format(partecipanteDateCreditiAcquisiti) + "\n"
 	        			+ " come " + varShow + " ha acquisito:", fontNomeCampo);
 	        par5.setAlignment(Element.ALIGN_CENTER);
 	        par5.add(c16);
