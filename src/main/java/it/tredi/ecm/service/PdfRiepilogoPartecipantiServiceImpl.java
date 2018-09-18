@@ -308,14 +308,16 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        //ATTESTA
 	        String varShow="";
 	        if (partecipante.getReclutato()=="SI"){
-	        	varShow="Partecipante Reclutato";
+	        	varShow=" come Partecipante Reclutato";
 	        }
 	        if (partecipante.getReclutato()=="NO"){
 
-	        	varShow="Partecipante non reclutato";
+	        	varShow="come Partecipante non reclutato";
 	        }
 	        
-	      
+	        if ((partecipante.getTipologiaPartecipante()!="PARTECIPANTE") && (partecipante.getReclutato()=="NO")) {
+	        	varShow="";
+	        }
 	        
 	        SimpleDateFormat formatConvertStringToDate = new SimpleDateFormat("yyyy-MM-dd");
 	        Date partecipanteDateCreditiAcquisiti = formatConvertStringToDate.parse(partecipante.getDataCreditiAcquisiti());
@@ -328,7 +330,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Chunk c18 = new Chunk("Prof./Prof.ssa/Dott./Dott.ssa/Sig./Sig.ra " + partecipante.getNome() + " " + partecipante.getCognome(), fontNomeCampo);
 	        Chunk c20 = new Chunk("C.F. " + partecipante.getCodiceFiscale(), fontNomeCampo);
 	        Chunk c21 = new Chunk(" in qualità di " + partecipante.getTipologiaPartecipante() + " il " + formatConvert.format(partecipanteDateCreditiAcquisiti) + "\n"
-	        			+ " come " + varShow + " ha acquisito:", fontNomeCampo);
+	        			+ "" + varShow + " ha acquisito:", fontNomeCampo);
 	        par5.setAlignment(Element.ALIGN_CENTER);
 	        par5.add(c16);
 	        par5.add(Chunk.NEWLINE);
@@ -347,7 +349,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 
 	        //CREDITI PARTECIPANTE
 	        Paragraph par6 = new Paragraph();
-	        Chunk c22 = new Chunk(partecipante.getNumeroCrediti()+" (" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "/" + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
+	        Chunk c22 = new Chunk(partecipante.getNumeroCrediti()+" (" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "," + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
 	        Chunk c27 = new Chunk("(secondo i parametri stabiliti dai " + "‘‘" +  "Criteri per l’assegnazione dei crediti\n" +
 	        " alle attivita ECM" + "’’" + " Allegati all’Accordo Stato Regioni del 02/02/2017)", fontNomeCampo);
 	        Chunk c28 = new Chunk("Nella professione ", fontNomeCampo);
