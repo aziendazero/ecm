@@ -307,15 +307,17 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 
 	        //ATTESTA
 	        String varShow="";
-	        if (partecipante.getReclutato()=="SI"){
-	        	varShow=" come Partecipante Reclutato";
+	        if (partecipante.getTipologiaPartecipante()=="PARTECIPANTE") {
+		        if (partecipante.getReclutato()=="SI"){
+		        	varShow=" come Partecipante Reclutato";
+		        }
+		        if (partecipante.getReclutato()=="NO"){
+	
+		        	varShow="come Partecipante non reclutato";
+		        }
 	        }
-	        if (partecipante.getReclutato()=="NO"){
-
-	        	varShow="come Partecipante non reclutato";
-	        }
-	        
-	        if ((partecipante.getTipologiaPartecipante()!="PARTECIPANTE") && (partecipante.getReclutato()=="NO")) {
+	         	        
+	        else {
 	        	varShow="";
 	        }
 	        
