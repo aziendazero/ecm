@@ -254,12 +254,12 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Chunk c6 = new Chunk(", dal titolo: " , fontNomeCampo);
 	        Chunk c61 = new Chunk(evento.getTitolo(), fontNomeCampo);
 	        Chunk c7 = new Chunk("", fontNomeCampo);
-	        //if(!(evento instanceof EventoFAD)) {
+	        if(!(evento instanceof EventoFAD)) {
 	        	if(evento instanceof EventoRES)
 	        		c7.append(" e tenutosi a " + ((EventoRES) evento).getSedeEvento().getLuogo());
 	        	else if(evento instanceof EventoFSC)
 	        		c7.append(" e tenutosi a " + ((EventoFSC) evento).getSedeEvento().getLuogo());
-	        //}
+	        }
 	        Chunk c8 = new Chunk( " dal " + dateTimeFormatter.format(evento.getDataInizio()) + " al " , fontNomeCampo);
 	        Chunk c81 = new Chunk(dateTimeFormatter.format(evento.getDataFine()), fontNomeCampo);
 	        Chunk c9 = new Chunk(" avente come obiettivo formativo: " + evento.getObiettivoNazionale().getNome(), fontNomeCampo);
@@ -307,15 +307,19 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 
 	        //ATTESTA
 	        String varShow="";
-	        if (partecipante.getReclutato()=="SI"){
-	        	varShow="Partecipante Reclutato";
+	        if (partecipante.getTipologiaPartecipante()=="PARTECIPANTE") {
+		        if (partecipante.getReclutato()=="SI"){
+		        	varShow=" reclutato";
+		        }
+		        if (partecipante.getReclutato()=="NO"){
+	
+		        	varShow=" non reclutato";
+		        }
 	        }
-	        if (partecipante.getReclutato()=="NO"){
-
-	        	varShow="Partecipante non reclutato";
+	         	        
+	        else {
+	        	varShow="";
 	        }
-	        
-	      
 	        
 	        SimpleDateFormat formatConvertStringToDate = new SimpleDateFormat("yyyy-MM-dd");
 	        Date partecipanteDateCreditiAcquisiti = formatConvertStringToDate.parse(partecipante.getDataCreditiAcquisiti());
@@ -324,11 +328,11 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        	        
 	        Paragraph par5 = new Paragraph();
 	        Chunk c16 = new Chunk("ATTESTA", fontBigBold);
-	        Chunk c17 = new Chunk("che il/la", fontNomeCampo);
-	        Chunk c18 = new Chunk("Prof./Prof.ssa/Dott./Dott.ssa/Sig./Sig.ra " + partecipante.getNome() + " " + partecipante.getCognome(), fontNomeCampo);
+	        Chunk c17 = new Chunk("che ", fontNomeCampo);
+	        Chunk c18 = new Chunk("" + partecipante.getNome() + " " + partecipante.getCognome(), fontNomeCampo);
 	        Chunk c20 = new Chunk("C.F. " + partecipante.getCodiceFiscale(), fontNomeCampo);
-	        Chunk c21 = new Chunk(" in qualità di " + partecipante.getTipologiaPartecipante() + " il " + formatConvert.format(partecipanteDateCreditiAcquisiti) + "\n"
-	        			+ " come " + varShow + " ha acquisito:", fontNomeCampo);
+	        Chunk c21 = new Chunk(" in qualità di " + partecipante.getTipologiaPartecipante() + varShow + " il " + formatConvert.format(partecipanteDateCreditiAcquisiti) + "\n"
+	        			+ " ha acquisito:", fontNomeCampo);
 	        par5.setAlignment(Element.ALIGN_CENTER);
 	        par5.add(c16);
 	        par5.add(Chunk.NEWLINE);
@@ -347,7 +351,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 
 	        //CREDITI PARTECIPANTE
 	        Paragraph par6 = new Paragraph();
-	        Chunk c22 = new Chunk(partecipante.getNumeroCrediti()+" (" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "/" + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
+	        Chunk c22 = new Chunk(partecipante.getNumeroCrediti()+" (" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "," + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
 	        Chunk c27 = new Chunk("(secondo i parametri stabiliti dai " + "‘‘" +  "Criteri per l’assegnazione dei crediti\n" +
 	        " alle attivita ECM" + "’’" + " Allegati all’Accordo Stato Regioni del 02/02/2017)", fontNomeCampo);
 	        Chunk c28 = new Chunk("Nella professione ", fontNomeCampo);
