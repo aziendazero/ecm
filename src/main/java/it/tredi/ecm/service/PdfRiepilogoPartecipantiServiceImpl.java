@@ -330,7 +330,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        Chunk c16 = new Chunk("ATTESTA", fontBigBold);
 	        Chunk c17 = new Chunk("che ", fontNomeCampo);
 	        Chunk c18 = new Chunk("" + partecipante.getNome() + " " + partecipante.getCognome(), fontNomeCampo);
-	        Chunk c20 = new Chunk("C.F. " + partecipante.getCodiceFiscale(), fontNomeCampo);
+	        Chunk c20 = new Chunk(" C.F. " + partecipante.getCodiceFiscale(), fontNomeCampo);
 	        Chunk c21 = new Chunk(" in qualità di " + partecipante.getTipologiaPartecipante() + varShow + " il " + formatConvert.format(partecipanteDateCreditiAcquisiti) + "\n"
 	        			+ " ha acquisito:", fontNomeCampo);
 	        par5.setAlignment(Element.ALIGN_CENTER);
@@ -339,7 +339,6 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        par5.add(c17);
 	        par5.add(Chunk.NEWLINE);
 	        par5.add(c18);
-	        par5.add(Chunk.NEWLINE);
 	        par5.add(c20);
 	        par5.add(c21);
 	        document.add(par5);
@@ -348,10 +347,12 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        document.add(Chunk.NEWLINE);
 
 	        String[] listNumeroCrediti = splitNumeroCrediti(partecipante.getNumeroCrediti());
-
+  
+	        String nrCredito = partecipante.getNumeroCrediti().replace(".", ",");
+	        
 	        //CREDITI PARTECIPANTE
 	        Paragraph par6 = new Paragraph();
-	        Chunk c22 = new Chunk(partecipante.getNumeroCrediti()+" (" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "," + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
+	        Chunk c22 = new Chunk(nrCredito+" (" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "," + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
 	        Chunk c27 = new Chunk("(secondo i parametri stabiliti dai " + "‘‘" +  "Criteri per l’assegnazione dei crediti\n" +
 	        " alle attivita ECM" + "’’" + " Allegati all’Accordo Stato Regioni del 02/02/2017)", fontNomeCampo);
 	        Chunk c28 = new Chunk("Nella professione ", fontNomeCampo);
