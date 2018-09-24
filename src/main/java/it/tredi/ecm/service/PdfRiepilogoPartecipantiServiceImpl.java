@@ -338,6 +338,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        par5.add(Chunk.NEWLINE);
 	        par5.add(c17);
 	        par5.add(Chunk.NEWLINE);
+	        par5.add(Chunk.NEWLINE);
 	        par5.add(c18);
 	        par5.add(c20);
 	        par5.add(c21);
