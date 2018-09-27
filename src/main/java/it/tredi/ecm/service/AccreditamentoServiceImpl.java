@@ -1970,6 +1970,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 				//invia l'email di notifica al responsabile segreteria ECM
 				sendEmailToResponsabili(accreditamentoId);
 			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE) {
+				//TODO settare data inizio accreditamento
+				settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate.now(), accreditamentoId, stato);
+
 				File lettera = accreditamento.getLetteraAccompagnatoriaAccreditamento();
 				File decreto = accreditamento.getDecretoAccreditamento();
 				Set<Long> fileAllegatiIds = new HashSet<Long>();
@@ -2244,8 +2247,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		tokenService.createBonitaSemaphore(accreditamentoId);
 
 		workflowService.eseguiTaskInserimentoEsitoOdgForCurrentUser(getAccreditamento(accreditamentoId), stato);
-		if(!getAccreditamento(accreditamentoId).isVariazioneDati())
-			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(seduta.getData(), accreditamentoId, stato);
+//		if(!getAccreditamento(accreditamentoId).isVariazioneDati())
+//			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(seduta.getData(), accreditamentoId, stato);
 
 		//rilascio semaforo bonita
 		tokenService.removeBonitaSemaphore(accreditamentoId);
@@ -2348,8 +2351,8 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 		workflowService.eseguiTaskValutazioneSulCampoForCurrentUser(accreditamento, accreditamento.getVerbaleValutazioneSulCampo().getTeamLeader().getUsernameWorkflow(), destinazioneStatoDomandaStandard);
 
-		if(destinazioneStatoDomandaStandard == AccreditamentoStatoEnum.ACCREDITATO)
-			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(accreditamento.getVerbaleValutazioneSulCampo().getGiorno(), accreditamentoId, destinazioneStatoDomandaStandard);
+//		if(destinazioneStatoDomandaStandard == AccreditamentoStatoEnum.ACCREDITATO)
+//			settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(accreditamento.getVerbaleValutazioneSulCampo().getGiorno(), accreditamentoId, destinazioneStatoDomandaStandard);
 
 		//rilascio semaforo bonita
 		tokenService.removeBonitaSemaphore(accreditamentoId);
