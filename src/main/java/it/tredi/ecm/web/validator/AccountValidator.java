@@ -30,7 +30,14 @@ public class AccountValidator{
 	public void validate(Object target, Errors errors, String prefix) {
 		LOGGER.info(Utils.getLogMessage("Validazione Account"));
 		Account account = (Account)target;
-		validateAccount(account, errors, prefix);
+		validateFullAccount(account, errors, prefix);
+		Utils.logDebugErrorFields(LOGGER, errors);
+	}
+
+	public void validateForProviderRegistration(Object target, Errors errors, String prefix) {
+		LOGGER.info(Utils.getLogMessage("Validazione Account"));
+		Account account = (Account)target;
+		validateCommon(account, errors, prefix);
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
@@ -69,7 +76,7 @@ public class AccountValidator{
 		Utils.logDebugErrorFields(LOGGER, errors);
 	}
 
-	private void validateAccount(Account account, Errors errors, String prefix){
+	private void validateCommon(Account account, Errors errors, String prefix) {
 		//Presenza e univocità dello username
 		if(account.getUsername() == null || account.getUsername().isEmpty()){
 			errors.rejectValue(prefix + "username", "error.empty");
@@ -99,16 +106,20 @@ public class AccountValidator{
 				}
 			}
 		}
-		
+	}
+
+	private void validateFullAccount(Account account, Errors errors, String prefix){
+		validateCommon(account, errors, prefix);
+
 		//Presenza dello cognome
 		if(account.getCognome() == null || account.getCognome().isEmpty()){
 			errors.rejectValue(prefix + "cognome", "error.empty");
 		}
-		
+
 		//Presenza dello nome
 		if(account.getNome() == null || account.getNome().isEmpty()){
 			errors.rejectValue(prefix + "nome", "error.empty");
 		}
-		
+
 	}
 }
