@@ -155,10 +155,10 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 		addCellLabelCampoValoreString("label.componente_crec_team_leader", verbale.getTeamLeader().getFullNameBase(), tableFields);
 		addCellLabelCampoValoreString("label.osservatore_regionale", verbale.getOsservatoreRegionale().getFullNameBase(), tableFields);
 		for(Account a : verbale.getComponentiSegreteria()) {
-			addCellLabelCampoValoreStringWithParam("label.componente_segreteria_ecm", null, a.getFullNameBase(), tableFields);
+			addCellLabelCampoValoreStringWithParam("label.componente_UOC_FSPS", null, a.getFullNameBase(), tableFields);
 		}
-		if(verbale.getReferenteInformatico() != null)
-			addCellLabelCampoValoreString("label.referente_informatico", verbale.getReferenteInformatico().getFullNameBase(), tableFields);
+		/*if(verbale.getReferenteInformatico() != null)
+			addCellLabelCampoValoreString("label.referente_informatico", verbale.getReferenteInformatico().getFullNameBase(), tableFields);*/
 		if(verbale.getIsPresenteLegaleRappresentante() != null) {
 			if(verbale.getIsPresenteLegaleRappresentante())
 				addCellLabelCampoValoreLegaleRappr("label.sottoscrivente", accreditamento.getProvider().getLegaleRappresentante(), tableFields);
@@ -428,13 +428,13 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
         String[] valuesFirmaOssRegionale = {messageSource.getMessage("label.componente_osservatorio_regionale", null, Locale.getDefault()), verbale.getOsservatoreRegionale().getFullNameBase()};
         parFirmaOssRegionale.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaOssRegionale, Locale.getDefault()));
         document.add(parFirmaOssRegionale);
-
+        
         //FIRMA COMPONENTI SEGRETERIA
         for(Account a : verbale.getComponentiSegreteria()) {
         	Paragraph parFirmaECM = new Paragraph();
         	parFirmaECM.setAlignment(Element.ALIGN_LEFT);
         	parFirmaECM.setFont(fontValoreCampo);
-            String[] valuesFirmaECM = {messageSource.getMessage("label.componente_segreteria_ecm", null, Locale.getDefault()), a.getFullNameBase()};
+            String[] valuesFirmaECM = {messageSource.getMessage("label.componente_UOC_FSPS", null, Locale.getDefault()), a.getFullNameBase()};
             parFirmaECM.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaECM, Locale.getDefault()));
             document.add(parFirmaECM);
         }
