@@ -2257,7 +2257,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 	@Override
 	public void settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate dataSeduta, Long accreditamentoId, AccreditamentoStatoEnum stato) throws Exception{
 		Provider provider = providerService.getProvider(getProviderIdForAccreditamento(accreditamentoId));
-		if(stato == AccreditamentoStatoEnum.ACCREDITATO){
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE){
 			Accreditamento accreditamento = getAccreditamento(accreditamentoId);
 			if(accreditamento.isProvvisorio()) {
 				provider.setStatus(ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE);
