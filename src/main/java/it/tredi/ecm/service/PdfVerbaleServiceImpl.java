@@ -157,8 +157,8 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 		for(Account a : verbale.getComponentiSegreteria()) {
 			addCellLabelCampoValoreStringWithParam("label.componente_UOC_FSPS", null, a.getFullNameBase(), tableFields);
 		}
-		/*if(verbale.getReferenteInformatico() != null)
-			addCellLabelCampoValoreString("label.referente_informatico", verbale.getReferenteInformatico().getFullNameBase(), tableFields);*/
+		if(verbale.getReferenteInformatico() != null)
+			addCellLabelCampoValoreString("label.referente_informatico", verbale.getReferenteInformatico().getFullNameBase(), tableFields);
 		if(verbale.getIsPresenteLegaleRappresentante() != null) {
 			if(verbale.getIsPresenteLegaleRappresentante())
 				addCellLabelCampoValoreLegaleRappr("label.sottoscrivente", accreditamento.getProvider().getLegaleRappresentante(), tableFields);
