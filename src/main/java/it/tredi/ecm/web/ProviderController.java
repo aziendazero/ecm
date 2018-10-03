@@ -256,6 +256,7 @@ public class ProviderController {
 			Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/save"));
 		try{
+			
 			//validazione del provider
 			providerValidator.validateForAccreditamento(providerWrapper.getProvider(), result, "provider.");
 

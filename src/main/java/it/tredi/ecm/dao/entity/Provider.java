@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -66,7 +67,7 @@ public class Provider extends BaseEntity {
 
 	/* ACCOUNTS DEL PROVIDER */
 	@DiffIgnore
-	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE })
+	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE },fetch=FetchType.EAGER)
 	Set<Account> accounts;
 
 	/* INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE */
@@ -80,7 +81,7 @@ public class Provider extends BaseEntity {
 	private String emailStruttura;
 	
 	//for saving logo of provider
-	@OneToOne
+	@OneToOne(fetch=FetchType.EAGER)
 	private File providerFile;
 
 	// boolean che serve ai provider di tipo A per decidere se possono pagare con
@@ -98,12 +99,12 @@ public class Provider extends BaseEntity {
 	 * PERSONE REGISTRATE DAL PROVIDER alcune in fase di registrazione, altre in
 	 * fase di accreditamento
 	 */
-	@OneToMany(mappedBy = "provider")
+	@OneToMany(mappedBy = "provider",fetch=FetchType.EAGER)
 	@Where(clause = "dirty = 'false'")
 	private Set<Persona> persone = new HashSet<Persona>();
 
 	/* SEDI DEL PROVIDER FORNITE IN FASE DI ACCREDITAMENTO */
-	@OneToMany(mappedBy = "provider")
+	@OneToMany(mappedBy = "provider",fetch=FetchType.EAGER)
 	@Where(clause = "dirty = 'false'")
 	private Set<Sede> sedi = new HashSet<Sede>();
 
