@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -66,7 +67,7 @@ public class Persona extends BaseEntityDefaultId{
 	private Boolean coordinatoreComitatoScientifico;
 
 	@JsonView(JsonViewModel.Integrazione.class)
-	@ManyToMany(cascade= CascadeType.REMOVE)
+	@ManyToMany(cascade= CascadeType.REMOVE,fetch=FetchType.EAGER)
 	@JoinTable(name="persona_files",
 				joinColumns={@JoinColumn(name="persona_id")},
 				inverseJoinColumns={@JoinColumn(name="files_id")}
