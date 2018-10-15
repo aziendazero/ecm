@@ -15,6 +15,6 @@ public interface AlertEmailRepository extends CrudRepository<AlertEmail, Long> {
 	public AlertEmail findByTipoAndProviderIdAndDataScadenza(AlertTipoEnum tipo, Long providerId, LocalDateTime dataScadenza);
 	public AlertEmail findByTipoAndEventoIdAndDataScadenza(AlertTipoEnum tipo, Long eventoId, LocalDateTime dataScadenza);
 	public Set<AlertEmail> findAllByDataInvioIsNullAndDataScadenzaBefore(LocalDateTime localDateTime);
-	public AlertEmail findByTipoAndProviderIdAndDataInvioIsNull(AlertTipoEnum tipo, Long providerId);
-	public AlertEmail findByTipoAndEventoIdAndDataInvioIsNull(AlertTipoEnum tipo, Long eventoId);
+	public Set<AlertEmail> findByTipoAndProviderIdAndDataInvioIsNull(AlertTipoEnum tipo, Long providerId);
+	public Set<AlertEmail> findByTipoAndEventoIdAndDataInvioIsNull(AlertTipoEnum tipo, Long eventoId);
 }

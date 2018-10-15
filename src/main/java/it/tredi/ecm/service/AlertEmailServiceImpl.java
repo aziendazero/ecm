@@ -282,20 +282,24 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 	@Override
 	public void annullaIfExistForProviderNotInviato(AlertTipoEnum tipo, Long providerId) {
 		LOGGER.info("Verifica se Alert già registrato ma non ancora inviato");
-		AlertEmail alert = alertMailRepository.findByTipoAndProviderIdAndDataInvioIsNull(tipo, providerId);
-		if(alert != null) {
-			alert.setDataInvio(LocalDateTime.now());
-			save(alert);
+		Set<AlertEmail> alertEmails = alertMailRepository.findByTipoAndProviderIdAndDataInvioIsNull(tipo, providerId);
+		if(alertEmails != null && !alertEmails.isEmpty()) {
+			for(AlertEmail a : alertEmails) {
+				a.setDataInvio(LocalDateTime.now());
+				save(a);
+			}
 		}
 	}
 
 	@Override
 	public void annullaIfExistForEventoNotInviato(AlertTipoEnum tipo, Long eventoId) {
 		LOGGER.info("Verifica se Alert già registrato ma non ancora inviato");
-		AlertEmail alert = alertMailRepository.findByTipoAndEventoIdAndDataInvioIsNull(tipo, eventoId);
-		if(alert != null) {
-			alert.setDataInvio(LocalDateTime.now());
-			save(alert);
+		Set<AlertEmail> alertEmails = alertMailRepository.findByTipoAndEventoIdAndDataInvioIsNull(tipo, eventoId);
+		if(alertEmails != null && !alertEmails.isEmpty()) {
+			for(AlertEmail a : alertEmails) {
+				a.setDataInvio(LocalDateTime.now());
+				save(a);
+			}
 		}
 	}
 }
