@@ -55,7 +55,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 	@Setter(AccessLevel.NONE)
 	@Getter(AccessLevel.NONE)
 	private LocalDate dataScadenza;// la data scadenza entro cui il procedimento deve essere completato
-	
+
 	//20180403 data non più utilizzata ora viene registrata al suo posto la data scadenza
 //	@Column(name = "data_inizio_conteggio")//data fittizia utilizzata per calcolare la reale durata del procedimento
 //	private LocalDate dataInizioConteggio;
@@ -63,7 +63,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 	private Integer durataProcedimento = null;
 	@Column(name = "massima_durata_procedimento")//campo contenente la massima durata del procedimento espresso in giorni (per il valore vedi AccreditamentoService.massimaDurataProcedimento) salvato nel caso venga modificato il valore da 180 giorni
 	private Integer massimaDurataProcedimento = null;
-	
+
 	@Column(name = "data_valutazione_crecm")//la data in cui il gruppo CRECM termina la valutazione e il flusso avanza
 	private LocalDate dataValutazioneCrecm;
 	@Column(name = "data_ins_odg")
@@ -162,11 +162,11 @@ public class Accreditamento extends BaseEntityDefaultId {
 
 	@OneToOne
 	private File fileDecadenza;
-	
+
 	// ERM014776
 	// domanda chiusa DINIEGO/SOSPENSIONE/DECADENZA
 	@Column(name = "data_chiusura_accreditamento")
-	private LocalDate dataChiusuraAcc; 
+	private LocalDate dataChiusuraAcc;
 
 	public Accreditamento(){}
 	public Accreditamento(AccreditamentoTipoEnum tipoDomanda){
@@ -371,6 +371,8 @@ public class Accreditamento extends BaseEntityDefaultId {
 			return false;
 		case CANCELLATO:
 			return false;
+		case ACCREDITATO:
+			return false;
 		default:
 			return true;
 		}
@@ -405,7 +407,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 			return true;
 		return false;
 	}
-	
+
 	public LocalDate getDataScadenza() {
 		//le domande importate dal vecchio sistema non hanno la dataScadenza
 		if(dataScadenza == null) {
@@ -422,10 +424,10 @@ public class Accreditamento extends BaseEntityDefaultId {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Restituisce i giorni restanti per completare il procedimento, calcolati considerando quelli in carico alla segreteria
-	 * per accreditamenti avviati, per accreditamenti mai avviati restituisce null 
+	 * per accreditamenti avviati, per accreditamenti mai avviati restituisce null
 	 * @return
 	 */
 	private Integer getGiorniRestantiProcedimento() {
@@ -433,17 +435,17 @@ public class Accreditamento extends BaseEntityDefaultId {
 			return null;
 		//getDurataProcedimento() restituisce il numero di giorni trascorsi dalla domanda in carico alla segreteria
 		//sono questi giorni a non poter superare AccreditamentoService.massimaDurataProcedimento (180 giorni)
-		//quindi i giorni rimanenti sono dati da getGiorniRestantiProcedimento() 
+		//quindi i giorni rimanenti sono dati da getGiorniRestantiProcedimento()
 		return massimaDurataProcedimento - getDurataProcedimento();
 	}
-	
+
 	public void setStato(AccreditamentoStatoEnum nuovoStato, TipoWorkflowEnum tipoWorkflow) {
 		//Gestisco la durata del procedimento
 		if(this.stato != nuovoStato) {
-			if(tipoWorkflow != null 
-					&& 
-					(tipoWorkflow == TipoWorkflowEnum.ACCREDITAMENTO || tipoWorkflow == TipoWorkflowEnum.DECADENZA) 
-					&& 
+			if(tipoWorkflow != null
+					&&
+					(tipoWorkflow == TipoWorkflowEnum.ACCREDITAMENTO || tipoWorkflow == TipoWorkflowEnum.DECADENZA)
+					&&
 					nuovoStato != AccreditamentoStatoEnum.BOZZA) {
 				if(nuovoStato == AccreditamentoStatoEnum.ACCREDITATO || nuovoStato == AccreditamentoStatoEnum.DINIEGO || nuovoStato == AccreditamentoStatoEnum.CANCELLATO) {
 					//gestisco gli stati di conclusione flusso
@@ -468,7 +470,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 
 	/**
 	 * Restituisce la durata del procedimento per accreditamenti avviati considerando solo i giorni trascorsi in carico alla segreteria
-	 * per accreditamenti mai avviati restituisce null 
+	 * per accreditamenti mai avviati restituisce null
 	 * @return
 	 */
 	private Integer getDurataProcedimento(){
@@ -487,7 +489,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 			startRestartConteggio();
 		}
 	}
-	
+
 	//nel caso in cui si stoppa il conteggio...salviamo momentaneamente la durata già trascorsa
 	private void standbyConteggio(){
 		durataProcedimento = getDurataProcedimento();
@@ -502,7 +504,7 @@ public class Accreditamento extends BaseEntityDefaultId {
 			dataScadenza = LocalDate.now().plusDays(massimaDurataProcedimento - durataProcedimento);
 		durataProcedimento = null;
 	}
-	
+
 	public long getFileIdForProtocollo(){
 		if(isProvvisorio()){
 			for(File f : datiAccreditamento.getFiles())
@@ -618,5 +620,5 @@ public class Accreditamento extends BaseEntityDefaultId {
 
 		return false;
 	}
-	
+
 }
