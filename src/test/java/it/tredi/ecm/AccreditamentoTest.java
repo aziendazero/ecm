@@ -1,5 +1,7 @@
 package it.tredi.ecm;
 
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +24,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import it.tredi.ecm.dao.entity.Accreditamento;
+import it.tredi.ecm.dao.entity.AccreditamentoDiff;
+import it.tredi.ecm.dao.entity.FieldValutazioneAccreditamento;
 import it.tredi.ecm.dao.entity.File;
+import it.tredi.ecm.dao.entity.PersonaDiff;
 import it.tredi.ecm.dao.entity.Sede;
 import it.tredi.ecm.dao.enumlist.AccreditamentoStatoEnum;
 import it.tredi.ecm.dao.enumlist.AccreditamentoTipoEnum;
 import it.tredi.ecm.dao.repository.AccreditamentoRepository;
 import it.tredi.ecm.service.AccreditamentoService;
+import it.tredi.ecm.service.DiffService;
+import it.tredi.ecm.service.DiffServiceImpl;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.SedeService;
 
@@ -37,7 +44,7 @@ import it.tredi.ecm.service.SedeService;
 @ActiveProfiles("dev")
 //@WithUserDetails("provider")
 @Ignore
-@Rollback(false)
+@Rollback(true)
 public class AccreditamentoTest {
 
 	@Autowired
@@ -47,6 +54,8 @@ public class AccreditamentoTest {
 	@Autowired SedeService sedeService;
 	@Autowired FileService fileService;
 	@Autowired AccreditamentoRepository accreditamentoRepository;
+
+	@Autowired DiffService diffService;
 
 	private MockMvc mockMvc;
 
@@ -111,7 +120,7 @@ public class AccreditamentoTest {
 
 		Long providerId = 160L;
 		AccreditamentoTipoEnum tipoDomanda = AccreditamentoTipoEnum.STANDARD;
-		
+
 		Set<Accreditamento> accrs = accreditamentoRepository.getAccreditamentiAvviatiForProvider(providerId, tipoDomanda);
 		System.out.println("accreditamentoRepository.getAccreditamentiAvviatiForProvider size: " + accrs.size());
 		for(Accreditamento acc : accrs)
@@ -132,18 +141,35 @@ public class AccreditamentoTest {
 		listaGiorni.add(4);
 		listaGiorni.add(5);
 		listaGiorni.add(30);
-		
+
 		for(Integer giorni : listaGiorni) {
 			System.out.println("-- giorni: " + giorni + " --");
 			Set<Accreditamento> accrs = accreditamentoRepository.findAllAccreditamentiInScadenzaNeiProssimiGiorni(giorni);
 			System.out.println("\taccreditamentoRepository.findAllAccreditamentiInScadenzaNeiProssimiGiorni size: " + accrs.size());
 			for(Accreditamento acc : accrs)
 				System.out.println("\t\tacc id: " + acc.getId());
-	
+
 			long numAccrs = accreditamentoRepository.countAllAccreditamentiInScadenzaNeiProssimiGiorni(giorni);
 			System.out.println("\taccreditamentoRepository.countAllAccreditamentiInScadenzaNeiProssimiGiorni: " + numAccrs);
 		}
 		System.out.println("testRepositoryModificaDataScadenza end");
 
 	}
+
+	@Test
+	@Transactional
+	@Rollback(true)
+	@Ignore
+	public void testConfrontaDiff() {
+		Accreditamento accreditamento1 = accreditamentoService.getAccreditamento(4413L);
+		AccreditamentoDiff diff1 = diffService.creaAllDiffAccreditamento(accreditamento1);
+
+		Accreditamento accreditamento2 = accreditamentoService.getAccreditamento(143586L);
+		AccreditamentoDiff diff2 = diffService.creaAllDiffAccreditamento(accreditamento2);
+
+		Set<FieldValutazioneAccreditamento> valutazioniDiff = diffService.confrontaDiffAccreditamento(diff1, diff2);
+		assertTrue(!valutazioniDiff.isEmpty());
+
+	}
+
 }

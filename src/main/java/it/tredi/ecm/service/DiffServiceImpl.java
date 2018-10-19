@@ -318,81 +318,57 @@ public class DiffServiceImpl implements DiffService {
 
 		//tipo organizzatore
 		if(!Objects.equals(providerOld.getTipoOrganizzatore(), providerNew.getTipoOrganizzatore())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.PROVIDER__TIPO_ORGANIZZATORE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//denominazione legale
 		if(!Objects.equals(providerOld.getDenominazioneLegale(), providerNew.getDenominazioneLegale())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.PROVIDER__DENOMINAZIONE_LEGALE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.PROVIDER__DENOMINAZIONE_LEGALE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//partita iva
 		if(providerOld.isHasPartitaIVA() != providerNew.isHasPartitaIVA()
 				|| !Objects.equals(providerOld.getPartitaIva(), providerNew.getPartitaIva())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.PROVIDER__PARTITA_IVA);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.PROVIDER__PARTITA_IVA, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//codice fiscale
 		if(!Objects.equals(providerOld.getCodiceFiscale(), providerNew.getCodiceFiscale())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.PROVIDER__CODICE_FISCALE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.PROVIDER__CODICE_FISCALE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//ragione sociale
 		if(!Objects.equals(providerOld.getRagioneSociale(), providerNew.getRagioneSociale())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.PROVIDER__RAGIONE_SOCIALE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.PROVIDER__RAGIONE_SOCIALE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//email struttura
 		if(!Objects.equals(providerOld.getEmailStruttura(), providerNew.getEmailStruttura())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.PROVIDER__EMAIL_STRUTTURA);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.PROVIDER__EMAIL_STRUTTURA, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		if(!Objects.equals(providerOld.getNaturaOrganizzazione(), providerNew.getNaturaOrganizzazione())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.PROVIDER__NATURA_ORGANIZZAZIONE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.PROVIDER__NATURA_ORGANIZZAZIONE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		if(providerOld.isNoProfit() != providerNew.isNoProfit()) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.PROVIDER__NO_PROFIT);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.PROVIDER__NO_PROFIT, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		return fieldValutazioneModificati;
@@ -437,134 +413,86 @@ public class DiffServiceImpl implements DiffService {
 
 			//cognome
 			if(!Objects.equals(personaOld.getCognome(), personaNew.getCognome())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.cognome", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "persona.anagrafica.cognome", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//nome
 			if(!Objects.equals(personaOld.getNome(), personaNew.getNome())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.nome", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "persona.anagrafica.nome", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//codice fiscale
 			if(!Objects.equals(personaOld.getCodiceFiscale(), personaNew.getCodiceFiscale())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.codiceFiscale", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "persona.anagrafica.codiceFiscale", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//telefono
 			if(!Objects.equals(personaOld.getTelefono(), personaNew.getTelefono())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.telefono", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "persona.anagrafica.telefono", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//cellulare
 			if(!Objects.equals(personaOld.getCellulare(), personaNew.getCellulare())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.cellulare", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "persona.anagrafica.cellulare", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//email
 			if(!Objects.equals(personaOld.getEmail(), personaNew.getEmail())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.email", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "persona.anagrafica.email", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//pec
 			if(!Objects.equals(personaOld.getPec(), personaNew.getPec())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("persona.anagrafica.pec", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "persona.anagrafica.pec", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//professione
 			if(!Objects.equals(personaOld.getProfessione(), personaNew.getProfessione())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("persona.professione", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "persona.professione", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//coordinatore comitato scientifico
 			if(personaOld.isCoordinatoreComitatoScientifico() != personaNew.isCoordinatoreComitatoScientifico()) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("persona.coordinatore", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "persona.coordinatore", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//file atto di nomina
 			if(!Objects.equals(personaOld.getFileAttoDiNomina(), personaNew.getFileAttoDiNomina())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("attoNomina", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "attoNomina", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//file cv
 			if(!Objects.equals(personaOld.getFileCurriculumVitae(), personaNew.getFileCurriculumVitae())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("cv", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "cv", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//file delega
 			if(!Objects.equals(personaOld.getFileDelega(), personaNew.getFileDelega())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.getIdField("delega", ruolo));
-				field.setObjectReference(objRef);
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByKeyForDiff(accreditamento, "delega", ruolo, objRef);
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 		}
 
@@ -627,107 +555,103 @@ public class DiffServiceImpl implements DiffService {
 
 			//provincia
 			if(!Objects.equals(sedeOld.getProvincia(), sedeNew.getProvincia())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.SEDE__PROVINCIA);
-				field.setObjectReference(sedeNew.getSedeId());
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.SEDE__PROVINCIA, sedeNew.getSedeId());
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//comune
 			if(!Objects.equals(sedeOld.getComune(), sedeNew.getComune())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.SEDE__COMUNE);
-				field.setObjectReference(sedeNew.getSedeId());
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.SEDE__COMUNE, sedeNew.getSedeId());
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//indirizzo
 			if(!Objects.equals(sedeOld.getIndirizzo(), sedeNew.getIndirizzo())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.SEDE__INDIRIZZO);
-				field.setObjectReference(sedeNew.getSedeId());
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.SEDE__INDIRIZZO, sedeNew.getSedeId());
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//cap
 			if(!Objects.equals(sedeOld.getCap(), sedeNew.getCap())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.SEDE__CAP);
-				field.setObjectReference(sedeNew.getSedeId());
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.SEDE__CAP, sedeNew.getSedeId());
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//telefono
 			if(!Objects.equals(sedeOld.getTelefono(), sedeNew.getTelefono())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.SEDE__TELEFONO);
-				field.setObjectReference(sedeNew.getSedeId());
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.SEDE__TELEFONO, sedeNew.getSedeId());
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//altroTelefono non esiste più?
 
 			//fax
 			if(!Objects.equals(sedeOld.getFax(), sedeNew.getFax())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.SEDE__FAX);
-				field.setObjectReference(sedeNew.getSedeId());
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.SEDE__FAX, sedeNew.getSedeId());
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//email
 			if(!Objects.equals(sedeOld.getEmail(), sedeNew.getEmail())) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.SEDE__EMAIL);
-				field.setObjectReference(sedeNew.getSedeId());
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.SEDE__EMAIL, sedeNew.getSedeId());
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//sede legale
 			if(sedeOld.isSedeLegale() != sedeNew.isSedeLegale()) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.SEDE__IS_LEGALE);
-				field.setObjectReference(sedeNew.getSedeId());
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.SEDE__IS_LEGALE, sedeNew.getSedeId());
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 
 			//sede operativa
 			if(sedeOld.isSedeOperativa() != sedeNew.isSedeOperativa()) {
-				FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-				field.setAccreditamento(accreditamento);
-				field.setIdField(IdFieldEnum.SEDE__IS_OPERATIVA);
-				field.setObjectReference(sedeNew.getSedeId());
-				field.setModificatoInIntegrazione(true);
-				fieldValutazioneAccreditamentoService.save(field);
-				fieldValutazioneModificati.add(field);
+				FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.SEDE__IS_OPERATIVA, sedeNew.getSedeId());
+				if(field != null)
+					fieldValutazioneModificati.add(field);
 			}
 		}
 
 		return fieldValutazioneModificati;
+	}
+
+	private FieldValutazioneAccreditamento buildFieldValutazioneAccreditamentoByKeyForDiff(Accreditamento accreditamento, String key, Ruolo ruolo, Long objRef) {
+		FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+		field.setAccreditamento(accreditamento);
+		field.setIdField(IdFieldEnum.getIdField(key, ruolo));
+		field.setObjectReference((objRef != null) ? objRef.longValue() : -1);
+		field.setModificatoInIntegrazione(true);
+
+		if(field.getIdField() != null)
+		{
+			fieldValutazioneAccreditamentoService.save(field);
+			return field;
+		}
+
+		return null;
+	}
+
+	private FieldValutazioneAccreditamento buildFieldValutazioneAccreditamentoByIdFieldForDiff(Accreditamento accreditamento, IdFieldEnum idField, Long objRef) {
+		FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
+		field.setAccreditamento(accreditamento);
+		field.setIdField(idField);
+		field.setObjectReference((objRef != null) ? objRef.longValue() : -1);
+		field.setModificatoInIntegrazione(true);
+
+		if(field.getIdField() != null)
+		{
+			fieldValutazioneAccreditamentoService.save(field);
+			return field;
+		}
+
+		return null;
 	}
 
 	private Set<FieldValutazioneAccreditamento> confrontaDiffAllSedi(Set<SedeDiff> sediOld, Set<SedeDiff> sediNew, Accreditamento accreditamento) {
@@ -771,162 +695,114 @@ public class DiffServiceImpl implements DiffService {
 
 		//generale/settoriale tipologia procedure formative
 		if(!Objects.equals(datiOld.getTipologiaAccreditamento(), datiNew.getTipologiaAccreditamento())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__TIPOLOGIA_ACCREDITAMENTO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__TIPOLOGIA_ACCREDITAMENTO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//procedure formative
 		if(!Objects.equals(datiOld.getProcedureFormative(), datiNew.getProcedureFormative())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//generale/settoriale professioni/discipline
 		if(!Objects.equals(datiOld.getAccreditamentoPerProfessioni(), datiNew.getAccreditamentoPerProfessioni())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__PROFESSIONI_ACCREDITAMENTO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//discipline
 		if(!Objects.equals(datiOld.getDiscipline(), datiNew.getDiscipline())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__PROCEDURE_FORMATIVE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//fatturato complessivo valore uno
 		if(!Objects.equals(datiOld.getFatturatoComplessivoValoreUno(), datiNew.getFatturatoComplessivoValoreUno())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_UNO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//fatturato complessivo valore due
 		if(!Objects.equals(datiOld.getFatturatoComplessivoValoreDue(), datiNew.getFatturatoComplessivoValoreDue())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_DUE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//fatturato complessivo valore tre
 		if(!Objects.equals(datiOld.getFatturatoComplessivoValoreTre(), datiNew.getFatturatoComplessivoValoreTre())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_COMPLESSIVO_TRE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//fatturato formazione valore uno
 		if(!Objects.equals(datiOld.getFatturatoFormazioneValoreUno(), datiNew.getFatturatoFormazioneValoreUno())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_UNO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//fatturato formazione valore due
 		if(!Objects.equals(datiOld.getFatturatoFormazioneValoreDue(), datiNew.getFatturatoFormazioneValoreDue())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_DUE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//fatturato formazione valore tre
 		if(!Objects.equals(datiOld.getFatturatoFormazioneValoreTre(), datiNew.getFatturatoFormazioneValoreTre())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FATTURATO_FORMAZIONE_TRE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file estratto bilancio complessivo
 		if(!Objects.equals(datiOld.getFileEstrattoBilancioComplessivo(), datiNew.getFileEstrattoBilancioComplessivo())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_COMPLESSIVO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file estratto bilancio formazione
 		if(!Objects.equals(datiOld.getFileEstrattoBilancioFormazione(), datiNew.getFileEstrattoBilancioFormazione())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__ESTRATTO_BILANCIO_FORMAZIONE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//numero dipendenti formazione tempo indeterminato
 		if(!Objects.equals(datiOld.getNumeroDipendentiFormazioneTempoIndeterminato(), datiNew.getNumeroDipendentiFormazioneTempoIndeterminato())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_TEMPO_INDETERMINATO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//numero dipendenti formazione altro
 		if(!Objects.equals(datiOld.getNumeroDipendentiFormazioneAltro(), datiNew.getNumeroDipendentiFormazioneAltro())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__NUMERO_DIPENDENTI_FORMAZIONE_ALTRO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file organigramma
 		if(!Objects.equals(datiOld.getFileOrganigramma(), datiNew.getFileOrganigramma())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__ORGANIGRAMMA);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__ORGANIGRAMMA, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file funzionigramma
 		if(!Objects.equals(datiOld.getFileFunzionigramma(), datiNew.getFileFunzionigramma())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.DATI_ACCREDITAMENTO__FUNZIONIGRAMMA);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.DATI_ACCREDITAMENTO__FUNZIONIGRAMMA, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		return fieldValutazioneModificati;
@@ -939,92 +815,66 @@ public class DiffServiceImpl implements DiffService {
 
 		//file atto costitutivo
 		if(!Objects.equals(diffOld.getFileAttoCostitutivo(), diffNew.getFileAttoCostitutivo())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ATTO_COSTITUIVO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
+
 		}
 
 		//file dichiarazione esclusione
 		if(!Objects.equals(diffOld.getFileDichiarazioneEsclusione(), diffNew.getFileDichiarazioneEsclusione())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_ESCLUSIONE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file esperienza formazione
 		if(!Objects.equals(diffOld.getFileEsperienzaFormazione(), diffNew.getFileEsperienzaFormazione())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__ESPERIENZA_FORMAZIONE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file utilizzo sedi
 		if(!Objects.equals(diffOld.getFileUtilizzoSedi(), diffNew.getFileUtilizzoSedi())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__UTILIZZO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__UTILIZZO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file sistema informatico
 		if(!Objects.equals(diffOld.getFileSistemaInformatico(), diffNew.getFileSistemaInformatico())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__SISTEMA_INFORMATICO, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file piano qualità
 		if(!Objects.equals(diffOld.getFilePianoQualita(), diffNew.getFilePianoQualita())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__PIANO_QUALITA, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file dichiarazione legale rappresentante
 		if(!Objects.equals(diffOld.getFileDichiarazioneLegaleRappresentante(), diffNew.getFileDichiarazioneLegaleRappresentante())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__DICHIARAZIONE_LEGALE, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file richiesta accreditamento standard
 		if(!Objects.equals(diffOld.getFileRichiestaAccreditamentoStandard(), diffNew.getFileRichiestaAccreditamentoStandard())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RICHIESTA_ACCREDITAMENTO_STANDARD, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		//file relazione attività formativa
 		if(!Objects.equals(diffOld.getFileRelazioneAttivitaFormativa(), diffNew.getFileRelazioneAttivitaFormativa())) {
-			FieldValutazioneAccreditamento field = new FieldValutazioneAccreditamento();
-			field.setAccreditamento(accreditamento);
-			field.setIdField(IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA);
-			field.setModificatoInIntegrazione(true);
-			fieldValutazioneAccreditamentoService.save(field);
-			fieldValutazioneModificati.add(field);
+			FieldValutazioneAccreditamento field = buildFieldValutazioneAccreditamentoByIdFieldForDiff(accreditamento, IdFieldEnum.ACCREDITAMENTO_ALLEGATI__RELAZIONE_ATTIVITA_FORMATIVA, null);
+			if(field != null)
+				fieldValutazioneModificati.add(field);
 		}
 
 		return fieldValutazioneModificati;
