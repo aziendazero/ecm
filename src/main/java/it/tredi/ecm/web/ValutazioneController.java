@@ -65,7 +65,7 @@ public class ValutazioneController {
 
 		for(Valutazione v : valutazioni){
 			Map<String,String> mappa = new HashMap<String, String>();
-			String header = v.getAccount().isSegreteria() ? "Valutazione Segreteria ECM" : "Valutazione Referee";
+			String header = v.getAccount().isSegreteria() ? "Valutazione UOC FSPS" : "Valutazione Referee";
 			String value = v.getValutazioneComplessiva() == null ? "" : v.getValutazioneComplessiva();
 			Account currentUser = Utils.getAuthenticatedUser().getAccount();
 			if(currentUser.isReferee() || currentUser.isSegreteria())
@@ -79,7 +79,7 @@ public class ValutazioneController {
 
 		return result;
 	}
-	
+
 	//TODO permission
 	@RequestMapping("/accreditamento/{accreditamentoId}/valutazione/{valutazioneId}/show")
 	public String showValutazione (@PathVariable Long accreditamentoId, @PathVariable Long valutazioneId, Model model, RedirectAttributes redirectAttrs) {
@@ -104,7 +104,7 @@ public class ValutazioneController {
 			return "valutazione/valutazioneShowAllById :: showAllValutazioneById";
 		}
 	}
-	
+
 	//Solo responsabile segreteria_ECM riassegnaAccountValutazione
 	@PreAuthorize("@securityAccessServiceImpl.isUserSegreteria(principal)")
 	@RequestMapping(value ="/accreditamento/{accreditamentoId}/riassegnaAccountValutazione")
@@ -114,40 +114,40 @@ public class ValutazioneController {
 			Accreditamento accreditamento = accreditamentoService.getAccreditamento(accreditamentoId);
 			Set<Valutazione> valutazioneNonStoriccizate = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 			Set<Account> accountProfileSegreteria = accountService.getUserByProfileEnum(ProfileEnum.SEGRETERIA);
-			
+
 			ValutazioneWrapper wrapper = new ValutazioneWrapper();
-			
-			for(Valutazione v : valutazioneNonStoriccizate ) {	
+
+			for(Valutazione v : valutazioneNonStoriccizate ) {
 				wrapper.setAccountSelected(v.getAccount().getId());
 			}
-			
+
 			wrapper.setAccreditamentoId(accreditamentoId);
 			wrapper.setAllAccountProfileSegreteria(accountProfileSegreteria);
 			model.addAttribute("accreditamento",accreditamento);
 			model.addAttribute("valutazioneWrapper", wrapper);
 			return "accreditamento/accreditamentoRiassegnaAccountValutazione";
-			
+
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("GET /accreditamento/" + accreditamentoId + "/riassegnaAccountValutazione"),ex);
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /accreditamento/" + accreditamentoId + "/show"));
 			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}
 	}
-	
+
 	@RequestMapping(value="/accreditamento/{accreditamentoId}/riassegnaAccountValutazione/riassegna", method = RequestMethod.POST)
 	public String riassegnaAccountValutazione(@PathVariable Long accreditamentoId, @ModelAttribute("valutazioneWrapper") ValutazioneWrapper wrapper, Model model, RedirectAttributes redirectAttrs, HttpServletRequest request) {
 		try{
-			Set<Valutazione> valutazioneNonStoriccizate = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);	
+			Set<Valutazione> valutazioneNonStoriccizate = valutazioneService.getAllValutazioniForAccreditamentoIdAndNotStoricizzato(accreditamentoId);
 			for(Valutazione valutazione : valutazioneNonStoriccizate) {
 				valutazioneService.riassegnaAccountValutazioneNotStoricizzato(valutazione.getId(), wrapper.getAccountSelected());
 			}
 			LOGGER.info(Utils.getLogMessage("REDIRECT success:/accreditamento/{accreditamentoId}/show"));
 			redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.riassegna", "success"));
-			return "redirect:/accreditamento/{accreditamentoId}/show";	
+			return "redirect:/accreditamento/{accreditamentoId}/show";
 		}catch (Exception ex){
 			LOGGER.error(Utils.getLogMessage("Errore: /accreditamento/{accreditamentoId}/riassegnaAccountValutazione/riassegna"),ex);
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/accreditamento/{accreditamentoId}/riassegnaAccountValutazione/riassegna";
 		}
-	}	
+	}
 }

@@ -50,8 +50,8 @@
 								<tr>
 									<th th:text="#{label.id}">label.id</th>
 									<th th:text="#{label.descrizione}">label.descrizione</th>
-									<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM - ' + valutazioneWrapper.valutazione.account.getFullNameBase() : 'Referee - ' + valutazioneWrapper.valutazione.account.getFullNameBase()}">Nome</th>
-									<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM' : 'Referee'}">Nome</th>
+									<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'UOC FSPS - ' + valutazioneWrapper.valutazione.account.getFullNameBase() : 'Referee - ' + valutazioneWrapper.valutazione.account.getFullNameBase()}">Nome</th>
+									<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'UOC FSPS' : 'Referee'}">Nome</th>
 								</tr>
 							</thead>
 							<!-- ciclo su IdField (tranne che per il FULL / idEditabile == -1)-->
@@ -97,8 +97,8 @@
 									<tr>
 										<th th:text="#{label.id}">label.id</th>
 										<th th:text="#{label.descrizione}">label.descrizione</th>
-										<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM - ' + valutazioneWrapper.valutazione.account.getFullNameBase() : 'Referee - ' + valutazioneWrapper.valutazione.account.getFullNameBase()}">Nome</th>
-										<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'Segreteria ECM' : 'Referee'}">Nome</th>
+										<th th:if="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'UOC FSPS - ' + valutazioneWrapper.valutazione.account.getFullNameBase() : 'Referee - ' + valutazioneWrapper.valutazione.account.getFullNameBase()}">Nome</th>
+										<th th:unless="${#authentication.principal.hasProfile('REFEREE') or #authentication.principal.hasProfile('SEGRETERIA')}" th:text="#{label.valutazione} + ' ' + ${valutazioneWrapper.valutazione.account.isSegreteria() ? 'UOC FSPS' : 'Referee'}">Nome</th>
 									</tr>
 								</thead>
 								<!-- ciclo su IdField (tranne che per il FULL / idEditabile == -1)-->

@@ -114,7 +114,7 @@
 									<td th:text="${accreditamento.dataFineAccreditamento == null} ? '' : ${#temporals.format(accreditamento.dataFineAccreditamento, 'dd/MM/yyyy')}"></td>
 
 									<td th:if="${mappaCarica != null}">
-										<div th:unless="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:each="valutatore, row : ${mappaCarica.get(accreditamento.id)}" class="valutatore" th:text="${valutatore.isSegreteria() ? 'Segreteria ECM - ' : 'Referee - '} + ${valutatore.getFullName()}"></div>
+										<div th:unless="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:each="valutatore, row : ${mappaCarica.get(accreditamento.id)}" class="valutatore" th:text="${valutatore.isSegreteria() ? 'UOC FSPS - ' : 'Referee - '} + ${valutatore.getFullName()}"></div>
 										<div th:if="${#sets.isEmpty(mappaCarica.get(accreditamento.id))}" th:text="#{label.da_prendere_in_carica}" class="danger"></div>
 									</td>
 									<td th:if="${#authentication.principal.isReferee() and mappaScadenze != null}" th:text="${mappaScadenze.get(accreditamento.id) != null ? #temporals.format(mappaScadenze.get(accreditamento.id), 'dd/MM/yyyy - HH:mm') : 'N/D'}"></td>

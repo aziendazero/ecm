@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum ValutazioneTipoEnum {
-		SEGRETERIA_ECM(1,"segreteria ecm"),
+		SEGRETERIA_ECM(1,"UOC FSPS"),
 		REFEREE(2, "referee"),
 		COMMISSIONE_ECM(2, "commissione ecm"),
 		TEAM_LEADER(4, "team leader");
-		
+
 		private int id;
 		private String nome;
 

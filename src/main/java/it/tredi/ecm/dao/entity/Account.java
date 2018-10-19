@@ -137,7 +137,7 @@ public class Account extends BaseEntityDefaultId{
 
 		if(isSegreteria()) {
 			toRet += " ";
-			toRet += "(Segreteria ECM)";
+			toRet += "(UOC FSPS)";
 		}
 
 		if(isReferee()) {
