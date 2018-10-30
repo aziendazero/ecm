@@ -356,12 +356,12 @@
 			</build>
 		</profile>
 		<profile>
-			<id>Ameljo</id>
+			<id>kbicaku</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<spring.profile>Ameljo</spring.profile>
+				<spring.profile>kbicaku</spring.profile>
 			</properties>
 			<build>
 				<resources>
@@ -382,7 +382,7 @@
 				</resources>
 			</build>
 		</profile>
-		<!-- esempio di profilo da utilizzare per ambienti di test per evitare
+    		<!-- esempio di profilo da utilizzare per ambienti di test per evitare
 			di copiare le properties di altri ambienti -->
 		<profile>
 			<id>demo</id>
