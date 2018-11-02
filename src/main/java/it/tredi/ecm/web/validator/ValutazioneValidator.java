@@ -213,6 +213,8 @@ public class ValutazioneValidator {
 			errors.rejectValue(prefix + "componentiSegreteria", "error.empty");
 		if(verbale.getReferenteInformatico() == null && verbale.getAccreditamento().getDatiAccreditamento().getProcedureFormative().contains(ProceduraFormativa.FAD))
 			errors.rejectValue(prefix + "referenteInformatico", "error.empty");
+		if(verbale.getSede() == null)
+			errors.rejectValue(prefix + "sede", "error.empty");
 		validateSottoscriventeValutazioneSulCampo(verbale, errors, prefix);
 	}
 
