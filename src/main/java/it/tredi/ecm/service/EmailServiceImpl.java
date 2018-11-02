@@ -107,13 +107,13 @@ public class EmailServiceImpl implements EmailService {
 			subject += "Avviso di scadenza termini per reinvio integrazioni relative al preavviso di rigetto richieste sulla domanda di accreditamento provvisorio";
 		}
 
-		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_STANDARD){
+		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_STANDARD){
 			context.setVariable("isStandard", true);
 			context.setVariable("isPreavvisoDiRigetto", false);
 			subject += "Avviso di scadenza termini per reinvio integrazioni relative al preavviso di rigetto richieste sulla domanda di accreditamento standard";
 		}
 
-		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_PREAVVISO_DI_RIGETTO_ACCREDITAMENTO_STANDARD){
+		if(alert.getTipo() == AlertTipoEnum.SCADENZA_REINVIO_INTEGRAZIONI_ACCREDITAMENTO_STANDARD){
 			context.setVariable("isStandard", true);
 			context.setVariable("isPreavvisoDiRigetto", true);
 			subject += "Avviso di scadenza termini per reinvio integrazioni richieste sulla domanda di accreditamento standard";
@@ -166,13 +166,13 @@ public class EmailServiceImpl implements EmailService {
 			subject += " standard";
 		else
 			subject += " provvisorio";
-		
+
 		if(isPreavvisoRigetto) {
 			subject += " in stato \"Preavviso di rigetto\"";
 		}else {
 			subject += " in stato \"Richiesta di integrazioni\"";
 		}
-		
+
 
 		String message = templateEngine.process("confermaInvioIntegrazioni", context);
 
