@@ -588,8 +588,8 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 		try {
 			img = Image.getInstance(imgb);
 			Float scala = 1.2F;
-			Float width = 400F/scala;
 			Float height = 85F/scala;
+			Float width = height*2;
 			img.scaleToFit(width, height);
             img.setAlignment(Element.ALIGN_CENTER);
 		} catch(Exception e) {
