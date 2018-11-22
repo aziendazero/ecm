@@ -1,5 +1,7 @@
 package it.tredi.ecm.scheduledtask;
 
+import java.time.LocalDate;
+
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -26,8 +28,14 @@ public class PagamentoTask {
 
 		engineeringService.esitoPagamentiEventi();
 		engineeringService.esitoPagamentiQuoteAnnuali();
-		quotaAnnualeService.checkAndCreateQuoteAnnualiPerAnnoInCorso();
-
+		int year  = LocalDate.now().getYear(); 
+		LocalDate leftDate1 = LocalDate.of(year, 4, 1);
+		LocalDate rightDate2 = LocalDate.of(year, 12, 31);
+		LocalDate DateNow = LocalDate.now();
+		if(DateNow.getMonthValue() >= leftDate1.getMonthValue() && DateNow.getMonthValue() <= rightDate2.getMonthValue()){
+			quotaAnnualeService.checkAndCreateQuoteAnnualiPerAnnoInCorso();
+		}
+		
 		LOGGER.info("controllaEsitoPagamenti - exiting");
 	}
 }
