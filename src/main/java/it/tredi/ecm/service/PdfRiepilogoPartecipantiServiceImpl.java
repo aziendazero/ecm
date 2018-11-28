@@ -312,20 +312,20 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 		        	varShow=" reclutato";
 		        }
 		        if (partecipante.getReclutato()=="NO"){
-	
+
 		        	varShow=" non reclutato";
 		        }
 	        }
-	         	        
+
 	        else {
 	        	varShow="";
 	        }
-	        
+
 	        SimpleDateFormat formatConvertStringToDate = new SimpleDateFormat("yyyy-MM-dd");
 	        Date partecipanteDateCreditiAcquisiti = formatConvertStringToDate.parse(partecipante.getDataCreditiAcquisiti());
 	        String DATE_FORMAT = "dd/MM/yyyy";
 	        SimpleDateFormat formatConvert = new SimpleDateFormat(DATE_FORMAT);
-	        	        
+
 	        Paragraph par5 = new Paragraph();
 	        Chunk c16 = new Chunk("ATTESTA", fontBigBold);
 	        Chunk c17 = new Chunk("che ", fontNomeCampo);
@@ -348,9 +348,9 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        document.add(Chunk.NEWLINE);
 
 	        String[] listNumeroCrediti = splitNumeroCrediti(partecipante.getNumeroCrediti());
-  
+
 	        String nrCredito = partecipante.getNumeroCrediti().replace(".", ",");
-	        
+
 	        //CREDITI PARTECIPANTE
 	        Paragraph par6 = new Paragraph();
 	        Chunk c22 = new Chunk(nrCredito+" (" + Utils.convert(Integer.parseInt(listNumeroCrediti[0]))  + "," + Utils.convert(Integer.parseInt(listNumeroCrediti[1])) + ") Crediti Formativi E.C.M", fontNomeCampo);
@@ -500,7 +500,8 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 			addCellSubTable(partecipante.getTipologiaPartecipante(), table);
 			addCellSubTable(partecipante.getNumeroCrediti(), table);
 			addCellSubTable(partecipante.getDataCreditiAcquisiti(), table);
-			addCellSubTableProfessioni(partecipante.getProfessioni(), table);
+			//addCellSubTableProfessioni(partecipante.getProfessioni(), table);
+			addCellSubTableProfessioni(partecipante.getProfessioni_discipline().keySet(), table);
 		}
 	}
 
