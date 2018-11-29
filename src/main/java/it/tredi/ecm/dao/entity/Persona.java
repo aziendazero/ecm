@@ -9,7 +9,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -18,14 +17,12 @@ import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToOne;
-import javax.persistence.Transient;
 
 import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.javers.core.metamodel.annotation.TypeName;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import it.tredi.ecm.dao.enumlist.FileEnum;
 import it.tredi.ecm.dao.enumlist.Ruolo;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,7 +64,7 @@ public class Persona extends BaseEntityDefaultId{
 	private Boolean coordinatoreComitatoScientifico;
 
 	@JsonView(JsonViewModel.Integrazione.class)
-	@ManyToMany(cascade= CascadeType.REMOVE,fetch=FetchType.EAGER)
+	@ManyToMany(cascade= CascadeType.REMOVE)
 	@JoinTable(name="persona_files",
 				joinColumns={@JoinColumn(name="persona_id")},
 				inverseJoinColumns={@JoinColumn(name="files_id")}

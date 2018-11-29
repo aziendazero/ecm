@@ -67,7 +67,7 @@ public class Provider extends BaseEntity {
 
 	/* ACCOUNTS DEL PROVIDER */
 	@DiffIgnore
-	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE },fetch=FetchType.EAGER)
+	@OneToMany(mappedBy = "provider", cascade = { CascadeType.REMOVE })
 	Set<Account> accounts;
 
 	/* INFO PROVIDER FORNITE IN FASE DI REGISTRAZIONE */
@@ -79,9 +79,9 @@ public class Provider extends BaseEntity {
 	private String partitaIva;
 	private String codiceFiscale;
 	private String emailStruttura;
-	
+
 	//for saving logo of provider
-	@OneToOne(fetch=FetchType.EAGER)
+	@OneToOne
 	private File providerFile;
 
 	// boolean che serve ai provider di tipo A per decidere se possono pagare con
@@ -99,12 +99,12 @@ public class Provider extends BaseEntity {
 	 * PERSONE REGISTRATE DAL PROVIDER alcune in fase di registrazione, altre in
 	 * fase di accreditamento
 	 */
-	@OneToMany(mappedBy = "provider",fetch=FetchType.EAGER)
+	@OneToMany(mappedBy = "provider")
 	@Where(clause = "dirty = 'false'")
 	private Set<Persona> persone = new HashSet<Persona>();
 
 	/* SEDI DEL PROVIDER FORNITE IN FASE DI ACCREDITAMENTO */
-	@OneToMany(mappedBy = "provider",fetch=FetchType.EAGER)
+	@OneToMany(mappedBy = "provider")
 	@Where(clause = "dirty = 'false'")
 	private Set<Sede> sedi = new HashSet<Sede>();
 

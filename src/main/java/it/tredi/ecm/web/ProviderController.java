@@ -71,7 +71,7 @@ import it.tredi.ecm.web.validator.ValutazioneValidator;
 import it.tredi.ecm.service.FileService;
 
 @Controller
-@SessionAttributes({"providerList","providerId","providerWrapper"})
+@SessionAttributes({"providerList"})
 public class ProviderController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Provider.class);
 
@@ -82,7 +82,7 @@ public class ProviderController {
 	private final String RICERCA = "ricerca/ricercaProvider";
 	private final String ERROR = "fragments/errorsAjax";
 	private final String PROVIDER = "provider/logoInsert";
-	
+
 	@Autowired private FileService fileService;
 
 	@Autowired private ProviderService providerService;
@@ -124,7 +124,7 @@ public class ProviderController {
 		}
 		return new ProviderWrapper();
 	}
-	
+
 	//Distinguo il prepareWrapper dalla verisione chiamata in caricamento della View da quella chiamata per il reload e merge con il form
 	//nel secondo caso non riapplico le eventuali integrazioni altrimenti mi ritroverei delle entity attached me mi danno errore.
 	//Distinguo inoltre il prepareWrapper in funzione dello stato della domanda
@@ -256,7 +256,7 @@ public class ProviderController {
 			Model model, RedirectAttributes redirectAttrs, @PathVariable Long accreditamentoId){
 		LOGGER.info(Utils.getLogMessage("GET: /accreditamento/" + accreditamentoId + "/provider/save"));
 		try{
-			
+
 			//validazione del provider
 			providerValidator.validateForAccreditamento(providerWrapper.getProvider(), result, "provider.");
 
@@ -647,7 +647,7 @@ public class ProviderController {
 			return "redirect:/provider/list";
 		}
 	}
-			
+
 	//insert logo of Provider
 	@RequestMapping("/provider/logo/insert")
 	public String inserisciLogoForProvider(Model model, RedirectAttributes redirectAttrs) {
@@ -663,12 +663,12 @@ public class ProviderController {
 				return "redirect:/home";
 			}
 		}
-		
+
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#providerId)")
 	@RequestMapping("/provider/{providerId}/logo/insert")
 		public String showLogoForProvider(@PathVariable Long providerId, Model model,
 				RedirectAttributes redirectAttrs) {
-			
+
 			try{
 				LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/logo/insert"));
 				return goToProviderLogo(model, prepareProviderWrapperLogo(providerService.getProvider(providerId)));
@@ -680,14 +680,14 @@ public class ProviderController {
 				return "redirect:/home";
 			}
 		}
-	
-	//save logo of provider 
+
+	//save logo of provider
 	@RequestMapping("/provider/{providerId}/logo/saveLogo")
 	public String salvaLogoProvider(@PathVariable Long providerId,
 			@RequestParam(name = "idModalProvider", required=false) Long idModalProvider,
 			@RequestParam(name = "modeModalProvider") String modeModalProvider,
 			@ModelAttribute ("providerWrapper") ProviderWrapper wrapper, BindingResult result, Model model, RedirectAttributes redirectAttrs) {
-		
+
 		try{
 			LOGGER.info(Utils.getLogMessage("POST /provider/" + providerId + "/logo/save"));
 
@@ -703,15 +703,15 @@ public class ProviderController {
 				return ERROR + " :: fragmentError";
 			}
 			else {
-				
+
 				Provider provider = providerService.getProvider(providerId);
 				providerService.saveProviderLogo(wrapper.getProviderFile(), provider, modeModalProvider);
 				wrapper.setProvider(provider);
 				wrapper.setProviderFile(provider.getProviderFile());
 				model.addAttribute("providerWrapper", wrapper);
 				return PROVIDER + ":: allegatoProviderLogoTable";
-				
-				
+
+
 			}
 		}
 		catch (Exception ex) {
@@ -720,7 +720,7 @@ public class ProviderController {
 			return "redirect:/provider/"+ providerId + "/logo/insert";
 		}
 	}
-	
+
 	//modify logo of provider
 	@RequestMapping("/provider/{providerId}/logo/loadModaleProvider")
 	public String caricaModaleProvider(@PathVariable Long providerId,
@@ -738,7 +738,7 @@ public class ProviderController {
 			return "redirect:/provider/"+ providerId + "/logo/insert";
 		}
 	}
-	
+
 	//TODO	@PreAuthorize("@securityAccessServiceImpl.canShowAllProvider(principal)")
 	@RequestMapping(value = "/provider/{providerId}/blocca", method = RequestMethod.POST)
 	public String bloccaProvider(@PathVariable Long providerId, @ModelAttribute("impostazioniProviderWrapper") ImpostazioniProviderWrapper wrapper,
@@ -803,21 +803,21 @@ public class ProviderController {
 			session.setAttribute("providerList", providerList);
 		}
 	}
-	
+
 	private ProviderWrapper prepareProviderWrapperLogo(Provider provider) {
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperLogo(" + provider.getId() + ") - entering"));
 		ProviderWrapper providerWrapper = new ProviderWrapper();
-		providerWrapper.setProvider(provider); 
+		providerWrapper.setProvider(provider);
 		providerWrapper.setProviderFile(new File(FileEnum.FILE_POVIDER_LOGO));
 		LOGGER.info(Utils.getLogMessage("prepareProviderWrapperLogo(" + provider.getId() + ") - exiting"));
 		return providerWrapper;
 	}
-	
+
 	private String goToProviderLogo(Model model, ProviderWrapper wrapper) {
 		model.addAttribute("providerWrapper", wrapper);
 		LOGGER.info(Utils.getLogMessage("VIEW: provider/logoInsert" ));
 		return "provider/logoInsert";
 	}
-	
+
 
 }
