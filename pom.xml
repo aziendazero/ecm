@@ -8,6 +8,7 @@
 	<version>2.0.19</version>
 	<packaging>war</packaging>
 
+
 	<name>it.tredi.ecm</name>
 	<description>Progetto realizzato per Regione Veneto Sanità - "Sviluppo sistema informatico per la gestione dei crediti informativi ECM"</description>
 
