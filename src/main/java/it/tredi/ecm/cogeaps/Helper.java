@@ -88,8 +88,8 @@ public class Helper {
 		dbEventoDataMap.put("cod_accr", CODICE_ENTE_ACCREDITANTE);
 		dbEventoDataMap.put("data_ini", evento.getDataInizio().format(DateTimeFormatter.ISO_LOCAL_DATE));
 		dbEventoDataMap.put("data_fine", evento.getDataFine().format(DateTimeFormatter.ISO_LOCAL_DATE));
-		//tiommi 22/05/2017
-		BigDecimal durataRounded = new BigDecimal(Float.toString(evento.getDurata())).setScale(0, RoundingMode.HALF_DOWN);
+		//tiommi 22/05/2017 | dpranteda 12/12/2018
+		BigDecimal durataRounded = new BigDecimal(Float.toString(evento.getDurata())).setScale(0, RoundingMode.HALF_UP);
 		dbEventoDataMap.put("ore", durataRounded.toString());
 		//end
 		dbEventoDataMap.put("crediti", Float.toString(evento.getCrediti()));
