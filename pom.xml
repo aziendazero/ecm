@@ -128,7 +128,7 @@
 		<dependency>
 			<groupId>it.tredi</groupId>
 			<artifactId>springdatautil</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-io</groupId>
