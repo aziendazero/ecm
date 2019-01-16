@@ -600,9 +600,9 @@ public class EventoController {
 		model.addAttribute("denominazioneProvider", denominazioneProvider);
 		model.addAttribute("providerId", providerId);
 		try {
-			
+
 			model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
-			
+
 			Accreditamento accreditamento =  accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
 			model.addAttribute("proceduraFormativaList", accreditamento.getDatiAccreditamento().getProcedureFormative());
 			model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
@@ -610,7 +610,7 @@ public class EventoController {
 		}
 		catch (Exception ex) {
 			model.addAttribute("eventoRiedizioneList", null);
-			
+
 			model.addAttribute("proceduraFormativaList", null);
 			model.addAttribute("canCreateEvento", false);
 			model.addAttribute("canRieditEvento", false);
@@ -1492,6 +1492,7 @@ public class EventoController {
 						} else if(target.equalsIgnoreCase("coordinatori")){
 							errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getCoordinatori(), false, "anagraficaBase_");
 						} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
+							// EVENTO_VERSIONE
 							EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
 							if(curVersione == EventoVersioneEnum.DUE_DAL_2018)
 								errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
@@ -1579,6 +1580,7 @@ public class EventoController {
 				} else if(target.equalsIgnoreCase("esperti")){
 					errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getEsperti(), true, "anagraficaBase_");
 				} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
+					// EVENTO_VERSIONE
 					EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
 					if(curVersione == EventoVersioneEnum.DUE_DAL_2018)
 						errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");

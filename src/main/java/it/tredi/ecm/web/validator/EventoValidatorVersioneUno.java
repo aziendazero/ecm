@@ -56,12 +56,13 @@ import it.tredi.ecm.web.validator.bean.ValidateEventoFadInfo;
 import it.tredi.ecm.web.validator.bean.ValidateEventoResInfo;
 import it.tredi.ecm.web.validator.bean.ValidateFasiAzioniRuoliFSCInfo;
 
+// EVENTO_VERSIONE
 @Component
 public class EventoValidatorVersioneUno {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventoValidatorVersioneUno.class);
 
 	@Autowired private EcmProperties ecmProperties;
-	
+
 	// ERM014045 - rimossi controlli sulle firme
 	// @Autowired private FileValidator fileValidator;
 	@Autowired private FileService fileService;
@@ -141,10 +142,10 @@ public class EventoValidatorVersioneUno {
 					if(!Utils.getAuthenticatedUser().isSegreteria()) {
 						if(
 							evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni))
-							// 08/01/2018 
+							// 08/01/2018
 							// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
 							// da non applicare ad eventi FSC
-							//|| 
+							//||
 							//evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()
 						)
 							//Non è possibile inserire una riedizione di un Evento entro 10 giorni dalla data del suo inizio
@@ -156,11 +157,11 @@ public class EventoValidatorVersioneUno {
 					}
 					if(!(evento instanceof EventoFSC)) {
 						if(
-								// 08/01/2018 
+								// 08/01/2018
 								// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
 								// da non applicare ad eventi FSC
 								//evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())
-								//|| 
+								//||
 								evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()
 						) {
 							// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
@@ -213,11 +214,11 @@ public class EventoValidatorVersioneUno {
 				}
 				if(!(evento instanceof EventoFSC)) {
 					if(
-							// 08/01/2018 
+							// 08/01/2018
 							// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
 							// da non applicare ad eventi FSC
 							//evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())
-							//|| 
+							//||
 							evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()
 					) {
 						// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
@@ -531,7 +532,7 @@ public class EventoValidatorVersioneUno {
 
 	//validate RES
 	private void validateRES(EventoRES evento, EventoWrapper wrapper, Errors errors, String prefix) throws Exception {
-		ValidateEventoResInfo validateEventoResInfo = new ValidateEventoResInfo(); 
+		ValidateEventoResInfo validateEventoResInfo = new ValidateEventoResInfo();
 
 		/* SEDE (tutti campi obbligatori)
 		 * provincia da selezione, comune da selezione, almeno 1 char indirizzo, almeno 1 char luogo
@@ -1097,7 +1098,7 @@ public class EventoValidatorVersioneUno {
 
 	//validate FAD
 	private void validateFAD(EventoFAD evento, EventoWrapper wrapper, Errors errors, String prefix) throws Exception{
-		ValidateEventoFadInfo validateEventoFadInfo = new ValidateEventoFadInfo(); 
+		ValidateEventoFadInfo validateEventoFadInfo = new ValidateEventoFadInfo();
 		/* DATA FINE (campo obbligatorio)
 		 * e l'evento non può avere durata superiore a 365 giorni
 		 * -------------
@@ -1288,7 +1289,7 @@ public class EventoValidatorVersioneUno {
 		//if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
 		if(Utils.rejectIfCodFiscIncorrect(persona.getAnagrafica().getCodiceFiscale(), persona.getAnagrafica().getStraniero()))
 			return true;
-		
+
 		if(persona.getAnagrafica().getCv() == null || persona.getAnagrafica().getCv().isNew())
 			return true;
 
@@ -1350,7 +1351,7 @@ public class EventoValidatorVersioneUno {
 			return true;
 		if(partner.getPartnerFile() == null || partner.getPartnerFile().isNew())
 			return true;
-		
+
 		/* ERM014045
 		if(!fileValidator.validateFirmaCF(partner.getPartnerFile(), providerId))
 			return true;
@@ -1468,7 +1469,7 @@ public class EventoValidatorVersioneUno {
 
 			if(validateEventoResInfo.isAlertResDocentiNonPresenti() || validateEventoResInfo.isAlertResDocentiPartecipanti())
 				return true;
-			
+
 			//controllo per eventi non di tipolgia CONVEGNO_CONGRESSO [ 1) ]
 			if(tipologiaEvento != TipologiaEventoRESEnum.CONVEGNO_CONGRESSO) {
 				if(dettaglio.getRisultatoAtteso() == null || dettaglio.getRisultatoAtteso().isEmpty())
@@ -1495,7 +1496,7 @@ public class EventoValidatorVersioneUno {
 	//validate FasiAzioniRuoliFSC
 	//ritorna se ha trovato almeno 1 partecipante e almeno 1 tutor per fase
 	private ValidateFasiAzioniRuoliFSCInfo validateFasiAzioniRuoliFSC(FaseAzioniRuoliEventoFSCTypeA faseAzioniRuoli, Errors errors, String prefix, TipologiaEventoFSCEnum tipologiaEvento,
-			EventoVersioneEnum versione, List<RuoloFSCEnum> listRuoloFSCEnumPerResponsabiliScientifici, 
+			EventoVersioneEnum versione, List<RuoloFSCEnum> listRuoloFSCEnumPerResponsabiliScientifici,
 			List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatori, List<RuoloFSCEnum> listRuoloFSCEnumPerEsperti) {
 
 		ValidateFasiAzioniRuoliFSCInfo validateFasiAzioniRuoliFSCInfo = new ValidateFasiAzioniRuoliFSCInfo();
@@ -1507,7 +1508,7 @@ public class EventoValidatorVersioneUno {
 		if(faseAzioniRuoli.getAzioniRuoli() == null || faseAzioniRuoli.getAzioniRuoli().isEmpty()) {
 			errors.rejectValue(prefix + "azioniRuoli", "error.empty");
 			//return new boolean[] {false, false};
-			return validateFasiAzioniRuoliFSCInfo;			
+			return validateFasiAzioniRuoliFSCInfo;
 		}
 		else {
 			int counter = 0;
@@ -1535,9 +1536,9 @@ public class EventoValidatorVersioneUno {
 						}
 					}
 				}
-				
+
 				//versione 2 controllo che i ruoli delle azioni siano validi in quanto potrebbero essere stati inseriti correttamente
-				//ma poi potrebbero essere stati modificati i responsabili scientifici o la data inizio passando da un evento della versione 2 alla versione 1 
+				//ma poi potrebbero essere stati modificati i responsabili scientifici o la data inizio passando da un evento della versione 2 alla versione 1
 				//rendendo alcuni o tutti i ruoli "Responsabile scientifico X" (X = A o B o C) non piu' accettabili
 				for(RuoloOreFSC ruoloOre : aref.getRuoli()) {
 					eventoValidator.validateRuoloDinamicoDaSezione1(validateFasiAzioniRuoliFSCInfo, ruoloOre, tipologiaEvento, versione, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
@@ -1589,7 +1590,7 @@ public class EventoValidatorVersioneUno {
 				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_coordinatore_x_non_valido");
 			if(validateFasiAzioniRuoliFSCInfo.isInvalidEsperto())
 				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_esperto_x_non_valido");
-			
+
 			//return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
 			validateFasiAzioniRuoliFSCInfo.setAtLeastOnePartecipante(atLeastOnePartecipante);
 			validateFasiAzioniRuoliFSCInfo.setAtLeastOneTutor(atLeastOneTutor);

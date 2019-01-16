@@ -118,8 +118,8 @@ public class EventoServiceImpl implements EventoService {
 
 	@Autowired private ObiettivoRepository obiettivoRepository;
 	private Set<Obiettivo> obiettiviNazionaliOldList = new HashSet<Obiettivo>();
-	
-	
+
+
 	@Autowired private EventoRepository eventoRepository;
 
 	@Autowired private PersonaEventoRepository personaEventoRepository;
@@ -967,7 +967,7 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public Evento handleRipetibiliAndAllegati(EventoWrapper eventoWrapper) throws Exception{
 		Evento evento = eventoWrapper.getEvento();
-
+		// EVENTO_VERSIONE
 		if(evento instanceof EventoFSC) {
 			if(versioneEvento(evento) == EventoVersioneEnum.UNO_PRIMA_2018) {
 				//cancello eventuali esperti coordinatori e investigatori inseriti
@@ -2242,8 +2242,8 @@ public class EventoServiceImpl implements EventoService {
 			return listaEventi.size();
 		return 0;
 	}
-	
-	
+
+
 	@Override
 	public List<Evento> cerca(RicercaEventoWrapper wrapper) {
 
@@ -2329,7 +2329,8 @@ public class EventoServiceImpl implements EventoService {
 					||
 				(wrapper.getObiettiviNazionaliSelezionatiVersione1() != null && !wrapper.getObiettiviNazionaliSelezionatiVersione1().isEmpty())
 				){
-				
+
+				// EVENTO_VERSIONE
 				if ((wrapper.getVersione() != null) && (wrapper.getVersione() == 1)
 						&& wrapper.getObiettiviNazionaliSelezionatiVersione1() != null && !wrapper.getObiettiviNazionaliSelezionatiVersione1().isEmpty()){
 					query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN (:obiettiviNazionaliSelezionati)");
@@ -2339,7 +2340,7 @@ public class EventoServiceImpl implements EventoService {
 					params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionati());
 				}
 			}
-			
+
 			//OBIETTIVI REGIONALI
 			if(wrapper.getObiettiviRegionaliSelezionati() != null && !wrapper.getObiettiviRegionaliSelezionati().isEmpty()){
 				query = Utils.QUERY_AND(query, "e.obiettivoRegionale IN (:obiettiviRegionaliSelezionati)");
@@ -2459,6 +2460,7 @@ public class EventoServiceImpl implements EventoService {
 				params.put("altreFormeFinanziamento", wrapper.getAltreFormeFinanziamento().booleanValue());
 			}
 
+			// EVENTO_VERSIONE
 			//VERSIONE
 			if(wrapper.getVersione() != null) {
 				query = Utils.QUERY_AND(query, "e.versione = :versione");

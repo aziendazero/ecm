@@ -1733,6 +1733,7 @@
 					}
 				}
 
+				// EVENTO_VERSIONE
 				function setEspertiCoordinatori() {
 					var val = $('#tipologiaEventoId').selectpicker('val');
 					var versione = getVersione();
@@ -1760,6 +1761,7 @@
 					}
 				}
 
+				// EVENTO_VERSIONE
 				function mostraFlagCalcoloCrediti() {
 					var versione = getVersione();
 					if (versione === 2) {
@@ -1771,6 +1773,7 @@
 					}
 				}
 
+				// EVENTO_VERSIONE
 				function setEvResTipologiaSperimentazione() {
 					//console.log($('#tipologiaEventoId').val());
 					var val = $('#tipologiaEventoId').selectpicker('val');
@@ -1865,6 +1868,7 @@
 					abilitaDisabilitaMotivazioneCreditiInseritiUtente();
 				}
 
+				// EVENTO_VERSIONE
 				function abilitaDisabilitaMotivazioneCreditiInseritiUtente() {
 					//console.log('abilitaDisabilitaMotivazioneCreditiInseritiUtente: ' + $(".crediti-proposti").val());
 					var versione = getVersione();
@@ -1886,6 +1890,7 @@
 					}
 				}
 
+				// EVENTO_VERSIONE
 				function setStepEventoTempoDedicato() {
 					//sistemo lo step dell'input eventoTempoDedicato
 					var versione = getVersione();
@@ -1905,7 +1910,7 @@
 						}
 					}
 				}
-				
+
 		/* 		function updateSelectRuoliOre(){
 					var val = $('#tipologiaEventoId').selectpicker('val');
 					var ruoliOrePicker_ref ='#addRuoloOreFSC-ruolo';
@@ -1933,6 +1938,7 @@
 				var ruoliEsperti = [[${eventoWrapper.getListRuoloFSCEnumPerEspertiDocenti()}]];
 				var ruoliCoordinatori = [[${eventoWrapper.getListRuoloFSCEnumPerCoordinatori()}]];
 
+				// EVENTO_VERSIONE
 				function updateVerificaAprendimento(){
 					var tipologiaEvento = $('#tipologiaEventoId').selectpicker('val');
 					if(tipologiaEvento != null && tipologiaEvento != undefined){
@@ -1945,7 +1951,8 @@
 						}
 					}
 				}
-				
+
+				// EVENTO_VERSIONE
 				function updateRuoliCoinvolti(){
 					var tipologiaEvento = $('#tipologiaEventoId').selectpicker('val');
 					if(tipologiaEvento != null && tipologiaEvento != undefined){
@@ -1980,9 +1987,9 @@
 							}
 
 							if (versione === 2) {
-								
-								
-								
+
+
+
 								//devo integrare il dato con gli eventuali RESPONSABILE_SCIENTIFICO_X
 								$.each(ruoliRespScient, function() {
 									//console.log('ruoliRespScient: ' + $(this).attr("$name"));

@@ -1089,7 +1089,7 @@
 												<span class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12" id="creditiFormativi">
-												<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}" 
+												<input type="number" min="0" oninput="validity.valid||(value='0');" step="any" class="form-control crediti-proposti" th:field="${eventoWrapper.evento.crediti}"
 															th:disabled="${isRiedizione or isEditSemiBloccato}" th:attr="data-editabile=${!isRiedizione and !isEditSemiBloccato}" />
 											</div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.crediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.crediti')}__}"></div>
@@ -1107,8 +1107,8 @@
 											</div>
 											<div th:if="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.motivazioneCrediti')}" class="alert" th:text="#{__${eventoWrapper.mappaErroriValidazione.get('evento.motivazioneCrediti')}__}"></div>
 										</div>
-										
-										
+
+
 
 										<!-- RESPONSABILE SEGRETERIA ORGANIZZATIVA -->
 										<div class="item alert-tabella-evento form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabileSegreteria')} ? 'bad'">
@@ -1431,7 +1431,7 @@
 											</div>
 										</div>
 										<!-- SEZIONE PORTATA FUORI CON NUMERAZIONE PROPRIA -->
-											
+
 										<div class="divider-dashed" ></div>
 
 										<!-- FORME FINANZIAMENTO BLOCCO -->
@@ -1640,7 +1640,7 @@
 						deselectAllText : 'Deseleziona tutti',
 						countSelectedText : '{0} selezionate'
 					});
-					
+
 				    $("#addAttivitaRES-metodolgieDidattiche").prop('disabled',true);
 
 				    $(".datatable-responsive-programmaRES").DataTable({
@@ -1693,7 +1693,7 @@
 					$('#dataInizio').on('change', setAttivitaSalutiIntroduttivi);
 					$('#dataInizio').on('change', mostraNascondiCampoNumeroPartecipantiPerCorso);
 					$('#dataInizio').on('change', abilitaDisabilitaMotivazioneCreditiInseritiUtente);
-					
+
 					//setta i nomi dei giorni e dei mesi a seconda delle label i18n anche per le date intermedie
 					days = getDayNamesShort();
 					months = getMonthNames();
@@ -2010,11 +2010,11 @@
 						if($(".titolo-convegno").attr("data-editabile") === 'true') {
 							$(".titolo-convegno").prop("disabled", false);
 						}
-						
+
 						$(".partecipanti-per_corso").slideUp("slow");
 						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
 						$("#numeroPartecipantiPerCorso").selectpicker('refresh');
-						
+
 						$("#brochure-obbligatoria").removeClass("hidden");
 						abilitaModalitaVerificaApprendimento('esame');
 						$(".risultati-attesi-input").show();
@@ -2023,7 +2023,7 @@
 						$(".convegno-congresso").slideUp("slow");
 						$(".workshop-seminario").slideUp("slow");
 						$(".partecipanti-per_corso").slideDown("slow");
-						
+
 						$(".radio-workshop").iCheck('disable');
 						$(".label-radio-workshop").addClass("label-disabled");
 						$(".titolo-convegno").prop("disabled", true);
@@ -2046,6 +2046,7 @@
 					mostraNascondiCampoNumeroPartecipantiPerCorso(value);
 				}
 
+				// EVENTO_VERSIONE
 				//funzione che calcola al doc ready o all'onchange della relativa select
 				//se mostrare o meno input aggiuntivi relativi alla tipologia dell'evento
 				function mostraNascondiCampoNumeroPartecipantiPerCorso(valueTipologiaEvento) {
@@ -2079,10 +2080,10 @@
 					} else {
 						$(".partecipanti-per_corso").slideUp("slow");
 						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
-						$("#numeroPartecipantiPerCorso").selectpicker('refresh');						
+						$("#numeroPartecipantiPerCorso").selectpicker('refresh');
 					}
 				}
-				
+
 				//funzione che calcola al doc ready o all'onchange della relativa select
 				//se mostrare o meno input aggiuntivi relativi alla lingua dell'evento
 				function mostraNascondiCampiLingua(value) {
@@ -2142,6 +2143,7 @@
 					abilitaDisabilitaMotivazioneCreditiInseritiUtente();
 				}
 
+				// EVENTO_VERSIONE
 				function abilitaDisabilitaMotivazioneCreditiInseritiUtente() {
 					//console.log('abilitaDisabilitaMotivazioneCreditiInseritiUtente: ' + $(".crediti-proposti").val());
 					var versione = getVersione();
@@ -2160,7 +2162,7 @@
 						$(".motivazioneCrediti").val('');
 					}
 				}
-				
+
 				//funzione che aggiunge un risultato atteso
 				function aggiungiRisultatoAtteso(caller, target) {
 					$.post([[@{|/provider/${eventoWrapper.evento.provider.id}/evento/addRisultatoAtteso/|}]] + target, $('#formEventoRES').serialize() + eventoWrapper_cId)
@@ -2503,7 +2505,8 @@
 						default: 	break;
 					}
 				}
-				
+
+				// EVENTO_VERSIONE
 				function setDocRelTutMod() {
 					var versione = getVersione();
 					if (versione === 2) {
@@ -2515,6 +2518,7 @@
 					}
 				}
 
+				// EVENTO_VERSIONE
 				function setAttivitaSalutiIntroduttivi() {
 					var versione = getVersione();
 					if (versione === 2) {
@@ -2523,7 +2527,7 @@
 						$(".attivitaSalutiIntroduttivi").hide();
 					}
 				}
-				
+
 			/*]]>*/
 			</script>
 		</div>

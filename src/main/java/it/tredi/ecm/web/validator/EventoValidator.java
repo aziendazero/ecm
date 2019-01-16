@@ -31,6 +31,7 @@ public class EventoValidator {
 	@Autowired private EventoValidatorVersioneUno eventoValidatorVersioneUno;
 	@Autowired private EventoValidatorVersioneDue eventoValidatorVersioneDue;
 
+	// EVENTO_VERSIONE
 	public void validate(Object target, EventoWrapper wrapper, Errors errors, String prefix) throws Exception{
 		Evento evento = (Evento) target;
 
@@ -70,6 +71,7 @@ public class EventoValidator {
 		return errMap;
 	}
 
+	// EVENTO_VERSIONE
 	//versione 2 controllo che i ruoli delle azioni siano validi in quanto potrebbero essere stati inseriti correttamente
 	//ma poi potrebbero essere stati modificati i responsabili scientifici o la data inizio passando da un evento della versione 2 alla versione 1
 	//o viceversa rendendo alcuni o tutti i ruoli "Responsabile scientifico X" (X = A o B o C) non piu' accettabili

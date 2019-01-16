@@ -16,7 +16,8 @@ public class EventoCrediti {
 	@Autowired private EventoService eventoService;
 	@Autowired private EventoCreditiVersioneUno eventoCreditiVersioneUno;
 	@Autowired private EventoCreditiVersioneDue eventoCreditiVersioneDue;
-	
+
+	// EVENTO_VERSIONE
 	public float calcoloCreditiEvento(EventoWrapper eventoWrapper) throws Exception {
 		EventoVersioneEnum eventoVersione = eventoService.versioneEvento(eventoWrapper.getEvento());
 		switch (eventoVersione) {
@@ -29,5 +30,5 @@ public class EventoCrediti {
 			throw new Exception("Evento versione: " + eventoVersione + " non gestita");
 		}
 	}
-	
+
 }

@@ -19,32 +19,35 @@ import it.tredi.ecm.dao.repository.ObiettivoRepository;
 public class ObiettivoServiceImpl implements ObiettivoService {
 
 	private final static Logger LOGGER = Logger.getLogger(ObiettivoServiceImpl.class);
-	
+
 	@Autowired
 	private ObiettivoRepository obiettivoRepository;
-	
+
 	@Override
 	public Set<Obiettivo> getAllObiettivi() {
 		LOGGER.debug("Recupero tutti gli Obiettivi");
-		return obiettivoRepository.findAll(); 
+		return obiettivoRepository.findAll();
 	}
-	
+
+	// EVENTO_VERSIONE
 	@Override
 	public Set<Obiettivo> getObiettiviNazionali(EventoVersioneEnum versione) {
 		LOGGER.debug("Recupero tutti gli Obiettivi Nazionali");
 		if(versione == null || versione == EventoVersioneEnum.DUE_DAL_2018) {
-			return obiettivoRepository.findAllByNazionaleAndVersioneNotOrderByCodiceCogeapsAsc(true, 1).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new)); 
+			return obiettivoRepository.findAllByNazionaleAndVersioneNotOrderByCodiceCogeapsAsc(true, 1).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new));
 		}else {
-			return obiettivoRepository.findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(true, 1).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new)); 
+			return obiettivoRepository.findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(true, 1).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new));
 		}
-		
+
 	}
-		
+
+	// EVENTO_VERSIONE
 	@Override
 	public Set<Obiettivo> getObiettiviNazionali() {
 		return getObiettiviNazionali(EventoVersioneEnum.DUE_DAL_2018);
 	}
-	
+
+	// EVENTO_VERSIONE
 	@Override
 	public Set<Obiettivo> getObiettiviNazionaliVersione1() {
 		return getObiettiviNazionali(EventoVersioneEnum.UNO_PRIMA_2018);
@@ -55,7 +58,7 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 		LOGGER.debug("Recupero tutti gli Obiettivi Regionali");
 		return obiettivoRepository.findAllByNazionale(false);
 	}
-	
+
 	@Override
 	@Transactional
 	public void save(Obiettivo obiettivo) {
@@ -75,7 +78,8 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 		LOGGER.info("Retrieving Obiettivo (" + obiettivoId +")");
 		return obiettivoRepository.findOne(obiettivoId);
 	}
-	
+
+	// EVENTO_VERSIONE
 	@Override
 	public Obiettivo findOneByCodiceCogeaps(String codiceCogeaps, boolean nazionale) {
 		LOGGER.info("Retrieving Obiettivo by CodiceCogeaps (" + codiceCogeaps +") and Nazionale (" + nazionale + ")");
@@ -85,5 +89,5 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 		return obiettivi.iterator().next();
 	}
 
-	
+
 }

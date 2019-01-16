@@ -6,6 +6,7 @@ import java.util.Set;
 
 import lombok.Getter;
 
+// EVENTO_VERSIONE
 @Getter
 public enum EventoVersioneEnum {
 	UNO_PRIMA_2018 (1),

@@ -14,7 +14,7 @@ public enum VerificaApprendimentoFSCEnum implements INomeEnum {
 	PROVA_SCRITTA(4,"Prova scritta"),
 	RELAZIONE_FIRMATA(5,"Rapporto conclusivo basato su valutazione dell’apprendimento valutata dal responsabile scientifico"),
 	RAPPORTO_CONCLUSIVO(6, "Rapporto conclusivo basato su valutazione dell’apprendimento valutata dal tutor"),
-	
+
 	// ERM015132
 	RELAZIONE_FIRMATA_V1(50,"Relazione firmata dal responsabile o dal coordinatore del progetto"),
 	RAPPORTO_CONCLUSIVO_V1(51, "Rapporto conclusivo di training individualizzato da parte del tutor");
@@ -26,12 +26,13 @@ public enum VerificaApprendimentoFSCEnum implements INomeEnum {
 		this.id = id;
 		this.nome = nome;
 	}
-	
+
+	// EVENTO_VERSIONE
 	// otiene la lista di valori che non siano deprecati.
 	public static VerificaApprendimentoFSCEnum[] getValues(EventoVersioneEnum version /*Evento e*/){
 		//EventoVersioneEnum version = e.getVersione();
 		if(version != null && version == EventoVersioneEnum.UNO_PRIMA_2018) {
-			// v1 
+			// v1
 			return Stream.of(VerificaApprendimentoFSCEnum.values()).filter(c->c.getId() != 5 && c.getId() != 6).toArray(size->new VerificaApprendimentoFSCEnum[size]);
 		}else {
 			// v2
@@ -42,17 +43,17 @@ public enum VerificaApprendimentoFSCEnum implements INomeEnum {
 
 /* ERM015132 db patch
 
-update ecmdb.eventofsc_verifica_apprendimento 
+update ecmdb.eventofsc_verifica_apprendimento
 set verifica_apprendimento = 'RAPPORTO_CONCLUSIVO_V1'
-where eventofsc_id in ( 
-select distinct e.id from ecmdb.evento e, ecmdb.eventofsc_verifica_apprendimento eva 
+where eventofsc_id in (
+select distinct e.id from ecmdb.evento e, ecmdb.eventofsc_verifica_apprendimento eva
 where e.id = eva.eventofsc_id and eva.verifica_apprendimento='RAPPORTO_CONCLUSIVO' and e.versione = 1
 ) and verifica_apprendimento ='RAPPORTO_CONCLUSIVO'
 
-update ecmdb.eventofsc_verifica_apprendimento 
+update ecmdb.eventofsc_verifica_apprendimento
 set verifica_apprendimento = 'RELAZIONE_FIRMATA_V1'
-where eventofsc_id in ( 
-select e.id from ecmdb.evento e, ecmdb.eventofsc_verifica_apprendimento eva 
+where eventofsc_id in (
+select e.id from ecmdb.evento e, ecmdb.eventofsc_verifica_apprendimento eva
 where e.id = eva.eventofsc_id and eva.verifica_apprendimento='RELAZIONE_FIRMATA' and e.versione = 1
 ) and verifica_apprendimento ='RELAZIONE_FIRMATA'
 

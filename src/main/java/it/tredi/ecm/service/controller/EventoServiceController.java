@@ -13,6 +13,7 @@ import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.bean.EcmProperties;
 
+// EVENTO_VERSIONE
 @Component
 public class EventoServiceController {
 	@Autowired private EcmProperties ecmProperties;
@@ -35,23 +36,23 @@ public class EventoServiceController {
 		}
 		return versione;
 	}
-	
+
 	public boolean isVersionDue(Evento evento) {
 		return versioneEvento(evento) == EventoVersioneEnum.DUE_DAL_2018;
 	}
-	
+
 	public boolean fadDisableSupportoSvoltoDaEsperto(EventoFAD evento) {
 		if(versioneEvento(evento) == EventoVersioneEnum.DUE_DAL_2018 && evento.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE) {
 			return true;
 		}
 		return false;
 	}
-	
-	
+
+
 	// ERM014776
 	/*
-	 * 	1)  se accreditamento e chiuso si puo modificare 
-	 * 		solo se data corrente non e maggiore di data chiusura 
+	 * 	1)  se accreditamento e chiuso si puo modificare
+	 * 		solo se data corrente non e maggiore di data chiusura
 	 * 		del acc + un intervallo dei giorni
 	 */
 	public boolean canEdit(Evento e){
@@ -82,7 +83,7 @@ public class EventoServiceController {
 
 	/*
 	 * Il tasto appare solo a evento terminato
-	 * 
+	 *
 	 */
 	public boolean canDoRendicontazione(Evento e){
 		return accreditamentoService.canProviderWorkWithEvent(e.getProvider().getId(), e) &&  e.canDoRendicontazione();

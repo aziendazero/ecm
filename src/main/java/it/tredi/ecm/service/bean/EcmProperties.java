@@ -54,7 +54,7 @@ public class EcmProperties {
 	// ERM012514
 	private int RelazioneAnnualeGiornoPeriodoNuovo;
 	private int RelazioneAnnualeMesePeriodoNuovo;
-	
+
 	// ERM014776
 	private int AccreditamentoNumeroGiorniDopoChiusura;
 
@@ -68,6 +68,8 @@ public class EcmProperties {
 	private String proxyPassword;
 	private boolean conteggioGiorniAvanzatoAbilitato;
 	private boolean conteggioGiorniAvanzatoBeforeDayMode;
+
+	// EVENTO_VERSIONE
 	private EventoVersioneEnum eventoVersioneDefault;
 	private LocalDate eventoDataPassaggioVersioneDue;
 	private Set<EventoVersioneEnum> eventoVersioniRieditabili;
@@ -100,5 +102,5 @@ public class EcmProperties {
 	public LocalDate espandiDataPerGiorniChiusura(LocalDate d) {
 		return d.plusDays(getAccreditamentoNumeroGiorniDopoChiusura());
 	}
-	
+
 }

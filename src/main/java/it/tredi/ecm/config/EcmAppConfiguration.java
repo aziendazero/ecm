@@ -102,7 +102,7 @@ public class EcmAppConfiguration {
 	private int relazioneAnnualeGiornoPeriodoNuovo = 30;
 	@Value("${relazioneAnnuale.mesePeriodoNuovo}")
 	private int relazioneAnnualeMesePeriodoNuovo = 6;
-	
+
 	// ERM014776
 	@Value("${accreditamento.numeroGiorniDopoChiusura}")
 	private int accreditamentoNumeroGiorniDopoChiusura = 7;
@@ -130,6 +130,7 @@ public class EcmAppConfiguration {
 	@Value("${conteggioGiorniAvanzatoBeforeDayMode}")
 	private boolean conteggioGiorniAvanzatoBeforeDayMode;
 
+	// EVENTO_VERSIONE
 	@Value("#{T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).getByNumeroVersione(${evento.numeroversione.default})}")
 	private EventoVersioneEnum eventoVersioneDefault = EventoVersioneEnum.DUE_DAL_2018;
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.data.passaggio.versione.due}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
@@ -203,7 +204,7 @@ public class EcmAppConfiguration {
 		// ERM012514
 		ecmProperties.setRelazioneAnnualeGiornoPeriodoNuovo(relazioneAnnualeGiornoPeriodoNuovo);
 		ecmProperties.setRelazioneAnnualeMesePeriodoNuovo(relazioneAnnualeMesePeriodoNuovo);
-		
+
 		// ERM014776
 		ecmProperties.setAccreditamentoNumeroGiorniDopoChiusura(accreditamentoNumeroGiorniDopoChiusura);
 
@@ -219,9 +220,12 @@ public class EcmAppConfiguration {
 
 		ecmProperties.setConteggioGiorniAvanzatoAbilitato(conteggioGiorniAvanzatoAbilitato);
 		ecmProperties.setConteggioGiorniAvanzatoBeforeDayMode(conteggioGiorniAvanzatoBeforeDayMode);
+
+		// EVENTO_VERSIONE
 		ecmProperties.setEventoVersioneDefault(eventoVersioneDefault);
 		ecmProperties.setEventoDataPassaggioVersioneDue(eventoDataPassaggioVersioneDue);
 		ecmProperties.setEventoVersioniRieditabili(eventoVersioniRieditabili);
+
 		ecmProperties.setEventoFadDataFineMaxTriennio(eventoFadDataFineMaxTriennio);
 		ecmProperties.setEventoFscDataFineMaxTriennio(eventoFscDataFineMaxTriennio);
 

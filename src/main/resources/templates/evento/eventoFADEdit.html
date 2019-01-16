@@ -1009,7 +1009,7 @@
 								</div>
 
 								<div class="divider-dashed" ></div>
-								
+
 								<!-- SEZIONE PORTATA FUORI CON NUMERAZIONE PROPRIA -->
 								<div class="no-padding infanzia-sponsor-radio item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia')} ? 'bad'">
 									<label class="control-label col-xs-1">
@@ -1082,9 +1082,9 @@
 									</div>
 								</div>
 								<!-- SEZIONE PORTATA FUORI CON NUMERAZIONE PROPRIA -->
-							
+
 								<div class="divider-dashed" ></div>
-								
+
 								<!-- FORME FINANZIAMENTO BLOCCO -->
 								<!-- RADIO FORME FINANZIAMENTO -->
 								<div class="item form-group" th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.altreFormeFinanziamento')} ? 'bad'">
@@ -1331,7 +1331,7 @@
 						abilitaDisabilitaMotivazioneCreditiInseritiUtente();
 					});
 					$('#dataInizio').on('change', abilitaDisabilitaMotivazioneCreditiInseritiUtente);
-					
+
 					//decide cosa mostrare a seconda dei campi già settati dal client
 					showHideCampsFAD();
 
@@ -1414,6 +1414,7 @@
 					abilitaDisabilitaMotivazioneCreditiInseritiUtente();
 				}
 
+				// EVENTO_VERSIONE
 				function abilitaDisabilitaMotivazioneCreditiInseritiUtente() {
 					//console.log('abilitaDisabilitaMotivazioneCreditiInseritiUtente: ' + $(".crediti-proposti").val());
 					var versione = getVersione();
@@ -1432,7 +1433,7 @@
 						$(".motivazioneCrediti").val('');
 					}
 				}
-				
+
 				//eventLister cambio tab
 				$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 			    	tabSelected = e.target.id;
@@ -1590,7 +1591,7 @@
 					}
 				}
 
-				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.  
+				//onchange su obiettivoformativo -> cambia la lista di metodologieDidattiche che si possono selezionare.
 				function updateMetodologieDidattiche(caller){
 					var obiettivo = $(caller).val();
 					var metodologiePicker_ref ='#addAttivitaFAD-metodolgieDidattiche';
