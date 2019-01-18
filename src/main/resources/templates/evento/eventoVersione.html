@@ -16,6 +16,8 @@
 				//var eventoVersionDefault = [[@{|${@ecmProperties.getEventoVersioneDefault().getNumeroVersione()}|}]];
 				var eventoVersionDefault = [[${@ecmProperties.getEventoVersioneDefault().getNumeroVersione()}]];
 				var eventoDataPassaggioVersioneDue = new Date([[@{${@ecmProperties.getEventoDataPassaggioVersioneDue().getYear()}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneDue().getMonthValue() - 1}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneDue().getDayOfMonth()}}]], 0, 0, 0, 0);
+				var eventoDataPassaggioVersioneTre = new Date([[@{${@ecmProperties.getEventoDataPassaggioVersioneTre().getYear()}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneTre().getMonthValue() - 1}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneTre().getDayOfMonth()}}]], 0, 0, 0, 0);
+
 
 				function getEventoDataInizio() {
 					var toRet = null;
@@ -50,7 +52,10 @@
 						if(eventoDataInizio != null) {
 							//console.log('eventoDataInizio: ' + eventoDataInizio + '\neventoDataPassaggioVersioneDue: ' + eventoDataPassaggioVersioneDue);
 							//console.log(eventoDataInizio.getTime() + ' - ' + eventoDataPassaggioVersioneDue.getTime());
-							if(eventoDataInizio.getTime() >= eventoDataPassaggioVersioneDue.getTime() ) {
+
+							if(eventoDataInizio.getTime() >= eventoDataPassaggioVersioneTre.getTime() ) {
+								versione = 3;
+							}else if(eventoDataInizio.getTime() >= eventoDataPassaggioVersioneDue.getTime() ) {
 								versione = 2;
 							} else {
 								versione = 1;

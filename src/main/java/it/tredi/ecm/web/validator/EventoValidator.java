@@ -18,6 +18,7 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.service.EventoService;
+import it.tredi.ecm.service.controller.EventoServiceController;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoWrapper;
 import it.tredi.ecm.web.validator.bean.ValidateFasiAzioniRuoliFSCInfo;
@@ -27,24 +28,28 @@ public class EventoValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventoValidator.class);
 
 	@Autowired private FileValidator fileValidator;
-	@Autowired private EventoService eventoService;
+	@Autowired private EventoServiceController eventoServiceController;
 	@Autowired private EventoValidatorVersioneUno eventoValidatorVersioneUno;
 	@Autowired private EventoValidatorVersioneDue eventoValidatorVersioneDue;
+	@Autowired private EventoValidatorVersioneTre eventoValidatorVersioneTre;
 
 	// EVENTO_VERSIONE
 	public void validate(Object target, EventoWrapper wrapper, Errors errors, String prefix) throws Exception{
 		Evento evento = (Evento) target;
 
-		EventoVersioneEnum eventoVersione = eventoService.versioneEvento(evento);
-		switch (eventoVersione) {
+		EventoVersioneEnum versioneEvento = eventoServiceController.versioneEvento(evento);
+		switch (versioneEvento) {
 		case UNO_PRIMA_2018:
 			eventoValidatorVersioneUno.validate(target, wrapper, errors, prefix);
 			break;
 		case DUE_DAL_2018:
 			eventoValidatorVersioneDue.validate(target, wrapper, errors, prefix);
 			break;
+		case TRE_DAL_2019:
+			eventoValidatorVersioneTre.validate(target, wrapper, errors, prefix);
+			break;
 		default:
-			throw new Exception("Evento versione: " + eventoVersione + " non gestita");
+			throw new Exception("Evento versione: " + versioneEvento + " non gestita");
 		}
 
 //		validateCommon(evento, errors, prefix);
@@ -76,11 +81,11 @@ public class EventoValidator {
 	//ma poi potrebbero essere stati modificati i responsabili scientifici o la data inizio passando da un evento della versione 2 alla versione 1
 	//o viceversa rendendo alcuni o tutti i ruoli "Responsabile scientifico X" (X = A o B o C) non piu' accettabili
 	public void validateRuoloDinamicoDaSezione1(ValidateFasiAzioniRuoliFSCInfo validateFasiAzioniRuoliFSCInfo, RuoloOreFSC ruoloOre
-			, TipologiaEventoFSCEnum tipologiaEvento, EventoVersioneEnum versione
+			, TipologiaEventoFSCEnum tipologiaEvento, EventoVersioneEnum versioneEvento
 			, List<RuoloFSCEnum> listRuoloFSCEnumPerResponsabiliScientifici, List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatori, List<RuoloFSCEnum> listRuoloFSCEnumPerEsperti) {
 		if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.RESPONSABILE_SCIENTIFICO) {
 			//potrebbe non essere valido
-			if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
+			if(eventoServiceController.isVersionUno(versioneEvento)) {
 				// vengono settati tutti a null perche' nella versione 1 non esistevano
 				validateFasiAzioniRuoliFSCInfo.setInvalidResponsabileScientifico(true);
 			} else {
@@ -89,7 +94,7 @@ public class EventoValidator {
 			}
 		} else if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE_X) {
 			//potrebbe non essere valido
-			if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
+			if(eventoServiceController.isVersionUno(versioneEvento)) {
 				// vengono settati tutti a null perche' nella versione 1 non esistevano
 				validateFasiAzioniRuoliFSCInfo.setInvalidCoordinatore(true);
 			} else {
@@ -98,7 +103,7 @@ public class EventoValidator {
 			}
 		} else if(ruoloOre.getRuolo() != null && ruoloOre.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.ESPERTO) {
 			//potrebbe non essere valido
-			if(versione == EventoVersioneEnum.UNO_PRIMA_2018) {
+			if(eventoServiceController.isVersionUno(versioneEvento)) {
 				//vengono accettati solo quelli validi per la tipologia corrente
 				if(tipologiaEvento != null && !tipologiaEvento.getRuoliCoinvolti().contains(ruoloOre.getRuolo())) {
 					validateFasiAzioniRuoliFSCInfo.setInvalidEsperto(true);

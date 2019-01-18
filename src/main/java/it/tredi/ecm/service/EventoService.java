@@ -103,7 +103,6 @@ public interface EventoService {
 	public Pagamento getPagamentoForQuietanza(Evento evento) throws Exception;
 	public Long getFileQuietanzaId(Long eventoId);
 
-	public EventoVersioneEnum versioneEvento(Evento evento);
 	public 	List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(EventoFSC evento);
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti(EventoFSC evento);
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento);

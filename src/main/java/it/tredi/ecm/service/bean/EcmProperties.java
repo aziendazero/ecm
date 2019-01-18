@@ -72,6 +72,7 @@ public class EcmProperties {
 	// EVENTO_VERSIONE
 	private EventoVersioneEnum eventoVersioneDefault;
 	private LocalDate eventoDataPassaggioVersioneDue;
+	private LocalDate eventoDataPassaggioVersioneTre;
 	private Set<EventoVersioneEnum> eventoVersioniRieditabili;
 
 	private LocalDate eventoFadDataFineMaxTriennio;

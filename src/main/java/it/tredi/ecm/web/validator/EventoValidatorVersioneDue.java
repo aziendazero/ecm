@@ -51,6 +51,7 @@ import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.service.controller.EventoServiceController;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
@@ -68,6 +69,7 @@ public class EventoValidatorVersioneDue {
 	//@Autowired private FileValidator fileValidator; // ERM014045 - no firm
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
+	@Autowired private EventoServiceController eventoServiceController;
 	@Autowired private EventoValidator eventoValidator;
 	@Autowired private PersonaEventoValidator personaEventoValidator;
 
@@ -1035,7 +1037,7 @@ public class EventoValidatorVersioneDue {
 			int counter = 0;
 			boolean atLeastOnePartecipante = false;
 			boolean atLeastOneTutor = false;
-			EventoVersioneEnum versione = eventoService.versioneEvento(evento);
+			EventoVersioneEnum versioneEvento = eventoServiceController.versioneEvento(evento);
 			List<RuoloFSCEnum> listRuoloFSCEnumPerResponsabiliScientifici = eventoService.getListRuoloFSCEnumPerResponsabiliScientifici(evento);
 			List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatori = eventoService.getListRuoloFSCEnumPerCoordinatori(evento);
 			List<RuoloFSCEnum> listRuoloFSCEnumPerEsperti = eventoService.getListRuoloFSCEnumPerEsperti(evento);
@@ -1048,7 +1050,7 @@ public class EventoValidatorVersioneDue {
 					//validazione solo se la fase è abilitata
 					if(evento.getFasiDaInserire().getFasiAbilitate().contains(far.getFaseDiLavoro())) {
 						//return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
-						ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versione, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
+						ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versioneEvento, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
 						if(validationResults.isAtLeastOnePartecipante())
 							atLeastOnePartecipante = true;
 						if(validationResults.isAtLeastOneTutor())
@@ -1061,7 +1063,7 @@ public class EventoValidatorVersioneDue {
 			else {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
 					//return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
-					ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versione, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
+					ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versioneEvento, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
 					if(validationResults.isAtLeastOnePartecipante())
 						atLeastOnePartecipante = true;
 					if(validationResults.isAtLeastOneTutor())

@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.apache.tomcat.jni.Local;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
@@ -42,7 +43,7 @@ import it.tredi.ecm.service.bean.CurrentUser;
 public class Utils {
 
 	private final static Logger LOGGER = Logger.getLogger(Utils.class);
-	
+
 	//var to convert numero credito in digit and letter in pdf document
 	private static final String[] tensNames = {
 				    "",
@@ -51,7 +52,7 @@ public class Utils {
 				    "trenta",
 				    "quaranta",
 				    "cinquanta"
-				    
+
 				  };
 
 	private static final String[] numNames = {
@@ -76,8 +77,8 @@ public class Utils {
 				    "diciotto",
 				    "diciannove"
 				  };
-				  
-				
+
+
 
 	/**
 	 * Recupero dell'utente loggato
@@ -520,11 +521,11 @@ public class Utils {
 		}
 		return CodiceFiscaleCheck.OK;
 	}
-	
-	
+
+
 	//method to convert numero crediti into digit and letter format for .pdf document
 	private static String convertLessThanOneThousand(int number) {
-		
+
 		String soFar;
 
 	    if (number % 100 < 20){
@@ -541,13 +542,13 @@ public class Utils {
 	    if (number == 0) return soFar;
 	    return numNames[number] + " hundred" + soFar;
 	  }
-	
+
 	public static String convert(long number) {
-	    
+
 	    if (number == 0) { return "zero"; }
 
 	    String snumber = Long.toString(number);
-	    
+
 	    String mask = "000000000000";
 	    DecimalFormat df = new DecimalFormat(mask);
 	    snumber = df.format(number);
@@ -560,6 +561,30 @@ public class Utils {
 
 	    // remove extra spaces!
 	    return result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");
-	  }	
+	  }
+
+	public static boolean isDateAfterIncluded(LocalDate toCheck, LocalDate start) {
+		if(toCheck != null && start != null) {
+			return (toCheck.isAfter(start) || toCheck.isEqual(start));
+		}
+
+		return false;
+	}
+
+	public static boolean isDateBeforeIncluded(LocalDate toCheck, LocalDate end) {
+		if(toCheck != null && end != null) {
+			return (toCheck.isBefore(end) || toCheck.isEqual(end));
+		}
+
+		return false;
+	}
+
+	public static boolean isDateBetweenIncluded(LocalDate toCheck, LocalDate start, LocalDate end) {
+		if(toCheck != null && start != null && end != null) {
+			return isDateAfterIncluded(toCheck, start) && isDateBeforeIncluded(toCheck, end);
+		}
+
+		return false;
+	}
 
 }

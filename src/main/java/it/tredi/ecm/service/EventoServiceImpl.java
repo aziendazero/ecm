@@ -969,7 +969,8 @@ public class EventoServiceImpl implements EventoService {
 		Evento evento = eventoWrapper.getEvento();
 		// EVENTO_VERSIONE
 		if(evento instanceof EventoFSC) {
-			if(versioneEvento(evento) == EventoVersioneEnum.UNO_PRIMA_2018) {
+			EventoVersioneEnum versioneEvento = eventoServiceController.versioneEvento(evento);
+			if(eventoServiceController.isVersionUno(versioneEvento)) {
 				//cancello eventuali esperti coordinatori e investigatori inseriti
 				if(eventoWrapper.getEsperti() != null)
 					eventoWrapper.getEsperti().clear();
@@ -1683,10 +1684,6 @@ public class EventoServiceImpl implements EventoService {
 					iterator.remove();
 			}
 		}
-	}
-
-	public EventoVersioneEnum versioneEvento(Evento evento) {
-		return eventoServiceController.versioneEvento(evento);
 	}
 
 	/*

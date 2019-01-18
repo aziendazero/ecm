@@ -7,27 +7,31 @@ import org.springframework.stereotype.Component;
 
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.service.EventoService;
+import it.tredi.ecm.service.controller.EventoServiceController;
 import it.tredi.ecm.web.bean.EventoWrapper;
 
 @Component
 public class EventoCrediti {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventoCrediti.class);
 
-	@Autowired private EventoService eventoService;
+	@Autowired private EventoServiceController eventoServiceController;
 	@Autowired private EventoCreditiVersioneUno eventoCreditiVersioneUno;
 	@Autowired private EventoCreditiVersioneDue eventoCreditiVersioneDue;
+	@Autowired private EventoCreditiVersioneDue eventoCreditiVersioneTre;
 
 	// EVENTO_VERSIONE
 	public float calcoloCreditiEvento(EventoWrapper eventoWrapper) throws Exception {
-		EventoVersioneEnum eventoVersione = eventoService.versioneEvento(eventoWrapper.getEvento());
-		switch (eventoVersione) {
+		EventoVersioneEnum versioneEvento = eventoServiceController.versioneEvento(eventoWrapper.getEvento());
+		switch (versioneEvento) {
 		case UNO_PRIMA_2018:
 			return eventoCreditiVersioneUno.calcoloCreditiEvento(eventoWrapper);
 		case DUE_DAL_2018:
 			return eventoCreditiVersioneDue.calcoloCreditiEvento(eventoWrapper);
+		case TRE_DAL_2019:
+			return eventoCreditiVersioneTre.calcoloCreditiEvento(eventoWrapper);
 		default:
-			LOGGER.error("Evento versione: " + eventoVersione + " non gestita");
-			throw new Exception("Evento versione: " + eventoVersione + " non gestita");
+			LOGGER.error("Evento versione: " + versioneEvento + " non gestita");
+			throw new Exception("Evento versione: " + versioneEvento + " non gestita");
 		}
 	}
 

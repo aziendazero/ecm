@@ -132,13 +132,15 @@ public class EcmAppConfiguration {
 
 	// EVENTO_VERSIONE
 	@Value("#{T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).getByNumeroVersione(${evento.numeroversione.default})}")
-	private EventoVersioneEnum eventoVersioneDefault = EventoVersioneEnum.DUE_DAL_2018;
+	private EventoVersioneEnum eventoVersioneDefault = EventoVersioneEnum.TRE_DAL_2019;
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.data.passaggio.versione.due}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
 	private LocalDate eventoDataPassaggioVersioneDue = LocalDate.of(2018, 1, 1);
+	@Value("#{T(java.time.LocalDate).parse(\"${evento.data.passaggio.versione.tre}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
+	private LocalDate eventoDataPassaggioVersioneTre = LocalDate.of(2019, 1, 1);
 
 	@Value("#{T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).getSetByNumeroVersioni('${evento.versioni.rieditabili}'.split(','))}")
 	private Set<EventoVersioneEnum> eventoVersioniRieditabili = new HashSet<EventoVersioneEnum>(
-			Arrays.asList(EventoVersioneEnum.DUE_DAL_2018));
+			Arrays.asList(EventoVersioneEnum.TRE_DAL_2019));
 
 	@Value("#{T(java.time.LocalDate).parse(\"${evento.fad.data.fine.max.triennio}\", T(java.time.format.DateTimeFormatter).ofPattern(\"yyyyMMdd\"))}")
 	private LocalDate eventoFadDataFineMaxTriennio = LocalDate.of(2019, 12, 31);
@@ -224,6 +226,7 @@ public class EcmAppConfiguration {
 		// EVENTO_VERSIONE
 		ecmProperties.setEventoVersioneDefault(eventoVersioneDefault);
 		ecmProperties.setEventoDataPassaggioVersioneDue(eventoDataPassaggioVersioneDue);
+		ecmProperties.setEventoDataPassaggioVersioneTre(eventoDataPassaggioVersioneTre);
 		ecmProperties.setEventoVersioniRieditabili(eventoVersioniRieditabili);
 
 		ecmProperties.setEventoFadDataFineMaxTriennio(eventoFadDataFineMaxTriennio);

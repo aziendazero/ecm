@@ -37,13 +37,16 @@ import it.tredi.ecm.dao.entity.VerificaApprendimentoFAD;
 import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
+import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
+import it.tredi.ecm.dao.enumlist.VerificaApprendimentoFSCEnum;
 import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
@@ -59,13 +62,11 @@ import it.tredi.ecm.web.validator.bean.ValidateFasiAzioniRuoliFSCInfo;
 
 // EVENTO_VERSIONE
 @Component
-public class EventoValidatorVersioneUno {
-	private static final Logger LOGGER = LoggerFactory.getLogger(EventoValidatorVersioneUno.class);
+public class EventoValidatorVersioneTre {
+	private static final Logger LOGGER = LoggerFactory.getLogger(EventoValidatorVersioneTre.class);
 
 	@Autowired private EcmProperties ecmProperties;
-
-	// ERM014045 - rimossi controlli sulle firme
-	// @Autowired private FileValidator fileValidator;
+	//@Autowired private FileValidator fileValidator; // ERM014045 - no firm
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
 	@Autowired private EventoServiceController eventoServiceController;
@@ -209,11 +210,13 @@ public class EventoValidatorVersioneUno {
 				//numero date da rispettare
 				checkDateInizioFine(evento, eventoDaDB, prefix, errors);
 			}
+			/* escludere dal controllo le riedizioni FSC */
 			if(evento.isRiedizione()) {
 				if(evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())) {
 					//La data di inizio di una riedizione non può essere antecedente a quella dell'evento rieditato
 					errors.rejectValue(prefix + "dataInizio", "error.data_inizio_antecedente_al_padre");
 				}
+
 				if(!(evento instanceof EventoFSC)) {
 					if(
 							// 08/01/2018
@@ -263,7 +266,7 @@ public class EventoValidatorVersioneUno {
 		else if(evento.getResponsabili().size() > ecmProperties.getNumeroMassimoResponsabiliEvento())
 			errors.rejectValue(prefix + "responsabili", "error.troppi_responsabili3");
 		else {
-			boolean atLeastOneErrorPersonaEventoDuplicata = !personaEventoValidator.validateAnagraficaBaseEvento(evento.getResponsabili(), errors, "responsabiliScientifici");
+			boolean atLeastOneErrorPersonaEventoDuplicata = !personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(evento.getResponsabili(), errors, "responsabiliScientifici");
 			if(atLeastOneErrorPersonaEventoDuplicata) {
 				errors.rejectValue(prefix + "responsabili", "error.responsabili_scientifici_duplicati");
 			} else {
@@ -337,70 +340,81 @@ public class EventoValidatorVersioneUno {
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA)
 		 * radio
 		 * */
+		// ERM014977 - getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia va testato solo se sponsorizato
+		// e contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
 		if(evento.getContenutiEvento() != null
 				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
 				&& evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
-			errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
+				&& evento.getEventoSponsorizzato() == true) {
 
-		/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
-		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
-		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
-		 * file allegato
-		 * */
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
+				errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
+			else if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+						&& (evento.getEventoSponsorizzato() == null || evento.getEventoSponsorizzato() == false)
+					)
+				errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.evento_deve_essere_sponsorizzato");
+
+
+			/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
+			 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+			 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
+			 * file allegato
+			 * */
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
+					&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
+				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
+			}
+
+			// ERM014045 - no firma
+			/*
+			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
+					&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
+			{
+				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()))
+					errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
+			}
+			*/
+
+			/* AUTOCERTIFICAZIONE DI AUTORIZZAZIONE DEL MINISTERO
+			 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
+			 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == false)
+			 * file allegato
+			 * */
+			if(evento.getEventoSponsorizzato() != null
+					&& evento.getEventoSponsorizzato() == true
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+					&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null){
+				errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
+			}
+
+			// ERM014045 - no firma
+			/*
+			if(evento.getEventoSponsorizzato() != null
+					&& evento.getEventoSponsorizzato() == true
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
+					&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
+					&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() != null)
+			{
+					if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
+						errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
+			}
+			*/
+		}
+
+		// ERM014977-2  getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia va testato solo se sponsorizato
+		// e contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA e se no sponsorizato
 		if(evento.getContenutiEvento() != null
 				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
 				&& evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
+				&& evento.getEventoSponsorizzato() == false
 				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
 			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
 		}
 
-		/* ERM014045
-		if(evento.getContenutiEvento() != null
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
-				&& evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == false
-				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() != null)
-		{
-			if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(), evento.getProvider().getId()))
-				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.codiceFiscale.firmatario");
-		}
-		*/
 
-		/* AUTOCERTIFICAZIONE DI AUTORIZZAZIONE DEL MINISTERO
-		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
-		 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == false)
-		 * file allegato
-		 * */
-		if(evento.getContenutiEvento() != null
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
-				&& evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() == null){
-			errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.empty");
-		}
-
-		/* ERM014045
-		if(evento.getContenutiEvento() != null
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
-				&& evento.getEventoSponsorizzato() != null
-				&& evento.getEventoSponsorizzato() == true
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
-				&& evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
-				&& evento.getAutocertificazioneAutorizzazioneMinisteroSalute() != null)
-		{
-				if(!fileValidator.validateFirmaCF(evento.getAutocertificazioneAutorizzazioneMinisteroSalute(), evento.getProvider().getId()))
-					errors.rejectValue("autocertificazioneAutorizzazioneMinisteroSalute", "error.codiceFiscale.firmatario");
-		}
-		*/
 
 
 		/* RADIO ALTRE FORME FINANZIAMENTO (campo obbligatorio)
@@ -419,7 +433,8 @@ public class EventoValidatorVersioneUno {
 			errors.rejectValue("contrattiAccordiConvenzioni", "error.empty");
 		}
 
-		/* ERM014045
+		// ERM014045 - no firma
+		/*
 		if(evento.getAltreFormeFinanziamento() != null
 				&& evento.getAltreFormeFinanziamento() == true
 				&& evento.getContrattiAccordiConvenzioni() != null)
@@ -440,7 +455,8 @@ public class EventoValidatorVersioneUno {
 				errors.rejectValue("autocertificazioneAssenzaFinanziamenti", "error.empty");
 			}
 
-			/* ERM014045
+			// ERM014045 - no firma
+			/*
 			if(evento.getAltreFormeFinanziamento() != null
 					&& evento.getAltreFormeFinanziamento() == false
 					&& evento.getAutocertificazioneAssenzaFinanziamenti() != null)
@@ -484,15 +500,16 @@ public class EventoValidatorVersioneUno {
 		/* DICHIARAZIONE ASSENZA CONFLITTO DI INTERESSE (campo obbligatorio)
 		 * file allegato
 		 * */
+
 		if(evento.getDichiarazioneAssenzaConflittoInteresse() == null){
 			errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.empty");
-		}
-		/* ERM014045
-		else{
+		}else{
+			// ERM014045 - no firma
+			/*
 			if(!fileValidator.validateFirmaCF(evento.getDichiarazioneAssenzaConflittoInteresse(), evento.getProvider().getId()))
 				errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.codiceFiscale.firmatario");
+				*/
 		}
-		*/
 
 		/* PROCEDURA VERIFICA QUALITÀ (campo obbligatorio)
 		 * spunta richiesta
@@ -515,6 +532,9 @@ public class EventoValidatorVersioneUno {
 		if(evento.getCrediti() == null)
 			errors.rejectValue(prefix + "crediti", "error.empty_crediti");
 
+		if(!evento.getConfermatiCrediti().booleanValue() && evento.getCrediti() != null && (evento.getMotivazioneCrediti() == null || evento.getMotivazioneCrediti().isEmpty())) {
+			errors.rejectValue(prefix + "motivazioneCrediti", "error.empty");
+		}
 	}
 
 	private void checkDateInizioFine(Evento evento, Evento evento2, String prefix, Errors errors) {
@@ -673,6 +693,13 @@ public class EventoValidatorVersioneUno {
 				&& (evento.getTitoloConvegno() == null || evento.getTitoloConvegno().isEmpty()))
 			errors.rejectValue(prefix + "titoloConvegno", "error.empty");
 
+		/* NUMERO DEI PARTECIPANTI PER CORSO (campo obbligatorio se la tipologia è CORSO_AGGIORNAMENTO) */
+		if(evento.getTipologiaEventoRES() != null
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO
+				&& evento.getNumeroPartecipantiPerCorso() == null) {
+			errors.rejectValue(prefix + "numeroPartecipantiPerCorso", "error.empty");
+		}
+
 		/* NUMERO DEI PARTECIPANTI (campo obbligatorio)
 		 * campo valore numerico
 		 * se la tipologia dell'evento è CONVEGNO_CONGRESSO -> minimo 200 partecipanti
@@ -681,6 +708,8 @@ public class EventoValidatorVersioneUno {
 		 * */
 		if(evento.getNumeroPartecipanti() == null)
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.empty");
+		else if(evento.getNumeroPartecipanti() <= 0)
+			errors.rejectValue(prefix + "numeroPartecipanti", "error.numero_positivo");
 		else if(evento.getTipologiaEventoRES() != null
 				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO
 				&& evento.getNumeroPartecipanti() < ecmProperties.getNumeroMinimoPartecipantiConvegnoCongressoRES())
@@ -690,9 +719,15 @@ public class EventoValidatorVersioneUno {
 				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiWorkshopSeminarioRES())
 			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti100");
 		else if(evento.getTipologiaEventoRES() != null
-				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO
-				&& evento.getNumeroPartecipanti() > ecmProperties.getNumeroMassimoPartecipantiCorsoAggiornamentoRES())
-			errors.rejectValue(prefix + "numeroPartecipanti", "error.troppi_partecipanti200");
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO) {
+			if(evento.getNumeroPartecipantiPerCorso() != null) {
+				if(evento.getNumeroPartecipantiPerCorso() == NumeroPartecipantiPerCorsoEnum.CORSO_AGGIORNAMENTO_FINO_100_PARTECIPANTI && evento.getNumeroPartecipanti() > 100) {
+					errors.rejectValue(prefix + "numeroPartecipanti", "error.partecipanti_corso_aggiornamento_fino_100");
+				} else if (evento.getNumeroPartecipantiPerCorso() == NumeroPartecipantiPerCorsoEnum.CORSO_AGGIORNAMENTO_DA_101_A_200_PARTECIPANTI && (evento.getNumeroPartecipanti() < 101 || evento.getNumeroPartecipanti() > 200)) {
+					errors.rejectValue(prefix + "numeroPartecipanti", "error.partecipanti_corso_aggiornamento_da_101_fino_200");
+				}
+			}
+		}
 
 		/* DOCENTI/RELATORI/TUTOR (serie di campi obbligatori)
 		 * ripetibile complesso di classe PersonaEvento
@@ -851,11 +886,11 @@ public class EventoValidatorVersioneUno {
 		if(evento.getVerificaRicaduteFormative() == null)
 			errors.rejectValue(prefix + "verificaRicaduteFormative", "error.empty");
 
-		/* ERM014045
 		/* DOCUMENTO VERIICA RICADUTE FORMATIVE (campo FACOLTATIVO, MA SE C'E' CONTROLLO SULLA FIRMA DIGITALE)
 		 * file allegato
-		 *
-		 * /
+		 * */
+		// ERM014045 - no firm
+		/*
 		if(evento.getDocumentoVerificaRicaduteFormative() != null && !evento.getDocumentoVerificaRicaduteFormative().isNew()){
 			if(!fileValidator.validateFirmaCF(evento.getDocumentoVerificaRicaduteFormative(), evento.getProvider().getId()))
 				errors.rejectValue("documentoVerificaRicaduteFormative", "error.codiceFiscale.firmatario");
@@ -893,6 +928,8 @@ public class EventoValidatorVersioneUno {
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
+		else if(evento.getDataFine() != null && (evento.getDataFine().isAfter(ecmProperties.getEventoFscDataFineMaxTriennio())))
+			errors.rejectValue(prefix + "dataFine", "error.fsc_data_fine_non_appartenente_triennio_attuale");
 		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
 		else {
@@ -902,8 +939,13 @@ public class EventoValidatorVersioneUno {
 					errors.rejectValue(prefix + "dataFine", "error.data_fine_riedizione_non_valida");
 			}
 			else {
-				if(evento.getDataInizio() != null && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFSC())))
-					errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fsc730");
+				//DataInizio e TipologiaEventoFSC sono obbligatori se non compilati non effettuo il controllo sulla DataFine
+				if(evento.getDataInizio() != null && evento.getTipologiaEventoFSC() != null)
+					if(evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFscVersione2AttivitaDiRicerca()))) {
+						errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fsc_attivita_di_ricerca");
+					} else if(evento.getTipologiaEventoFSC() != TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA && evento.getDataFine().isAfter(evento.getDataInizio().plusDays(ecmProperties.getGiorniMaxEventoFscVersione2()))) {
+						errors.rejectValue(prefix + "dataFine", "error.numero_massimo_giorni_evento_fsc_non_attivita_di_ricerca");
+					}
 			}
 		}
 
@@ -921,6 +963,14 @@ public class EventoValidatorVersioneUno {
 				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.GRUPPI_DI_MIGLIORAMENTO
 				&& evento.getTipologiaGruppo() == null)
 			errors.rejectValue(prefix + "tipologiaGruppo", "error.empty");
+
+		/* TIPOLOGIE DI SPERIMENTAZIONE (campo obbligatorio se tipologiaEvento == ATTIVITA_DI_RICERCA)
+		 * radio
+		 * */
+		if(evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA
+				&& evento.getTipologiaSperimentazione() == null)
+			errors.rejectValue(prefix + "tipologiaSperimentazione", "error.empty");
 
 		/* SPERIMENTAZIONE CLINICA (campo obbligatorio se tipologiaEvento == ATTIVITA_DI_RICERCA)
 		 * radio
@@ -940,6 +990,24 @@ public class EventoValidatorVersioneUno {
 				&& (evento.getOttenutoComitatoEtico() == null
 				|| evento.getOttenutoComitatoEtico() == false))
 			errors.rejectValue(prefix + "ottenutoComitatoEtico", "error.empty");
+
+		//vale per la versione 2 qui stiamo validando solo la versione 2
+		if(evento.getEsperti() != null && evento.getEsperti().size() > ecmProperties.getNumeroMassimoEspertiEvento())
+			errors.rejectValue(prefix + "esperti", "error.troppi_esperti3");
+		if(evento.getCoordinatori() != null && evento.getCoordinatori().size() > ecmProperties.getNumeroMassimoCoordinatoriEvento())
+			errors.rejectValue(prefix + "coordinatori", "error.troppi_coordinatori3");
+
+		if(evento.getTipologiaEventoFSC() != null && evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA) {
+			if(evento.getInvestigatori() == null || evento.getInvestigatori().isEmpty())
+				errors.rejectValue(prefix + "investigatori", "error.empty");
+		}
+
+		//È prevista la redazione di un documento conclusivo quale ad es. linee guida, procedure, protocolli, indicazioni operative?
+		if(evento.getPrevistaRedazioneDocumentoConclusivo() == null)
+			errors.rejectValue(prefix + "previstaRedazioneDocumentoConclusivo", "error.empty");
+		//È presente un Tutor esperto esterno che validi le attività del gruppo?
+		if(evento.getPresenteTutorEspertoEsternoValidatoreAttivita() == null)
+			errors.rejectValue(prefix + "presenteTutorEspertoEsternoValidatoreAttivita", "error.empty");
 
 		/* DESCRIZIONE DEL PROGETTO E RILEVANZA FORMATIVA (campo obbligatorio)
 		 * campo testuale
@@ -981,7 +1049,7 @@ public class EventoValidatorVersioneUno {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
 					//validazione solo se la fase è abilitata
 					if(evento.getFasiDaInserire().getFasiAbilitate().contains(far.getFaseDiLavoro())) {
-						//boolean[] validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
+						//return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
 						ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versioneEvento, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
 						if(validationResults.isAtLeastOnePartecipante())
 							atLeastOnePartecipante = true;
@@ -994,7 +1062,7 @@ public class EventoValidatorVersioneUno {
 			//gestione di default
 			else {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
-					//boolean[] validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC());
+					//return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
 					ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versioneEvento, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
 					if(validationResults.isAtLeastOnePartecipante())
 						atLeastOnePartecipante = true;
@@ -1025,7 +1093,7 @@ public class EventoValidatorVersioneUno {
 				}
 			}
 			if(atLeastOneErrorTabella)
-				errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc"+evento.getTipologiaEventoFSC());
+				errors.rejectValue(prefix + "riepilogoRuoli", "error.errore_tabella_fsc_versione2_"+evento.getTipologiaEventoFSC());
 		}
 
 		/* NUMERO PARTECIPANTI (campo obbligatorio)
@@ -1077,15 +1145,29 @@ public class EventoValidatorVersioneUno {
 		/* VERIFICA APPRENDIMENTO (campo obbligatorio)
 		 * checkbox
 		 * */
-		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty())
+		if(evento.getVerificaApprendimento() == null || evento.getVerificaApprendimento().isEmpty()) {
 			errors.rejectValue(prefix + "verificaApprendimento", "error.empty");
+		} else {
 
-		/* INDICATORE EFFICACIA FORMATIVA (campo obbligatorio se tipologiaEvento == PROGETTI_DI_MIGLIORAMENTO)
-		 * campo testuale
-		 * almeno 1 char
-		 * */
-		if(evento.getTipologiaEventoFSC() != null
-				&& evento.getTipologiaEventoFSC() ==  TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
+			if (evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+					&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoFSCEnum.RAPPORTO_CONCLUSIVO)) {
+				errors.rejectValue(prefix + "verificaApprendimento",
+						"error.evento_tipo_NON_TRAINING_INDIVIDUALIZZATO_manca_RAPPORTO_CONCLUSIVO");
+			}
+
+			if (evento.getTipologiaEventoFSC() != TipologiaEventoFSCEnum.TRAINING_INDIVIDUALIZZATO
+					&& !evento.getVerificaApprendimento().contains(VerificaApprendimentoFSCEnum.RELAZIONE_FIRMATA)) {
+				errors.rejectValue(prefix + "verificaApprendimento",
+						"error.evento_tipo_TRAINING_INDIVIDUALIZZATO_manca_RELAZIONE_FIRMATA");
+			}
+		}
+
+		/*
+		 * INDICATORE EFFICACIA FORMATIVA (campo obbligatorio se tipologiaEvento ==
+		 * PROGETTI_DI_MIGLIORAMENTO) campo testuale almeno 1 char
+		 */
+		if (evento.getTipologiaEventoFSC() != null
+				&& evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.PROGETTI_DI_MIGLIORAMENTO
 				&& (evento.getIndicatoreEfficaciaFormativa() == null
 				|| evento.getIndicatoreEfficaciaFormativa().isEmpty()))
 			errors.rejectValue(prefix + "indicatoreEfficaciaFormativa", "error.empty");
@@ -1108,7 +1190,14 @@ public class EventoValidatorVersioneUno {
 		 * */
 		if(evento.getDataFine() == null)
 			errors.rejectValue(prefix + "dataFine", "error.empty");
-		else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
+		else if(evento.getDataFine() != null && (evento.getDataFine().isAfter(ecmProperties.getEventoFadDataFineMaxTriennio()))) {
+			//Questo non funziona perche' non è stato usato nella view il #fields.errors ma una mappa personalizzata
+//			int year = ecmProperties.getEventoFadDataFineMaxTriennio().getYear();
+//			String[] values = new String[]{String.valueOf(year-2), String.valueOf(year)};
+//			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_appartenente_triennio_attuale_with_args", values, null);
+			//Quindi utilizzo un messaggio senza parametri
+			errors.rejectValue(prefix + "dataFine", "error.fad_data_fine_non_appartenente_triennio_attuale");
+		} else if(evento.getDataInizio() != null && (evento.getDataFine().isBefore(evento.getDataInizio())))
 			errors.rejectValue(prefix + "dataFine", "error.data_fine_non_valida");
 		else {
 			if(evento.isRiedizione() && !Utils.getAuthenticatedUser().isSegreteria()) {
@@ -1257,13 +1346,13 @@ public class EventoValidatorVersioneUno {
 		 * */
 		if(evento.getRequisitiHardwareSoftware() == null || evento.getRequisitiHardwareSoftware().isNew()){
 			errors.rejectValue("requisitiHardwareSoftware", "error.empty");
-		}
-		/* ERM014045
-		else{
+		}else{
+			// ERM014045 - no firm
+			/*
 			if(!fileValidator.validateFirmaCF(evento.getRequisitiHardwareSoftware(), evento.getProvider().getId()))
 				errors.rejectValue("requisitiHardwareSoftware", "error.codiceFiscale.firmatario");
+				*/
 		}
-		*/
 
 		/* ACCESSO PIATTAFORMA (serie di campi obbligatori)
 		 * 3 campi testuali
@@ -1319,7 +1408,7 @@ public class EventoValidatorVersioneUno {
 			return true;
 		if(persona.getAnagrafica().getNome() == null || persona.getAnagrafica().getNome().isEmpty())
 			return true;
-		//  @since ERM014009
+		// @since ERM014009
 		//if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
 		if(Utils.rejectIfCodFiscIncorrect(persona.getAnagrafica().getCodiceFiscale()))
 			return true;
@@ -1353,8 +1442,8 @@ public class EventoValidatorVersioneUno {
 			return true;
 		if(partner.getPartnerFile() == null || partner.getPartnerFile().isNew())
 			return true;
-
-		/* ERM014045
+		// ERM014045 - no firm
+		/*
 		if(!fileValidator.validateFirmaCF(partner.getPartnerFile(), providerId))
 			return true;
 		*/
@@ -1447,7 +1536,8 @@ public class EventoValidatorVersioneUno {
 				return true;
 			Set<PersonaEvento> docentiTitolariDettaglio = new HashSet<PersonaEvento>();
 			for(PersonaEvento docente : dettaglio.getDocenti()) {
-				if("titolare".equalsIgnoreCase(docente.getTitolare()))
+				//il "Moderatore" NON deve essere considerato come un docente, anche se titolare, nel controllo del rapporto 1/25 tra docenti/discenti.
+				if("titolare".equalsIgnoreCase(docente.getTitolare()) && docente.getRuolo() != RuoloPersonaEventoEnum.MODERATORE)
 					docentiTitolariDettaglio.add(docente);
 				//Controllo che il docente sia veramente presente fra i docenti
 				if(!docentiEvento.contains(docente))
@@ -1617,7 +1707,9 @@ public class EventoValidatorVersioneUno {
 			return new boolean[] {true, false, false, false};
 
 		//parti specifiche
-		int numCoordinatori = 0;
+		int numCoordinatoriA = 0;
+		int numCoordinatoriB = 0;
+		int numCoordinatoriC = 0;
 		int numResponsabili = 0;
 		boolean hasPartecipante = false;
 		boolean hasTutor = false;
@@ -1637,8 +1729,12 @@ public class EventoValidatorVersioneUno {
 					if(r.getRuolo() == null)
 						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					else {
-						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE)
-							numCoordinatori++;
+						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_A)
+							numCoordinatoriA++;
+						else if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_B)
+							numCoordinatoriB++;
+						else if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_C)
+							numCoordinatoriC++;
 						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 							if(r.getTempoDedicato() < 1)
 								return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
@@ -1649,7 +1745,7 @@ public class EventoValidatorVersioneUno {
 							hasTutor = true;
 					}
 				}
-				if(numCoordinatori > 1)
+				if(numCoordinatoriA > 1 || numCoordinatoriB > 1 || numCoordinatoriC > 1)
 					return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 
 			break;
@@ -1668,8 +1764,12 @@ public class EventoValidatorVersioneUno {
 					if(r.getRuolo() == null)
 						return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 					else {
-						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE)
-							numCoordinatori++;
+						if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_A)
+							numCoordinatoriA++;
+						else if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_B)
+							numCoordinatoriB++;
+						else if(r.getRuolo() == RuoloFSCEnum.COORDINATORE_C)
+							numCoordinatoriC++;
 						else if(r.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE) {
 							if(r.getTempoDedicato() < 2)
 								return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
@@ -1681,7 +1781,7 @@ public class EventoValidatorVersioneUno {
 				}
 				//caso particolare (qua le fasi sono come le azioni per le altre tipologie,
 				//quindi controllo che nella riga ci sia almeno 1 ruolo Partecipante)
-				if(numCoordinatori > 1)
+				if(numCoordinatoriA > 1 || numCoordinatoriB > 0 || numCoordinatoriC > 0)
 					return new boolean[] {true, hasPartecipante, hasTutor, ruoloRipetuto};
 
 			break;
@@ -1781,20 +1881,20 @@ public class EventoValidatorVersioneUno {
 
 		//tipologiaEvento == TRAINING_INDIVIDUALIZZATO || ATTIVITA_DI_RICERCA nessun controllo
 
-		if(tipologiaEvento != null)
+		if(tipologiaEvento != null) {
 			switch(tipologiaEvento) {
 
 				//tipologiaEvento == GRUPPI_DI_MIGLIORAMENTO
 				// - massimo 25 partecipanti per ruolo
-				// - impegno complessivo minimo 8 ore totali per tutti i ruoli tranne ruolo COORDINATORE
+				// - impegno complessivo minimo 8 ore totali per ruolo PARTECIPANTE
 				// - massimo un coordinatore
 				case GRUPPI_DI_MIGLIORAMENTO:
 
 					if(riepilogoRuoli.getNumeroPartecipanti() > 25)
 						return true;
-					if(riepilogoRuoli.getTempoDedicato() < 8f
-							&& riepilogoRuoli.getRuolo() != null
-							&& riepilogoRuoli.getRuolo().getRuoloBase() != RuoloFSCBaseEnum.COORDINATORE)
+					if(riepilogoRuoli.getRuolo() != null
+							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE
+							&& riepilogoRuoli.getTempoDedicato() < 8f)
 						return true;
 					if(riepilogoRuoli.getRuolo() != null
 							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
@@ -1858,6 +1958,22 @@ public class EventoValidatorVersioneUno {
 				break;
 
 			}
+		}
+		//Specifici Versione 2
+		//per "Responsabile scientifico A B C", "Coordinatore A B C", per "Esperto A B C" deve essere inserito solo 1 partecipante
+		if(riepilogoRuoli.getRuolo() != null
+				&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.RESPONSABILE_SCIENTIFICO
+				&& riepilogoRuoli.getNumeroPartecipanti() > 1)
+			return true;
+		if(riepilogoRuoli.getRuolo() != null
+				&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE_X
+				&& riepilogoRuoli.getNumeroPartecipanti() > 1)
+			return true;
+		if(riepilogoRuoli.getRuolo() != null
+				&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.ESPERTO
+				&& riepilogoRuoli.getNumeroPartecipanti() > 1)
+			return true;
+
 
 		return false;
 	}

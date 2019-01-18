@@ -1,17 +1,15 @@
 package it.tredi.ecm.service.controller;
 
-import java.time.LocalDate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.utils.Utils;
 
 // EVENTO_VERSIONE
 @Component
@@ -25,9 +23,11 @@ public class EventoServiceController {
 		if(evento.getVersione() != null) {
 			versione = evento.getVersione();
 		} else {
-			//se la data inizio dell'evento e' maggiore uguale al 2018 utilizzo il nuovo metodo di calcolo
+			//determino la versione in funzione della data di inizio verificando gli intervalli stabiliti da property
 			if(evento.getDataInizio() != null) {
-				if(evento.getDataInizio().isAfter(ecmProperties.getEventoDataPassaggioVersioneDue()) || evento.getDataInizio().isEqual(ecmProperties.getEventoDataPassaggioVersioneDue())) {
+				if(Utils.isDateAfterIncluded(evento.getDataInizio(), ecmProperties.getEventoDataPassaggioVersioneTre())) {
+					versione = EventoVersioneEnum.TRE_DAL_2019;
+				}else if(Utils.isDateAfterIncluded(evento.getDataInizio(), ecmProperties.getEventoDataPassaggioVersioneDue())) {
 					versione = EventoVersioneEnum.DUE_DAL_2018;
 				} else {
 					versione = EventoVersioneEnum.UNO_PRIMA_2018;
@@ -37,12 +37,34 @@ public class EventoServiceController {
 		return versione;
 	}
 
+	/* i metodi che prendono l'ENUM come parametro sono chiamati lato server (.java) */
+	public boolean isVersionUno(EventoVersioneEnum versione) {
+		return (versione != null && versione == EventoVersioneEnum.UNO_PRIMA_2018);
+	}
+
+	public boolean isVersionDue(EventoVersioneEnum versione) {
+		return (versione != null && versione == EventoVersioneEnum.DUE_DAL_2018);
+	}
+
+	public boolean isVersionTre(EventoVersioneEnum versione) {
+		return (versione != null && versione == EventoVersioneEnum.TRE_DAL_2019);
+	}
+
+	/* i metodi che prendono l'evento come parametro sono chiamati lato client (.html)*/
+	public boolean isVersionUno(Evento evento) {
+		return versioneEvento(evento) == EventoVersioneEnum.UNO_PRIMA_2018;
+	}
+
 	public boolean isVersionDue(Evento evento) {
 		return versioneEvento(evento) == EventoVersioneEnum.DUE_DAL_2018;
 	}
 
+	public boolean isVersionTre(Evento evento) {
+		return versioneEvento(evento) == EventoVersioneEnum.TRE_DAL_2019;
+	}
+
 	public boolean fadDisableSupportoSvoltoDaEsperto(EventoFAD evento) {
-		if(versioneEvento(evento) == EventoVersioneEnum.DUE_DAL_2018 && evento.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE) {
+		if(isVersionDue(evento) && evento.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE) {
 			return true;
 		}
 		return false;

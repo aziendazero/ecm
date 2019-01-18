@@ -796,7 +796,7 @@ public class EventoController {
 					evento.setStato(EventoStatoEnum.VALIDATO);
 					if(evento.getVersione() == null) {
 						//imposto la versione in modo che non venga piu' modificata
-						evento.setVersione(eventoService.versioneEvento(evento));
+						evento.setVersione(eventoServiceController.versioneEvento(evento));
 					}
 					evento.setValidatorCheck(true);
 					eventoService.save(evento);
@@ -834,7 +834,7 @@ public class EventoController {
 			evento.setStato(EventoStatoEnum.VALIDATO);
 			if(evento.getVersione() == null) {
 				//imposto la versione in modo che non venga piu' modificata
-				evento.setVersione(eventoService.versioneEvento(evento));
+				evento.setVersione(eventoServiceController.versioneEvento(evento));
 			}
 			evento.setValidatorCheck(true);
 			eventoService.save(evento);
@@ -1494,7 +1494,7 @@ public class EventoController {
 						} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
 							// EVENTO_VERSIONE
 							EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
-							if(curVersione == EventoVersioneEnum.DUE_DAL_2018)
+							if(eventoServiceController.isVersionDue(curVersione))
 								errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
 							else
 								errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
@@ -1582,7 +1582,7 @@ public class EventoController {
 				} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
 					// EVENTO_VERSIONE
 					EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
-					if(curVersione == EventoVersioneEnum.DUE_DAL_2018)
+					if(eventoServiceController.isVersionDue(curVersione))
 						errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");
 					else
 						errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");
