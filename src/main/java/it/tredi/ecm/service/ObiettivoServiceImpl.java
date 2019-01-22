@@ -2,6 +2,7 @@ package it.tredi.ecm.service;
 
 import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,14 +15,17 @@ import org.springframework.stereotype.Service;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.repository.ObiettivoRepository;
+import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.service.controller.EventoServiceController;
 
 @Service
 public class ObiettivoServiceImpl implements ObiettivoService {
 
 	private final static Logger LOGGER = Logger.getLogger(ObiettivoServiceImpl.class);
 
-	@Autowired
-	private ObiettivoRepository obiettivoRepository;
+	@Autowired private ObiettivoRepository obiettivoRepository;
+	@Autowired private EcmProperties ecmProperties;
+	@Autowired private EventoServiceController eventoServiceController;
 
 	@Override
 	public Set<Obiettivo> getAllObiettivi() {
@@ -32,31 +36,38 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 	// EVENTO_VERSIONE
 	@Override
 	public Set<Obiettivo> getObiettiviNazionali(EventoVersioneEnum versione) {
-		LOGGER.debug("Recupero tutti gli Obiettivi Nazionali");
-		if(versione == null || versione == EventoVersioneEnum.DUE_DAL_2018) {
-			return obiettivoRepository.findAllByNazionaleAndVersioneNotOrderByCodiceCogeapsAsc(true, 1).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new));
-		}else {
-			return obiettivoRepository.findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(true, 1).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new));
+		LOGGER.debug("Recupero tutti gli Obiettivi Nazionali per versione " + versione);
+
+		if(versione == null) {
+			versione = ecmProperties.getEventoVersioneDefault();
 		}
 
+		return obiettivoRepository.findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(true, versione.getNumeroVersione()).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	// EVENTO_VERSIONE
 	@Override
 	public Set<Obiettivo> getObiettiviNazionali() {
-		return getObiettiviNazionali(EventoVersioneEnum.DUE_DAL_2018);
-	}
-
-	// EVENTO_VERSIONE
-	@Override
-	public Set<Obiettivo> getObiettiviNazionaliVersione1() {
-		return getObiettiviNazionali(EventoVersioneEnum.UNO_PRIMA_2018);
+		return getObiettiviNazionali(null);
 	}
 
 	@Override
 	public Set<Obiettivo> getObiettiviRegionali() {
 		LOGGER.debug("Recupero tutti gli Obiettivi Regionali");
-		return obiettivoRepository.findAllByNazionale(false);
+		return getObiettiviRegionali(null);
+	}
+
+	@Override
+	public Set<Obiettivo> getObiettiviRegionali(EventoVersioneEnum versione) {
+		LOGGER.debug("Recupero tutti gli Obiettivi Regionali per versione " + versione);
+
+		if(versione == null) {
+			versione = ecmProperties.getEventoVersioneDefault();
+		}else if(eventoServiceController.isVersionDue(versione)) {
+			versione = EventoVersioneEnum.UNO_PRIMA_2018; //nella versione 2 gli obiettivi regionali non erano cambiati
+		}
+
+		return obiettivoRepository.findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(false, versione.getNumeroVersione()).stream().sorted(Comparator.comparing(Obiettivo::getIntCogeaps)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	@Override
@@ -89,5 +100,10 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 		return obiettivi.iterator().next();
 	}
 
+	@Override
+	public Set<Obiettivo> getObiettiviByCodiceCogeapsAndVersioneEventi(boolean nazionale, List<String> codiceCogeaps, EventoVersioneEnum versione) {
+		LOGGER.info("Retrieving Obiettivo by CodiceCogeaps IN (" + codiceCogeaps.toString() +") and versioneEvento (" + versione.name() + ") + and Nazionale (" + nazionale + ")");
+		return obiettivoRepository.findAllByNazionaleAndCodiceCogeapsInAndVersione(nazionale, codiceCogeaps, versione.getNumeroVersione());
+	}
 
 }

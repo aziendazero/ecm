@@ -2325,6 +2325,8 @@ public class EventoServiceImpl implements EventoService {
 				(wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty())
 					||
 				(wrapper.getObiettiviNazionaliSelezionatiVersione1() != null && !wrapper.getObiettiviNazionaliSelezionatiVersione1().isEmpty())
+					||
+				(wrapper.getObiettiviNazionaliSelezionatiVersione2() != null && !wrapper.getObiettiviNazionaliSelezionatiVersione2().isEmpty())
 				){
 
 				// EVENTO_VERSIONE
@@ -2332,16 +2334,33 @@ public class EventoServiceImpl implements EventoService {
 						&& wrapper.getObiettiviNazionaliSelezionatiVersione1() != null && !wrapper.getObiettiviNazionaliSelezionatiVersione1().isEmpty()){
 					query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN (:obiettiviNazionaliSelezionati)");
 					params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionatiVersione1());
-				} else if (wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty()) {
+				}else if ((wrapper.getVersione() != null) && (wrapper.getVersione() == 2)
+						&& wrapper.getObiettiviNazionaliSelezionatiVersione2() != null && !wrapper.getObiettiviNazionaliSelezionatiVersione2().isEmpty()){
+					query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN (:obiettiviNazionaliSelezionati)");
+					params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionatiVersione2());
+				}else if (wrapper.getObiettiviNazionaliSelezionati() != null && !wrapper.getObiettiviNazionaliSelezionati().isEmpty()) {
 					query = Utils.QUERY_AND(query, "e.obiettivoNazionale IN (:obiettiviNazionaliSelezionati)");
 					params.put("obiettiviNazionaliSelezionati", wrapper.getObiettiviNazionaliSelezionati());
 				}
 			}
 
 			//OBIETTIVI REGIONALI
-			if(wrapper.getObiettiviRegionaliSelezionati() != null && !wrapper.getObiettiviRegionaliSelezionati().isEmpty()){
-				query = Utils.QUERY_AND(query, "e.obiettivoRegionale IN (:obiettiviRegionaliSelezionati)");
-				params.put("obiettiviRegionaliSelezionati", wrapper.getObiettiviRegionaliSelezionati());
+			if(
+				(wrapper.getObiettiviRegionaliSelezionati() != null && !wrapper.getObiettiviRegionaliSelezionati().isEmpty())
+					||
+				(wrapper.getObiettiviRegionaliSelezionatiVersione1_2() != null && !wrapper.getObiettiviRegionaliSelezionatiVersione1_2().isEmpty())
+				){
+
+				// EVENTO_VERSIONE
+				if( ((wrapper.getVersione() != null) && (wrapper.getVersione() == 1 || wrapper.getVersione() == 2))
+						&& wrapper.getObiettiviRegionaliSelezionatiVersione1_2() != null && !wrapper.getObiettiviRegionaliSelezionatiVersione1_2().isEmpty()) {
+					query = Utils.QUERY_AND(query, "e.obiettivoRegionale IN (:obiettiviRegionaliSelezionati)");
+					params.put("obiettiviRegionaliSelezionati", wrapper.getObiettiviRegionaliSelezionatiVersione1_2());
+				}else if(wrapper.getObiettiviRegionaliSelezionati() != null && !wrapper.getObiettiviRegionaliSelezionati().isEmpty()) {
+					query = Utils.QUERY_AND(query, "e.obiettivoRegionale IN (:obiettiviRegionaliSelezionati)");
+					params.put("obiettiviRegionaliSelezionati", wrapper.getObiettiviRegionaliSelezionati());
+				}
+
 			}
 
 			//PROFESSIONI SELEZIONATE

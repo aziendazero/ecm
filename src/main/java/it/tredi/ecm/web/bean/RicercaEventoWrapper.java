@@ -30,7 +30,9 @@ public class RicercaEventoWrapper {
 
 	private Set<Obiettivo> obiettiviNazionaliSelezionati;
 	private Set<Obiettivo> obiettiviNazionaliSelezionatiVersione1;
+	private Set<Obiettivo> obiettiviNazionaliSelezionatiVersione2;
 	private Set<Obiettivo> obiettiviRegionaliSelezionati;
+	private Set<Obiettivo> obiettiviRegionaliSelezionatiVersione1_2;
 	private Set<Professione> professioniSelezionate;
 	private Set<Disciplina> disciplineSelezionate;
 
@@ -63,7 +65,9 @@ public class RicercaEventoWrapper {
 
 	private Set<Obiettivo> obiettiviNazionaliList;
 	private Set<Obiettivo> obiettiviNazionaliListVersione1;
+	private Set<Obiettivo> obiettiviNazionaliListVersione2;
 	private Set<Obiettivo> obiettiviRegionaliList;
+	private Set<Obiettivo> obiettiviRegionaliListVersione1_2;
 	private Set<Professione> professioniList;
 	private Set<Disciplina> disciplineList;
 

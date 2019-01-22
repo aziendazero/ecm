@@ -71,6 +71,7 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.JsonViewModel;
+import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
@@ -89,6 +90,7 @@ import it.tredi.ecm.dao.enumlist.ObiettiviFormativiFADEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TematicheInteresseEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
@@ -1248,6 +1250,7 @@ public class EventoController {
 
 		// ERM015189
 		eventoWrapper.setObiettiviNazionali(obiettivoService.getObiettiviNazionali(evento.getVersione()));
+		eventoWrapper.setObiettiviRegionali(obiettivoService.getObiettiviRegionali(evento.getVersione()));
 
 		eventoWrapper.initProgrammi();
 		if(reloadWrapperFromDB)
@@ -2379,8 +2382,10 @@ public class EventoController {
 		wrapper.setProfessioniList(professioneService.getAllProfessioni());
 		wrapper.setDisciplineList(disciplinaService.getAllDiscipline());
 		wrapper.setObiettiviNazionaliList(obiettivoService.getObiettiviNazionali());
-		wrapper.setObiettiviNazionaliListVersione1(obiettivoService.getObiettiviNazionaliVersione1());
+		wrapper.setObiettiviNazionaliListVersione1(obiettivoService.getObiettiviNazionali(EventoVersioneEnum.UNO_PRIMA_2018));
 		wrapper.setObiettiviRegionaliList(obiettivoService.getObiettiviRegionali());
+		wrapper.setObiettiviNazionaliListVersione2(obiettivoService.getObiettiviNazionali(EventoVersioneEnum.DUE_DAL_2018));
+		wrapper.setObiettiviRegionaliListVersione1_2(obiettivoService.getObiettiviRegionali(EventoVersioneEnum.UNO_PRIMA_2018));
 		return wrapper;
 	}
 
@@ -2544,6 +2549,12 @@ public class EventoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/provider/"+providerId+"/evento/list";
 		}
+	}
+
+	@RequestMapping("/listaObiettiviByTematicheInteresseEnum")
+	@ResponseBody
+	public Set<Obiettivo>getListaObiettiviByTematicheInteresseEnum(@RequestParam TematicheInteresseEnum tematicaInteresse){
+		return obiettivoService.getObiettiviByCodiceCogeapsAndVersioneEventi(tematicaInteresse.isNazionale(), tematicaInteresse.getObiettiviNazionali(), tematicaInteresse.getVersioneEvento());
 	}
 
 }

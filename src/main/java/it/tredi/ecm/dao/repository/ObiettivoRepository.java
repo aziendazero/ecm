@@ -1,5 +1,6 @@
 package it.tredi.ecm.dao.repository;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.repository.CrudRepository;
@@ -13,4 +14,5 @@ public interface ObiettivoRepository extends CrudRepository<Obiettivo, Long> {
 	Set<Obiettivo> findAllByNazionaleAndVersioneNotOrderByCodiceCogeapsAsc(boolean nazionale, int Versione);
 	Set<Obiettivo> findAllByNazionaleAndVersioneOrderByCodiceCogeapsAsc(boolean nazionale, int Versione);
 	Obiettivo findOneByCodiceCogeapsAndNazionaleAndVersione(String codiceCogeaps, boolean nazionale,int Versione);
+	Set<Obiettivo> findAllByNazionaleAndCodiceCogeapsInAndVersione(boolean nazionale, List<String> codiceCogeaps, int Versione);
 }

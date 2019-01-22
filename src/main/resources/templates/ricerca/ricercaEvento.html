@@ -81,6 +81,10 @@
 												<input type="radio" class="flat versione" th:field="${ricercaEventoWrapper.versione}" th:value="2"/>
 												<span th:text="#{label.due}"></span>
 											</label>
+											<label>
+												<input type="radio" class="flat versione" th:field="${ricercaEventoWrapper.versione}" th:value="3"/>
+												<span th:text="#{label.tre}"></span>
+											</label>
 										</div>
 									</div>
 								</div>
@@ -287,6 +291,25 @@
 												</option>
 											</optgroup>
 										</select>
+										<select
+											multiple="multiple" class="selectpicker obiettivoNazionaleVersione2"
+											th:field="${ricercaEventoWrapper.obiettiviNazionaliSelezionatiVersione2}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un obiettivo...">
+											<optgroup class="optgroup-primary"
+												th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
+												th:label="${categoriaObiettivoNazionale.nome}"
+												th:remove="all-but-first">
+												<option
+													th:each="obiettivoNazionale, row: ${ricercaEventoWrapper.obiettiviNazionaliListVersione2}"
+													th:if="${obiettivoNazionale.categoria == categoriaObiettivoNazionale}"
+													th:value="${obiettivoNazionale.id}"
+													th:text="${obiettivoNazionale.nome}">
+												</option>
+											</optgroup>
+										</select>
 									</div>
 								</div>
 
@@ -296,8 +319,7 @@
 										<span th:text="#{label.obiettivo_strategico_regionale}">Obiettivo Strategico Regionale</span>
 									</label>
 									<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
-										<select id="obiettivoRegionale"
-											multiple="multiple" class="selectpicker"
+										<select multiple="multiple" class="selectpicker obiettivoRegionale"
 											th:field="${ricercaEventoWrapper.obiettiviRegionaliSelezionati}"
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
@@ -305,6 +327,18 @@
 											title="Seleziona un obiettivo...">
 											<option
 												th:each="obiettivoRegionale, row: ${ricercaEventoWrapper.obiettiviRegionaliList}"
+												th:value="${obiettivoRegionale.id}"
+												th:text="${obiettivoRegionale.nome}">
+											</option>
+										</select>
+										<select multiple="multiple" class="selectpicker obiettivoRegionaleVersione1_2"
+											th:field="${ricercaEventoWrapper.obiettiviRegionaliSelezionatiVersione1_2}"
+											data-width="100%" data-style="btn-primary"
+											data-actions-box="true" data-size="10"
+											data-hide-disabled="false"
+											title="Seleziona un obiettivo...">
+											<option
+												th:each="obiettivoRegionale, row: ${ricercaEventoWrapper.obiettiviRegionaliListVersione1_2}"
 												th:value="${obiettivoRegionale.id}"
 												th:text="${obiettivoRegionale.nome}">
 											</option>
@@ -793,12 +827,12 @@
 								$(".tipologia-FAD").on("ifUnchecked", function() {
 									mostraNascondiTipologia(false,'FAD');
 								});
-								
+
 								$(".versione").on("ifChecked", function() {
 									mostraObiettiviPerVersione($(this).val());
 								});
 
-								mostraObiettiviPerVersione('2');
+								mostraObiettiviPerVersione('3');
 
 							});
 
@@ -808,15 +842,42 @@
 
 							function mostraObiettiviPerVersione(value) {
 								if(value == '1') {
-									$(".obiettivoNazionale").hide();
-									$(".obiettivoNazionale").selectpicker('deselectAll');									
+									hideObiettivo('Nazionale','');
+									hideObiettivo('Regionale','');
+
+									hideObiettivo('Nazionale','2');
+									hideObiettivo('Regionale','2');
+
 									$(".obiettivoNazionaleVersione1").show();
-								}
-								else {
-									$(".obiettivoNazionaleVersione1").hide();
-									$(".obiettivoNazionaleVersione1").selectpicker('deselectAll');									
+									$(".obiettivoRegionaleVersione1_2").show();
+								}else if(value == '2'){
+									hideObiettivo('Nazionale','');
+									hideObiettivo('Regionale','');
+
+									hideObiettivo('Nazionale','1');
+									hideObiettivo('Regionale','1_2');
+
+									$(".obiettivoNazionaleVersione2").show();
+									$(".obiettivoRegionaleVersione1_2").show();
+								}else {
+									hideObiettivo('Nazionale','1');
+									hideObiettivo('Nazionale','2');
+									hideObiettivo('Regionale','1_2');
+
 									$(".obiettivoNazionale").show();
+									$(".obiettivoRegionale").show();
 								}
+							}
+
+							function hideObiettivo(tipo, versione){
+								if(versione == ''){
+									$(".obiettivo" + tipo + versione).hide();
+									$(".obiettivo" + tipo + versione).selectpicker('deselectAll');
+								}else{
+									$(".obiettivo" + tipo + 'Versione' + versione).hide();
+									$(".obiettivo" + tipo + 'Versione' + versione).selectpicker('deselectAll');
+								}
+
 							}
 
 							//funzione per l'abilita / disabilita le discipline selezionabili in base alle professioni
@@ -870,8 +931,8 @@
 								$('#tipologia-FSC').selectpicker('val','');
 								$('#tipologia-FAD').selectpicker('val','');
 
-								$('#obiettivoNazionale').selectpicker('val','');
-								$('#obiettivoRegionale').selectpicker('val','');
+								$('.obiettivoNazionale').selectpicker('val','');
+								$('.obiettivoRegionale').selectpicker('val','');
 								$('#professioni').selectpicker('val','');
 								$('#discipline').selectpicker('val','');
 
