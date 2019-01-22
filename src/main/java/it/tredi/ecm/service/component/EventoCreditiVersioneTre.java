@@ -55,7 +55,7 @@ public class EventoCreditiVersioneTre {
 
 		return crediti;
 	}
-	
+
 	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, Integer numeroPartecipanti, RiepilogoRES riepilogoRES, NumeroPartecipantiPerCorsoEnum numeroPartecipantiPerCorso, Obiettivo obiettivoRegionale){
 		float crediti = 0.0f;
 		float oreFrontale = 0f;
@@ -114,26 +114,26 @@ public class EventoCreditiVersioneTre {
 				crediti = 6.0f;
 		}
 
-		if(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO || 
+		if(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO ||
 				tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO) {
-			
+
 			float extraCrediti = 0.0f;
 			numeroPartecipanti = numeroPartecipanti != null ? numeroPartecipanti.intValue() : 0;
-			
+
 			if(numeroPartecipanti <= 25)
 				extraCrediti += 0.3f;
-			
-			/* nel caso in cui i partecipanti siano 26 - 50 deve essere rispettata la proporzione docenti:discenti 1:25 
-			 * per usufruire di questi extra crediti 
-			 * questo controllo viene comunque fatto dal validatore, 
+
+			/* nel caso in cui i partecipanti siano 26 - 50 deve essere rispettata la proporzione docenti:discenti 1:25
+			 * per usufruire di questi extra crediti
+			 * questo controllo viene comunque fatto dal validatore,
 			 * quindi do per scontato che sia rispettato */
 			if(numeroPartecipanti <= 50 && oreInterattiva > 0.0f) {
 				extraCrediti += 0.3f;
 			}
-			
+
 			/*
 			 * WORKSHOP_SEMINARIO
-			 * 
+			 *
 			 * 0.7 crediti ogni ora non frazionabili
 			 * + extraCrediti cumulabili
 			 * MAX CREDITI 50
@@ -143,22 +143,17 @@ public class EventoCreditiVersioneTre {
 				if(crediti > 50f)
 					crediti = 50f;
 			}
-			
+
 			/*
 			 * CORSO_AGGIORNAMENTO
-			 * 
+			 *
 			 * CORSO_AGGIORNAMENTO_FINO_100_PARTECIPANTI 		-> 1.0 crediti ogni ora non frazionabili
 			 * CORSO_AGGIORNAMENTO_DA_101_A_200_PARTECIPANTI 	-> 0.7 crediti ogni ora non frazionabili
 			 * + extraCrediti cumulabili
-			 * + 0.3 crediti ogni ora SE Obiettivo Regionale
 			 * MAX CREDITI 50
 			 * */
 			if(tipologiaEvento == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO){
-				
-				//+ 0.3 crediti ogni ora SE Obiettivo Regionale
-				if(obiettivoRegionale != null && !obiettivoRegionale.isNazionale() && !obiettivoRegionale.getCodiceCogeaps().equalsIgnoreCase("1"))
-					extraCrediti += 0.3f;
-						
+
 				//CORSO_AGGIORNAMENTO_FINO_100_PARTECIPANTI 		-> 1.0 crediti ogni ora non frazionabili
 				//CORSO_AGGIORNAMENTO_DA_101_A_200_PARTECIPANTI 	-> 0.7 crediti ogni ora non frazionabili
 				float creditiOra = 0.0f;
@@ -166,13 +161,13 @@ public class EventoCreditiVersioneTre {
 					creditiOra = 1.0f;
 				else if(numeroPartecipantiPerCorso == NumeroPartecipantiPerCorsoEnum.CORSO_AGGIORNAMENTO_DA_101_A_200_PARTECIPANTI)
 					creditiOra = 0.7f;
-										
+
 				crediti = (creditiOra + extraCrediti) * (int) durata;
 				if(crediti > 50f)
 					crediti = 50f;
 			}
 		}
-		
+
 		crediti = Utils.getRoundedFloatValue(crediti, 1);
 
 		return crediti;
@@ -180,7 +175,7 @@ public class EventoCreditiVersioneTre {
 
 	private float calcoloCreditiFormativiEventoFSC(EventoFSC evento, EventoWrapper wrapper){
 		float crediti = 0.0f;
-		
+
 		calcolaCreditiPartecipantiFSC(evento, wrapper.getRiepilogoRuoliFSC());
 		crediti = getMaxCreditiPartecipantiFSC(wrapper.getRiepilogoRuoliFSC());
 		calcolaCreditiAltriRuoliFSC(evento, wrapper.getRiepilogoRuoliFSC(),crediti);
@@ -198,7 +193,7 @@ public class EventoCreditiVersioneTre {
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(pairs.getKey() != null && pairs.getKey().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE)
-					pairs.getValue().calcolaCreditiVersioneDue(evento,0f);
+					pairs.getValue().calcolaCreditiVersioneTre(evento,0f);
 			 }
 		}
 	}
@@ -213,7 +208,7 @@ public class EventoCreditiVersioneTre {
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() != RuoloFSCBaseEnum.PARTECIPANTE)
-					pairs.getValue().calcolaCreditiVersioneDue(evento,maxValue);
+					pairs.getValue().calcolaCreditiVersioneTre(evento,maxValue);
 			 }
 		}
 	}
@@ -236,12 +231,12 @@ public class EventoCreditiVersioneTre {
 
 		return max;
 	}
-	
+
 	private float calcoloCreditiFormativiEventoFAD(EventoFAD evento){
 		//crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
 		float crediti = 0.0f;
 		float durata = Utils.getRoundedHALFDOWNFloatValue(evento.getDurata());
-		
+
 		if(evento.getTipologiaEventoFAD() != null) {
 			switch (evento.getTipologiaEventoFAD()) {
 			case APPRENDIMENTO_INDIVIDUALE_NO_ONLINE:

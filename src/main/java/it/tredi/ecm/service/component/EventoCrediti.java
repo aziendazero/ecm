@@ -17,7 +17,7 @@ public class EventoCrediti {
 	@Autowired private EventoServiceController eventoServiceController;
 	@Autowired private EventoCreditiVersioneUno eventoCreditiVersioneUno;
 	@Autowired private EventoCreditiVersioneDue eventoCreditiVersioneDue;
-	@Autowired private EventoCreditiVersioneDue eventoCreditiVersioneTre;
+	@Autowired private EventoCreditiVersioneTre eventoCreditiVersioneTre;
 
 	// EVENTO_VERSIONE
 	public float calcoloCreditiEvento(EventoWrapper eventoWrapper) throws Exception {
