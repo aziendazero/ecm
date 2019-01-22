@@ -93,6 +93,7 @@ import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TematicheInteresseEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaTematicheInteresseEnum;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
@@ -2554,7 +2555,8 @@ public class EventoController {
 	@RequestMapping("/listaObiettiviByTematicheInteresseEnum")
 	@ResponseBody
 	public Set<Obiettivo>getListaObiettiviByTematicheInteresseEnum(@RequestParam TematicheInteresseEnum tematicaInteresse){
-		return obiettivoService.getObiettiviByCodiceCogeapsAndVersioneEventi(tematicaInteresse.isNazionale(), tematicaInteresse.getObiettiviNazionali(), tematicaInteresse.getVersioneEvento());
+		boolean nazionale = tematicaInteresse.getTipo() == TipologiaTematicheInteresseEnum.REGIONALE ? false : true;
+		return obiettivoService.getObiettiviByCodiceCogeapsAndVersioneEventi(nazionale, tematicaInteresse.getObiettiviNazionali(), tematicaInteresse.getVersioneEvento());
 	}
 
 }

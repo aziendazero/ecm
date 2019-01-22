@@ -364,8 +364,8 @@ public class Evento extends BaseEntity {
 
 	private Boolean autorizzazionePrivacy;
 
-//	@Enumerated(EnumType.STRING)
-//	private TematicheInteresseEnum tematicaInteresse;
+	@Enumerated(EnumType.STRING)
+	private TematicheInteresseEnum tematicaInteresse;
 
 	@DiffIgnore
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="evento", orphanRemoval=true)

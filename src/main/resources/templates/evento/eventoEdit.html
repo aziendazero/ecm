@@ -793,6 +793,8 @@
 
 			//implementazione della funzione che decide cosa mostrare a seconda dei campi già settati dal client per i campi in comune tra gli eventi
 			function showHideCampsCommon() {
+				//tematiche interesse
+				mostraNascondiTematicheInteresse($(".contenuto:checked").val());
 
 				//sponsor
 				mostraNascondiCampiSponsor($(".sponsor:checked").val());
@@ -825,14 +827,16 @@
 					mostraNascondiCampiPartner($(this).val());
 				});
 
-				$(".contenuto").on("ifChecked", function() {
+				$(".contenuto").iCheck("disable");
+			/*  	$(".contenuto").on("ifChecked", function() {
 					mostraNascondiRadioPrimaInfanzia($(this).val(), $(".sponsor:checked").val());
-				})
+					mostraNascondiTematicheInteresse($(this).val());
+				}); */
 
 				//gestione evento iCheck su radio riguardante le autocertificazioni alimenti prima infanzia
 				$(".sponsor-infanzia").on("ifChecked", function() {
 					mostraNascondiAllegatiAutocertificazioniSponsor($(this).val());
-				})
+				});
 
 			}
 
@@ -949,6 +953,28 @@
 					$(".partner-si").slideUp("slow");
 					//TODO logica disable?
 				}
+			}
+
+			// EVENTO_VERSIONE
+			function mostraNascondiTematicheInteresse(contenutiEvento){
+				if (typeof contenutiEvento == 'undefined')
+					contenutiEvento = $(".contenuto:checked").val();
+				alert('contenutiEvento: ' + contenutiEvento);
+				console.log('mostraNascondiTematicheInteresse - contenutiEvento: ' + contenutiEvento);
+
+				var versione = getVersione();
+				if (versione === 3) {
+					if(contenutiEvento == "ALTRO"){
+						$('.tematica_interesse').slideDown("slow");
+						updateObiettiviNazionali($('#tematica_interesse').val());
+					}else{
+						$(".tematica_interesse").slideUp("fast");
+					}
+				}
+			}
+
+			function updateObiettiviNazionali(tematicaInteresse){
+				console.log('updateObiettiviNazionali - tematicaInteresse: ' + tematicaInteresse);
 			}
 
 			/*RIPETIBILI*/

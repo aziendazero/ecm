@@ -42,6 +42,7 @@ import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.RuoloPersonaEventoEnum;
+import it.tredi.ecm.dao.enumlist.TematicheInteresseEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
@@ -106,6 +107,22 @@ public class EventoValidatorVersioneTre {
 		 * */
 		if(evento.getContenutiEvento() == null)
 			errors.rejectValue(prefix + "contenutiEvento", "error.empty");
+
+		/* TEMATICHE SPECIALI DI INTERESSE NAZIONALE o REGIONALE
+		 * selectpicker
+		 * */
+		if(evento.getContenutiEvento() != null && evento.getContenutiEvento() == ContenutiEventoEnum.ALTRO) {
+			if(evento.getTematicaInteresse() == null)
+				errors.rejectValue(prefix + "tematicaInteresse", "error.empty");
+
+			/*
+			 * A seconda del tipo di TEMATICA SPECIALE DI INTERESSE NAZIONALE o REGIONALE -> SI VINCOLA IL VALORE DELL'OBIETTIVO NAZIONALE
+			 * */
+			if(evento.getTematicaInteresse() != null && evento.getTematicaInteresse() != TematicheInteresseEnum.NON_RIGUARDA_UNA_TEMATICA_SPECIALE && evento.getObiettivoNazionale() != null) {
+				if(!evento.getTematicaInteresse().getObiettiviNazionali().contains(evento.getObiettivoNazionale().getCodiceCogeaps()))
+					errors.rejectValue(prefix + "obiettivoRegionale", "error.valore_non_consentito");
+			}
+		}
 
 		/* TITOLO (campo obbligatorio)
 		 * campo testuale libero
