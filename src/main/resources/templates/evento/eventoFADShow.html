@@ -70,6 +70,16 @@
 						</div>
 					</div>
 
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.contenutiEvento == T(it.tredi.ecm.dao.enumlist.ContenutiEventoEnum).ALTRO and @eventoServiceController.isVersionTre(eventoWrapperShow.evento)}">
+						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
+							<span class="label-show" th:text="#{label.tematica_interesse_speciale}">Tematica Speciale di interesse Nazionale o Regionale</span>
+						</label>
+						<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+							<div class="value" th:if="${eventoWrapperShow.evento.tematicaInteresse != null}" th:text="${eventoWrapperShow.evento.tematicaInteresse.nome}"></div>
+							<div class="value danger" th:unless="${eventoWrapperShow.evento.tematicaInteresse != null}" th:text="#{label.dato_non_inserito}"></div>
+						</div>
+					</div>
+
 					<div class="divider-dashed"></div>
 
 					<!-- TITOLO -->
@@ -582,7 +592,7 @@
 							<div class="value danger" th:text="#{label.dato_non_inserito}"></div>
 						</div>
 					</div>
-					<th:block th:if="${eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).EVENTI_SEMINARIALI_IN_RETE 
+					<th:block th:if="${eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).EVENTI_SEMINARIALI_IN_RETE
 					or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_NO_ONLINE
 					or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_INDIVIDUALE_SI_ONLINE
 					or eventoWrapperShow.evento.tipologiaEventoFAD == T(it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum).APPRENDIMENTO_CONTESTO_SOCIALE}">

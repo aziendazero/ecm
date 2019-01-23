@@ -393,6 +393,7 @@
 					$('form > input[type=submit]').prop("disabled", true);
 			    });
 
+		        // necessario per inizializzare widget della sezione1 di editEvento
 		        initEventiComponents();
 			});
 
@@ -553,7 +554,6 @@
 			*/
 			function initEventiComponents(){
 			 	$(".contenuto").on("ifChecked", function() {
-					mostraNascondiRadioPrimaInfanzia($(this).val(), $(".sponsor:checked").val());
 					mostraNascondiTematicheInteresse($(this).val());
 				});
 			}

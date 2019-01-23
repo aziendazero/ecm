@@ -793,9 +793,6 @@
 
 			//implementazione della funzione che decide cosa mostrare a seconda dei campi già settati dal client per i campi in comune tra gli eventi
 			function showHideCampsCommon() {
-				//tematiche interesse
-				mostraNascondiTematicheInteresse($(".contenuto:checked").val());
-
 				//sponsor
 				mostraNascondiCampiSponsor($(".sponsor:checked").val());
 
@@ -809,7 +806,10 @@
 				//radio alimenti prima infanzia
 				mostraNascondiRadioPrimaInfanzia($(".contenuto:checked").val(), $(".sponsor:checked").val());
 
-				}
+				//tematiche interesse
+				mostraNascondiTematicheInteresse($(".contenuto:checked").val());
+			}
+
 			function handleListenerEventsCampsCommon(){
 
 				//gestione evento iCheck su radio riguardante gli sponsor
@@ -827,17 +827,19 @@
 					mostraNascondiCampiPartner($(this).val());
 				});
 
-				$(".contenuto").iCheck("disable");
-			/*  	$(".contenuto").on("ifChecked", function() {
+				$(".contenuto").on("ifChecked", function() {
 					mostraNascondiRadioPrimaInfanzia($(this).val(), $(".sponsor:checked").val());
-					mostraNascondiTematicheInteresse($(this).val());
-				}); */
+				});
 
 				//gestione evento iCheck su radio riguardante le autocertificazioni alimenti prima infanzia
 				$(".sponsor-infanzia").on("ifChecked", function() {
 					mostraNascondiAllegatiAutocertificazioniSponsor($(this).val());
 				});
 
+				// aggiunto anche in initEventiComponents() -> footer.html per essere sicuri che vengano inizializzati nella sezione1
+				$(".contenuto").on("ifChecked", function() {
+					mostraNascondiTematicheInteresse($(this).val());
+				});
 			}
 
 			//funzioni show/hide in base alle scelte effettuate (lato client)
@@ -957,24 +959,70 @@
 
 			// EVENTO_VERSIONE
 			function mostraNascondiTematicheInteresse(contenutiEvento){
-				if (typeof contenutiEvento == 'undefined')
-					contenutiEvento = $(".contenuto:checked").val();
-				alert('contenutiEvento: ' + contenutiEvento);
-				console.log('mostraNascondiTematicheInteresse - contenutiEvento: ' + contenutiEvento);
-
 				var versione = getVersione();
 				if (versione === 3) {
+					if (typeof contenutiEvento == 'undefined')
+						contenutiEvento = $(".contenuto:checked").val();
+					console.log('mostraNascondiTematicheInteresse - contenutiEvento: ' + contenutiEvento);
+
 					if(contenutiEvento == "ALTRO"){
 						$('.tematica_interesse').slideDown("slow");
-						updateObiettiviNazionali($('#tematica_interesse').val());
+						updateObiettiviNazionali($('#tematica_interesse'));
 					}else{
 						$(".tematica_interesse").slideUp("fast");
+						updateObiettiviNazionali(null);
 					}
 				}
 			}
 
-			function updateObiettiviNazionali(tematicaInteresse){
-				console.log('updateObiettiviNazionali - tematicaInteresse: ' + tematicaInteresse);
+			function updateObiettiviNazionali(caller){
+				var selectId = '#obiettivoNazionale';
+				console.log('updateObiettiviNazionali - caller: ' + caller);
+
+				if(caller == null || caller == ''){
+					$.each($(selectId + " option"), function() {
+						$(this).show();
+					});
+					$(selectId).selectpicker('refresh');
+				}else{
+					var tematicaInteresse = $(caller).val();
+					var versione = getVersione();
+					var precVal = $(selectId).val();
+
+					console.log('updateObiettiviNazionali - tematicaInteresse: ' + tematicaInteresse);
+
+					if(tematicaInteresse == 'NON_RIGUARDA_UNA_TEMATICA_SPECIALE' || tematicaInteresse == ''){
+						$.each($(selectId + " option"), function() {
+							$(this).show();
+						});
+						$(selectId).selectpicker('refresh');
+					}else{
+						var start = [[@{/listaObiettiviByTematicheInteresseEnum?tematicaInteresse=}]];
+						var end = tematicaInteresse;
+						var url = start + end;
+
+						console.log(tematicaInteresse);
+						console.log($(selectId));
+
+						$(selectId).prop('disabled',false);
+						$.get(url, function(data){
+
+							$(selectId).selectpicker('val','');
+							$.each($(selectId + " option"), function() {
+								$(this).hide();
+							});
+
+							for(var item = 0; item < data.length; item++){
+								console.log(data[item]);
+								$.each($(selectId + " option"), function() {
+									if($(this).attr("value") == data[item].id)
+										$(this).show();
+								});
+							}
+							$(selectId).selectpicker('refresh');
+						});
+					}
+				}
 			}
 
 			/*RIPETIBILI*/

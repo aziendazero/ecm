@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import org.javers.core.metamodel.annotation.TypeName;
 
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TematicheInteresseEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaGruppoFSCEnum;
 import it.tredi.ecm.utils.Utils;
@@ -608,6 +609,10 @@ public class RiepilogoRuoliFSC {
 		TipologiaEventoFSCEnum tipologiaEvento = evento.getTipologiaEventoFSC();
 		float moltiplicatore;
 
+		float extraCreditiTematicheInteresse = 0.0f;
+		if(evento.getTematicaInteresse() != null && evento.getTematicaInteresse() != TematicheInteresseEnum.NON_RIGUARDA_UNA_TEMATICA_SPECIALE)
+			extraCreditiTematicheInteresse = 0.3f;
+
 		if(tipologiaEvento != null && ruolo != null){
 			switch(tipologiaEvento){
 				case TRAINING_INDIVIDUALIZZATO:
@@ -626,7 +631,7 @@ public class RiepilogoRuoliFSC {
 						switch(ruolo.getRuoloBase())
 						{
 							case PARTECIPANTE:
-								crediti = 1.5f * (int) tempoDedicato;
+								crediti = (1.5f + extraCreditiTematicheInteresse) * (int) tempoDedicato;
 								crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_VERSIONE_DUE : crediti;
 								break;
 							case TUTOR:
@@ -688,7 +693,7 @@ public class RiepilogoRuoliFSC {
 									moltiplicatore = 1f;
 								}
 
-								crediti = moltiplicatore * (int) tempoDedicato;
+								crediti = (moltiplicatore + extraCreditiTematicheInteresse) * (int) tempoDedicato;
 								crediti = (crediti > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
 								break;
 
@@ -731,7 +736,7 @@ public class RiepilogoRuoliFSC {
 						switch(ruolo.getRuoloBase())
 						{
 							case PARTECIPANTE:
-								moltiplicatore = 1f;
+								moltiplicatore = 1f + extraCreditiTematicheInteresse;
 								if(evento.getPresenteTutorEspertoEsternoValidatoreAttivita() != null && evento.getPresenteTutorEspertoEsternoValidatoreAttivita().booleanValue()) {
 									moltiplicatore += 0.3f;
 								}
@@ -779,7 +784,7 @@ public class RiepilogoRuoliFSC {
 					switch(ruolo.getRuoloBase())
 					{
 						case PARTECIPANTE:
-							moltiplicatore = 1f;
+							moltiplicatore = 1f + extraCreditiTematicheInteresse;
 							if(evento.getPrevistaRedazioneDocumentoConclusivo() != null && evento.getPrevistaRedazioneDocumentoConclusivo().booleanValue()) {
 								moltiplicatore += 0.3f;
 							}

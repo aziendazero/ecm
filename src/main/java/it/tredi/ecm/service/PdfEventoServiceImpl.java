@@ -188,6 +188,10 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValoreEnum("label.procedure_formative_tipologia", evento.getProceduraFormativa(), tableFields);
 		addCellLabelCampoValore("label.destinatari_evento", evento.getDestinatariEvento(), tableFields);
 		addCellLabelCampoValore("label.evento_contenuti", evento.getContenutiEvento(), tableFields);
+
+		if(eventoServiceController.isVersionTre(evento) && evento.getContenutiEvento() == ContenutiEventoEnum.ALTRO)
+			addCellLabelCampoValore("label.tematica_interesse_speciale", evento.getTematicaInteresse(), tableFields);
+
 		addCellLabelCampoValore("label.titolo", evento.getTitolo(), tableFields);
 		addCellLabelCampoValore("label.data_inizio", evento.getDataInizio(), tableFields);
 		addCellLabelCampoValore("label.data_fine", evento.getDataFine(), tableFields);
@@ -293,6 +297,10 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValoreEnum("label.procedure_formative_tipologia", evento.getProceduraFormativa(), tableFields);
 		addCellLabelCampoValore("label.destinatari_evento", evento.getDestinatariEvento(), tableFields);
 		addCellLabelCampoValore("label.evento_contenuti", evento.getContenutiEvento(), tableFields);
+
+		if(eventoServiceController.isVersionTre(evento) && evento.getContenutiEvento() == ContenutiEventoEnum.ALTRO)
+			addCellLabelCampoValore("label.tematica_interesse_speciale", evento.getTematicaInteresse(), tableFields);
+
 		addCellLabelCampoValore("label.titolo", evento.getTitolo(), tableFields);
 		addCellLabelCampoValore("label.provincia", eventoFSC.getSedeEvento().getProvincia(), tableFields);
 		addCellLabelCampoValore("label.comune", eventoFSC.getSedeEvento().getComune(), tableFields);
@@ -418,6 +426,10 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValoreEnum("label.procedure_formative_tipologia", evento.getProceduraFormativa(), tableFields);
 		addCellLabelCampoValore("label.destinatari_evento", evento.getDestinatariEvento(), tableFields);
 		addCellLabelCampoValore("label.evento_contenuti", evento.getContenutiEvento(), tableFields);
+
+		if(eventoServiceController.isVersionTre(evento) && evento.getContenutiEvento() == ContenutiEventoEnum.ALTRO)
+			addCellLabelCampoValore("label.tematica_interesse_speciale", evento.getTematicaInteresse(), tableFields);
+
 		addCellLabelCampoValore("label.titolo", evento.getTitolo(), tableFields);
 		addCellLabelCampoValore("label.provincia", eventoRES.getSedeEvento().getProvincia(), tableFields);
 		addCellLabelCampoValore("label.comune", eventoRES.getSedeEvento().getComune(), tableFields);

@@ -19,6 +19,7 @@ import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
 import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TematicheInteresseEnum;
 import it.tredi.ecm.dao.enumlist.TipoMetodologiaEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.utils.Utils;
@@ -34,7 +35,7 @@ public class EventoCreditiVersioneTre {
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			EventoRES evento = ((EventoRES)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEventoRES(), evento.getDurata(), eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES(), evento.getNumeroPartecipantiPerCorso(), evento.getObiettivoRegionale());
+			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEventoRES(), evento.getDurata(), eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES(), evento.getNumeroPartecipantiPerCorso(), evento.getTematicaInteresse());
 			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
 			return crediti;
@@ -56,7 +57,7 @@ public class EventoCreditiVersioneTre {
 		return crediti;
 	}
 
-	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, Integer numeroPartecipanti, RiepilogoRES riepilogoRES, NumeroPartecipantiPerCorsoEnum numeroPartecipantiPerCorso, Obiettivo obiettivoRegionale){
+	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, Integer numeroPartecipanti, RiepilogoRES riepilogoRES, NumeroPartecipantiPerCorsoEnum numeroPartecipantiPerCorso, TematicheInteresseEnum tematicaInteresse){
 		float crediti = 0.0f;
 		float oreFrontale = 0f;
 		long minutiFrontale = 0;
@@ -168,6 +169,10 @@ public class EventoCreditiVersioneTre {
 			}
 		}
 
+		/* +0.3 crediti ogni ora non frazionabili se è stato selezionato una tematica di interesse nazionale o regionale */
+		if(tematicaInteresse != null && tematicaInteresse != TematicheInteresseEnum.NON_RIGUARDA_UNA_TEMATICA_SPECIALE)
+			crediti += (0.30f * (int) durata);
+
 		crediti = Utils.getRoundedFloatValue(crediti, 1);
 
 		return crediti;
@@ -254,6 +259,10 @@ public class EventoCreditiVersioneTre {
 				break;
 			}
 		}
+
+		/* +0.3 crediti ogni ora non frazionabili se è stato selezionato una tematica di interesse nazionale o regionale */
+		if(evento.getTematicaInteresse() != null && evento.getTematicaInteresse() != TematicheInteresseEnum.NON_RIGUARDA_UNA_TEMATICA_SPECIALE)
+			crediti += (0.30f * (int) durata);
 
 		if(crediti > 50f)
 			crediti = 50f;
