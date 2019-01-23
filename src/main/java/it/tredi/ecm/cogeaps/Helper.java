@@ -37,6 +37,7 @@ import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.pdf.PdfPartecipanteInfo;
 import it.tredi.ecm.pdf.PdfRiepilogoPartecipantiInfo;
 import it.tredi.ecm.service.DisciplinaService;
+import it.tredi.ecm.utils.Utils;
 
 public class Helper {
 
@@ -89,7 +90,8 @@ public class Helper {
 		dbEventoDataMap.put("data_ini", evento.getDataInizio().format(DateTimeFormatter.ISO_LOCAL_DATE));
 		dbEventoDataMap.put("data_fine", evento.getDataFine().format(DateTimeFormatter.ISO_LOCAL_DATE));
 		//tiommi 22/05/2017 | dpranteda 12/12/2018
-		BigDecimal durataRounded = new BigDecimal(Float.toString(evento.getDurata())).setScale(0, RoundingMode.HALF_UP);
+		//BigDecimal durataRounded = new BigDecimal(Float.toString(evento.getDurata())).setScale(0, RoundingMode.HALF_UP);
+		BigDecimal durataRounded = Utils.getRoundedFLOORBigDecimalValue(evento.getDurata());
 		dbEventoDataMap.put("ore", durataRounded.toString());
 		//end
 		dbEventoDataMap.put("crediti", Float.toString(evento.getCrediti()));

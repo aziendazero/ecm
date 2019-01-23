@@ -93,17 +93,24 @@ public class EventoCreditiVersioneTre {
 		}
 
 		oreFrontale = (float) minutiFrontale / 60;
-		oreFrontale = Utils.getRoundedFloatValue(oreFrontale, 2);
+		//oreFrontale = Utils.getRoundedFloatValue(oreFrontale, 2);
+		oreFrontale = Utils.getRoundedFLOORFloatValue(oreFrontale, 2);
 		oreInterattiva = (float) minutiInterattiva / 60;
-		oreInterattiva = Utils.getRoundedFloatValue(oreInterattiva, 2);
+		//oreInterattiva = Utils.getRoundedFloatValue(oreInterattiva, 2);
+		oreInterattiva = Utils.getRoundedFLOORFloatValue(oreInterattiva, 2);
 
 		riepilogoRES.setTotaleOreFrontali(oreFrontale);
 		riepilogoRES.setTotaleOreInterattive(oreInterattiva);
 
 		//approssimazione per calcolo con HALF_DOWN (2.5 -> 2 || 2.6 -> 3)
-		durata = Utils.getRoundedHALFDOWNFloatValue(durata);
-		oreFrontale = Utils.getRoundedHALFDOWNFloatValue(oreFrontale);
-		oreInterattiva = Utils.getRoundedHALFDOWNFloatValue(oreInterattiva);
+//		durata = Utils.getRoundedHALFDOWNFloatValue(durata);
+//		oreFrontale = Utils.getRoundedHALFDOWNFloatValue(oreFrontale);
+//		oreInterattiva = Utils.getRoundedHALFDOWNFloatValue(oreInterattiva);
+
+		//approssimazione per calcolo con FLOOR (2.5 -> 2 || 2.6 -> 2)
+		durata = Utils.getRoundedFLOORFloatValue(durata);
+		oreFrontale = Utils.getRoundedFLOORFloatValue(oreFrontale);
+		oreInterattiva = Utils.getRoundedFLOORFloatValue(oreInterattiva);
 
 		/*
 		 * 0.3 crediti ogni ora non frazionabili
@@ -240,7 +247,8 @@ public class EventoCreditiVersioneTre {
 	private float calcoloCreditiFormativiEventoFAD(EventoFAD evento){
 		//crediti = calcoloCreditiFormativiEventoFAD(evento.getDurata(), evento.getSupportoSvoltoDaEsperto());
 		float crediti = 0.0f;
-		float durata = Utils.getRoundedHALFDOWNFloatValue(evento.getDurata());
+		//float durata = Utils.getRoundedHALFDOWNFloatValue(evento.getDurata());
+		float durata = Utils.getRoundedFLOORFloatValue(evento.getDurata());
 
 		if(evento.getTipologiaEventoFAD() != null) {
 			switch (evento.getTipologiaEventoFAD()) {

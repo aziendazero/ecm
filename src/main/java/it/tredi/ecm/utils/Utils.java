@@ -332,8 +332,23 @@ public class Utils {
 		return (int) bg.floatValue();
 	}
 
+	public static int getRoundedFLOORFloatValue(float value) {
+		BigDecimal bg = new BigDecimal(value).setScale(0, RoundingMode.FLOOR);
+		return (int) bg.floatValue();
+	}
+
+	public static BigDecimal getRoundedFLOORBigDecimalValue(float value) {
+		BigDecimal bg = new BigDecimal(value).setScale(0, RoundingMode.FLOOR);
+		return bg;
+	}
+
 	public static float getRoundedFloatValue(float value, int precision) {
 		BigDecimal bg = new BigDecimal(value).setScale(precision, RoundingMode.HALF_UP);
+		return bg.floatValue();
+	}
+
+	public static float getRoundedFLOORFloatValue(float value, int precision) {
+		BigDecimal bg = new BigDecimal(value).setScale(precision, RoundingMode.FLOOR);
 		return bg.floatValue();
 	}
 
