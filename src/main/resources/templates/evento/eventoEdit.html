@@ -986,7 +986,6 @@
 					$(selectId).selectpicker('refresh');
 				}else{
 					var tematicaInteresse = $(caller).val();
-					var versione = getVersione();
 					var precVal = $(selectId).val();
 
 					console.log('updateObiettiviNazionali - tematicaInteresse: ' + tematicaInteresse);
@@ -1065,10 +1064,11 @@
 					if(target == 'responsabiliScientifici' && isFsc()) {
 						//solo i responsabiliScientifici del evento FSC hanno le colonne in piu'
 						buttonColumn = 8;
-						if(versione === 2) {
-							showExtCols = true;
-						} else {
+
+						if(versione === 1) {
 							showExtCols = false;
+						} else {
+							showExtCols = true;
 						}
 					$('#'+target).DataTable({
 						"bFilter" : false,
@@ -1224,7 +1224,7 @@
 						$("#container-svolgeAttivitaDiDocenza").hide();
 						if(target == 'responsabiliScientifici'){
 							$("#container-qualifica").show();
-							if (isFsc() && versione === 2)
+							if (isFsc() && !versione === 1)
 								$("#container-svolgeAttivitaDiDocenza").show();
 							$("#container-ruolo").hide();
 							$("#container-titolare").hide();
@@ -1287,7 +1287,7 @@
 					$(selectId).prop('disabled',false);
 
 					$.each($(selectId + " option"), function() {
-						if(versione === 2 || ($(this).attr("value") != 'MODERATORE')) {
+						if(!versione === 1 || ($(this).attr("value") != 'MODERATORE')) {
 							$(this).show();
 						} else {
 							$(this).hide();
@@ -1295,7 +1295,7 @@
 					});
 
 					if(precVal !== undefined && precVal != '') {
-						if(versione === 2 || precVal != 'MODERATORE')
+						if(!versione === 1 || precVal != 'MODERATORE')
 							$(selectId).val(precVal);
 					}
 					$(selectId).selectpicker('refresh');
@@ -1694,7 +1694,7 @@
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFsc=${eventoWrapper.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FSC},
-					isFscAndVersioneSaved2=${isFsc and eventoWrapper.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018},
+					isFscAndVersioneSaved2=${isFsc and @eventoServiceController.isVersionDueOrHigh(eventoWrapper.evento)},
 					checkEdit=${isFscAndVersioneSaved2 ? isEventoIniziato : isRiedizione or isEditSemiBloccato}">
 
 			<script th:inline="javascript" th:if="${isFsc}">

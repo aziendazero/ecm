@@ -35,7 +35,7 @@ public enum VerificaApprendimentoFSCEnum implements INomeEnum {
 			// v1
 			return Stream.of(VerificaApprendimentoFSCEnum.values()).filter(c->c.getId() != 5 && c.getId() != 6).toArray(size->new VerificaApprendimentoFSCEnum[size]);
 		}else {
-			// v2
+			// v2 v3
 			return Stream.of(VerificaApprendimentoFSCEnum.values()).filter(c->c.getId() != 50 && c.getId() != 51).toArray(size->new VerificaApprendimentoFSCEnum[size]);
 		}
 	}

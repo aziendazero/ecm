@@ -59,6 +59,10 @@ public class EventoServiceController {
 		return versioneEvento(evento) == EventoVersioneEnum.DUE_DAL_2018;
 	}
 
+	public boolean isVersionDueOrHigh(Evento evento) {
+		return (versioneEvento(evento) == EventoVersioneEnum.DUE_DAL_2018 || versioneEvento(evento) == EventoVersioneEnum.TRE_DAL_2019);
+	}
+
 	public boolean isVersionTre(Evento evento) {
 		return versioneEvento(evento) == EventoVersioneEnum.TRE_DAL_2019;
 	}

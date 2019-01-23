@@ -263,7 +263,7 @@
 					</div>
 
 					<!-- NUMERO PARTECIPANTI PER CORSO -->
-					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoRES == T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).CORSO_AGGIORNAMENTO and @eventoServiceController.isVersionDue(eventoWrapperShow.evento)}">
+					<div class="item form-group" th:if="${eventoWrapperShow.evento.tipologiaEventoRES == T(it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum).CORSO_AGGIORNAMENTO and @eventoServiceController.isVersionDueOrHigh(eventoWrapperShow.evento)}">
 						<div class="col-xs-1"></div><label class="control-label col-md-3 col-sm-3 col-xs-11">
 							<span class="label-show" th:text="#{label.numero_partecipanti_per_corso}">Numero dei partecipanti</span>
 						</label>

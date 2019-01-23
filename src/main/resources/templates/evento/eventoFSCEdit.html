@@ -1771,7 +1771,15 @@
 				function setEspertiCoordinatori() {
 					var val = $('#tipologiaEventoId').selectpicker('val');
 					var versione = getVersione();
-					if (versione === 2) {
+
+					if (versione === 1) {
+						$("#resp_esp_coord_invest_intesta").hide();
+						$("#resp_esp_coord_intesta").hide();
+						$("#resp_sci_num_campo").show();
+						$("#esperti_block").hide();
+						$("#coordinatori_block").hide();
+						$("#investigatori_block").hide();
+					}else{
 						if (val === 'ATTIVITA_DI_RICERCA') {
 							$("#resp_esp_coord_invest_intesta").show();
 							$("#resp_esp_coord_intesta").hide();
@@ -1785,25 +1793,18 @@
 						$("#resp_sci_num_campo").hide();
 						$("#esperti_block").show();
 						$("#coordinatori_block").show();
-					} else {
-						$("#resp_esp_coord_invest_intesta").hide();
-						$("#resp_esp_coord_intesta").hide();
-						$("#resp_sci_num_campo").show();
-						$("#esperti_block").hide();
-						$("#coordinatori_block").hide();
-						$("#investigatori_block").hide();
 					}
 				}
 
 				// EVENTO_VERSIONE
 				function mostraFlagCalcoloCrediti() {
 					var versione = getVersione();
-					if (versione === 2) {
-						$("#redazdoc_block").show();
-						$("#prestutesp_block").show();
-					} else {
+					if (versione === 1) {
 						$("#redazdoc_block").hide();
 						$("#prestutesp_block").hide();
+					}else{
+						$("#redazdoc_block").show();
+						$("#prestutesp_block").show();
 					}
 				}
 
@@ -1813,7 +1814,7 @@
 					var val = $('#tipologiaEventoId').selectpicker('val');
 					//alert(tipEvVal)
 					var versione = getVersione();
-					if (versione === 2 && val === 'ATTIVITA_DI_RICERCA') {
+					if ((versione === 2 || versione === 3) && val === 'ATTIVITA_DI_RICERCA') {
 						//alert('mostro')
 						$(".tipologiaSperimentazione").slideDown("slow");
 					} else {
@@ -1906,7 +1907,11 @@
 				function abilitaDisabilitaMotivazioneCreditiInseritiUtente() {
 					//console.log('abilitaDisabilitaMotivazioneCreditiInseritiUtente: ' + $(".crediti-proposti").val());
 					var versione = getVersione();
-					if (versione === 2) {
+					if (versione === 1) {
+						$(".motivazione-crediti").slideUp("fast");
+						//$(".motivazione-crediti").hide();
+						$(".motivazioneCrediti").val('');
+					}else{
 						if($(".crediti-proposti").val() == '') {
 							//campo crediti-proposti compilato
 							$(".motivazione-crediti").slideUp("fast");
@@ -1917,10 +1922,6 @@
 							//value false crediti inseriti dal provider
 							$(".motivazione-crediti").slideDown("slow");
 						}
-					} else {
-						$(".motivazione-crediti").slideUp("fast");
-						//$(".motivazione-crediti").hide();
-						$(".motivazioneCrediti").val('');
 					}
 				}
 
@@ -1928,11 +1929,7 @@
 				function setStepEventoTempoDedicato() {
 					//sistemo lo step dell'input eventoTempoDedicato
 					var versione = getVersione();
-					if (versione === 2) {
-						//lo step è sempre 1
-						$("#eventoTempoDedicato").attr('step', '1');
-						console.log('setStepEventoTempoDedicato: versione = 2 - step = 1');
-					} else {
+					if (versione === 1) {
 						// cambia a seconda della Tipologia dell'evento
 						var val = $('#tipologiaEventoId').selectpicker('val');
 						if (val === 'GRUPPI_DI_MIGLIORAMENTO') {
@@ -1942,6 +1939,10 @@
 							$("#eventoTempoDedicato").attr('step', '1');
 							console.log('setStepEventoTempoDedicato: versione = 1 - step = 1');
 						}
+					}else{
+						//lo step è sempre 1
+						$("#eventoTempoDedicato").attr('step', '1');
+						console.log('setStepEventoTempoDedicato: versione = 2 - step = 1');
 					}
 				}
 
@@ -1976,7 +1977,7 @@
 				function updateVerificaAprendimento(){
 					var tipologiaEvento = $('#tipologiaEventoId').selectpicker('val');
 					if(tipologiaEvento != null && tipologiaEvento != undefined){
-						if (getVersione() === 2) {
+						if (getVersione() === 2 || getVersione() === 3) {
 							if(tipologiaEvento === 'TRAINING_INDIVIDUALIZZATO'){
 								$("input[value='RAPPORTO_CONCLUSIVO']").iCheck('check');
 							}else{
@@ -2020,7 +2021,7 @@
 								});
 							}
 
-							if (versione === 2) {
+							if (versione === 2 || versione === 3) {
 
 
 

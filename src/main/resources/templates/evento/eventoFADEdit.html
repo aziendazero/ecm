@@ -1452,7 +1452,11 @@
 				function abilitaDisabilitaMotivazioneCreditiInseritiUtente() {
 					//console.log('abilitaDisabilitaMotivazioneCreditiInseritiUtente: ' + $(".crediti-proposti").val());
 					var versione = getVersione();
-					if (versione === 2) {
+
+					if(versione === 1){
+						$(".motivazione-crediti").slideUp("fast");
+						$(".motivazioneCrediti").val('');
+					}else{
 						if($(".crediti-proposti").val() == '') {
 							//campo crediti-proposti compilato
 							$(".motivazione-crediti").slideUp("fast");
@@ -1462,9 +1466,6 @@
 							//value false crediti inseriti dal provider
 							$(".motivazione-crediti").slideDown("slow");
 						}
-					} else {
-						$(".motivazione-crediti").slideUp("fast");
-						$(".motivazioneCrediti").val('');
 					}
 				}
 

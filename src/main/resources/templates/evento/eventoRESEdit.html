@@ -2089,7 +2089,12 @@
 						console.log('mostraNascondiCampoNumeroPartecipantiPerCorso - valueTipologiaEvento valorizzato: '+ valueTipologiaEvento)
 					}
 					var versione = getVersione();
-					if(versione === 2) {
+
+					if(versione === 1) {
+						$(".partecipanti-per_corso").slideUp("slow");
+						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
+						$("#numeroPartecipantiPerCorso").selectpicker('refresh');
+					}else{
 						switch (valueTipologiaEvento) {
 						case 'CONVEGNO_CONGRESSO':
 							$(".partecipanti-per_corso").slideUp("slow");
@@ -2110,10 +2115,6 @@
 							$("#numeroPartecipantiPerCorso").selectpicker('refresh');
 							break;
 						}
-					} else {
-						$(".partecipanti-per_corso").slideUp("slow");
-						$("#numeroPartecipantiPerCorso").selectpicker('deselectAll');
-						$("#numeroPartecipantiPerCorso").selectpicker('refresh');
 					}
 				}
 
@@ -2180,7 +2181,11 @@
 				function abilitaDisabilitaMotivazioneCreditiInseritiUtente() {
 					//console.log('abilitaDisabilitaMotivazioneCreditiInseritiUtente: ' + $(".crediti-proposti").val());
 					var versione = getVersione();
-					if (versione === 2) {
+
+					if (versione === 1) {
+						$(".motivazione-crediti").slideUp("fast");
+						$(".motivazioneCrediti").val('');
+					}else{
 						if($(".crediti-proposti").val() == '') {
 							//oppure campo crediti-proposti compilato
 							$(".motivazione-crediti").slideUp("fast");
@@ -2190,9 +2195,6 @@
 							//value false crediti inseriti dal provider
 							$(".motivazione-crediti").slideDown("slow");
 						}
-					} else {
-						$(".motivazione-crediti").slideUp("fast");
-						$(".motivazioneCrediti").val('');
 					}
 				}
 
@@ -2541,22 +2543,23 @@
 				// EVENTO_VERSIONE
 				function setDocRelTutMod() {
 					var versione = getVersione();
-					if (versione === 2) {
-						$("#docreltut").hide();
-						$("#docreltutmod").show();
-					} else {
+
+					if (versione === 1) {
 						$("#docreltutmod").hide();
 						$("#docreltut").show();
+					}else{
+						$("#docreltut").hide();
+						$("#docreltutmod").show();
 					}
 				}
 
 				// EVENTO_VERSIONE
 				function setAttivitaSalutiIntroduttivi() {
 					var versione = getVersione();
-					if (versione === 2) {
-						$(".attivitaSalutiIntroduttivi").show();
-					} else {
+					if (versione === 1) {
 						$(".attivitaSalutiIntroduttivi").hide();
+					}else{
+						$(".attivitaSalutiIntroduttivi").show();
 					}
 				}
 
