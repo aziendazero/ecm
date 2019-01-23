@@ -286,6 +286,10 @@ public class Evento extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private ContenutiEventoEnum contenutiEvento;
 
+	@Column(name = "tematica_interesse")
+	@Enumerated(EnumType.STRING)
+	private TematicheInteresseEnum tematicaInteresse;
+
 	@Column(name= "archiviato_prima_infanzia")
 	private boolean archivatoPrimaInfanzia;
 
@@ -363,9 +367,6 @@ public class Evento extends BaseEntity {
 	private Boolean proceduraVerificaQualitaPercepita;
 
 	private Boolean autorizzazionePrivacy;
-
-	@Enumerated(EnumType.STRING)
-	private TematicheInteresseEnum tematicaInteresse;
 
 	@DiffIgnore
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="evento", orphanRemoval=true)
