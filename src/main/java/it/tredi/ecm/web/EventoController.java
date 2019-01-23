@@ -1498,7 +1498,7 @@ public class EventoController {
 						} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
 							// EVENTO_VERSIONE
 							EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
-							if(eventoServiceController.isVersionDue(curVersione))
+							if(eventoServiceController.isVersionDueOrHigh(curVersione))
 								errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
 							else
 								errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
@@ -1586,7 +1586,7 @@ public class EventoController {
 				} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
 					// EVENTO_VERSIONE
 					EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
-					if(eventoServiceController.isVersionDue(curVersione))
+					if(eventoServiceController.isVersionDueOrHigh(curVersione))
 						errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");
 					else
 						errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");

@@ -63,7 +63,9 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 
 		if(versione == null) {
 			versione = ecmProperties.getEventoVersioneDefault();
-		}else if(eventoServiceController.isVersionDue(versione)) {
+		}else if(eventoServiceController.isVersionTre(versione)) {
+			versione = EventoVersioneEnum.TRE_DAL_2019;
+		}else if(eventoServiceController.isVersionDue(versione) || eventoServiceController.isVersionUno(versione)) {
 			versione = EventoVersioneEnum.UNO_PRIMA_2018; //nella versione 2 gli obiettivi regionali non erano cambiati
 		}
 

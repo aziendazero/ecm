@@ -46,6 +46,10 @@ public class EventoServiceController {
 		return (versione != null && versione == EventoVersioneEnum.DUE_DAL_2018);
 	}
 
+	public boolean isVersionDueOrHigh(EventoVersioneEnum versione) {
+		return (versione != null && (versione == EventoVersioneEnum.DUE_DAL_2018 || versione == EventoVersioneEnum.TRE_DAL_2019));
+	}
+
 	public boolean isVersionTre(EventoVersioneEnum versione) {
 		return (versione != null && versione == EventoVersioneEnum.TRE_DAL_2019);
 	}
@@ -68,7 +72,7 @@ public class EventoServiceController {
 	}
 
 	public boolean fadDisableSupportoSvoltoDaEsperto(EventoFAD evento) {
-		if(isVersionDue(evento) && evento.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE) {
+		if(isVersionDueOrHigh(evento) && evento.getTipologiaEventoFAD() == TipologiaEventoFADEnum.EVENTI_SEMINARIALI_IN_RETE) {
 			return true;
 		}
 		return false;

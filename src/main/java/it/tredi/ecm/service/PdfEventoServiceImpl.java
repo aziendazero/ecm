@@ -315,7 +315,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 
 		// EVENTO_VERSIONE
 		EventoVersioneEnum versioneEvento = eventoServiceController.versioneEvento(evento);
-		if( eventoServiceController.isVersionDue(versioneEvento) && eventoFSC.getTipologiaSperimentazione() != null && TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA.equals(eventoFSC.getTipologiaEventoFSC()))
+		if( eventoServiceController.isVersionDueOrHigh(versioneEvento) && eventoFSC.getTipologiaSperimentazione() != null && TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA.equals(eventoFSC.getTipologiaEventoFSC()))
 			addCellLabelCampoValore("label.eventofsc_tipologiaSperimentazione", eventoFSC.getTipologiaSperimentazione().getNome(), tableFields);
 
 		if(eventoFSC.getSperimentazioneClinica() != null)
@@ -328,7 +328,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValoreDiscipline("label.professioni_discipline", evento.getDiscipline(), tableFields);
 		addCellLabelCampoValorePersone("label.responsabili_scientifici", evento.getResponsabili(), tableFields, true, false, false, eventoFSC.getVersione());
 
-		if(eventoServiceController.isVersionDue(versioneEvento)) {
+		if(eventoServiceController.isVersionDueOrHigh(versioneEvento)) {
 			addCellLabelCampoValorePersoneEsperti("label.esperti", eventoFSC.getEsperti(), tableFields);
 			addCellLabelCampoValorePersoneEsperti("label.coordinatori", eventoFSC.getCoordinatori(), tableFields);
 			if(TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA.equals(eventoFSC.getTipologiaEventoFSC()))
@@ -399,7 +399,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		addCellLabelCampoValore("label.dichiarazione_assenza_conflitto_interesse", evento.getDichiarazioneAssenzaConflittoInteresse(), tableFields);
 		addCellLabelCampoValore("label.procedura_verifica_qualita", evento.getProceduraVerificaQualitaPercepita(), tableFields);
 
-		if(eventoServiceController.isVersionDue(versioneEvento)) {
+		if(eventoServiceController.isVersionDueOrHigh(versioneEvento)) {
 			addCellLabelCampoValore("label.prevista_redazione_documento_conclusivo", eventoFSC.getPrevistaRedazioneDocumentoConclusivo(), tableFields);
 			addCellLabelCampoValore("label.presente_tutor_esperto_esterno_validatore", eventoFSC.getPresenteTutorEspertoEsternoValidatoreAttivita(), tableFields);
 		}
@@ -453,7 +453,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		}
 
 		// EVENTO_VERSIONE
-		if(eventoServiceController.isVersionDue(versioneEvento) && eventoRES.getTipologiaEventoRES() != null && eventoRES.getTipologiaEventoRES().equals(TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO))
+		if(eventoServiceController.isVersionDueOrHigh(versioneEvento) && eventoRES.getTipologiaEventoRES() != null && eventoRES.getTipologiaEventoRES().equals(TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO))
 			addCellLabelCampoValore("label.numero_partecipanti_per_corso", eventoRES.getNumeroPartecipantiPerCorso(), tableFields);
 
 		addCellLabelCampoValore("label.numero_partecipanti", evento.getNumeroPartecipanti(), tableFields);
@@ -1073,7 +1073,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 		if(persone != null && persone.size() > 0) {
 
 			int numCols;
-			if(eventoServiceController.isVersionDue(versione))
+			if(eventoServiceController.isVersionDueOrHigh(versione))
 				numCols = 6;
 			else
 				numCols = 4;
@@ -1112,7 +1112,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 				addCellIntestaSubTableByString(messageSource.getMessage("label.titolare", null, Locale.getDefault()) + "/" + messageSource.getMessage("label.sostituto", null, Locale.getDefault()), tablePers);
 			addCellIntestaSubTableByLabel("label.cv", tablePers);
 
-			if(eventoServiceController.isVersionDue(versione)) {
+			if(eventoServiceController.isVersionDueOrHigh(versione)) {
 				addCellIntestaSubTableByLabel("label.identificativo_persona_evento", tablePers);
 				addCellIntestaSubTableByLabel("label.svolge_attivita_docenza", tablePers);
 			}
@@ -1140,7 +1140,7 @@ public class PdfEventoServiceImpl implements PdfEventoService {
 					addCellSubTable(pers.getAnagrafica().getCv().getNomeFile(), tablePers);
 				}
 
-				if(eventoServiceController.isVersionDue(versione)) {
+				if(eventoServiceController.isVersionDueOrHigh(versione)) {
 					if(pers.getIdentificativoPersonaRuoloEvento() != null)
 						addCellSubTable(pers.getIdentificativoPersonaRuoloEvento().getNome(), tablePers);
 					else
