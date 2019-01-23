@@ -22,15 +22,15 @@ public interface QuotaAnnualeService {
 	public boolean hasProviderPagamentiNonEffettuati(Long providerId);
 	public Set<Provider> getAllProviderNotPagamentoRegistrato(Integer annoRiferimento);
 
-	public void checkAndCreateQuoteAnnualiPerAnnoInCorso();
+	public void checkAndCreateQuoteAnnualiPerAnnoInCorso(boolean all);
 
 	public Set<Provider> getAllProviderNotPagamentoEffettuatoAllaScadenza();
 	public int countProviderNotPagamentoEffettuatoAllaScadenza();
 
 	public void save(QuotaAnnuale quotaAnnuale);
 	public void salvaQuietanzaPagamento(File quietanzaPagamento, Long quotaAnnualeId);
-	
+
 	public Set<QuotaAnnuale> getAllPagamentiScaduti(LocalDate now);
-	
+
 	public void spostaDataScadenzaPagamenti(HashMap<Long, LocalDate> quoteAnnualiSpostate);
 }

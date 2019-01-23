@@ -45,7 +45,9 @@ public class PagamentoTask {
 		LocalDate fineControllo = LocalDate.of(year, messeFinisceCalcolaQuotaAnnuale, giornoFinisceCalcolaQuotaAnnuale);
 		LocalDate today = LocalDate.now();
 		if( (today.isAfter(inizioControllo) || today.isEqual(inizioControllo)) && (today.isBefore(fineControllo) || today.isEqual(fineControllo)) ){
-			quotaAnnualeService.checkAndCreateQuoteAnnualiPerAnnoInCorso();
+			quotaAnnualeService.checkAndCreateQuoteAnnualiPerAnnoInCorso(true);
+		}else {
+			quotaAnnualeService.checkAndCreateQuoteAnnualiPerAnnoInCorso(false);
 		}
 
 		LOGGER.info("controllaEsitoPagamenti - exiting");

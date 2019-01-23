@@ -190,7 +190,7 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 	}
 
 	@Override
-	public void checkAndCreateQuoteAnnualiPerAnnoInCorso() {
+	public void checkAndCreateQuoteAnnualiPerAnnoInCorso(boolean all) {
 		LOGGER.info("Creazione QuotaAnnuale per anno in corso");
 		int annoInCorso = LocalDate.now().getYear();
 		Set<Provider> provideList = getAllProviderNotPagamentoRegistrato(annoInCorso);
@@ -199,7 +199,9 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 		}else{
 			LOGGER.info("Trovati " + provideList.size() + " provider senza pagamento");
 			for(Provider p : provideList)
-				createPagamentoProviderPerQuotaAnnuale(p.getId(), annoInCorso, false);
+				if(all || (!all && p.isGruppoB())) {
+					createPagamentoProviderPerQuotaAnnuale(p.getId(), annoInCorso, false);
+				}
 		}
 	}
 
