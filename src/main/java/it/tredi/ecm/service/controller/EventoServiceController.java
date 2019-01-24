@@ -119,4 +119,12 @@ public class EventoServiceController {
 		return accreditamentoService.canProviderWorkWithEvent(e.getProvider().getId(), e) &&  e.canDoRendicontazione();
 	}
 
+	/*
+	 * Il tasto appare solo a evento VALIDATO
+	 *
+	 * */
+	public boolean canDoMarcaNoEcm(Evento e){
+		return accreditamentoService.canProviderWorkWithEvent(e.getProvider().getId(), e) &&  e.canDoMarcaNoECM();
+	}
+
 }

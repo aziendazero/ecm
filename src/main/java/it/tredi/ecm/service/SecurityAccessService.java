@@ -57,11 +57,12 @@ public interface SecurityAccessService {
 	public boolean canEditVerbaleAccreditamento(CurrentUser currentUser, Long accreditamentoId);
 	public boolean canDeleteEvento(CurrentUser currentUser, Long providerId);
 	public boolean canEditEvento(CurrentUser currentUser, Long providerId);
+	public boolean canDoMarcaNoEcm(CurrentUser currentUser, Long providerId);
 
 	public boolean canConclusioneProcedimento(CurrentUser currentUser, Long accreditamentoId);
 
 	public boolean isUserSegreteria(CurrentUser currentUser);
-	
+
 	public boolean canShowRiepilogoVariazioneDati(CurrentUser currentUser, Long accreditamentoId);
-	
+
 }

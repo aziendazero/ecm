@@ -114,4 +114,6 @@ public interface EventoService {
 
 	public Integer countAllEventiCondivisioneEsitiValutazione();
 	public Set<Evento> getEventiCondivisioneEsitiValutazione();
+
+	public void marcaNoEcm(Long eventoId) throws Exception;
 }

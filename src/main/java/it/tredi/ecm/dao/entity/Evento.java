@@ -368,6 +368,10 @@ public class Evento extends BaseEntity {
 
 	private Boolean autorizzazionePrivacy;
 
+	// flag da utlizzare nel caso di eventi che non hanno partecipanti e quindi non vengono pagati e non vengono rendicontati
+	private Boolean eventoNoEcm;
+
+
 	@DiffIgnore
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="evento", orphanRemoval=true)
 	private Set<AnagrafeRegionaleCrediti> anagrafeRegionaleCrediti = new HashSet<AnagrafeRegionaleCrediti>();
@@ -529,6 +533,12 @@ public class Evento extends BaseEntity {
 		return false;
 	}
 
+	public boolean canDoMarcaNoECM() {
+		if(stato == EventoStatoEnum.VALIDATO)
+			return true;
+		return false;
+	}
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -568,5 +578,12 @@ public class Evento extends BaseEntity {
 			setDataScadenzaPagamento(dataFine.plusDays(90));
 			setDataScadenzaInvioRendicontazione(dataFine.plusDays(90));
 		}
+	}
+
+	public boolean isEventoNoEcm() {
+		if(eventoNoEcm != null)
+			return eventoNoEcm.booleanValue();
+
+		return false;
 	}
 }

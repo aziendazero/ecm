@@ -44,10 +44,10 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 	@EntityGraph(value = "graph.evento.forRiedizione", type = EntityGraphType.FETCH)
 	public Evento findOneForRiedizione(@Param("id") Long id);
 
-	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalseAndStatoNot(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum cancellato);
-	public Set<Evento> findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStato(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum validato);
-	public Set<Evento> findAllByProviderIdAndPagatoFalseAndDataScadenzaPagamentoBeforeAndStatoNot(Long providerId, LocalDate now, EventoStatoEnum cancellato);
-	public Set<Evento> findAllByProviderIdAndDataScadenzaInvioRendicontazioneBeforeAndStato(Long providerId, LocalDate now, EventoStatoEnum validato);
+	public Set<Evento> findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalseAndStatoNotAndEventoNoEcmNull(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum cancellato);
+	public Set<Evento> findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStatoAndEventoNoEcmNull(Long providerId, LocalDate start, LocalDate end, EventoStatoEnum validato);
+	public Set<Evento> findAllByProviderIdAndPagatoFalseAndDataScadenzaPagamentoBeforeAndStatoNotAndEventoNoEcmNull(Long providerId, LocalDate now, EventoStatoEnum cancellato);
+	public Set<Evento> findAllByProviderIdAndDataScadenzaInvioRendicontazioneBeforeAndStatoAndEventoNoEcmNull(Long providerId, LocalDate now, EventoStatoEnum validato);
 	public Set<Evento> findAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
 	public Integer countAllByProviderIdAndStato(Long id, EventoStatoEnum stato);
 

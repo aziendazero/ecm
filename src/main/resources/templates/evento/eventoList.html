@@ -315,7 +315,7 @@ function loadScript(url, callback){
 										<td th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></td>
 										<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
 										<td>
-											<div th:text="${evento.stato.nome}"></div>
+											<div th:text="${evento.isEventoNoEcm()} ? ${'NO ECM'} : ${evento.stato.nome}"></div>
 											<div th:if="${evento.pagato != null and evento.pagato and !evento.isCancellato()}"><span class="label-pagato" th:text="#{label.pagato}"></span></div>
 											<div th:if="${evento.isCancellato()}"><span class="label-non-pagato" th:text="#{label.cancellato}"></span></div>
 											<div th:if="${evento.pagato == null or (!evento.pagato and !evento.isCancellato())}">
@@ -351,6 +351,7 @@ function loadScript(url, callback){
 
 											<a class="btn btn-primary min-icon-width" th:if="${#authentication.principal.account.isSegreteria()}" th:href="@{|/audit/entity/${evento.getAuditEntityType()}/entityId/${evento.id}|}" th:title="#{label.registro_operazioni}"><i class="fa fa-book"></i></a>
 											<a class="btn btn-warning min-icon-width" th:if="${@eventoServiceController.canDoRendicontazione(evento)}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/rendiconto|}" th:title="#{label.rendiconto}"><i class="fa fa-file-text"></i></a>
+											<button class="btn btn-info min-icon-width" th:if="${@eventoServiceController.canDoMarcaNoEcm(evento)}" th:onclick="|confirmMarcaNoEcmEventoModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}','${evento.stato}')|"  th:title="#{label.marca_no_ecm}"><i class="fa fa-file-excel-o"></i></button>
 											<a class="btn btn-primary min-icon-width" th:if="${@eventoServiceController.canDoUploadSponsor(evento)}" th:href="@{|/provider/${evento.provider.id}/evento/${evento.id}/allegaContrattiSponsor|}" th:title="#{label.allega_contratti_sponsor}"><i class="fa fa-file"></i></a>
 											<button class="btn btn-danger min-icon-width" th:if="${@eventoServiceController.canEdit(evento)}" th:onclick="|confirmDeleteEventoModal('${evento.provider.id}','${evento.id}','${evento.proceduraFormativa}','${evento.codiceIdentificativo}','${evento.stato}')|" th:title="${evento.stato == T(it.tredi.ecm.dao.enumlist.EventoStatoEnum).BOZZA} ? #{label.elimina} : #{label.annulla}"><i class="fa fa-trash"></i></button>
 										</td>
@@ -406,14 +407,14 @@ function loadScript(url, callback){
 				}
 
 				if([[${#authentication.principal.isSegreteria()}]]) {
-					
+
 					colonne = [0,1,2,3,5,6,7,8,9,10,11,12,13,14]
 					confermati = 13
 					azioni = 15
 					titolo = 4
 					date = [6,7,11]
 					url = [[${providerId == null}]] ? [[@{|/evento/eventoListPaginated|}]] : [[@{|/provider/${providerId}/evento/eventoListPaginated|}]];
-					
+
 
 					dataColumns = [
 				            { "data": "codiceIdent", "sWidth" : "10%"},
@@ -436,7 +437,7 @@ function loadScript(url, callback){
 			        		]
 				}
 				else if([[${#authentication.principal.isProvider()}]]){
-					
+
 					colonne = [0,1,2,4,5,6,7,8,9,10,11,12,13]
 					confermati = 12
 					date = [5,6,10]
@@ -463,19 +464,19 @@ function loadScript(url, callback){
 			            ]
 				}
 				else {
-					
+
 					colonne = [0,1,2,4,5,6,7,8,9,10,11,12]
 					confermati = 12
 					date = [5,6,10]
-					
+
 				}
 				var days;
 				var months;
-				
-				
+
+
 
 				$(document).ready(function() {
-					
+
 			        $.fn.dataTable.moment('DD/MM/YYYY');
 			        if(![[${showAllList}]]){
 						 $(".datatable-responsive-eventi-provider").DataTable({
@@ -566,7 +567,7 @@ function loadScript(url, callback){
 						}
 			        }
 			        if([[${showAllList}]]){
-			        	
+
 						$(".datatable-responsive-eventi-provider").DataTable({
 							"bFilter" : false,
 							"bInfo" : false,
@@ -607,10 +608,10 @@ function loadScript(url, callback){
 				                	   		$(this).attr('href', tempLink);
 				                	});
 						} );
-			        } 
-			        
-						
-			        
+			        }
+
+
+
 				 $(".datatable-responsive-eventi-attuazione").DataTable({
 						"bInfo" : false,
 						"bPaginate" : false,

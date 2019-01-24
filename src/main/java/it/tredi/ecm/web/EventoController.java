@@ -288,7 +288,7 @@ public class EventoController {
 		if(event.getDataFine() != null)
 			dataModel.setDataFine(event.getDataFine().format(formatter));
 
-		String statoBuild = "<div>" + event.getStato().getNome() + "</div>";
+		String statoBuild = "<div>" + (event.isEventoNoEcm() ? "NO ECM" : event.getStato().getNome()) + "</div>";
 
 		if(event.getPagato() != null && event.getPagato() && !event.isCancellato())
 			statoBuild += "<div ><span class=\"label-pagato\">" + messageSource.getMessage("label.pagato", null, LocaleContextHolder.getLocale()) + "</span></div>";
@@ -363,6 +363,12 @@ public class EventoController {
 			if (eventoServiceController.canDoRendicontazione(event)) {
 				buttons += "<a class=\"btn btn-warning min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/rendiconto\" title=\"" +
 																messageSource.getMessage("label.rendiconto", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file-text\"></i></a>";
+			}
+
+			if (eventoServiceController.canDoMarcaNoEcm(event)) {
+				buttons += "<button class=\"btn btn-info min-icon-width\" onclick=\"confirmMarcaNoEcmEventoModal('" + event.getProvider().getId() + "','" +
+						event.getId() + "','" + event.getProceduraFormativa() + "','" + event.getCodiceIdentificativo() + "','" + event.getStato() + "')\" title=\"" +
+						messageSource.getMessage("label.marca_no_ecm", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file-excel-o\"></i></button>";
 			}
 
 			if (eventoServiceController.canDoUploadSponsor(event)) {
@@ -1014,6 +1020,35 @@ public class EventoController {
 			return "redirect:/provider/" + providerId + "/evento/list";
 		}
 	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canDoMarcaNoEcm(principal, #providerId)")
+	@RequestMapping("/provider/{providerId}/evento/{eventoId}/marcaNoEcm")
+	public String marcaNoEcmEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
+			HttpSession session, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/marcaNoEcm"));
+		try {
+			//marcaNoEcm dell'evento
+			Evento evento = eventoService.getEvento(eventoId);
+			if(evento.getStato() == EventoStatoEnum.VALIDATO){
+				eventoService.marcaNoEcm(eventoId);
+				updateEventoList(evento.getId(), session);
+			}
+
+			if(model.asMap().containsKey("returnLink")) {
+				String returnLink = (String) model.asMap().get("returnLink");
+				return "redirect:" + returnLink;
+			}
+			else
+				return "redirect:/provider/"+providerId+"/evento/list";
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/marcaNoEcm"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/"+providerId+"/evento/list";
+		}
+	}
+
 
 
 		@RequestMapping("/evento/{eventoId}")

@@ -2194,7 +2194,7 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalseAndStatoNot(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.CANCELLATO);
+		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalseAndStatoNotAndEventoNoEcmNull(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.CANCELLATO);
 	}
 
 	@Override
@@ -2208,7 +2208,7 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiRendicontazione(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStato(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.VALIDATO);
+		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStatoAndEventoNoEcmNull(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.VALIDATO);
 	}
 
 	@Override
@@ -2222,7 +2222,7 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdScadutiENonPagati(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndPagatoFalseAndDataScadenzaPagamentoBeforeAndStatoNot(providerId, LocalDate.now(), EventoStatoEnum.CANCELLATO);
+		return eventoRepository.findAllByProviderIdAndPagatoFalseAndDataScadenzaPagamentoBeforeAndStatoNotAndEventoNoEcmNull(providerId, LocalDate.now(), EventoStatoEnum.CANCELLATO);
 	}
 
 	@Override
@@ -2235,7 +2235,7 @@ public class EventoServiceImpl implements EventoService {
 
 	@Override
 	public Set<Evento> getEventiForProviderIdScadutiENonRendicontati(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBeforeAndStato(providerId, LocalDate.now(), EventoStatoEnum.VALIDATO);
+		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBeforeAndStatoAndEventoNoEcmNull(providerId, LocalDate.now(), EventoStatoEnum.VALIDATO);
 	}
 
 	@Override
@@ -3002,4 +3002,14 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAllEventiCondivisioneEsitiValutazione();
 	}
 
+	@Override
+	public void marcaNoEcm(Long eventoId) throws Exception {
+		Evento evento = getEvento(eventoId);
+		evento.setStato(EventoStatoEnum.RAPPORTATO);
+		evento.setEventoNoEcm(true);
+
+		alertEmailService.annullaIfExistForEventoNotInviato(AlertTipoEnum.SCADENZA_PAGAMENTO_E_RENDICONTAZIONE_EVENTO, eventoId);
+
+		save(evento);
+	}
 }
