@@ -579,7 +579,7 @@ public class RiepilogoRuoliFSC {
 		}
 	}
 
-	public void calcolaCreditiVersioneTre(EventoFSC evento, float f){
+	public void calcolaCreditiVersioneTre(EventoFSC evento, float f, boolean isTematicaInteresseSpeciale){
 		/*
 		public enum RuoloFSCBaseEnum {
 			PARTECIPANTE(1,"P"),
@@ -610,7 +610,7 @@ public class RiepilogoRuoliFSC {
 		float moltiplicatore;
 
 		float extraCreditiTematicheInteresse = 0.0f;
-		if(evento.getTematicaInteresse() != null && evento.getTematicaInteresse() != TematicheInteresseEnum.NON_RIGUARDA_UNA_TEMATICA_SPECIALE)
+		if(isTematicaInteresseSpeciale)
 			extraCreditiTematicheInteresse = 0.3f;
 
 		if(tipologiaEvento != null && ruolo != null){

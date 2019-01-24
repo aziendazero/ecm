@@ -10,12 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import it.tredi.ecm.dao.entity.DettaglioAttivitaRES;
+import it.tredi.ecm.dao.entity.Evento;
 import it.tredi.ecm.dao.entity.EventoFAD;
 import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.RiepilogoRES;
 import it.tredi.ecm.dao.entity.RiepilogoRuoliFSC;
+import it.tredi.ecm.dao.enumlist.ContenutiEventoEnum;
 import it.tredi.ecm.dao.enumlist.NumeroPartecipantiPerCorsoEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
@@ -35,7 +37,7 @@ public class EventoCreditiVersioneTre {
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			EventoRES evento = ((EventoRES)eventoWrapper.getEvento());
-			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEventoRES(), evento.getDurata(), eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES(), evento.getNumeroPartecipantiPerCorso(), evento.getTematicaInteresse());
+			crediti = calcoloCreditiFormativiEventoRES(evento.getTipologiaEventoRES(), evento.getDurata(), eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values(), evento.getNumeroPartecipanti(), evento.getRiepilogoRES(), evento.getNumeroPartecipantiPerCorso(), isTematicaInteresseSpeciale(evento));
 			eventoWrapper.setCreditiProposti(crediti);
 			LOGGER.info(Utils.getLogMessage("Calcolato crediti per evento RES"));
 			return crediti;
@@ -57,7 +59,7 @@ public class EventoCreditiVersioneTre {
 		return crediti;
 	}
 
-	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, Integer numeroPartecipanti, RiepilogoRES riepilogoRES, NumeroPartecipantiPerCorsoEnum numeroPartecipantiPerCorso, TematicheInteresseEnum tematicaInteresse){
+	private float calcoloCreditiFormativiEventoRES(TipologiaEventoRESEnum tipologiaEvento, float durata, Collection<EventoRESProgrammaGiornalieroWrapper> programma, Integer numeroPartecipanti, RiepilogoRES riepilogoRES, NumeroPartecipantiPerCorsoEnum numeroPartecipantiPerCorso, boolean isTematicaInteresse){
 		float crediti = 0.0f;
 		float oreFrontale = 0f;
 		long minutiFrontale = 0;
@@ -116,8 +118,14 @@ public class EventoCreditiVersioneTre {
 		 * 0.3 crediti ogni ora non frazionabili
 		 * MAX CREDITI 6
 		 * */
+
+		/* +0.3 crediti ogni ora non frazionabili se è stato selezionato una tematica di interesse nazionale o regionale */
+		float extraCreditiTematicheInteresse = 0.0f;
+		if(isTematicaInteresse)
+			extraCreditiTematicheInteresse += (0.30f * (int) durata);
+
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
-			crediti = (0.30f * (int) durata);
+			crediti = ((0.30f + extraCreditiTematicheInteresse) * (int) durata);
 			if(crediti > 6.0f)
 				crediti = 6.0f;
 		}
@@ -147,7 +155,7 @@ public class EventoCreditiVersioneTre {
 			 * MAX CREDITI 50
 			 * */
 			if(tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO){
-				crediti = (0.70f + extraCrediti) * (int) durata;
+				crediti = (0.70f + extraCrediti + extraCreditiTematicheInteresse) * (int) durata;
 				if(crediti > 50f)
 					crediti = 50f;
 			}
@@ -170,15 +178,11 @@ public class EventoCreditiVersioneTre {
 				else if(numeroPartecipantiPerCorso == NumeroPartecipantiPerCorsoEnum.CORSO_AGGIORNAMENTO_DA_101_A_200_PARTECIPANTI)
 					creditiOra = 0.7f;
 
-				crediti = (creditiOra + extraCrediti) * (int) durata;
+				crediti = (creditiOra + extraCrediti + extraCreditiTematicheInteresse) * (int) durata;
 				if(crediti > 50f)
 					crediti = 50f;
 			}
 		}
-
-		/* +0.3 crediti ogni ora non frazionabili se è stato selezionato una tematica di interesse nazionale o regionale */
-		if(tematicaInteresse != null && tematicaInteresse != TematicheInteresseEnum.NON_RIGUARDA_UNA_TEMATICA_SPECIALE)
-			crediti += (0.30f * (int) durata);
 
 		crediti = Utils.getRoundedFloatValue(crediti, 1);
 
@@ -205,7 +209,7 @@ public class EventoCreditiVersioneTre {
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(pairs.getKey() != null && pairs.getKey().getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE)
-					pairs.getValue().calcolaCreditiVersioneTre(evento,0f);
+					pairs.getValue().calcolaCreditiVersioneTre(evento,0f,isTematicaInteresseSpeciale(evento));
 			 }
 		}
 	}
@@ -220,7 +224,7 @@ public class EventoCreditiVersioneTre {
 			while (iterator.hasNext()) {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() != RuoloFSCBaseEnum.PARTECIPANTE)
-					pairs.getValue().calcolaCreditiVersioneTre(evento,maxValue);
+					pairs.getValue().calcolaCreditiVersioneTre(evento,maxValue,isTematicaInteresseSpeciale(evento));
 			 }
 		}
 	}
@@ -269,13 +273,22 @@ public class EventoCreditiVersioneTre {
 		}
 
 		/* +0.3 crediti ogni ora non frazionabili se è stato selezionato una tematica di interesse nazionale o regionale */
-		if(evento.getTematicaInteresse() != null && evento.getTematicaInteresse() != TematicheInteresseEnum.NON_RIGUARDA_UNA_TEMATICA_SPECIALE)
+		if(isTematicaInteresseSpeciale(evento))
 			crediti += (0.30f * (int) durata);
 
 		if(crediti > 50f)
 			crediti = 50f;
 		crediti = Utils.getRoundedFloatValue(crediti, 1);
 		return crediti;
+	}
+
+	public boolean isTematicaInteresseSpeciale(Evento evento) {
+		//Tematiche interesse speciali
+		if(evento.getContenutiEvento() != null && evento.getContenutiEvento() == ContenutiEventoEnum.ALTRO) {
+			if(evento.getTematicaInteresse() != null && evento.getTematicaInteresse() != TematicheInteresseEnum.NON_RIGUARDA_UNA_TEMATICA_SPECIALE)
+				return true;
+		}
+			return false;
 	}
 
 }

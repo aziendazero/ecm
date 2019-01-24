@@ -240,6 +240,58 @@
 											</div>
 										</div>
 
+										<!-- CONDIVISIONE ESITI VALUTAZIONE -->
+										<div id="container-condivisioneEsitiValutazione" class="item form-group">
+											<label class="control-label col-md-3 col-sm-3 col-xs-11" for="condivisioneEsitiValutazione">
+												<span th:text="#{label.condivisione_esiti_valutazione}">condivisioneEsitiValutazione</span>
+											</label>
+											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
+												<div class="checkbox">
+													<label>
+														<input id="condivisioneEsitiValutazione" type="checkbox" class="flat" th:field="${eventoWrapper.tempAttivitaRES.condivisioneEsitiValutazione}" />
+													</label>
+												</div>
+
+												<div class="divider-dashed"></div>
+
+												<table class="table table-striped table-bordered">
+													<thead>
+														<tr>
+													    	<th th:text="#{label.tempo_totale_att_form}">Tempo totale att. form.</th>
+													    	<th th:text="#{label.durata_max_condivisione}">Durata max della condivisione</th>
+													  	</tr>
+													</thead>
+													<tbody>
+														<tr>
+														    <td th:text="'&lt; 5 ore'"></td>
+														    <td th:text="'0'"></td>
+														  </tr>
+														  <tr>
+														    <td th:text="'&gt;= 5 e &lt;10 ore'"></td>
+														    <td th:text="'30 minuti'"></td>
+														  </tr>
+														  <tr>
+														    <td th:text="'&gt;= 10 e &lt;20 ore'"></td>
+														    <td th:text="'60 minuti'"></td>
+														  </tr>
+														  <tr>
+														    <td th:text="'&gt;= 20 e &lt;30 ore'"></td>
+														    <td th:text="'120 minuti'"></td>
+														  </tr>
+														  <tr>
+														    <td th:text="'&gt;= 30'"></td>
+														    <td th:text="'180 minuti'"></td>
+														  </tr>
+													</tbody>
+												</table>
+											</div>
+
+											<div class="item form-group">
+
+											</div>
+										</div>
+
+
 										<input id="targetTableAttivitaRES" type="text" name="target" style="display: none;" />
 										<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />
 										<input id="extraType" type="text" name="extraType" style="display: none;" />
@@ -2292,6 +2344,8 @@
 
 	/********************* PROGRAMMA GIORNALIERO ****************************/
 				function openAddAttivitaTo(target,programmaIndex,extraType,modificaElemento,clean){
+					var versione = getVersione();
+
 					if(clean) {
 						var url = [[@{|/provider/${eventoWrapper.evento.provider.id}/evento/resettaAttivita/|}]] + target;
 						$.get(url).done(function(data) {
@@ -2334,6 +2388,8 @@
 								$("#container-titlePausa").hide();
 								$("#container-titleRegistrazionePartecipanti").hide();
 								$("#container-titleSalutiIntroduttivi").hide();
+								if(versione === 3)
+									$("#container-condivisioneEsitiValutazione").show();
 							}
 							else if (extraType == 'REGISTRAZIONE PARTECIPANTI'){
 								$("#container-titleRegistrazionePartecipanti").show();
@@ -2353,6 +2409,7 @@
 							$("#container-obiettivoFormativo").hide();
 							$("#container-metodologiaDidattica").hide();
 						}else{
+							$("#container-condivisioneEsitiValutazione").hide();
 							$("#container-titlePausa").hide();
 							$("#container-titleValutazioneApprendimento").hide();
 							$("#container-titleRegistrazionePartecipanti").hide();

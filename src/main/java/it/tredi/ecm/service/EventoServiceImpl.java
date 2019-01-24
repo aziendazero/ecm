@@ -989,6 +989,10 @@ public class EventoServiceImpl implements EventoService {
 			}
 		}
 
+		//Tematiche interesse speciali
+//		if(evento.getContenutiEvento() == null || evento.getContenutiEvento() != ContenutiEventoEnum.ALTRO)
+//			evento.setTematicaInteresse(null);
+
 		calculateAutoCompilingData(eventoWrapper);
 
 		if(evento instanceof EventoRES){

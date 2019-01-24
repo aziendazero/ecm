@@ -63,19 +63,45 @@ public class EventoDurataVersioneTre {
 		float durata = 0;
 		long durataMinuti = 0;
 
+		long durataMinutiCondivisioneEsitiValutazione = 0;
+
 		if(programma != null){
 			for(EventoRESProgrammaGiornalieroWrapper progrGior : programma){
 				for(DettaglioAttivitaRES dett : progrGior.getProgramma().getProgramma()){
 					if(!dett.isExtraType()) {
 //						durata += dett.getOreAttivita();
 						durataMinuti += dett.getMinutiAttivita();
+					}else {
+						if(dett.isCondivisioneEsitiValutazione())
+							durataMinutiCondivisioneEsitiValutazione += dett.getMinutiAttivita();
 					}
 				}
 			}
 		}
 
+		//sotto le 5 ore di docenza non consideriamo nulla per la condivisioneEsitiValutazione
+		//se ci sono le ore di docenza verifichiamo l'incremento per la condivisioneEsitiValutazione, in linea con la tabella fornita
+		if(durataMinutiCondivisioneEsitiValutazione > 0 && durataMinuti >= 300) {
+			if(durataMinuti < 600) { // <10 ore -> max 30 minuti di condivisione
+				if(durataMinutiCondivisioneEsitiValutazione > 30)
+					durataMinutiCondivisioneEsitiValutazione = 30;
+			}else if(durataMinuti < 1200) {// < 20ore -> max 60 minuti di condivisione
+				if(durataMinutiCondivisioneEsitiValutazione > 60)
+					durataMinutiCondivisioneEsitiValutazione = 60;
+			}else if(durataMinuti < 1800) {// < 30ore -> max 120 minuti di condivisione
+				if(durataMinutiCondivisioneEsitiValutazione > 120)
+					durataMinutiCondivisioneEsitiValutazione = 120;
+			}else if(durataMinuti >= 1800) {// >= 30ore -> max 180 minuti di condivisione
+				if(durataMinutiCondivisioneEsitiValutazione > 180)
+					durataMinutiCondivisioneEsitiValutazione = 180;
+			}
+
+			durataMinuti += durataMinutiCondivisioneEsitiValutazione;
+		}
+
 		durata = (float) durataMinuti / 60;
 		durata = Utils.getRoundedFLOORFloatValue(durata, 2);
+
 		return durata;
 	}
 

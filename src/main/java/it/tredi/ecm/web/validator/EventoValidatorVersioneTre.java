@@ -120,7 +120,7 @@ public class EventoValidatorVersioneTre {
 			 * */
 			if(evento.getTematicaInteresse() != null && evento.getTematicaInteresse() != TematicheInteresseEnum.NON_RIGUARDA_UNA_TEMATICA_SPECIALE && evento.getObiettivoNazionale() != null) {
 				if(!evento.getTematicaInteresse().getObiettiviNazionali().contains(evento.getObiettivoNazionale().getCodiceCogeaps()))
-					errors.rejectValue(prefix + "obiettivoRegionale", "error.valore_non_consentito");
+					errors.rejectValue(prefix + "obiettivoNazionale", "error.valore_non_consentito");
 			}
 		}
 

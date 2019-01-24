@@ -986,7 +986,6 @@
 					$(selectId).selectpicker('refresh');
 				}else{
 					var tematicaInteresse = $(caller).val();
-					var precVal = $(selectId).val();
 
 					console.log('updateObiettiviNazionali - tematicaInteresse: ' + tematicaInteresse);
 
@@ -1003,6 +1002,7 @@
 						console.log(tematicaInteresse);
 						console.log($(selectId));
 
+						var precVal = $(selectId).val();
 						$(selectId).prop('disabled',false);
 						$.get(url, function(data){
 
@@ -1014,10 +1014,18 @@
 							for(var item = 0; item < data.length; item++){
 								console.log(data[item]);
 								$.each($(selectId + " option"), function() {
-									if($(this).attr("value") == data[item].id)
+									if($(this).attr("value") == data[item].id){
 										$(this).show();
+										if(precVal !== undefined && precVal != '') {
+											if($(this).attr("value") == precVal)
+												$(selectId).val(precVal);
+										}
+									}
 								});
 							}
+
+
+
 							$(selectId).selectpicker('refresh');
 						});
 					}
