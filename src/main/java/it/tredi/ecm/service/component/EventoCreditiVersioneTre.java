@@ -120,9 +120,9 @@ public class EventoCreditiVersioneTre {
 		 * */
 
 		/* +0.3 crediti ogni ora non frazionabili se è stato selezionato una tematica di interesse nazionale o regionale */
-		float extraCreditiTematicheInteresse = 0.0f;
+		float extraCreditiTematicheInteresse= 0.0f;
 		if(isTematicaInteresse)
-			extraCreditiTematicheInteresse += (0.30f * (int) durata);
+			extraCreditiTematicheInteresse = 0.30f;
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
 			crediti = ((0.30f + extraCreditiTematicheInteresse) * (int) durata);
