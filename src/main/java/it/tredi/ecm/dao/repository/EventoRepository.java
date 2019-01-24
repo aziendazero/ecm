@@ -80,4 +80,13 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
 	// ERM014776
 	public Set<Evento> findAllByProviderIdAndDataInizioAfter(Long providerId, LocalDate dataCut);
+
+//	@Query(
+//			value = "select count(*) from ecmdb.evento e where e.id IN (select p.evento_res_id FROM ecmdb.programma_giornalierores p where p.id IN (select d.programma_giornaliero_res_id FROM ecmdb.dettaglio_attivitares d where d.condivisione_esiti_valutazione = true))",
+//			nativeQuery = true)
+
+	@Query("SELECT count(e) FROM Evento e JOIN e.programma p JOIN p.programma d WHERE d.condivisioneEsitiValutazione = TRUE")
+	public Integer countAllEventiCondivisioneEsitiValutazione();
+	@Query("SELECT e FROM Evento e JOIN e.programma p JOIN p.programma d WHERE d.condivisioneEsitiValutazione = TRUE")
+	public Set<Evento> findAllEventiCondivisioneEsitiValutazione();
 }

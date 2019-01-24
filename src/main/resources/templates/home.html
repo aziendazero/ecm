@@ -299,6 +299,16 @@
 							</div>
 						</div>
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="tile-stats clickable" onclick="goTo('eventi/CONDIVISIONE_ESITI_VALUTZIONE/list')">
+								<div class="icon"><i class="fa fa-check-square-o"></i></div>
+								<div class="col-xs-10">
+				                	<div class="count" th:text="${homeWrapper.eventiCondivisioneEsitiValutazione}"></div>
+				                	<h3 class="tile-h3" th:text="${homeWrapper.eventiCondivisioneEsitiValutazione == 1} ? #{label.evento} : #{label.eventi}"></h3>
+				                	<p class="count-text" th:text="#{label.condivisione_esiti_valutazione}"></p>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="tile-stats clickable" onclick="goTo('provider/mancatoPagamentoAnnuale/list')">
 								<div class="icon"><i class="fa fa-credit-card"></i></div>
 								<div class="col-xs-10">

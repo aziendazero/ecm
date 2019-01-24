@@ -26,6 +26,7 @@ import it.tredi.ecm.dao.enumlist.ProgettiDiMiglioramentoFasiDaInserireFSCEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCBaseEnum;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoWrapper;
@@ -39,7 +40,7 @@ public class EventoDurataVersioneTre {
 
 		if(eventoWrapper.getEvento() instanceof EventoRES){
 			//durata = calcoloDurataEventoRES(eventoWrapper.getProgrammaEventoRES());
-			durata = calcoloDurataEventoRES(eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values());
+			durata = calcoloDurataEventoRES(eventoWrapper.getEventoRESDateProgrammiGiornalieriWrapper().getSortedProgrammiGiornalieriMap().values(), ((EventoRES)eventoWrapper.getEvento()).getTipologiaEventoRES());
 			((EventoRES)eventoWrapper.getEvento()).setDurata(durata);
 		}else if(eventoWrapper.getEvento() instanceof EventoFSC){
 			durata = calcoloDurataEventoFSC(eventoWrapper);
@@ -59,7 +60,7 @@ public class EventoDurataVersioneTre {
 		return durata;
 	}
 
-	private float calcoloDurataEventoRES(Collection<EventoRESProgrammaGiornalieroWrapper> programma){
+	private float calcoloDurataEventoRES(Collection<EventoRESProgrammaGiornalieroWrapper> programma, TipologiaEventoRESEnum tipologiaEventoRES){
 		float durata = 0;
 		long durataMinuti = 0;
 
@@ -81,7 +82,7 @@ public class EventoDurataVersioneTre {
 
 		//sotto le 5 ore di docenza non consideriamo nulla per la condivisioneEsitiValutazione
 		//se ci sono le ore di docenza verifichiamo l'incremento per la condivisioneEsitiValutazione, in linea con la tabella fornita
-		if(durataMinutiCondivisioneEsitiValutazione > 0 && durataMinuti >= 300) {
+		if((tipologiaEventoRES == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO || tipologiaEventoRES == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO) && durataMinutiCondivisioneEsitiValutazione > 0 && durataMinuti >= 300) {
 			if(durataMinuti < 600) { // <10 ore -> max 30 minuti di condivisione
 				if(durataMinutiCondivisioneEsitiValutazione > 30)
 					durataMinutiCondivisioneEsitiValutazione = 30;

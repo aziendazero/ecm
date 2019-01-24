@@ -2990,7 +2990,16 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 
+	@Override
+	public Integer countAllEventiCondivisioneEsitiValutazione() {
+		LOGGER.debug("Conteggio eventi con condivisione esiti Valutazione");
+		return eventoRepository.countAllEventiCondivisioneEsitiValutazione();
+	}
 
-
+	@Override
+	public Set<Evento> getEventiCondivisioneEsitiValutazione() {
+		LOGGER.debug("Recupero eventi con condivisione esiti Valutazione");
+		return eventoRepository.findAllEventiCondivisioneEsitiValutazione();
+	}
 
 }

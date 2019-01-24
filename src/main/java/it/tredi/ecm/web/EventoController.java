@@ -2288,6 +2288,8 @@ public class EventoController {
 				case MEDICINE_NON_CONVENZIONALI : listaEventi = eventoService.getEventiMedicineNonConvenzionali();
 													model.addAttribute("archiviaEvento",true);
 								break;
+				case CONDIVISIONE_ESITI_VALUTZIONE : listaEventi = eventoService.getEventiCondivisioneEsitiValutazione();
+													break;
 
 				default: break;
 			}

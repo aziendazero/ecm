@@ -103,7 +103,7 @@ public interface EventoService {
 	public Pagamento getPagamentoForQuietanza(Evento evento) throws Exception;
 	public Long getFileQuietanzaId(Long eventoId);
 
-	public 	List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(EventoFSC evento);
+	public List<RuoloFSCEnum> getListRuoloFSCEnumPerResponsabiliScientifici(EventoFSC evento);
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerEsperti(EventoFSC evento);
 	public List<RuoloFSCEnum> getListRuoloFSCEnumPerCoordinatori(EventoFSC evento);
 
@@ -111,4 +111,7 @@ public interface EventoService {
 
 	// ERM014776
 	public void eliminaEventiPerChiusuraAccreditamento(Accreditamento acc, LocalDate dataCut) throws Exception;
+
+	public Integer countAllEventiCondivisioneEsitiValutazione();
+	public Set<Evento> getEventiCondivisioneEsitiValutazione();
 }
