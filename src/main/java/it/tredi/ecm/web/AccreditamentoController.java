@@ -1118,7 +1118,7 @@ public class AccreditamentoController {
 					// validazione della valutazioneComplessiva
 					valutazioneValidator.validateValutazioneSulCampo(verbale, wrapper.getValutazioneComplessiva(),
 							result, "verbaleValutazioneSulCampo.",
-							AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO);
+							AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO, accreditamentoService.isAccreditamentoStandardRinnovoForProvider(accreditamentoId, accreditamento.getProvider().getId()));
 					if (result.hasErrors()) {
 						model.addAttribute("message",
 								new Message("message.errore", "message.inserire_campi_required", "error"));
@@ -1275,7 +1275,7 @@ public class AccreditamentoController {
 				verbale.getDelegato().setDelega(fileService.getFile(wrapper.getDelegaValutazioneSulCampo().getId()));
 
 			// validazione della valutazioneComplessiva
-			valutazioneValidator.validateEditVerbale(verbale, result, "verbaleValutazioneSulCampo.");
+			valutazioneValidator.validateEditVerbale(verbale, result, "verbaleValutazioneSulCampo.", accreditamentoService.isAccreditamentoStandardRinnovoForProvider(accreditamentoId, accreditamento.getProvider().getId()));
 
 			if (result.hasErrors()) {
 				model.addAttribute("message",

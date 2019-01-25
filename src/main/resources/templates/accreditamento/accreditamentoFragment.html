@@ -1290,7 +1290,7 @@
 														<span class="label-show" th:text="#{label.osservatore_regionale}">Osservatore Regionale</span>
 													</label>
 													<div class="col-lg-5 col-md-7 col-sm-7 col-xs-11">
-														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.osservatoreRegionale.getFullName()}"></div>
+														<div class="value" th:text="${accreditamentoWrapper.accreditamento.verbaleValutazioneSulCampo.osservatoreRegionale?.getFullName()}"></div>
 													</div>
 												</div>
 

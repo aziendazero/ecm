@@ -160,7 +160,7 @@ public class ValutazioneValidator {
 		}
 	}
 
-	public void validateValutazioneSulCampo(VerbaleValutazioneSulCampo verbaleValutazioneSulCampo, String valutazioneComplessiva, Errors errors, String prefix, AccreditamentoStatoEnum stato) {
+	public void validateValutazioneSulCampo(VerbaleValutazioneSulCampo verbaleValutazioneSulCampo, String valutazioneComplessiva, Errors errors, String prefix, AccreditamentoStatoEnum stato, boolean isRinnovo) {
 
 		if(stato == AccreditamentoStatoEnum.VALUTAZIONE_SEGRETERIA_ASSEGNAMENTO) {
 			if(verbaleValutazioneSulCampo.getGiorno() == null)
@@ -171,8 +171,13 @@ public class ValutazioneValidator {
 				errors.rejectValue(prefix + "ora", "error.empty");
 			if(verbaleValutazioneSulCampo.getTeamLeader() == null)
 				errors.rejectValue(prefix + "teamLeader", "error.empty");
-			if(verbaleValutazioneSulCampo.getOsservatoreRegionale() == null)
-				errors.rejectValue(prefix + "osservatoreRegionale", "error.empty");
+
+			//dpranteda - 25/01/2019 - #16908
+			if(!isRinnovo) {
+				if(verbaleValutazioneSulCampo.getOsservatoreRegionale() == null)
+					errors.rejectValue(prefix + "osservatoreRegionale", "error.empty");
+			}
+
 			if(verbaleValutazioneSulCampo.getComponentiSegreteria() == null || verbaleValutazioneSulCampo.getComponentiSegreteria().isEmpty())
 				errors.rejectValue(prefix + "componentiSegreteria", "error.empty");
 			if(verbaleValutazioneSulCampo.getReferenteInformatico() == null && verbaleValutazioneSulCampo.getAccreditamento().getDatiAccreditamento().getProcedureFormative().contains(ProceduraFormativa.FAD))
@@ -197,7 +202,7 @@ public class ValutazioneValidator {
 		return mappaErroriValutazione;
 	}
 
-	public void validateEditVerbale(VerbaleValutazioneSulCampo verbale, Errors errors, String prefix) {
+	public void validateEditVerbale(VerbaleValutazioneSulCampo verbale, Errors errors, String prefix, boolean isRinnovo) {
 		if(verbale.getGiorno() == null)
 			errors.rejectValue(prefix + "giorno", "error.empty");
 		if(verbale.getOra() == null)
@@ -207,8 +212,13 @@ public class ValutazioneValidator {
 //			errors.rejectValue(prefix + "giorno", "error.data_non_valida_verbale");
 		if(verbale.getTeamLeader() == null)
 			errors.rejectValue(prefix + "teamLeader", "error.empty");
-		if(verbale.getOsservatoreRegionale() == null)
-			errors.rejectValue(prefix + "osservatoreRegionale", "error.empty");
+
+		//dpranteda - 25/01/2019 - #16908
+		if(!isRinnovo) {
+			if(verbale.getOsservatoreRegionale() == null)
+				errors.rejectValue(prefix + "osservatoreRegionale", "error.empty");
+		}
+
 		if(verbale.getComponentiSegreteria() == null || verbale.getComponentiSegreteria().isEmpty())
 			errors.rejectValue(prefix + "componentiSegreteria", "error.empty");
 		if(verbale.getReferenteInformatico() == null && verbale.getAccreditamento().getDatiAccreditamento().getProcedureFormative().contains(ProceduraFormativa.FAD))
@@ -230,13 +240,13 @@ public class ValutazioneValidator {
 				errors.rejectValue(prefix + "delegato.cognome", "error.empty");
 			if(verbaleValutazioneSulCampo.getDelegato().getNome().isEmpty())
 				errors.rejectValue(prefix + "delegato.nome", "error.empty");
-			
+
 			/* @since ERM014009
 			if(verbaleValutazioneSulCampo.getDelegato().getCodiceFiscale().isEmpty())
 				errors.rejectValue(prefix + "delegato.codiceFiscale", "error.empty");
 				*/
 			Utils.rejectIfCodFiscIncorrect(verbaleValutazioneSulCampo.getDelegato().getCodiceFiscale(), errors, prefix + "delegato.codiceFiscale");
-			
+
 //			if(verbaleValutazioneSulCampo.getDelegato().getDelega() == null || verbaleValutazioneSulCampo.getDelegato().getDelega().isNew())
 //				errors.rejectValue(prefix + "delegato.delega", "error.empty");
 		}

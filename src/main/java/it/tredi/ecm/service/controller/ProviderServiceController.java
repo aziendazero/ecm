@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+
 import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Provider;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
@@ -28,5 +30,9 @@ public class ProviderServiceController {
 		}
 		return null;
 	}
-	
+
+	public boolean isAccreditamentoStandardRinnovoForProvider(Long accreditamentoId, Long providerId) {
+		return accreditamentoService.isAccreditamentoStandardRinnovoForProvider(accreditamentoId, providerId);
+	}
+
 }

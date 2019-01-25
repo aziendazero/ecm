@@ -103,7 +103,7 @@ public interface AccreditamentoService{
 
 	public Set<Accreditamento> getAllTipoStandart(CurrentUser currentUser);
 	public int countAllTipoStandart(CurrentUser currentUser);
-	
+
 	public Set<Accreditamento> getAllAccreditamentiInScadenza();
 	public long countAllAccreditamentiInScadenza();
 
@@ -153,13 +153,15 @@ public interface AccreditamentoService{
 	public Accreditamento getAccreditamentoAttivoOppureUltimoForProvider(Long providerId) throws AccreditamentoNotFoundException;
 
 	public void createAccreditamentoDiff(Long providerId) throws Exception;
-	
+
 	// ERM014775
 	public void replaceValutazioneSulCampoFiles(Long accreditamentoId, Long pdfId, Long a1Id, Long a2Id, Long a3Id);
-	
+
 	// ERM014776
 	public void chiudiAccreditamentoEPulisciEventi(Accreditamento acc)  throws Exception;
-	
+
 	// ERM014776
 	public boolean canProviderWorkWithEvent(Long providerId, Evento e);
+
+	public boolean isAccreditamentoStandardRinnovoForProvider(Long accreditamentoId, Long providerId);
 }
