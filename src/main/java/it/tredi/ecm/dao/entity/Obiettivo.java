@@ -21,7 +21,7 @@ public class Obiettivo extends BaseEntityDefaultId{
 	private boolean nazionale;
 	@Enumerated(EnumType.STRING)
 	private CategoriaObiettivoNazionale categoria;
-	
+
 	// ERM015189
 	private int versione;
 
@@ -42,11 +42,12 @@ public class Obiettivo extends BaseEntityDefaultId{
 	//obiettivo regionale -> Non rientra in uno degli obiettivi regionali
 	public boolean isNonRientraTraObiettiviRegionali(){
 		if(!nazionale){
-			return codiceCogeaps.equalsIgnoreCase("1");
+			if(versione == 1 && codiceCogeaps.equalsIgnoreCase("1"))
+				return true;
 		}
 		return false;
 	}
-	
+
 	public int getIntCogeaps() {
 		return Integer.parseInt(codiceCogeaps);
 	}

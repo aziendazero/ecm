@@ -567,7 +567,7 @@
 											data-width="100%" data-style="btn-primary"
 											data-actions-box="true" data-size="10"
 											data-hide-disabled="false"
-												title="Seleziona un obiettivo..." th:disabled="${isRiedizione or isFromPianoFormativo or isEditSemiBloccato}">
+												title="Seleziona un obiettivo..." th:disabled="${isRiedizione or isEditSemiBloccato}">
 											<optgroup class="optgroup-primary"
 												th:each="categoriaObiettivoNazionale, row: ${T(it.tredi.ecm.dao.enumlist.CategoriaObiettivoNazionale).values()}"
 												th:label="${categoriaObiettivoNazionale.nome}"
