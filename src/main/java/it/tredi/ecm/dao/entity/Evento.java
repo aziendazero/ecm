@@ -588,7 +588,7 @@ public class Evento extends BaseEntity {
 	}
 
 	public boolean isAlimentiPrimaInfanzia() {
-		if(getContenutiEvento() != null && getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA) {
+		if(contenutiEvento != null && contenutiEvento == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA && eventoSponsorizzato != null && eventoSponsorizzato.booleanValue()) {
 			return true;
 		}
 		return false;
