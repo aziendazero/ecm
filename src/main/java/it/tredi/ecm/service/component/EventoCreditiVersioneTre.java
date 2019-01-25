@@ -125,7 +125,7 @@ public class EventoCreditiVersioneTre {
 			extraCreditiTematicheInteresse = 0.30f;
 
 		if(tipologiaEvento == TipologiaEventoRESEnum.CONVEGNO_CONGRESSO){
-			crediti = ((0.30f + extraCreditiTematicheInteresse) * (int) durata);
+			crediti = 0.30f * (int) durata;
 			if(crediti > 6.0f)
 				crediti = 6.0f;
 		}
@@ -155,7 +155,7 @@ public class EventoCreditiVersioneTre {
 			 * MAX CREDITI 50
 			 * */
 			if(tipologiaEvento == TipologiaEventoRESEnum.WORKSHOP_SEMINARIO){
-				crediti = (0.70f + extraCrediti + extraCreditiTematicheInteresse) * (int) durata;
+				crediti = (0.70f + extraCrediti) * (int) durata;
 				if(crediti > 50f)
 					crediti = 50f;
 			}
