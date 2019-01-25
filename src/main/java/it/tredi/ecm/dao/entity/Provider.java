@@ -329,4 +329,10 @@ public class Provider extends BaseEntity {
 		return false;
 	}
 
+	public boolean isAttivo() {
+		if (status == ProviderStatoEnum.ACCREDITATO_STANDARD|| status == ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE)
+			return true;
+		return false;
+	}
+
 }
