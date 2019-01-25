@@ -369,7 +369,7 @@ public class Evento extends BaseEntity {
 	private Boolean autorizzazionePrivacy;
 
 	// flag da utlizzare nel caso di eventi che non hanno partecipanti e quindi non vengono pagati e non vengono rendicontati
-	private Boolean eventoNoEcm;
+	private Boolean eventoNoEcm = false;
 
 
 	@DiffIgnore

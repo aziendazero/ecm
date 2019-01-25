@@ -7,7 +7,7 @@
 	logicalFilePath="v000/20190124_002_add_column_marca_no_ecm_evento.xml">
 	<changeSet author="dpranteda (generated)" id="1">
 		<addColumn tableName="evento">
-			<column name="evento_no_ecm" type="boolean" />
+			<column name="evento_no_ecm" type="boolean" defaultValueBoolean="false"/>
 		</addColumn>
 	</changeSet>
 </databaseChangeLog>

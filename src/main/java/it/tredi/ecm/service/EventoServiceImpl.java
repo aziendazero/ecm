@@ -2147,6 +2147,7 @@ public class EventoServiceImpl implements EventoService {
 		riedizione.setProceduraVerificaQualitaPercepita(null);
 		riedizione.setAutorizzazionePrivacy(null);
 		riedizione.setLetteInfoAllegatoSponsor(null);
+		riedizione.setEventoNoEcm(false);
 
 		LOGGER.debug(Utils.getLogMessage("Copia dei File"));
 		riedizione.setBrochureEvento(fileService.copyFile(riedizione.getBrochureEvento()));
@@ -2194,7 +2195,7 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiPagamento(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalseAndStatoNotAndEventoNoEcmNull(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.CANCELLATO);
+		return eventoRepository.findAllByProviderIdAndDataScadenzaPagamentoBetweenAndPagatoFalseAndStatoNotAndEventoNoEcmFalse(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.CANCELLATO);
 	}
 
 	@Override
@@ -2208,7 +2209,7 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdInScadenzaDiRendicontazione(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStatoAndEventoNoEcmNull(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.VALIDATO);
+		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBetweenAndStatoAndEventoNoEcmFalse(providerId, LocalDate.now(), LocalDate.now().plusDays(30), EventoStatoEnum.VALIDATO);
 	}
 
 	@Override
@@ -2222,7 +2223,7 @@ public class EventoServiceImpl implements EventoService {
 	/* Vaschetta provider */
 	@Override
 	public Set<Evento> getEventiForProviderIdScadutiENonPagati(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndPagatoFalseAndDataScadenzaPagamentoBeforeAndStatoNotAndEventoNoEcmNull(providerId, LocalDate.now(), EventoStatoEnum.CANCELLATO);
+		return eventoRepository.findAllByProviderIdAndPagatoFalseAndDataScadenzaPagamentoBeforeAndStatoNotAndEventoNoEcmFalse(providerId, LocalDate.now(), EventoStatoEnum.CANCELLATO);
 	}
 
 	@Override
@@ -2235,7 +2236,7 @@ public class EventoServiceImpl implements EventoService {
 
 	@Override
 	public Set<Evento> getEventiForProviderIdScadutiENonRendicontati(Long providerId) {
-		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBeforeAndStatoAndEventoNoEcmNull(providerId, LocalDate.now(), EventoStatoEnum.VALIDATO);
+		return eventoRepository.findAllByProviderIdAndDataScadenzaInvioRendicontazioneBeforeAndStatoAndEventoNoEcmFalse(providerId, LocalDate.now(), EventoStatoEnum.VALIDATO);
 	}
 
 	@Override
