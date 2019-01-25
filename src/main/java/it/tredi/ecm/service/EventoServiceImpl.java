@@ -1248,6 +1248,12 @@ public class EventoServiceImpl implements EventoService {
 		}
 		evento.setSponsorUploaded(allSponsorsOk);
 
+		if(evento.getContenutiEvento() != ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA) {
+			evento.setEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia(null);
+			evento.setAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia(null);
+			evento.setAutocertificazioneAutorizzazioneMinisteroSalute(null);
+		}
+
 		return evento;
 	}
 

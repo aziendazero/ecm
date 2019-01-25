@@ -586,4 +586,11 @@ public class Evento extends BaseEntity {
 
 		return false;
 	}
+
+	public boolean isAlimentiPrimaInfanzia() {
+		if(getContenutiEvento() != null && getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA) {
+			return true;
+		}
+		return false;
+	}
 }
