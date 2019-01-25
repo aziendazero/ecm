@@ -179,6 +179,7 @@
 													data-size="10"
 													data-hide-disabled="false"
 													title="Seleziona l'Osservatore Regionale...">
+													<option value="" th:text="#{label.no_selezione}" th:if="${@providerServiceController.isAccreditamentoStandardRinnovoForProvider(accreditamentoWrapper.accreditamento.id,accreditamentoWrapper.provider.id)}"></option>
 													<option
 														th:each="osservatore, row: ${accreditamentoWrapper.osservatoriRegionali}"
 														th:value="${osservatore.id}"
