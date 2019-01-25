@@ -1,9 +1,8 @@
 package it.tredi.ecm.dao.enumlist;
 
-import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import lombok.Getter;
 
@@ -15,7 +14,8 @@ public enum ProviderStatoEnum {
 	DINIEGO (4, "Accreditamento diniegato"),
 	ACCREDITATO_STANDARD (5, "Accreditamento standard accettato"),
 	SOSPESO (6, "Accreditamento temporaneamente sospeso"),
-	CANCELLATO (7, "Accreditamento cancellato");
+	CANCELLATO (7, "Accreditamento cancellato"),
+	CESSATO (8, "Cessato");
 
 	private int id;
 	private String nome;
@@ -25,14 +25,14 @@ public enum ProviderStatoEnum {
 		this.nome = nome;
 	}
 
-	public static Set<ProviderStatoEnum> getAllStatiByFlagAttivi(boolean attivi) {
+	public static List<ProviderStatoEnum> getAllStatiByFlagAttivi(boolean attivi) {
 		// prende tutti gli stati a seconda del flag
-		Set<ProviderStatoEnum> stati = null;
+		ArrayList<ProviderStatoEnum> stati = null;
 		if(attivi) {
-			stati = new HashSet<ProviderStatoEnum>(Arrays.asList(INSERITO, VALIDATO, SOSPESO, ACCREDITATO_PROVVISORIAMENTE, ACCREDITATO_STANDARD));
+			stati = new ArrayList<ProviderStatoEnum>(Arrays.asList(INSERITO, VALIDATO, SOSPESO, ACCREDITATO_PROVVISORIAMENTE, ACCREDITATO_STANDARD));
 		}
 		else {
-			stati = new HashSet<ProviderStatoEnum>(Arrays.asList(DINIEGO, CANCELLATO));
+			stati = new ArrayList<ProviderStatoEnum>(Arrays.asList(DINIEGO, CANCELLATO, CESSATO));
 		}
 		return stati;
 	}

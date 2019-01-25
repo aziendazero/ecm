@@ -135,7 +135,8 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	public Set<Provider> getAllNotInserito() {
 		LOGGER.info("Recupero tutti i Providers non in stato inserito");
-		return providerRepository.findAllByStatusNot(ProviderStatoEnum.INSERITO);
+		return providerRepository.findAllByStatusNotIn(
+				Arrays.asList(ProviderStatoEnum.INSERITO, ProviderStatoEnum.CESSATO, ProviderStatoEnum.SOSPESO));
 	}
 
 	@Override
@@ -160,17 +161,17 @@ public class ProviderServiceImpl implements ProviderService {
 		auditReportProviderService.auditAccreditamentoProvider(provider);
 
 	}
-	
+
 	@Override
 	public void saveProviderLogo(File providerFile, Provider provider, String mode) throws Exception {
-		
+
 		if(mode.equals("edit")) {
 			Long fileId = provider.getProviderFile().getId();
 
 			if(fileId != providerFile.getId()){
 				provider.setProviderFile(null);
 				providerRepository.save(provider);
-				
+
 			}
 		}
 		provider.setProviderFile(providerFile);
