@@ -3017,7 +3017,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 		LOGGER.debug(Utils.getLogMessage("Verifica se Accreditamento Standard" + accreditamentoId + " si tratta di rinnovo per il provider " + providerId));
 		Set<Accreditamento> accreditamentiStandard = getAllAccreditamentiForProvider(providerId, AccreditamentoTipoEnum.STANDARD);
 		for(Accreditamento a : accreditamentiStandard) {
-			if(a.getStato() != AccreditamentoStatoEnum.CANCELLATO && a.getStato() != AccreditamentoStatoEnum.DINIEGO && a.getId() != accreditamentoId) {
+			if(a.getStato() != AccreditamentoStatoEnum.CANCELLATO && a.getStato() != AccreditamentoStatoEnum.DINIEGO && !a.getId().equals(accreditamentoId)) {
 				LOGGER.debug(Utils.getLogMessage("Rinnovo true"));
 				return true;
 			}
