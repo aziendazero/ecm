@@ -21,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
+import org.apache.tomcat.jni.Local;
 import org.hibernate.annotations.Where;
 import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.javers.core.metamodel.annotation.TypeName;
@@ -292,7 +293,7 @@ public class Provider extends BaseEntity {
 			return false;
 
 		// se flag attivato, controllo la data
-		if (dataScadenzaInsertPianoFormativo != null && LocalDate.now().isBefore(dataScadenzaInsertPianoFormativo))
+		if (dataScadenzaInsertPianoFormativo != null && ( LocalDate.now().isBefore(dataScadenzaInsertPianoFormativo) || LocalDate.now().isEqual(dataScadenzaInsertPianoFormativo)) )
 			return true;
 
 		return false;
