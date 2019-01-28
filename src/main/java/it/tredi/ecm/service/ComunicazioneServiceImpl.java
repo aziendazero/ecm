@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import it.tredi.ecm.dao.entity.Account;
+import it.tredi.ecm.dao.entity.Accreditamento;
 import it.tredi.ecm.dao.entity.Comunicazione;
 import it.tredi.ecm.dao.entity.ComunicazioneResponse;
 import it.tredi.ecm.dao.entity.File;
@@ -41,6 +42,7 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 	@Autowired private ComunicazioneRepository comunicazioneRepository;
 	@Autowired private ComunicazioneResponseRepository comunicazioneResponseRepository;
 	@Autowired private EmailService emailService;
+	@Autowired private AccreditamentoService accreditamentoService;
 	@PersistenceContext EntityManager entityManager;
 
 	@Override
@@ -289,7 +291,13 @@ public class ComunicazioneServiceImpl implements ComunicazioneService {
 			Set<Account> allUsers = accountService.getAllUsers();
 			for(Account a : allUsers) {
 				if(!a.isSegreteria() && a.isProviderAccountComunicazioni()) {
-					providerSet.add(a);
+					try {
+						Accreditamento accreditamento = accreditamentoService.getAccreditamentoAttivoForProvider(a.getProvider().getId());
+						if(accreditamento != null && a.getProvider().isAttivo())
+							providerSet.add(a);
+					}catch (Exception e) {
+						// se genera eccezione smplicemente non includo il provider nella lista
+					}
 				}
 				if(!a.isSegreteria() && a.isCommissioneEcm()) {
 					commissioneSet.add(a);

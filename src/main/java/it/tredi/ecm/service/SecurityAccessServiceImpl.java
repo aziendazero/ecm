@@ -425,5 +425,12 @@ public class SecurityAccessServiceImpl implements SecurityAccessService {
 
 		return false;
 	}
-	
+
+	@Override
+	public boolean canDoMarcaNoEcm(CurrentUser currentUser, Long providerId) {
+		if ((isProviderUser(currentUser.getAccount().getId(), providerId) && currentUser.isProvider()) || currentUser.isSegreteria())
+			return true;
+		return false;
+	}
+
 }

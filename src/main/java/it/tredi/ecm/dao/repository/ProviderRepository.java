@@ -34,6 +34,8 @@ public interface ProviderRepository extends JpaRepository<Provider, Long> {
 
 	public Set<Provider> findAllByStatusIn(List<ProviderStatoEnum> stati);
 
+	public Set<Provider> findAllByStatusNotIn(List<ProviderStatoEnum> stati);
+
 	@Query("SELECT a.provider.id FROM Account a JOIN a.provider p WHERE a.id = :accountId")
 	public Long getIdByAccountId(@Param("accountId") Long accountId);
 

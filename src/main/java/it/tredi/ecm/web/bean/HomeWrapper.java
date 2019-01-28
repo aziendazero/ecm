@@ -50,6 +50,7 @@ public class HomeWrapper {
 	private Integer eventiMedicineNonConvenzionali;
 	private Integer providerNotRelazioneAnnualeRegistrata;
 	private Integer domandeTipoStandart;
+	private Integer eventiCondivisioneEsitiValutazione;
 
 
 	//Referee

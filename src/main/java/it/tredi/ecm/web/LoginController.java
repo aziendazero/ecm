@@ -112,6 +112,7 @@ public class LoginController {
 					wrapper.setEventiAlimentazionePrimaInfanzia(eventoService.countAllEventiAlimentazionePrimaInfanzia());
 					wrapper.setEventiMedicineNonConvenzionali(eventoService.countAllEventiMedicineNonConvenzionali());
 					wrapper.setDomandeTipoStandart(accreditamentoService.countAllTipoStandart(currentUser));
+					wrapper.setEventiCondivisioneEsitiValutazione(eventoService.countAllEventiCondivisioneEsitiValutazione());
 					break;
 				case REFEREE:
 					wrapper.setIsReferee(true);

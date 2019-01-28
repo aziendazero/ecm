@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20190122_001_add_column_tematicheinteresse_evento_versione_3.xml">
+	<changeSet author="dpranteda (generated)" id="1">
+		<addColumn tableName="evento">
+			<column name="tematica_interesse" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+</databaseChangeLog>

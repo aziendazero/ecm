@@ -71,6 +71,7 @@ import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.FaseAzioniRuoliEventoFSCTypeA;
 import it.tredi.ecm.dao.entity.File;
 import it.tredi.ecm.dao.entity.JsonViewModel;
+import it.tredi.ecm.dao.entity.Obiettivo;
 import it.tredi.ecm.dao.entity.Partner;
 import it.tredi.ecm.dao.entity.PersonaEvento;
 import it.tredi.ecm.dao.entity.PersonaFullEvento;
@@ -89,8 +90,10 @@ import it.tredi.ecm.dao.enumlist.ObiettiviFormativiFADEnum;
 import it.tredi.ecm.dao.enumlist.ObiettiviFormativiRESEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
 import it.tredi.ecm.dao.enumlist.RuoloFSCEnum;
+import it.tredi.ecm.dao.enumlist.TematicheInteresseEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
+import it.tredi.ecm.dao.enumlist.TipologiaTematicheInteresseEnum;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
@@ -285,7 +288,7 @@ public class EventoController {
 		if(event.getDataFine() != null)
 			dataModel.setDataFine(event.getDataFine().format(formatter));
 
-		String statoBuild = "<div>" + event.getStato().getNome() + "</div>";
+		String statoBuild = "<div>" + (event.isEventoNoEcm() ? "NO ECM" : event.getStato().getNome()) + "</div>";
 
 		if(event.getPagato() != null && event.getPagato() && !event.isCancellato())
 			statoBuild += "<div ><span class=\"label-pagato\">" + messageSource.getMessage("label.pagato", null, LocaleContextHolder.getLocale()) + "</span></div>";
@@ -360,6 +363,12 @@ public class EventoController {
 			if (eventoServiceController.canDoRendicontazione(event)) {
 				buttons += "<a class=\"btn btn-warning min-icon-width linkButton\" href=\"provider/" + event.getProvider().getId() + "/evento/" + event.getId() + "/rendiconto\" title=\"" +
 																messageSource.getMessage("label.rendiconto", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file-text\"></i></a>";
+			}
+
+			if (eventoServiceController.canDoMarcaNoEcm(event)) {
+				buttons += "<button class=\"btn btn-info min-icon-width\" onclick=\"confirmMarcaNoEcmEventoModal('" + event.getProvider().getId() + "','" +
+						event.getId() + "','" + event.getProceduraFormativa() + "','" + event.getCodiceIdentificativo() + "','" + event.getStato() + "')\" title=\"" +
+						messageSource.getMessage("label.marca_no_ecm", null, LocaleContextHolder.getLocale()) + "\"><i class=\"fa fa-file-excel-o\"></i></button>";
 			}
 
 			if (eventoServiceController.canDoUploadSponsor(event)) {
@@ -600,9 +609,9 @@ public class EventoController {
 		model.addAttribute("denominazioneProvider", denominazioneProvider);
 		model.addAttribute("providerId", providerId);
 		try {
-			
+
 			model.addAttribute("eventoRiedizioneList", eventoService.getAllEventiRieditabiliForProviderId(providerId));
-			
+
 			Accreditamento accreditamento =  accreditamentoService.getAccreditamentoAttivoForProvider(providerId);
 			model.addAttribute("proceduraFormativaList", accreditamento.getDatiAccreditamento().getProcedureFormative());
 			model.addAttribute("canCreateEvento", eventoService.canCreateEvento(Utils.getAuthenticatedUser().getAccount()));
@@ -610,7 +619,7 @@ public class EventoController {
 		}
 		catch (Exception ex) {
 			model.addAttribute("eventoRiedizioneList", null);
-			
+
 			model.addAttribute("proceduraFormativaList", null);
 			model.addAttribute("canCreateEvento", false);
 			model.addAttribute("canRieditEvento", false);
@@ -796,7 +805,7 @@ public class EventoController {
 					evento.setStato(EventoStatoEnum.VALIDATO);
 					if(evento.getVersione() == null) {
 						//imposto la versione in modo che non venga piu' modificata
-						evento.setVersione(eventoService.versioneEvento(evento));
+						evento.setVersione(eventoServiceController.versioneEvento(evento));
 					}
 					evento.setValidatorCheck(true);
 					eventoService.save(evento);
@@ -834,7 +843,7 @@ public class EventoController {
 			evento.setStato(EventoStatoEnum.VALIDATO);
 			if(evento.getVersione() == null) {
 				//imposto la versione in modo che non venga piu' modificata
-				evento.setVersione(eventoService.versioneEvento(evento));
+				evento.setVersione(eventoServiceController.versioneEvento(evento));
 			}
 			evento.setValidatorCheck(true);
 			eventoService.save(evento);
@@ -1011,6 +1020,35 @@ public class EventoController {
 			return "redirect:/provider/" + providerId + "/evento/list";
 		}
 	}
+
+	@PreAuthorize("@securityAccessServiceImpl.canDoMarcaNoEcm(principal, #providerId)")
+	@RequestMapping("/provider/{providerId}/evento/{eventoId}/marcaNoEcm")
+	public String marcaNoEcmEvento(@PathVariable Long providerId, @PathVariable Long eventoId,
+			HttpSession session, Model model, RedirectAttributes redirectAttrs) {
+		LOGGER.info(Utils.getLogMessage("GET /provider/" + providerId + "/evento/"+ eventoId + "/marcaNoEcm"));
+		try {
+			//marcaNoEcm dell'evento
+			Evento evento = eventoService.getEvento(eventoId);
+			if(evento.getStato() == EventoStatoEnum.VALIDATO){
+				eventoService.marcaNoEcm(eventoId);
+				updateEventoList(evento.getId(), session);
+			}
+
+			if(model.asMap().containsKey("returnLink")) {
+				String returnLink = (String) model.asMap().get("returnLink");
+				return "redirect:" + returnLink;
+			}
+			else
+				return "redirect:/provider/"+providerId+"/evento/list";
+		}
+		catch (Exception ex) {
+			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/"+ eventoId + "/marcaNoEcm"),ex);
+			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/"+providerId+"/evento/list"));
+			return "redirect:/provider/"+providerId+"/evento/list";
+		}
+	}
+
 
 
 		@RequestMapping("/evento/{eventoId}")
@@ -1248,6 +1286,7 @@ public class EventoController {
 
 		// ERM015189
 		eventoWrapper.setObiettiviNazionali(obiettivoService.getObiettiviNazionali(evento.getVersione()));
+		eventoWrapper.setObiettiviRegionali(obiettivoService.getObiettiviRegionali(evento.getVersione()));
 
 		eventoWrapper.initProgrammi();
 		if(reloadWrapperFromDB)
@@ -1492,8 +1531,9 @@ public class EventoController {
 						} else if(target.equalsIgnoreCase("coordinatori")){
 							errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getCoordinatori(), false, "anagraficaBase_");
 						} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
+							// EVENTO_VERSIONE
 							EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
-							if(curVersione == EventoVersioneEnum.DUE_DAL_2018)
+							if(eventoServiceController.isVersionDueOrHigh(curVersione))
 								errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
 							else
 								errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), false, "anagraficaBase_");
@@ -1579,8 +1619,9 @@ public class EventoController {
 				} else if(target.equalsIgnoreCase("esperti")){
 					errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getEsperti(), true, "anagraficaBase_");
 				} else if(target.equalsIgnoreCase("responsabiliScientifici") && eventoWrapper.getEvento() instanceof EventoFSC) {
+					// EVENTO_VERSIONE
 					EventoVersioneEnum curVersione = EventoVersioneEnum.getByNumeroVersione(versioneEventoNum.intValue());
-					if(curVersione == EventoVersioneEnum.DUE_DAL_2018)
+					if(eventoServiceController.isVersionDueOrHigh(curVersione))
 						errMap = personaEventoValidator.validateAnagraficaBaseEventoWithSvolgeAttivitaDiDocenza(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");
 					else
 						errMap = personaEventoValidator.validateAnagraficaBaseEvento(eventoWrapper.getTempPersonaEvento(), eventoWrapper.getResponsabiliScientifici(), true, "anagraficaBase_");
@@ -2282,6 +2323,8 @@ public class EventoController {
 				case MEDICINE_NON_CONVENZIONALI : listaEventi = eventoService.getEventiMedicineNonConvenzionali();
 													model.addAttribute("archiviaEvento",true);
 								break;
+				case CONDIVISIONE_ESITI_VALUTZIONE : listaEventi = eventoService.getEventiCondivisioneEsitiValutazione();
+													break;
 
 				default: break;
 			}
@@ -2377,8 +2420,10 @@ public class EventoController {
 		wrapper.setProfessioniList(professioneService.getAllProfessioni());
 		wrapper.setDisciplineList(disciplinaService.getAllDiscipline());
 		wrapper.setObiettiviNazionaliList(obiettivoService.getObiettiviNazionali());
-		wrapper.setObiettiviNazionaliListVersione1(obiettivoService.getObiettiviNazionaliVersione1());
+		wrapper.setObiettiviNazionaliListVersione1(obiettivoService.getObiettiviNazionali(EventoVersioneEnum.UNO_PRIMA_2018));
 		wrapper.setObiettiviRegionaliList(obiettivoService.getObiettiviRegionali());
+		wrapper.setObiettiviNazionaliListVersione2(obiettivoService.getObiettiviNazionali(EventoVersioneEnum.DUE_DAL_2018));
+		wrapper.setObiettiviRegionaliListVersione1_2(obiettivoService.getObiettiviRegionali(EventoVersioneEnum.UNO_PRIMA_2018));
 		return wrapper;
 	}
 
@@ -2542,6 +2587,13 @@ public class EventoController {
 			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
 			return "redirect:/provider/"+providerId+"/evento/list";
 		}
+	}
+
+	@RequestMapping("/listaObiettiviByTematicheInteresseEnum")
+	@ResponseBody
+	public Set<Obiettivo>getListaObiettiviByTematicheInteresseEnum(@RequestParam TematicheInteresseEnum tematicaInteresse){
+		boolean nazionale = tematicaInteresse.getTipo() == TipologiaTematicheInteresseEnum.REGIONALE ? false : true;
+		return obiettivoService.getObiettiviByCodiceCogeapsAndVersioneEventi(nazionale, tematicaInteresse.getObiettiviNazionali(), tematicaInteresse.getVersioneEvento());
 	}
 
 }

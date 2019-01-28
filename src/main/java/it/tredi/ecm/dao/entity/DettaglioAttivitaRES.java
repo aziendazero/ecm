@@ -66,6 +66,15 @@ public class DettaglioAttivitaRES extends BaseEntityDefaultId implements Seriali
 	@Enumerated(EnumType.STRING)
 	private MetodologiaDidatticaRESEnum metodologiaDidattica;
 
+	private Boolean condivisioneEsitiValutazione;
+
+	public boolean isCondivisioneEsitiValutazione() {
+		if(condivisioneEsitiValutazione == null)
+			return false;
+		return condivisioneEsitiValutazione.booleanValue();
+	}
+
+
 	@DiffIgnore
 	private long minutiAttivita;
 	@DiffIgnore

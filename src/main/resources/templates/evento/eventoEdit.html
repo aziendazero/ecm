@@ -17,7 +17,7 @@
 					</div>
 					<div class="modal-body">
 						<th:block th:each="confirm, row: ${eventoWrapper.eventoConfirmWrapper.confirms}">
-						
+
 						<th:block th:if="${confirm instanceof T(it.tredi.ecm.web.confirm.FSCTutorPartecipantiConfirm)}">
 							<div>
 								<label class="value" th:text="#{label.alert_fsc_tutor_partecipanti}"></label>
@@ -33,14 +33,14 @@
 								<label class="value" th:if="${confirm.oldValueCrediti == confirm.newValueCrediti}" th:text="#{label.notifica_non_cambio_crediti(${confirm.newValueCrediti}, ${confirm.creditiProposti})}"></label>
 							</div>
 						</th:block>
-						
+
 						<th:block th:if="${confirm instanceof T(it.tredi.ecm.web.confirm.FSCDocentiNonUtilizzatiConfirm)}">
 							<div>
 								<label th:if="${confirm.isMultiDocenti()}" class="value" th:text="#{label.alert_fsc_docenti_non_in_eventi(${confirm.getRuoliDocenzaNonUtilizzati()})}"></label>
 								<label th:unless="${confirm.isMultiDocenti()}" class="value" th:text="#{label.alert_fsc_docente_non_in_eventi(${confirm.getRuoliDocenzaNonUtilizzati()})}"></label>
 							</div>
 						</th:block>
-						
+
 						</th:block>
 					</div>
 					<div class="modal-footer">
@@ -533,7 +533,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<th:block th:include="evento/eventoVersione :: eventoVersione" />
 
 		<script src="../static/js/province.js" th:src="@{/js/province.js}"></script>
@@ -577,7 +577,7 @@
 				//modale conferma modifiche
 				if([[${eventoWrapper.eventoConfirmWrapper.confirmRequired}]])
 					$("#modale-conferma").modal("show");
-				
+
 				//init datatable responsabili scientifici
 			    reInitDataTableById('responsabiliScientifici');
 				/*
@@ -793,7 +793,6 @@
 
 			//implementazione della funzione che decide cosa mostrare a seconda dei campi già settati dal client per i campi in comune tra gli eventi
 			function showHideCampsCommon() {
-
 				//sponsor
 				mostraNascondiCampiSponsor($(".sponsor:checked").val());
 
@@ -802,12 +801,15 @@
 
 				//partner
 			    mostraNascondiCampiPartner($(".partner:checked").val());
-				
-				
+
+
 				//radio alimenti prima infanzia
 				mostraNascondiRadioPrimaInfanzia($(".contenuto:checked").val(), $(".sponsor:checked").val());
 
-				}
+				//tematiche interesse
+				mostraNascondiTematicheInteresse($(".contenuto:checked").val());
+			}
+
 			function handleListenerEventsCampsCommon(){
 
 				//gestione evento iCheck su radio riguardante gli sponsor
@@ -827,13 +829,17 @@
 
 				$(".contenuto").on("ifChecked", function() {
 					mostraNascondiRadioPrimaInfanzia($(this).val(), $(".sponsor:checked").val());
-				})
+				});
 
 				//gestione evento iCheck su radio riguardante le autocertificazioni alimenti prima infanzia
 				$(".sponsor-infanzia").on("ifChecked", function() {
 					mostraNascondiAllegatiAutocertificazioniSponsor($(this).val());
-				})
+				});
 
+				// aggiunto anche in initEventiComponents() -> footer.html per essere sicuri che vengano inizializzati nella sezione1
+				$(".contenuto").on("ifChecked", function() {
+					mostraNascondiTematicheInteresse($(this).val());
+				});
 			}
 
 			//funzioni show/hide in base alle scelte effettuate (lato client)
@@ -850,6 +856,7 @@
 				mostraNascondiRadioPrimaInfanzia($(".contenuto:checked").val(), sponsorChecked);
 			}
 
+			// EVENTO_VERSIONE
 			//funzioni show/hide in base alle scelte effettuate (lato client)
 			//radio alimenti infanzia show/hide
 			//continua a valere per la versione 1
@@ -875,12 +882,12 @@
 						$(".infanzia-sponsor-no").slideUp("slow");
 					}
 				} else {//versione 2
-					// we are going back we will show as betore 
+					// we are going back we will show as betore
 					$(".numVers1").show();
 					$(".numVers2").hide();
-					
+
 					if(contenutiEvento == "ALIMENTAZIONE_PRIMA_INFANZIA" && sponsorChecked == "true") {
-						// scelta radio accesa e anche scelta file						
+						// scelta radio accesa e anche scelta file
 						$(".infanzia-sponsor-radio").slideDown("slow");
 						mostraNascondiAllegatiAutocertificazioniSponsor($(".sponsor-infanzia:checked").val());
 					}
@@ -890,12 +897,12 @@
 						$(".infanzia-sponsor-si").hide();
 						$(".infanzia-sponsor-no").show();
 					}else{
-						// tutta sezione spenta						
+						// tutta sezione spenta
 						$(".infanzia-sponsor-radio").hide();
 						$(".infanzia-sponsor-si").hide();
 						$(".infanzia-sponsor-no").hide();
 					}
-					
+
 				}
 			}
 
@@ -950,11 +957,86 @@
 				}
 			}
 
+			// EVENTO_VERSIONE
+			function mostraNascondiTematicheInteresse(contenutiEvento){
+				var versione = getVersione();
+				if (versione === 3) {
+					if (typeof contenutiEvento == 'undefined')
+						contenutiEvento = $(".contenuto:checked").val();
+					console.log('mostraNascondiTematicheInteresse - contenutiEvento: ' + contenutiEvento);
+
+					if(contenutiEvento == "ALTRO"){
+						$('.tematica_interesse').slideDown("slow");
+						updateObiettiviNazionali($('#tematica_interesse'));
+					}else{
+						$(".tematica_interesse").slideUp("fast");
+						updateObiettiviNazionali(null);
+					}
+				}
+			}
+
+			function updateObiettiviNazionali(caller){
+				var selectId = '#obiettivoNazionale';
+				console.log('updateObiettiviNazionali - caller: ' + caller);
+
+				if(caller == null || caller == ''){
+					$.each($(selectId + " option"), function() {
+						$(this).show();
+					});
+					$(selectId).selectpicker('refresh');
+				}else{
+					var tematicaInteresse = $(caller).val();
+
+					console.log('updateObiettiviNazionali - tematicaInteresse: ' + tematicaInteresse);
+
+					if(tematicaInteresse == 'NON_RIGUARDA_UNA_TEMATICA_SPECIALE' || tematicaInteresse == ''){
+						$.each($(selectId + " option"), function() {
+							$(this).show();
+						});
+						$(selectId).selectpicker('refresh');
+					}else{
+						var start = [[@{/listaObiettiviByTematicheInteresseEnum?tematicaInteresse=}]];
+						var end = tematicaInteresse;
+						var url = start + end;
+
+						console.log(tematicaInteresse);
+						console.log($(selectId));
+
+						var precVal = $(selectId).val();
+						$(selectId).prop('disabled',false);
+						$.get(url, function(data){
+
+							$(selectId).selectpicker('val','');
+							$.each($(selectId + " option"), function() {
+								$(this).hide();
+							});
+
+							for(var item = 0; item < data.length; item++){
+								console.log(data[item]);
+								$.each($(selectId + " option"), function() {
+									if($(this).attr("value") == data[item].id){
+										$(this).show();
+										if(precVal !== undefined && precVal != '') {
+											if($(this).attr("value") == precVal)
+												$(selectId).val(precVal);
+										}
+									}
+								});
+							}
+
+
+
+							$(selectId).selectpicker('refresh');
+						});
+					}
+				}
+			}
+
 			/*RIPETIBILI*/
 /************************************************************************************************************************/
 
 
-
+			// EVENTO_VERSIONE
  			//reinizializzazione delle datatable singole by id
 			function reInitDataTableById(target){
  				console.log("reinit by id called! - target: " + target);
@@ -962,7 +1044,7 @@
  				//destroy della datatable prima della reinizializzazione
  				$("#"+target).DataTable().destroy();
 				var buttonColumn;
-				//indica se mostrare le colonne Identificativo e svolgeAttivitaDiDocenza 
+				//indica se mostrare le colonne Identificativo e svolgeAttivitaDiDocenza
 				var showExtCols = false;
 				switch(target) {
 					case "responsabiliScientifici":
@@ -990,11 +1072,12 @@
 					if(target == 'responsabiliScientifici' && isFsc()) {
 						//solo i responsabiliScientifici del evento FSC hanno le colonne in piu'
 						buttonColumn = 8;
-						if(versione === 2) {
-							showExtCols = true;
-						} else {
+
+						if(versione === 1) {
 							showExtCols = false;
-						} 
+						} else {
+							showExtCols = true;
+						}
 					$('#'+target).DataTable({
 						"bFilter" : false,
 						"bInfo" : false,
@@ -1097,7 +1180,7 @@
 			    });
 		  	}
 
-
+			// EVENTO_VERSIONE
 			//apre la finestra di inserimento di una persona
 			//pulisce il binding del lookup se clean == true
 			function openAddPersonaTo(target,type,fromLookup,modificaElemento,clean){
@@ -1149,7 +1232,7 @@
 						$("#container-svolgeAttivitaDiDocenza").hide();
 						if(target == 'responsabiliScientifici'){
 							$("#container-qualifica").show();
-							if (isFsc() && versione === 2)
+							if (isFsc() && !versione === 1)
 								$("#container-svolgeAttivitaDiDocenza").show();
 							$("#container-ruolo").hide();
 							$("#container-titolare").hide();
@@ -1157,7 +1240,7 @@
 							$("#container-qualifica").hide();
 							//per EventoRES devo sistemare la select di inserimento del ruolo che cambia da versione 1 a 2
 							updatePersonaEventoRuoliDisponibili();
-							
+
 							$("#container-ruolo").show();
 							$("#container-titolare").show();
 						}else if(target == 'investigatori'){
@@ -1205,28 +1288,28 @@
 				if(isRes()){
 					console.log('updatePersonaEventoRuoliDisponibili: EvenoRES');
 					var selectId = '#personaevento-ruolo';
-					var versione = getVersione();					
-					var precVal = $(selectId).val(); 
+					var versione = getVersione();
+					var precVal = $(selectId).val();
 
 					$(selectId).selectpicker('val','');
 					$(selectId).prop('disabled',false);
 
 					$.each($(selectId + " option"), function() {
-						if(versione === 2 || ($(this).attr("value") != 'MODERATORE')) {
+						if(!versione === 1 || ($(this).attr("value") != 'MODERATORE')) {
 							$(this).show();
 						} else {
 							$(this).hide();
 						}
 					});
-					
+
 					if(precVal !== undefined && precVal != '') {
-						if(versione === 2 || precVal != 'MODERATORE')
+						if(!versione === 1 || precVal != 'MODERATORE')
 							$(selectId).val(precVal);
 					}
 					$(selectId).selectpicker('refresh');
 				}
 			}
-			
+
 			//chiude la modale di inserimento di una persona svuotandone i contenuti
 			function closeModaleAddPersona(){
 				console.log('closeModaleAddPersona')
@@ -1612,13 +1695,14 @@
 				<label class="col-xs-offset-4 col-xs-4" th:text="${#lists.size(eventoWrapper.responsabiliScientifici)}"></label>
 				<label class="col-xs-offset-4 col-xs-4" th:text="#{label.nessun_responsabile_registrato}"></label>
 			</th:block> -->
+			<!-- // EVENTO_VERSIONE -->
 			<th:block th:with="isRiedizione=${eventoWrapper.evento.isRiedizione() and !#authentication.principal.account.isSegreteria()},
 					isFromPianoFormativo=${eventoWrapper.evento.isEventoDaPianoFormativo() and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEditSemiBloccato=${eventoWrapper.editSemiBloccato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isEventoIniziato=${eventoWrapper.eventoIniziato and !#authentication.principal.hasProfile('SEGRETERIA')},
 					hasRiedizioni=${eventoWrapper.hasRiedizioni and !#authentication.principal.hasProfile('SEGRETERIA')},
 					isFsc=${eventoWrapper.proceduraFormativa == T(it.tredi.ecm.dao.enumlist.ProceduraFormativa).FSC},
-					isFscAndVersioneSaved2=${isFsc and eventoWrapper.evento.versione == T(it.tredi.ecm.dao.enumlist.EventoVersioneEnum).DUE_DAL_2018},
+					isFscAndVersioneSaved2=${isFsc and @eventoServiceController.isVersionDueOrHigh(eventoWrapper.evento)},
 					checkEdit=${isFscAndVersioneSaved2 ? isEventoIniziato : isRiedizione or isEditSemiBloccato}">
 
 			<script th:inline="javascript" th:if="${isFsc}">
@@ -1626,7 +1710,7 @@
 				ruoliRespScient = [[${eventoWrapper.getListRuoloFSCEnumPerResponsabiliScientificiDocenti()}]];
 			/*]]>*/
 			</script>
-		
+
 			<table id="responsabiliScientifici" class="datatable-responsive-responsabili no-order table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"
 				th:classappend="${#maps.containsKey(eventoWrapper.mappaErroriValidazione, 'evento.responsabili')} ? 'bad-table'">
 				<thead>
@@ -2058,26 +2142,26 @@
 										<th th:text="#{label.ore_attivita}" class="no-sort">ORE ATTIVITA'</th>
 										<th class="no-sort">
 											<div class="evento-button-container">
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}" 
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivita" class="btn btn-success evento-table-button" th:title="#{label.inserisci_attivita}"
 													th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-plus"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaPausa" class="btn btn-success evento-table-button" th:title="#{label.inserisci_pausa}" 
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaPausa" class="btn btn-success evento-table-button" th:title="#{label.inserisci_pausa}"
 													th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'PAUSA\', undefined, true)'" data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-pause-circle-o"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaValutazioneApprendimento" class="btn btn-success evento-table-button" 
-													th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'" 
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaValutazioneApprendimento" class="btn btn-success evento-table-button"
+													th:title="#{label.inserisci_valutazione_apprendimento}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'VALUTAZIONE APPRENDIMENTO\', undefined, true)'"
 													data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-pencil"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success evento-table-button" 
-													th:title="#{label.inserisci_registrazione_partecipanti}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'REGISTRAZIONE PARTECIPANTI\', undefined, true)'" 
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaRegistrazionePartecipanti" class="btn btn-success evento-table-button"
+													th:title="#{label.inserisci_registrazione_partecipanti}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'REGISTRAZIONE PARTECIPANTI\', undefined, true)'"
 													data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-group"></i></span>
 												</a>
-												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaSalutiIntroduttivi" class="btn btn-success evento-table-button attivitaSalutiIntroduttivi" 
-													th:title="#{label.inserisci_saluti_introduttivi}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'SALUTI INTRODUTTIVI\', undefined, true)'" 
+												<a th:unless="${isRiedizione or isEditSemiBloccato or eventoWrapper.hasRiedizioni}" id="add-attivitaSalutiIntroduttivi" class="btn btn-success evento-table-button attivitaSalutiIntroduttivi"
+													th:title="#{label.inserisci_saluti_introduttivi}" th:onclick="'openAddAttivitaTo(\'attivitaRES\',__${data.key}__,\'SALUTI INTRODUTTIVI\', undefined, true)'"
 													data-toggle="modal" data-target=".modal-add-attivitaRES">
 													<span><i class="fa fa-newspaper-o"></i></span>
 												</a>
@@ -2524,6 +2608,6 @@
 			</th:block>
 		</th:block>
 	</th:block>
-	
+
 </body>
 </html>

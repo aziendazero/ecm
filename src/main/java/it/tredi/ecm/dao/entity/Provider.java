@@ -317,14 +317,20 @@ public class Provider extends BaseEntity {
 			return false;
 
 		// se flag attivato, controllo la stato del provider
-		if (status != ProviderStatoEnum.CANCELLATO && status != ProviderStatoEnum.SOSPESO)
+		if (status != ProviderStatoEnum.CANCELLATO && status != ProviderStatoEnum.SOSPESO && status != ProviderStatoEnum.CESSATO)
 			return true;
 
 		return false;
 	}
 
 	public boolean isBloccato() {
-		if (status == ProviderStatoEnum.CANCELLATO || status == ProviderStatoEnum.SOSPESO)
+		if (status == ProviderStatoEnum.CANCELLATO || status == ProviderStatoEnum.SOSPESO || status == ProviderStatoEnum.CESSATO)
+			return true;
+		return false;
+	}
+
+	public boolean isAttivo() {
+		if (status == ProviderStatoEnum.ACCREDITATO_STANDARD|| status == ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE)
 			return true;
 		return false;
 	}

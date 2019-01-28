@@ -73,12 +73,12 @@ public class PagamentoController {
 	}
 
 	@PreAuthorize("@securityAccessServiceImpl.canEditProvider(principal,#id)")
-	@RequestMapping("/provider/{id}/pagamento/inserisci")
-	public String inserisciPagamento(@PathVariable Long id, Model model, RedirectAttributes redirectAttrs){
+	@RequestMapping("/provider/{id}/pagamento/inserisci/{anno}")
+	public String inserisciPagamento(@PathVariable Long id, @PathVariable Integer anno, Model model, RedirectAttributes redirectAttrs){
 		LOGGER.info(Utils.getLogMessage("GET /evento/list"));
 		try {
 			//pagamentoService.createPagamentoProviderPerQuotaAnnua(id, 2017, true);
-			quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(id, 2017, false);
+			quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(id, anno, false);
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("GET " + LIST),ex);

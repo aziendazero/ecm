@@ -51,6 +51,7 @@ import it.tredi.ecm.dao.enumlist.VerificaApprendimentoRESEnum;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
 import it.tredi.ecm.service.bean.EcmProperties;
+import it.tredi.ecm.service.controller.EventoServiceController;
 import it.tredi.ecm.utils.Utils;
 import it.tredi.ecm.web.bean.EventoRESProgrammaGiornalieroWrapper;
 import it.tredi.ecm.web.bean.EventoRESTipoDataProgrammaGiornalieroEnum;
@@ -59,6 +60,7 @@ import it.tredi.ecm.web.validator.bean.ValidateEventoFadInfo;
 import it.tredi.ecm.web.validator.bean.ValidateEventoResInfo;
 import it.tredi.ecm.web.validator.bean.ValidateFasiAzioniRuoliFSCInfo;
 
+// EVENTO_VERSIONE
 @Component
 public class EventoValidatorVersioneDue {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventoValidatorVersioneDue.class);
@@ -67,6 +69,7 @@ public class EventoValidatorVersioneDue {
 	//@Autowired private FileValidator fileValidator; // ERM014045 - no firm
 	@Autowired private FileService fileService;
 	@Autowired private EventoService eventoService;
+	@Autowired private EventoServiceController eventoServiceController;
 	@Autowired private EventoValidator eventoValidator;
 	@Autowired private PersonaEventoValidator personaEventoValidator;
 
@@ -142,10 +145,10 @@ public class EventoValidatorVersioneDue {
 					if(!Utils.getAuthenticatedUser().isSegreteria()) {
 						if(
 							evento.getDataInizio().isBefore(LocalDate.now().plusDays(minGiorni))
-							// 08/01/2018 
+							// 08/01/2018
 							// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
 							// da non applicare ad eventi FSC
-							//|| 
+							//||
 							//evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()
 						)
 							//Non è possibile inserire una riedizione di un Evento entro 10 giorni dalla data del suo inizio
@@ -157,11 +160,11 @@ public class EventoValidatorVersioneDue {
 					}
 					if(!(evento instanceof EventoFSC)) {
 						if(
-								// 08/01/2018 
+								// 08/01/2018
 								// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
 								// da non applicare ad eventi FSC
 								//evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())
-								//|| 
+								//||
 								evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()
 						) {
 							// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
@@ -216,11 +219,11 @@ public class EventoValidatorVersioneDue {
 
 				if(!(evento instanceof EventoFSC)) {
 					if(
-							// 08/01/2018 
+							// 08/01/2018
 							// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
 							// da non applicare ad eventi FSC
 							//evento.getDataInizio().isBefore(evento.getEventoPadre().getDataInizio())
-							//|| 
+							//||
 							evento.getDataInizio().getYear() != evento.getEventoPadre().getDataFine().getYear()
 					) {
 						// La data di inizio di una riedizione deve ricadere nello stesso anno solare della data di fine dell'Evento che viene rieditato.
@@ -337,21 +340,21 @@ public class EventoValidatorVersioneDue {
 		 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA)
 		 * radio
 		 * */
-		// ERM014977 - getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia va testato solo se sponsorizato 
+		// ERM014977 - getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia va testato solo se sponsorizato
 		// e contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
-		if(evento.getContenutiEvento() != null 
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA 
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
 				&& evento.getEventoSponsorizzato() != null
 				&& evento.getEventoSponsorizzato() == true) {
-			
+
 			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == null)
 				errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.empty");
 			else if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() == true
 						&& (evento.getEventoSponsorizzato() == null || evento.getEventoSponsorizzato() == false)
 					)
 				errors.rejectValue(prefix + "eventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia", "error.evento_deve_essere_sponsorizzato");
-			
-			
+
+
 			/* AUTOCERTIFICAZIONE ASSENZA SPONSOR PRIMA INFANZIA
 			 * (campo obbligatorio se contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA
 			 * e eventoSponsorizzatoDaAziendeAlimentiPrimainfanzia == true)
@@ -362,7 +365,7 @@ public class EventoValidatorVersioneDue {
 					&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
 				errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
 			}
-			
+
 			// ERM014045 - no firma
 			/*
 			if(evento.getEventoSponsorizzatoDaAziendeAlimentiPrimaInfanzia() != null
@@ -401,17 +404,17 @@ public class EventoValidatorVersioneDue {
 			*/
 		}
 
-		// ERM014977-2  getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia va testato solo se sponsorizato 
+		// ERM014977-2  getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia va testato solo se sponsorizato
 		// e contenutiEvento == ALIMENTAZIONE_PRIMA_INFANZIA e se no sponsorizato
-		if(evento.getContenutiEvento() != null 
-				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA 
+		if(evento.getContenutiEvento() != null
+				&& evento.getContenutiEvento() == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA
 				&& evento.getEventoSponsorizzato() != null
 				&& evento.getEventoSponsorizzato() == false
 				&& evento.getAutocertificazioneAssenzaAziendeAlimentiPrimaInfanzia() == null){
 			errors.rejectValue("autocertificazioneAssenzaAziendeAlimentiPrimaInfanzia", "error.empty");
 		}
 
-		
+
 
 
 		/* RADIO ALTRE FORME FINANZIAMENTO (campo obbligatorio)
@@ -497,7 +500,7 @@ public class EventoValidatorVersioneDue {
 		/* DICHIARAZIONE ASSENZA CONFLITTO DI INTERESSE (campo obbligatorio)
 		 * file allegato
 		 * */
-		
+
 		if(evento.getDichiarazioneAssenzaConflittoInteresse() == null){
 			errors.rejectValue("dichiarazioneAssenzaConflittoInteresse", "error.empty");
 		}else{
@@ -528,7 +531,7 @@ public class EventoValidatorVersioneDue {
 		 * */
 		if(evento.getCrediti() == null)
 			errors.rejectValue(prefix + "crediti", "error.empty_crediti");
-		
+
 		if(!evento.getConfermatiCrediti().booleanValue() && evento.getCrediti() != null && (evento.getMotivazioneCrediti() == null || evento.getMotivazioneCrediti().isEmpty())) {
 			errors.rejectValue(prefix + "motivazioneCrediti", "error.empty");
 		}
@@ -551,7 +554,7 @@ public class EventoValidatorVersioneDue {
 
 	//validate RES
 	private void validateRES(EventoRES evento, EventoWrapper wrapper, Errors errors, String prefix) throws Exception {
-		ValidateEventoResInfo validateEventoResInfo = new ValidateEventoResInfo(); 
+		ValidateEventoResInfo validateEventoResInfo = new ValidateEventoResInfo();
 
 		/* SEDE (tutti campi obbligatori)
 		 * provincia da selezione, comune da selezione, almeno 1 char indirizzo, almeno 1 char luogo
@@ -692,11 +695,11 @@ public class EventoValidatorVersioneDue {
 
 		/* NUMERO DEI PARTECIPANTI PER CORSO (campo obbligatorio se la tipologia è CORSO_AGGIORNAMENTO) */
 		if(evento.getTipologiaEventoRES() != null
-				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO 
-				&& evento.getNumeroPartecipantiPerCorso() == null) { 
+				&& evento.getTipologiaEventoRES() == TipologiaEventoRESEnum.CORSO_AGGIORNAMENTO
+				&& evento.getNumeroPartecipantiPerCorso() == null) {
 			errors.rejectValue(prefix + "numeroPartecipantiPerCorso", "error.empty");
 		}
-		
+
 		/* NUMERO DEI PARTECIPANTI (campo obbligatorio)
 		 * campo valore numerico
 		 * se la tipologia dell'evento è CONVEGNO_CONGRESSO -> minimo 200 partecipanti
@@ -993,7 +996,7 @@ public class EventoValidatorVersioneDue {
 			errors.rejectValue(prefix + "esperti", "error.troppi_esperti3");
 		if(evento.getCoordinatori() != null && evento.getCoordinatori().size() > ecmProperties.getNumeroMassimoCoordinatoriEvento())
 			errors.rejectValue(prefix + "coordinatori", "error.troppi_coordinatori3");
-		
+
 		if(evento.getTipologiaEventoFSC() != null && evento.getTipologiaEventoFSC() == TipologiaEventoFSCEnum.ATTIVITA_DI_RICERCA) {
 			if(evento.getInvestigatori() == null || evento.getInvestigatori().isEmpty())
 				errors.rejectValue(prefix + "investigatori", "error.empty");
@@ -1005,7 +1008,7 @@ public class EventoValidatorVersioneDue {
 		//È presente un Tutor esperto esterno che validi le attività del gruppo?
 		if(evento.getPresenteTutorEspertoEsternoValidatoreAttivita() == null)
 			errors.rejectValue(prefix + "presenteTutorEspertoEsternoValidatoreAttivita", "error.empty");
-		
+
 		/* DESCRIZIONE DEL PROGETTO E RILEVANZA FORMATIVA (campo obbligatorio)
 		 * campo testuale
 		 * almeno 1 char
@@ -1034,7 +1037,7 @@ public class EventoValidatorVersioneDue {
 			int counter = 0;
 			boolean atLeastOnePartecipante = false;
 			boolean atLeastOneTutor = false;
-			EventoVersioneEnum versione = eventoService.versioneEvento(evento);
+			EventoVersioneEnum versioneEvento = eventoServiceController.versioneEvento(evento);
 			List<RuoloFSCEnum> listRuoloFSCEnumPerResponsabiliScientifici = eventoService.getListRuoloFSCEnumPerResponsabiliScientifici(evento);
 			List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatori = eventoService.getListRuoloFSCEnumPerCoordinatori(evento);
 			List<RuoloFSCEnum> listRuoloFSCEnumPerEsperti = eventoService.getListRuoloFSCEnumPerEsperti(evento);
@@ -1047,7 +1050,7 @@ public class EventoValidatorVersioneDue {
 					//validazione solo se la fase è abilitata
 					if(evento.getFasiDaInserire().getFasiAbilitate().contains(far.getFaseDiLavoro())) {
 						//return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
-						ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versione, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
+						ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versioneEvento, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
 						if(validationResults.isAtLeastOnePartecipante())
 							atLeastOnePartecipante = true;
 						if(validationResults.isAtLeastOneTutor())
@@ -1060,7 +1063,7 @@ public class EventoValidatorVersioneDue {
 			else {
 				for(FaseAzioniRuoliEventoFSCTypeA far : evento.getFasiAzioniRuoli()) {
 					//return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
-					ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versione, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
+					ValidateFasiAzioniRuoliFSCInfo validationResults = validateFasiAzioniRuoliFSC(far, errors, "programmaEventoFSC["+counter+"].", evento.getTipologiaEventoFSC(), versioneEvento, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
 					if(validationResults.isAtLeastOnePartecipante())
 						atLeastOnePartecipante = true;
 					if(validationResults.isAtLeastOneTutor())
@@ -1179,7 +1182,7 @@ public class EventoValidatorVersioneDue {
 
 	//validate FAD
 	private void validateFAD(EventoFAD evento, EventoWrapper wrapper, Errors errors, String prefix) throws Exception{
-		ValidateEventoFadInfo validateEventoFadInfo = new ValidateEventoFadInfo(); 
+		ValidateEventoFadInfo validateEventoFadInfo = new ValidateEventoFadInfo();
 		/* DATA FINE (campo obbligatorio)
 		 * e l'evento non può avere durata superiore a 365 giorni
 		 * -------------
@@ -1377,7 +1380,7 @@ public class EventoValidatorVersioneDue {
 		//if(persona.getAnagrafica().getCodiceFiscale() == null || persona.getAnagrafica().getCodiceFiscale().isEmpty())
 		if(Utils.rejectIfCodFiscIncorrect(persona.getAnagrafica().getCodiceFiscale(), persona.getAnagrafica().getStraniero()))
 			return true;
-		
+
 		if(persona.getAnagrafica().getCv() == null || persona.getAnagrafica().getCv().isNew())
 			return true;
 
@@ -1555,7 +1558,7 @@ public class EventoValidatorVersioneDue {
 				//alertResDocentiPartecipanti = true;
 				validateEventoResInfo.setAlertResDocentiPartecipanti(true);
 			}
-			
+
 			if(validateEventoResInfo.isAlertResDocentiNonPresenti() || validateEventoResInfo.isAlertResDocentiPartecipanti())
 				return true;
 
@@ -1585,11 +1588,11 @@ public class EventoValidatorVersioneDue {
 	//validate FasiAzioniRuoliFSC
 	//ritorna se ha trovato almeno 1 partecipante e almeno 1 tutor per fase
 	private ValidateFasiAzioniRuoliFSCInfo validateFasiAzioniRuoliFSC(FaseAzioniRuoliEventoFSCTypeA faseAzioniRuoli, Errors errors, String prefix, TipologiaEventoFSCEnum tipologiaEvento,
-			EventoVersioneEnum versione, List<RuoloFSCEnum> listRuoloFSCEnumPerResponsabiliScientifici, 
+			EventoVersioneEnum versione, List<RuoloFSCEnum> listRuoloFSCEnumPerResponsabiliScientifici,
 			List<RuoloFSCEnum> listRuoloFSCEnumPerCoordinatori, List<RuoloFSCEnum> listRuoloFSCEnumPerEsperti) {
 
 		ValidateFasiAzioniRuoliFSCInfo validateFasiAzioniRuoliFSCInfo = new ValidateFasiAzioniRuoliFSCInfo();
-		
+
 		//fase di lavoro (gratis, non viene inserita dall'utente, ma generata
 		//automaticamente dal sistema
 
@@ -1625,9 +1628,9 @@ public class EventoValidatorVersioneDue {
 						}
 					}
 				}
-				
+
 				//versione 2 controllo che i ruoli delle azioni siano validi in quanto potrebbero essere stati inseriti correttamente
-				//ma poi potrebbero essere stati modificati i responsabili scientifici o la data inizio passando da un evento della versione 2 alla versione 1 
+				//ma poi potrebbero essere stati modificati i responsabili scientifici o la data inizio passando da un evento della versione 2 alla versione 1
 				//rendendo alcuni o tutti i ruoli "Responsabile scientifico X" (X = A o B o C) non piu' accettabili
 				for(RuoloOreFSC ruoloOre : aref.getRuoli()) {
 					eventoValidator.validateRuoloDinamicoDaSezione1(validateFasiAzioniRuoliFSCInfo, ruoloOre, tipologiaEvento, versione, listRuoloFSCEnumPerResponsabiliScientifici, listRuoloFSCEnumPerCoordinatori, listRuoloFSCEnumPerEsperti);
@@ -1671,7 +1674,7 @@ public class EventoValidatorVersioneDue {
 			else if(errorePartecipanteAudit) {
 				errors.rejectValue(prefix + "azioniRuoli", "error.partecipanti_AUDIT_ore");
 			}
-			
+
 			//mostro i messaggi di non validita' dei ruoli dinamici non piu' presenti in sezione 1
 			if(validateFasiAzioniRuoliFSCInfo.isInvalidResponsabileScientifico())
 				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_responsabile_scientifico_x_non_valido");
@@ -1679,14 +1682,14 @@ public class EventoValidatorVersioneDue {
 				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_coordinatore_x_non_valido");
 			if(validateFasiAzioniRuoliFSCInfo.isInvalidEsperto())
 				errors.rejectValue(prefix + "azioniRuoli", "error.ruolo_esperto_x_non_valido");
-			
+
 			//return new boolean[] {atLeastOnePartecipante, atLeastOneTutor};
 			validateFasiAzioniRuoliFSCInfo.setAtLeastOnePartecipante(atLeastOnePartecipante);
 			validateFasiAzioniRuoliFSCInfo.setAtLeastOneTutor(atLeastOneTutor);
 			return validateFasiAzioniRuoliFSCInfo;
 		}
 	}
-	
+
 	//validate azioniRuoli delle FasiAzioniRuoliFSC
 	//ritorna un array di boolean -> boolean[] {hasError, hasPartecipante, hasTutor, ruoloRipetuto}
 	private boolean[] validateAzioneRuoliFSC(AzioneRuoliEventoFSC azioneRuoli, TipologiaEventoFSCEnum tipologiaEvento) {
@@ -1897,7 +1900,7 @@ public class EventoValidatorVersioneDue {
 							&& riepilogoRuoli.getRuolo().getRuoloBase() == RuoloFSCBaseEnum.COORDINATORE
 							&& riepilogoRuoli.getNumeroPartecipanti() > 1)
 						return true;
-					
+
 				break;
 
 				//tipologiaEvento == PROGETTI DI MIGLIORAMENTO

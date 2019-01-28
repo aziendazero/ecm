@@ -48,7 +48,6 @@ import it.tredi.ecm.web.bean.RicercaEventoWrapper;
 @ActiveProfiles("demo")
 @WithUserDetails("test1")
 @Rollback(false)
-@Ignore
 public class EventoTest {
 
 	@Autowired private AnagraficaEventoService anagraficaEventoService;
@@ -158,6 +157,16 @@ public class EventoTest {
 
 		System.out.println("Eventi Rendicontati con riedizioni: " + withRiedizioni.size());
 		System.out.println("Eventi Rendicontati senza riedizioni: " + noRiedizioni.size());
+	}
+
+	@Test
+	@Ignore
+	public void testVaschettaCondivisioneEsitiValutazione() {
+		int count = eventoService.countAllEventiCondivisioneEsitiValutazione();
+		Set<Evento> result = eventoService.getEventiCondivisioneEsitiValutazione();
+
+		System.out.println(count);
+		System.out.println(result != null ? result.size() : 0);
 	}
 
 }

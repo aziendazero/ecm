@@ -6,10 +6,12 @@ import java.util.Set;
 
 import lombok.Getter;
 
+// EVENTO_VERSIONE
 @Getter
 public enum EventoVersioneEnum {
 	UNO_PRIMA_2018 (1),
-	DUE_DAL_2018 (2)
+	DUE_DAL_2018 (2),
+	TRE_DAL_2019 (3)
 	;
 
 	private int numeroVersione;

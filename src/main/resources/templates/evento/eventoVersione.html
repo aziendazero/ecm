@@ -9,13 +9,16 @@
 
 		<script th:inline="javascript">
 		/*<![CDATA[*/
+				// EVENTO_VERSIONE
 				var eventoType = [[${eventoWrapper.evento.getClass().getSimpleName()}]];
 				var eventoVersione = [[${eventoWrapper.evento.getVersione()?.getNumeroVersione()}]];
-		
+
 				//var eventoVersionDefault = [[@{|${@ecmProperties.getEventoVersioneDefault().getNumeroVersione()}|}]];
 				var eventoVersionDefault = [[${@ecmProperties.getEventoVersioneDefault().getNumeroVersione()}]];
 				var eventoDataPassaggioVersioneDue = new Date([[@{${@ecmProperties.getEventoDataPassaggioVersioneDue().getYear()}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneDue().getMonthValue() - 1}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneDue().getDayOfMonth()}}]], 0, 0, 0, 0);
-				
+				var eventoDataPassaggioVersioneTre = new Date([[@{${@ecmProperties.getEventoDataPassaggioVersioneTre().getYear()}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneTre().getMonthValue() - 1}}]], [[@{${@ecmProperties.getEventoDataPassaggioVersioneTre().getDayOfMonth()}}]], 0, 0, 0, 0);
+
+
 				function getEventoDataInizio() {
 					var toRet = null;
 					var dataInizio = $('#dataInizio').val();
@@ -28,11 +31,11 @@
 					}
 					return toRet;
 				}
-				
+
 				function isFad() {
 					return eventoType === 'EventoFAD';
 				}
-				
+
 				function isFsc() {
 					return eventoType === 'EventoFSC';
 				}
@@ -49,12 +52,15 @@
 						if(eventoDataInizio != null) {
 							//console.log('eventoDataInizio: ' + eventoDataInizio + '\neventoDataPassaggioVersioneDue: ' + eventoDataPassaggioVersioneDue);
 							//console.log(eventoDataInizio.getTime() + ' - ' + eventoDataPassaggioVersioneDue.getTime());
-							if(eventoDataInizio.getTime() >= eventoDataPassaggioVersioneDue.getTime() ) {
+
+							if(eventoDataInizio.getTime() >= eventoDataPassaggioVersioneTre.getTime() ) {
+								versione = 3;
+							}else if(eventoDataInizio.getTime() >= eventoDataPassaggioVersioneDue.getTime() ) {
 								versione = 2;
 							} else {
 								versione = 1;
 							}
-						}						
+						}
 					} else {
 						versione = eventoVersione;
 					}
@@ -65,7 +71,7 @@
 		</script>
 	</th:block>
 
-	
-	
+
+
 </body>
 </html>

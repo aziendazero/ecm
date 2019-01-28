@@ -95,7 +95,7 @@
 										<div class="item form-group" th:classappend="${#fields.hasErrors('accreditamentoWrapper.verbaleValutazioneSulCampo.osservatoreRegionale')} ? 'bad'">
 											<label class="control-label col-md-4 col-sm-4 col-xs-12" for="osservatoreRegionale">
 												<span th:text="#{label.osservatore_regionale}">Osservatore Regionale</span>
-												<span class="required">*</span>
+												<span th:unless="${@providerServiceController.isAccreditamentoStandardRinnovoForProvider(accreditamentoWrapper.accreditamento.id,accreditamentoWrapper.provider.id)}" class="required">*</span>
 											</label>
 											<div class="col-lg-5 col-md-7 col-sm-7 col-xs-12">
 												<select id="osservatoreRegionale"
@@ -105,6 +105,7 @@
 													data-size="10"
 													data-hide-disabled="false"
 													title="Seleziona l'Osservatore Regionale...">
+													<option value="" th:text="#{label.no_selezione}" th:if="${@providerServiceController.isAccreditamentoStandardRinnovoForProvider(accreditamentoWrapper.accreditamento.id,accreditamentoWrapper.provider.id)}"></option>
 													<option
 														th:each="osservatore, row: ${accreditamentoWrapper.osservatoriRegionali}"
 														th:value="${osservatore.id}"

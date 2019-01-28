@@ -173,13 +173,21 @@
 	<include file="20180613_001_obiettivi_add_column_versione.xml" relativeToChangelogFile="true"/>
 
 	<include file="20180613_003_applySQL_insert_obiettivi_versione_2.xml" relativeToChangelogFile="true"/>
-	
+
 	<include file="20180626_001_agiunta_data_chiusura_accreditamento.xml" relativeToChangelogFile="true"/>
-	
+
 	<!-- include xml file to add new field in provider table to save logo  -->
 	<include file="20180803_001_add_column_logo_of_provider.xml" relativeToChangelogFile="true"/>
 
 	<include file="20180904_002_applySQL_insert_disciplina.xml" relativeToChangelogFile="true"/>
+
+	<include file="20190121_002_applySQL_insert_obiettivi_versione_3.xml" relativeToChangelogFile="true"/>
+
+	<include file="20190122_001_add_column_tematicheinteresse_evento_versione_3.xml" relativeToChangelogFile="true"/>
+
+	<include file="20190124_001_add_column_condivisione_esiti_valutazione_evento_versione_3.xml" relativeToChangelogFile="true"/>
+
+	<include file="20190124_002_add_column_marca_no_ecm_evento.xml" relativeToChangelogFile="true"/>
 
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali
       Obiettivo n. 34 "Accreditamento strutture sanitarie e dei professionisti; cultura della qualità con acquisizione di nozioni tecnico -professionali"

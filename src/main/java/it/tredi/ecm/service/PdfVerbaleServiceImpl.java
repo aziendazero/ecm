@@ -153,7 +153,8 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
 		addCellLabelCampoValoreDataOra("label.data_ora", verbale.getDataoraVisita(), tableFields);
 		addCellLabelCampoValoreString("label.sede", verbale.getSede().getAddressNameFull(), tableFields);
 		addCellLabelCampoValoreString("label.componente_crec_team_leader", verbale.getTeamLeader().getFullNameBase(), tableFields);
-		addCellLabelCampoValoreString("label.osservatore_regionale", verbale.getOsservatoreRegionale().getFullNameBase(), tableFields);
+		if(verbale.getOsservatoreRegionale() != null)
+			addCellLabelCampoValoreString("label.osservatore_regionale", verbale.getOsservatoreRegionale().getFullNameBase(), tableFields);
 		for(Account a : verbale.getComponentiSegreteria()) {
 			addCellLabelCampoValoreStringWithParam("label.componente_UOC_FSPS", null, a.getFullNameBase(), tableFields);
 		}
@@ -422,13 +423,15 @@ public class PdfVerbaleServiceImpl implements PdfVerbaleService {
         document.add(parFirmaCrecm);
 
         //FIRMA OSSERVATORIO REGIONALE
-        Paragraph parFirmaOssRegionale = new Paragraph();
-        parFirmaOssRegionale.setAlignment(Element.ALIGN_LEFT);
-        parFirmaOssRegionale.setFont(fontValoreCampo);
-        String[] valuesFirmaOssRegionale = {messageSource.getMessage("label.componente_osservatorio_regionale", null, Locale.getDefault()), verbale.getOsservatoreRegionale().getFullNameBase()};
-        parFirmaOssRegionale.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaOssRegionale, Locale.getDefault()));
-        document.add(parFirmaOssRegionale);
-        
+        if(verbale.getOsservatoreRegionale() != null) {
+        	Paragraph parFirmaOssRegionale = new Paragraph();
+            parFirmaOssRegionale.setAlignment(Element.ALIGN_LEFT);
+            parFirmaOssRegionale.setFont(fontValoreCampo);
+            String[] valuesFirmaOssRegionale = {messageSource.getMessage("label.componente_osservatorio_regionale", null, Locale.getDefault()), verbale.getOsservatoreRegionale().getFullNameBase()};
+            parFirmaOssRegionale.add(messageSource.getMessage("label.firma_nomeFirmatario", valuesFirmaOssRegionale, Locale.getDefault()));
+            document.add(parFirmaOssRegionale);
+        }
+
         //FIRMA COMPONENTI SEGRETERIA
         for(Account a : verbale.getComponentiSegreteria()) {
         	Paragraph parFirmaECM = new Paragraph();

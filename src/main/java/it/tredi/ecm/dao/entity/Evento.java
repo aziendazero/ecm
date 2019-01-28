@@ -1,3 +1,4 @@
+
 package it.tredi.ecm.dao.entity;
 
 import java.math.BigDecimal;
@@ -51,6 +52,7 @@ import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
 import it.tredi.ecm.dao.enumlist.EventoStatoEnum;
 import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.dao.enumlist.ProceduraFormativa;
+import it.tredi.ecm.dao.enumlist.TematicheInteresseEnum;
 import it.tredi.ecm.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -143,7 +145,7 @@ public class Evento extends BaseEntity {
 	@JsonView({JsonViewModel.EventoLookup.class, EventoListDataTableModel.View.class})
 	@Enumerated(EnumType.STRING)
 	private ProceduraFormativa proceduraFormativa;
-	
+
 	@JsonView(EventoListDataTableModel.View.class)
 	@Transient
 	private String link = "";
@@ -179,7 +181,7 @@ public class Evento extends BaseEntity {
 
 	@Convert(converter = EventoVersioneEnumConverter.class)
 	EventoVersioneEnum versione;
-	
+
 	//Per Audit
 //	@Transient
 //	private Set<String> disciplineAudit = new HashSet<String>();
@@ -283,10 +285,14 @@ public class Evento extends BaseEntity {
 	@Column(name = "contenuti_evento")
 	@Enumerated(EnumType.STRING)
 	private ContenutiEventoEnum contenutiEvento;
-	
+
+	@Column(name = "tematica_interesse")
+	@Enumerated(EnumType.STRING)
+	private TematicheInteresseEnum tematicaInteresse;
+
 	@Column(name= "archiviato_prima_infanzia")
 	private boolean archivatoPrimaInfanzia;
-	
+
 	@Column(name="archiviato_medicinali_non_convenzionati")
 	private boolean archiviatoMedicinali;
 
@@ -320,7 +326,7 @@ public class Evento extends BaseEntity {
 
 	@Column(columnDefinition = "text")
 	private String motivazioneCrediti;
-	
+
 	private Boolean confermatiCrediti;
 
 	@OneToOne(cascade=CascadeType.ALL)
@@ -361,6 +367,10 @@ public class Evento extends BaseEntity {
 	private Boolean proceduraVerificaQualitaPercepita;
 
 	private Boolean autorizzazionePrivacy;
+
+	// flag da utlizzare nel caso di eventi che non hanno partecipanti e quindi non vengono pagati e non vengono rendicontati
+	private Boolean eventoNoEcm = false;
+
 
 	@DiffIgnore
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="evento", orphanRemoval=true)
@@ -405,15 +415,15 @@ public class Evento extends BaseEntity {
 
 	/*
 	 * ERM014776
-	 * 	1)  se accreditamento e chiuso si puo modificare 
-	 * 		solo se data corrente non e maggiore di data chiusura 
+	 * 	1)  se accreditamento e chiuso si puo modificare
+	 * 		solo se data corrente non e maggiore di data chiusura
 	 * 		del acc + un intervallo dei giorni
 	 */
 	public boolean canEdit(){
 		return canEdit(false);
 	}
 	public boolean canEdit(boolean skipProviderBlockato){
-		
+
 		// se skipProviderBlockato e vero salta primo test
 		if(!skipProviderBlockato && provider.isBloccato() && !Utils.getAuthenticatedUser().isSegreteria())
 			return false;
@@ -523,6 +533,12 @@ public class Evento extends BaseEntity {
 		return false;
 	}
 
+	public boolean canDoMarcaNoECM() {
+		if(stato == EventoStatoEnum.VALIDATO)
+			return true;
+		return false;
+	}
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -562,5 +578,21 @@ public class Evento extends BaseEntity {
 			setDataScadenzaPagamento(dataFine.plusDays(90));
 			setDataScadenzaInvioRendicontazione(dataFine.plusDays(90));
 		}
+	}
+
+	/* evento RAPPORTATO e con FLAG eventoNoEcm = true*/
+	public boolean isEventoNoEcm() {
+		if(eventoNoEcm != null && eventoNoEcm.booleanValue() == true && stato == EventoStatoEnum.RAPPORTATO) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isAlimentiPrimaInfanzia() {
+		if(contenutiEvento != null && contenutiEvento == ContenutiEventoEnum.ALIMENTAZIONE_PRIMA_INFANZIA && eventoSponsorizzato != null && eventoSponsorizzato.booleanValue()) {
+			return true;
+		}
+		return false;
 	}
 }
