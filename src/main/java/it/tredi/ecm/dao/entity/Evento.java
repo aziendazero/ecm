@@ -580,9 +580,11 @@ public class Evento extends BaseEntity {
 		}
 	}
 
+	/* evento RAPPORTATO e con FLAG eventoNoEcm = true*/
 	public boolean isEventoNoEcm() {
-		if(eventoNoEcm != null)
-			return eventoNoEcm.booleanValue();
+		if(eventoNoEcm != null && eventoNoEcm.booleanValue() == true && stato == EventoStatoEnum.RAPPORTATO) {
+			return true;
+		}
 
 		return false;
 	}
