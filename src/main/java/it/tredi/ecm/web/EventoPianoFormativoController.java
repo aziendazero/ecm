@@ -428,7 +428,7 @@ public class EventoPianoFormativoController {
 				if(wrapper.getEvento().isNew())
 					eventoService.buildPrefix(wrapper.getEvento());
 				PianoFormativo pianoFormativo = pianoFormativoService.getPianoFormativo(pianoFormativoId);
-				pianoFormativo.addEvento(wrapper.getEvento());
+				pianoFormativo.addEvento(wrapper.getEvento(), true);
 				pianoFormativoService.save(pianoFormativo);
 				// caso fromAccreditamento
 				if (accreditamentoId != null) {

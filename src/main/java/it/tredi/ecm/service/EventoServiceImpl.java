@@ -171,6 +171,7 @@ public class EventoServiceImpl implements EventoService {
 	public void save(Evento evento) throws Exception {
 		LOGGER.debug("Salvataggio evento");
 		Evento eventoDB = null;
+		LocalDate dataFinePrec = null;
 		Map<String, Object> diffMap = new HashMap<String, Object>();
 		if(evento.isNew()) {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
@@ -180,6 +181,7 @@ public class EventoServiceImpl implements EventoService {
 		}else{
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento/" + evento.getId() + " - Salvataggio"));
 			eventoDB = eventoRepository.getOne(evento.getId());
+			dataFinePrec = eventoDB.getDataFine();
 			if(!Objects.equals(evento.getDataFine(), eventoDB.getDataFine()))
 				evento.handleDateScadenza();
 			if(existRiedizioniOfEventoId(evento.getId()))
@@ -213,7 +215,7 @@ public class EventoServiceImpl implements EventoService {
 					if(pf == null){
 						pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
 					}
-					pf.addEvento(eventoPianoFormativo);
+					pf.addEvento(eventoPianoFormativo, false);
 					pianoFormativoService.save(pf);
 				}
 				if(!evento.getEventoPianoFormativo().isAttuato()){
@@ -222,6 +224,50 @@ public class EventoServiceImpl implements EventoService {
 			}
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
+
+		//#13262 - logica corretta per gestione eventi PFA attuati
+		if(evento.isEventoDaPianoFormativo()) {
+			// 1. quando si crea un evento da PFA, marcare subito l'eventoPFA come attuato
+			if(evento.getStato() == EventoStatoEnum.BOZZA) {
+				EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
+				eventoPianoFormativo.setAttuato(true);
+				eventoPianoFormativoRepository.save(eventoPianoFormativo);
+			}
+
+			// 2. quando si valida un evento ed è un'attuazione da PFA:
+			if(evento.getStato() == EventoStatoEnum.VALIDATO) {
+				// 1. marcare l'eventoPFA come attuato
+				EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
+				eventoPianoFormativo.setAttuato(true);
+				eventoPianoFormativoRepository.save(eventoPianoFormativo);
+
+				// 2. inserire l'eventoPFA nel PFA di riferimento se l'anno della data di fineEvento è anno successivo
+				LocalDate dataFine = evento.getDataFine();
+				if(dataFine != null){
+					int annoPianoFormativo = dataFine.getYear();
+					PianoFormativo pf = pianoFormativoService.getPianoFormativoAnnualeForProvider(evento.getProvider().getId(), annoPianoFormativo);
+					if(pf == null){
+						pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
+					}
+					pf.addEvento(eventoPianoFormativo, false);
+					pianoFormativoService.save(pf);
+				}
+
+				// 3. verificare se il salvataggio ha visto una modifica dell'anno di fine, e nel caso togliere l'eventoPFA
+				if(dataFinePrec != null && dataFinePrec.getYear() != dataFine.getYear() ) {
+					PianoFormativo pf = pianoFormativoService.getPianoFormativoAnnualeForProvider(evento.getProvider().getId(), dataFinePrec.getYear());
+					pf.removeEvento(eventoPianoFormativo.getId());
+				}
+			}
+
+			if(evento.getStato() == EventoStatoEnum.CANCELLATO) {
+
+			}
+		}
+
+
+
+
 
 		//devo farlo alla fine per contrasti con Hibernate
 		//lista degli eventi da sincronizzare

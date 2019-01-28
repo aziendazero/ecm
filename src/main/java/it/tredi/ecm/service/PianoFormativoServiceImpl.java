@@ -148,7 +148,7 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 					evento.getDiscipline().add(disciplina);
 				}
 				eventoPianoFormativoService.save(evento);
-				pianoFormativo.addEvento(evento);
+				pianoFormativo.addEvento(evento, true);
 			}
 			save(pianoFormativo);
 		}
@@ -274,14 +274,16 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 	@Transactional
 	public void addEventoTo(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception {
 		LOGGER.debug(Utils.getLogMessage("Inserimento eventoPianoFormativo " + eventoPianoFormatvioId + " nel piano formativo " + pianoFormativoId));
-		PianoFormativo pfa = getPianoFormativo(pianoFormativoId);
-		if(pfa == null){ new Exception("Piano Formativo non trovato"); }
-		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormatvioId);
-		if(epf == null){ new Exception("EventoPianoFormativo non trovato"); }
+//		PianoFormativo pfa = getPianoFormativo(pianoFormativoId);
+//		if(pfa == null){ new Exception("Piano Formativo non trovato"); }
+//		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormatvioId);
+//		if(epf == null){ new Exception("EventoPianoFormativo non trovato"); }
+//
+//		pfa.addEvento(epf);
+//		save(pfa);
+//		eventoPianoFormativoService.save(epf);
 
-		pfa.addEvento(epf);
-		save(pfa);
-		eventoPianoFormativoService.save(epf);
+		throw new Exception("Not implemented Method: PianoFormativoService.addEventoTo");
 	}
 
 	@Override

@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +78,11 @@ public class EventoPianoFormativo extends BaseEntity{
 	@Column(name="anno_piano_formativo")
 	private Integer pianoFormativo;
 
+	//campo per tenere traccia del pfa originario, in modo tale da gestire correttamente eventuali spostamenti e/o eliminazioni
+	@Column(name="anno_piano_formativo_nativo")
+	@Transient
+	private Integer pianoFormativoNativo;
+
 	@ManyToOne @JoinColumn(name = "provider_id")
 	private Provider provider;
 	@ManyToOne @JoinColumn(name = "accreditamento_id")
@@ -124,8 +130,8 @@ public class EventoPianoFormativo extends BaseEntity{
 			return true;
 		return false;
 	}
-	
-	
+
+
 	public String getInfoProcedureFormativa(int annoPianoFormativo) {
 		return !this.isFSCaScavalco(annoPianoFormativo) ? this.getProceduraFormativa().name() : this.getProceduraFormativa().name() + " (PFA " + this.getPianoFormativo() + ")";
 	}
