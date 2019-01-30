@@ -80,7 +80,6 @@ public class EventoPianoFormativo extends BaseEntity{
 
 	//campo per tenere traccia del pfa originario, in modo tale da gestire correttamente eventuali spostamenti e/o eliminazioni
 	@Column(name="anno_piano_formativo_nativo")
-	@Transient
 	private Integer pianoFormativoNativo;
 
 	@ManyToOne @JoinColumn(name = "provider_id")

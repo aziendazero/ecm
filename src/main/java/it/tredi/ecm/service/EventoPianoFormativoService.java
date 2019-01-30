@@ -15,4 +15,6 @@ public interface EventoPianoFormativoService {
 	public void buildPrefix(EventoPianoFormativo evento) throws Exception;
 	public void validaRendiconto(File rendiconto) throws Exception;
 	public Set<EventoPianoFormativo> getAllEventiAttuabiliForProviderId(Long providerId);
+
+	public void setAttuato(Long id, boolean attuato) throws Exception;
 }

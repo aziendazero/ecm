@@ -25,7 +25,7 @@ import it.tredi.ecm.web.bean.ScadenzeEventoWrapper;
 public interface EventoService {
 	public Evento getEvento(Long id);
 	public void save(Evento evento) throws Exception;
-	public void delete(Long id);
+	public void delete(Long id) throws Exception;
 
 	public void validaRendiconto(Long id, File rendiconto) throws Exception;
 	public List<Evento> getAllEventi();

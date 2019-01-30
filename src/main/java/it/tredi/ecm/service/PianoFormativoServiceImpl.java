@@ -272,18 +272,19 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 
 	@Override
 	@Transactional
-	public void addEventoTo(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception {
-		LOGGER.debug(Utils.getLogMessage("Inserimento eventoPianoFormativo " + eventoPianoFormatvioId + " nel piano formativo " + pianoFormativoId));
-//		PianoFormativo pfa = getPianoFormativo(pianoFormativoId);
-//		if(pfa == null){ new Exception("Piano Formativo non trovato"); }
-//		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormatvioId);
-//		if(epf == null){ new Exception("EventoPianoFormativo non trovato"); }
-//
-//		pfa.addEvento(epf);
-//		save(pfa);
-//		eventoPianoFormativoService.save(epf);
+	public void addEventoTo(Long providerId, int annoPianoFormativo, Long eventoPianoFormativoId) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Inserimento eventoPianoFormativo " + eventoPianoFormativoId + " nel piano formativo " + annoPianoFormativo + " del provider " + providerId));
 
-		throw new Exception("Not implemented Method: PianoFormativoService.addEventoTo");
+		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormativoId);
+		// se l'evento non è già agganciato al pfa
+		if(epf.getPianoFormativo() == null || annoPianoFormativo != epf.getPianoFormativo().intValue()){
+			PianoFormativo pf = getPianoFormativoAnnualeForProvider(providerId, annoPianoFormativo);
+			if(pf == null){
+				pf = create(providerId, annoPianoFormativo);
+			}
+			pf.addEvento(epf, false);
+			save(pf);
+		}
 	}
 
 	@Override
@@ -299,6 +300,22 @@ public class PianoFormativoServiceImpl implements PianoFormativoService {
 		if(epf == null){ new Exception("EventoPianoFormativo non trovato"); }
 		epf.setPianoFormativo(null);
 		eventoPianoFormativoService.save(epf);
+	}
+
+	/**
+	 * Funzione chiamata durante il salvataggio dell'evento per gestire la corretta rimozione in epf dal pfa anni successivi
+	 * Es. inizialmente un epf è stato inserito in un pfa (anno +1) poi però la data di fine dell'evento è stata spostata e quindi epf non deve più stare in qsto pfa
+	 *
+	 * */
+	@Override
+	public void removeEventoFromIfNotNativo(Long providerId, int annoPianoFormativo, Long eventoPianoFormativoId) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Rimozione removeEventoFromIfNotNativo " + eventoPianoFormativoId + " dal piano formativo " + annoPianoFormativo + " del provider " + providerId));
+		PianoFormativo pf = getPianoFormativoAnnualeForProvider(providerId, annoPianoFormativo);
+		EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(eventoPianoFormativoId);
+
+		//non è corretto eliminare epf dal pfa in cui è stato creato
+		if(pf.getAnnoPianoFormativo().intValue() != epf.getPianoFormativoNativo().intValue())
+			removeEventoFrom(eventoPianoFormativoId, pf.getId());
 	}
 
 	@Override

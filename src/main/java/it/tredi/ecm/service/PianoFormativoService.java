@@ -21,7 +21,10 @@ public interface PianoFormativoService {
 	public void importaEventiDaCSV(Long pianoFormativoId, File importEventiDaCsvFile, Long accreditamentoId) throws Exception;
 
 	public void removeEventoFrom(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception;
-	public void addEventoTo(Long eventoPianoFormatvioId, Long pianoFormativoId) throws Exception;
+
+	public void addEventoTo(Long providerId, int annoPianoFormativo, Long eventoPianoFormativoId) throws Exception;
+	public void removeEventoFromIfNotNativo(Long providerId, int annoPianoFormativo, Long eventoPianoFormativoId) throws Exception;
+
 
 	public Set<Provider> getAllProviderNotPianoFormativoInseritoPerAnno();
 	public int countProviderNotPianoFormativoInseritoPerAnno();

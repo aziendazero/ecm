@@ -89,4 +89,12 @@ public class EventoPianoFormativoServiceImpl implements EventoPianoFormativoServ
 		anni.add(LocalDateTime.now().getYear() + 1);
 		return eventoPianoFormativoRepository.findAllByProviderIdAndPianoFormativoInAndAttuatoFalse(providerId, anni);
 	}
+
+	@Override
+	public void setAttuato(Long id, boolean attuato) throws Exception {
+		LOGGER.debug(Utils.getLogMessage("Setta eventoPianoFormativo: " + id + " come attuato: " + attuato));
+		EventoPianoFormativo eventoPianoFormativo = getEvento(id);
+		eventoPianoFormativo.setAttuato(attuato);
+		save(eventoPianoFormativo);
+	}
 }
