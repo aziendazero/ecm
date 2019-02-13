@@ -342,6 +342,11 @@ public class Utils {
 		return bg;
 	}
 
+	public static BigDecimal getRoundedHALFUPBigDecimalValue(float value) {
+		BigDecimal bg = new BigDecimal(value).setScale(0, RoundingMode.HALF_UP);
+		return bg;
+	}
+
 	public static float getRoundedFloatValue(float value, int precision) {
 		BigDecimal bg = new BigDecimal(value).setScale(precision, RoundingMode.HALF_UP);
 		return bg.floatValue();

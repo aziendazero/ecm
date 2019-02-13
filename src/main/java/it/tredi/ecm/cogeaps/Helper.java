@@ -34,9 +34,11 @@ import it.tredi.ecm.dao.entity.EventoFSC;
 import it.tredi.ecm.dao.entity.EventoRES;
 import it.tredi.ecm.dao.entity.Professione;
 import it.tredi.ecm.dao.enumlist.DestinatariEventoEnum;
+import it.tredi.ecm.dao.enumlist.EventoVersioneEnum;
 import it.tredi.ecm.pdf.PdfPartecipanteInfo;
 import it.tredi.ecm.pdf.PdfRiepilogoPartecipantiInfo;
 import it.tredi.ecm.service.DisciplinaService;
+import it.tredi.ecm.service.controller.EventoServiceController;
 import it.tredi.ecm.utils.Utils;
 
 public class Helper {
@@ -54,6 +56,7 @@ public class Helper {
 	public final static String DISCIPLINE_NODE_NAME = "disciplina";
 
 	@Autowired private DisciplinaService disciplinaService;
+	@Autowired private EventoServiceController eventoServiceController;
 
 	//TODO - gestire eccezioni
 
@@ -89,9 +92,16 @@ public class Helper {
 		dbEventoDataMap.put("cod_accr", CODICE_ENTE_ACCREDITANTE);
 		dbEventoDataMap.put("data_ini", evento.getDataInizio().format(DateTimeFormatter.ISO_LOCAL_DATE));
 		dbEventoDataMap.put("data_fine", evento.getDataFine().format(DateTimeFormatter.ISO_LOCAL_DATE));
-		//tiommi 22/05/2017 | dpranteda 12/12/2018
-		//BigDecimal durataRounded = new BigDecimal(Float.toString(evento.getDurata())).setScale(0, RoundingMode.HALF_UP);
-		BigDecimal durataRounded = Utils.getRoundedFLOORBigDecimalValue(evento.getDurata());
+		//tiommi 22/05/2017 | dpranteda 12/12/2018 | dpranteda 13/02/2019
+		BigDecimal durataRounded;
+
+		// EVENTO_VERSIONE
+		if(evento.getVersione() == EventoVersioneEnum.TRE_DAL_2019) {
+			durataRounded = Utils.getRoundedFLOORBigDecimalValue(evento.getDurata());
+		}else {
+			durataRounded = Utils.getRoundedHALFUPBigDecimalValue(evento.getDurata());
+		}
+
 		dbEventoDataMap.put("ore", durataRounded.toString());
 		//end
 		dbEventoDataMap.put("crediti", Float.toString(evento.getCrediti()));
