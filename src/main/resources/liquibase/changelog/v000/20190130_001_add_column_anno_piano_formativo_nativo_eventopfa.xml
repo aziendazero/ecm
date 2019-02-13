@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="v000/20190130_001_add_column_anno_piano_formativo_nativo_eventopfa.xml">
+	<changeSet author="dpranteda (generated)" id="1">
+		<addColumn tableName="evento_piano_formativo">
+			<column name="anno_piano_formativo_nativo" type="INT" />
+		</addColumn>
+		<rollback>
+             	ALTER TABLE ecmdb.evento_piano_formativo DROP anno_piano_formativo_nativo;
+        </rollback>
+	</changeSet>
+
+	<changeSet author="dpranteda" id="2">
+    	<comment>INSERIMENTO VALORI ANNO_PIANO_FORMATIVO_NATIVO</comment>
+		<sqlFile dbms="postgresql"
+            encoding="utf8"
+            endDelimiter=";"
+            path="20190130_002_insert_valori_anno_piano_formativo_nativo.sql"
+            relativeToChangelogFile="true"
+            splitStatements="false"
+            stripComments="true"/>
+        <rollback>
+             	UPDATE ecmdb.evento_piano_formativo SET anno_piano_formativo_nativo = null;
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

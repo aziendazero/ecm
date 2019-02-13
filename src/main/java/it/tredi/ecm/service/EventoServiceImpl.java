@@ -127,6 +127,7 @@ public class EventoServiceImpl implements EventoService {
 	@Autowired private SponsorRepository sponsorRepository;
 	@Autowired private PartnerRepository partnerRepository;
 	@Autowired private EventoPianoFormativoRepository eventoPianoFormativoRepository;
+	@Autowired private EventoPianoFormativoService eventoPianoFormativoService;
 	@PersistenceContext EntityManager entityManager;
 
 
@@ -171,6 +172,7 @@ public class EventoServiceImpl implements EventoService {
 	public void save(Evento evento) throws Exception {
 		LOGGER.debug("Salvataggio evento");
 		Evento eventoDB = null;
+		LocalDate dataFinePrec = null;
 		Map<String, Object> diffMap = new HashMap<String, Object>();
 		if(evento.isNew()) {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
@@ -198,6 +200,7 @@ public class EventoServiceImpl implements EventoService {
 
 		//se attuazione di evento del piano formativo aggiorna il flag
 		//se attuazione di evento del piano formativo con data fine all'anno successivo...l'evento viene inserito nel piano formativo dell'anno successivo
+	/*
 		if(evento.isEventoDaPianoFormativo()){
 			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
 			if(evento.getStato() == EventoStatoEnum.CANCELLATO){
@@ -213,7 +216,7 @@ public class EventoServiceImpl implements EventoService {
 					if(pf == null){
 						pf = pianoFormativoService.create(evento.getProvider().getId(), annoPianoFormativo);
 					}
-					pf.addEvento(eventoPianoFormativo);
+					pf.addEvento(eventoPianoFormativo, false);
 					pianoFormativoService.save(pf);
 				}
 				if(!evento.getEventoPianoFormativo().isAttuato()){
@@ -222,6 +225,36 @@ public class EventoServiceImpl implements EventoService {
 			}
 			eventoPianoFormativoRepository.save(eventoPianoFormativo);
 		}
+	*/
+
+		//#13262 - logica corretta per gestione eventi PFA attuati
+		if(evento.isEventoDaPianoFormativo()) {
+			EventoPianoFormativo epf = evento.getEventoPianoFormativo();
+			// 1. quando si crea un evento da PFA, marcare subito l'eventoPFA come attuato
+			if(evento.getStato() == EventoStatoEnum.BOZZA) {
+				eventoPianoFormativoService.setAttuato(epf.getId(), true);
+			}
+
+			// 2. quando si valida un evento ed è un'attuazione da PFA:
+			if(evento.getStato() == EventoStatoEnum.VALIDATO) {
+				// 1. marcare l'eventoPFA come attuato
+				eventoPianoFormativoService.setAttuato(epf.getId(), true);
+
+				// 2. inserire l'eventoPFA nel PFA di riferimento se l'anno della data di fineEvento è anno successivo
+				// 3. verificare se il salvataggio ha visto una modifica dell'anno di fine, e nel caso togliere l'eventoPFA dal PFA errato (non rimuovere se il PFA è quello nativo)
+				LocalDate dataFine = evento.getDataFine();
+				if(epf.getPianoFormativo() == null || dataFine.getYear() != epf.getPianoFormativo().intValue()) {
+					pianoFormativoService.removeEventoFromIfNotNativo(evento.getProvider().getId(), epf.getPianoFormativo(), epf.getId());
+					pianoFormativoService.addEventoTo(evento.getProvider().getId(), dataFine.getYear(), epf.getId());
+				}
+				evento.setPianoFormativo(epf.getPianoFormativo());
+			}
+
+			// 3. quando si elimina un evento ed è un'attuazione da PFA:
+			if(evento.getStato() == EventoStatoEnum.CANCELLATO) {
+				gestioneEventoPFACancellazione(evento, epf);
+			}
+		}
 
 		//devo farlo alla fine per contrasti con Hibernate
 		//lista degli eventi da sincronizzare
@@ -229,6 +262,36 @@ public class EventoServiceImpl implements EventoService {
 		//aggiornamento degli eventi a seconda del diff (utilizza la reflection)
 		for(Evento ev : eventiDaAggiornare) {
 			syncEventoByDiffMap(ev, diffMap);
+		}
+	}
+
+	private void gestioneEventoPFACancellazione(Evento evento, EventoPianoFormativo epf) throws Exception {
+		LocalDate dataFine = evento.getDataFine();
+		/* 1. se l'evento NON ha riedizioni */
+		if(!existRiedizioniOfEventoId(evento.getId())) {
+			// 1. marcare eventoPFA come non attuato
+			eventoPianoFormativoService.setAttuato(epf.getId(), false);
+
+			// 2. togliere l'eventoPFA dal PFA anni successivi se era stato aggiunto
+			pianoFormativoService.removeEventoFromIfNotNativo(evento.getProvider().getId(), dataFine.getYear(), epf.getId());
+		}else {
+			/* 2. se l'evento HA riedizioni */
+			// 1. togliere il link dall'evento padre e agganciarlo alla sua prima riedizione
+			evento.setEventoPianoFormativo(null);
+			Set<Evento> riedizioni = getRiedizioniOfEventoId(evento.getId());
+			Evento evR = riedizioni.iterator().next();
+			evR.setEventoPianoFormativo(epf);
+			eventoRepository.saveAndFlush(evR);
+
+			// 2. ricalcolare eventuale pfa di riferimento del eventoPFA in funzione della dataFine della riedizione
+			LocalDate dataFineRiedizione = evR.getDataFine();
+			if(dataFineRiedizione != null) {
+				if(epf.getPianoFormativo() == null || dataFineRiedizione.getYear() != epf.getPianoFormativo().intValue()) {
+					pianoFormativoService.removeEventoFromIfNotNativo(evR.getProvider().getId(), epf.getPianoFormativo(), epf.getId());
+					pianoFormativoService.addEventoTo(evR.getProvider().getId(), dataFineRiedizione.getYear(), epf.getId());
+				}
+				evR.setPianoFormativo(epf.getPianoFormativo());
+			}
 		}
 	}
 
@@ -646,11 +709,15 @@ public class EventoServiceImpl implements EventoService {
 		//controllo se attuazione di un evento del piano formativo
 		Evento evento = getEvento(id);
 		if(evento.isEventoDaPianoFormativo() && evento.getEventoPianoFormativo().isAttuato()) {
-			EventoPianoFormativo eventoPianoFormativo = evento.getEventoPianoFormativo();
-			eventoPianoFormativo.setAttuato(false);
-			eventoPianoFormativoRepository.save(eventoPianoFormativo);
+			try{
+				gestioneEventoPFACancellazione(evento, evento.getEventoPianoFormativo());
+				eventoRepository.delete(id);
+			}catch (Exception ex){
+				LOGGER.error(Utils.getLogMessage("Errore gestioneEventoPFACancellazione per evento: " + id));
+			}
+		}else {
+			eventoRepository.delete(id);
 		}
-		eventoRepository.delete(id);
 	}
 
 	@Override

@@ -75,7 +75,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
 	@Query("SELECT COUNT (e) FROM Evento e WHERE e.eventoPadre.id = :id AND e.stato <> 'CANCELLATO'")
 	public int countRiedizioniOfEventoId(@Param("id") Long id);
-	@Query("SELECT e FROM Evento e WHERE e.eventoPadre.id = :id AND e.stato <> 'CANCELLATO'")
+	@Query("SELECT e FROM Evento e WHERE e.eventoPadre.id = :id AND e.stato <> 'CANCELLATO' ORDER BY e.edizione ASC")
 	public Set<Evento> getRiedizioniOfEventoId(@Param("id") Long id);
 
 	// ERM014776

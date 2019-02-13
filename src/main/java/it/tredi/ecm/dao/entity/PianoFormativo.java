@@ -32,9 +32,11 @@ public class PianoFormativo extends BaseEntityDefaultId{
 	@OrderBy("id ASC")
 	private Set<EventoPianoFormativo> eventiPianoFormativo = new HashSet<EventoPianoFormativo>();
 
-	public void addEvento(EventoPianoFormativo evento){
+	public void addEvento(EventoPianoFormativo evento, boolean nativo){
 		this.getEventiPianoFormativo().add(evento);
 		evento.setPianoFormativo(this.annoPianoFormativo);
+		if(nativo)
+			evento.setPianoFormativoNativo(this.annoPianoFormativo);
 
 //		if(evento.getPianoFormativo() != null){
 //			if(evento.getPianoFormativo().intValue() < this.annoPianoFormativo.intValue())
