@@ -42,7 +42,7 @@ public class Obiettivo extends BaseEntityDefaultId{
 	//obiettivo regionale -> Non rientra in uno degli obiettivi regionali
 	public boolean isNonRientraTraObiettiviRegionali(){
 		if(!nazionale){
-			if(versione == 1 && codiceCogeaps.equalsIgnoreCase("1"))
+			if(codiceCogeaps.equalsIgnoreCase("1"))
 				return true;
 		}
 		return false;
