@@ -92,15 +92,9 @@ public class Helper {
 		dbEventoDataMap.put("cod_accr", CODICE_ENTE_ACCREDITANTE);
 		dbEventoDataMap.put("data_ini", evento.getDataInizio().format(DateTimeFormatter.ISO_LOCAL_DATE));
 		dbEventoDataMap.put("data_fine", evento.getDataFine().format(DateTimeFormatter.ISO_LOCAL_DATE));
-		//tiommi 22/05/2017 | dpranteda 12/12/2018 | dpranteda 13/02/2019
+		//tiommi 22/05/2017 | dpranteda 12/12/2018 | dpranteda 13/02/2019 | dpranteda 25/02/2019
 		BigDecimal durataRounded;
-
-		// EVENTO_VERSIONE
-		if(evento.getVersione() == EventoVersioneEnum.TRE_DAL_2019) {
-			durataRounded = Utils.getRoundedFLOORBigDecimalValue(evento.getDurata());
-		}else {
-			durataRounded = Utils.getRoundedHALFUPBigDecimalValue(evento.getDurata());
-		}
+		durataRounded = Utils.getRoundedHALFUPBigDecimalValue(evento.getDurata());
 
 		dbEventoDataMap.put("ore", durataRounded.toString());
 		//end
