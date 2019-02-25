@@ -315,7 +315,7 @@ function loadScript(url, callback){
 										<td th:text="${evento.dataInizio != null} ? ${#temporals.format(evento.dataInizio, 'dd/MM/yyyy')} : ''"></td>
 										<td th:text="${evento.dataFine != null} ? ${#temporals.format(evento.dataFine, 'dd/MM/yyyy')} : ''"></td>
 										<td>
-											<div th:text="${evento.isEventoNoEcm()} ? ${'NO ECM'} : ${evento.stato.nome}"></div>
+											<div th:text="${evento.isEventoNoEcm()} ? #{label.no_ecm} : ${evento.stato.nome}"></div>
 											<div th:if="${evento.pagato != null and evento.pagato and !evento.isCancellato()}"><span class="label-pagato" th:text="#{label.pagato}"></span></div>
 											<div th:if="${evento.isCancellato()}"><span class="label-non-pagato" th:text="#{label.cancellato}"></span></div>
 											<div th:if="${evento.pagato == null or (!evento.pagato and !evento.isCancellato())}">

@@ -288,7 +288,7 @@ public class EventoController {
 		if(event.getDataFine() != null)
 			dataModel.setDataFine(event.getDataFine().format(formatter));
 
-		String statoBuild = "<div>" + (event.isEventoNoEcm() ? "NO ECM" : event.getStato().getNome()) + "</div>";
+		String statoBuild = "<div>" + (event.isEventoNoEcm() ? messageSource.getMessage("label.no_ecm", null, LocaleContextHolder.getLocale()) : event.getStato().getNome()) + "</div>";
 
 		if(event.getPagato() != null && event.getPagato() && !event.isCancellato())
 			statoBuild += "<div ><span class=\"label-pagato\">" + messageSource.getMessage("label.pagato", null, LocaleContextHolder.getLocale()) + "</span></div>";
