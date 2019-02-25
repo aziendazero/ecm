@@ -345,7 +345,7 @@ public class PdfRiepilogoPartecipantiServiceImpl implements PdfRiepilogoPartecip
 	        document.add(par5);
 
 	        document.add(Chunk.NEWLINE);
-	        document.add(Chunk.NEWLINE);
+	      //  document.add(Chunk.NEWLINE);
 
 	        String[] listNumeroCrediti = splitNumeroCrediti(partecipante.getNumeroCrediti());
 
