@@ -258,7 +258,7 @@
 													<thead>
 														<tr>
 													    	<th th:text="#{label.tempo_totale_att_form}">Tempo totale att. form.</th>
-													    	<th th:text="#{label.durata_max_condivisione}">Durata max della condivisione</th>
+													    	<th th:text="#{label.durata_max_condivisione} + ${'*'}">Durata max della condivisione</th>
 													  	</tr>
 													</thead>
 													<tbody>
@@ -283,14 +283,18 @@
 														    <td th:text="'180 minuti'"></td>
 														  </tr>
 													</tbody>
+													<tfoot>
+														<tr>
+															<td colspan="2" class="info-nota" th:text="${'*'} + #{label.nota_bene_valutazione_verifica_RES}"></td>
+														</tr>
+													</tfoot>
 												</table>
+
 											</div>
 
 											<div class="item form-group">
-
 											</div>
 										</div>
-
 
 										<input id="targetTableAttivitaRES" type="text" name="target" style="display: none;" />
 										<input id="addAttivitaTo" type="text" name="addAttivitaTo" style="display: none;" />

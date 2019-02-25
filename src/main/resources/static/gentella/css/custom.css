@@ -809,7 +809,7 @@ h2 {
   margin-top: 8px;
 }
 .btn-space{
-  margin-right: 5px !important;		
+  margin-right: 5px !important;
 }
 .piano-year-row{
 	width: 100%;
@@ -5464,4 +5464,10 @@ ul.notifications {
 
 .text-risultato {
 	margin-right: 5px;
+}
+
+.info-nota {
+	white-space: pre-line;
+	color: red !important;
+	font-weight: bold;
 }
