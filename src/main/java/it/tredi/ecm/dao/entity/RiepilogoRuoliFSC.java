@@ -579,7 +579,7 @@ public class RiepilogoRuoliFSC {
 		}
 	}
 
-	public void calcolaCreditiVersioneTre(EventoFSC evento, float f, boolean isTematicaInteresseSpeciale){
+	public void calcolaCreditiVersioneTre(EventoFSC evento, float maxValue, boolean isTematicaInteresseSpeciale){
 		/*
 		public enum RuoloFSCBaseEnum {
 			PARTECIPANTE(1,"P"),
@@ -613,6 +613,8 @@ public class RiepilogoRuoliFSC {
 		if(isTematicaInteresseSpeciale)
 			extraCreditiTematicheInteresse = 0.3f;
 
+		float maxCrediti = 0.0f;
+
 		if(tipologiaEvento != null && ruolo != null){
 			switch(tipologiaEvento){
 				case TRAINING_INDIVIDUALIZZATO:
@@ -636,19 +638,28 @@ public class RiepilogoRuoliFSC {
 								break;
 							case TUTOR:
 								crediti = 1 * (int) tempoDedicato;
-								crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_TUTOR_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_TUTOR_VERSIONE_DUE : crediti;
+
+								maxCrediti = (maxValue > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_TUTOR_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_TUTOR_VERSIONE_DUE : maxValue;
+								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 								break;
 							case ESPERTO:
 							//case COORDINATORE:
 							//case RESPONSABILE:
 							case RESPONSABILE_SCIENTIFICO:
 								crediti = 1 * (int) (tempoDedicato * 2);
-								crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : crediti;
+
+								maxCrediti = (maxValue > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : maxValue;
+								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 								break;
 							case COORDINATORE_X:
 								if(checkIsCoordinatoreEnabled(evento)) {
 									crediti = 1 * (int) (tempoDedicato * 2);
-									crediti = (crediti > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : crediti;
+
+									maxCrediti = (maxValue > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : maxValue;
+									crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 								} else {
 									crediti = 0.0f;
 								}
@@ -702,12 +713,18 @@ public class RiepilogoRuoliFSC {
 							//case COORDINATORE:
 							case ESPERTO:
 								crediti = 1 * (int) (tempoDedicato * 2);
-								crediti = (crediti > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
+
+								maxCrediti = (maxValue > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
+								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 								break;
 							case COORDINATORE_X:
 								if(checkIsCoordinatoreEnabled(evento)) {
 									crediti = 1 * (int) (tempoDedicato * 2);
-									crediti = (crediti > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
+
+									maxCrediti = (maxValue > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
+									crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 								} else {
 									crediti = 0.0f;
 								}
@@ -748,12 +765,18 @@ public class RiepilogoRuoliFSC {
 							case RESPONSABILE_SCIENTIFICO:
 							//case COORDINATORE:
 								crediti = 1 * (int) (tempoDedicato * 2);
-								crediti = (crediti > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE : crediti;
+
+								maxCrediti = (maxValue > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE : maxValue;
+								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 								break;
 							case COORDINATORE_X:
 								if(checkIsCoordinatoreEnabled(evento)) {
 									crediti = 1 * (int) (tempoDedicato * 2);
-									crediti = (crediti > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE : crediti;
+
+									maxCrediti = (maxValue > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE : maxValue;
+									crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 								} else {
 									crediti = 0.0f;
 								}
@@ -800,12 +823,18 @@ public class RiepilogoRuoliFSC {
 						case RESPONSABILE_SCIENTIFICO:
 						//case COORDINATORE:
 							crediti = 1 * (int) (tempoDedicato * 2);
-							crediti = (crediti > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
+
+							maxCrediti = (maxValue > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
+							crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 							break;
 						case COORDINATORE_X:
 							if(checkIsCoordinatoreEnabled(evento)) {
 								crediti = 1 * (int) (tempoDedicato * 2);
-								crediti = (crediti > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
+
+								maxCrediti = (maxValue > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
+								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 							} else {
 								crediti = 0.0f;
 							}
@@ -857,12 +886,18 @@ public class RiepilogoRuoliFSC {
 						case RESPONSABILE_SCIENTIFICO:
 						//case COORDINATORE:
 							crediti = 1 * (int) (tempoDedicato * 2);
-							crediti = (crediti > ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE) ? ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE : crediti;
+
+							maxCrediti = (maxValue > ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
+							crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 							break;
 						case COORDINATORE_X:
 							if(checkIsCoordinatoreEnabled(evento)) {
 								crediti = 1 * (int) (tempoDedicato * 2);
-								crediti = (crediti > ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE) ? ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE : crediti;
+
+								maxCrediti = (maxValue > ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
+								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
 							} else {
 								crediti = 0.0f;
 							}

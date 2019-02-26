@@ -191,10 +191,12 @@ public class EventoCreditiVersioneTre {
 
 	private float calcoloCreditiFormativiEventoFSC(EventoFSC evento, EventoWrapper wrapper){
 		float crediti = 0.0f;
+		float durataMax = 0.0f;
 
 		calcolaCreditiPartecipantiFSC(evento, wrapper.getRiepilogoRuoliFSC());
 		crediti = getMaxCreditiPartecipantiFSC(wrapper.getRiepilogoRuoliFSC());
-		calcolaCreditiAltriRuoliFSC(evento, wrapper.getRiepilogoRuoliFSC(),crediti);
+		durataMax = getMaxDurataPartecipantiFSC(wrapper.getRiepilogoRuoliFSC());
+		calcolaCreditiAltriRuoliFSC(evento, wrapper.getRiepilogoRuoliFSC(), durataMax*2);
 
 		return crediti;
 	}
@@ -242,6 +244,25 @@ public class EventoCreditiVersioneTre {
 				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
 				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getCrediti() > max)
 					max = pairs.getValue().getCrediti();
+			 }
+		}
+
+		return max;
+	}
+
+	/*
+	 * Data la mappa <Ruolo,RiepilogoRuoloOreFSC> individuo il valore MAX numero ore attribuito a un PARTECIPANTE
+	 * */
+	private float getMaxDurataPartecipantiFSC(Map<RuoloFSCEnum,RiepilogoRuoliFSC> riepilogoRuoliFSC){
+		float max = 0.0f;
+
+		if(riepilogoRuoliFSC != null){
+			Iterator<Entry<RuoloFSCEnum,RiepilogoRuoliFSC>> iterator = riepilogoRuoliFSC.entrySet().iterator();
+
+			while (iterator.hasNext()) {
+				Map.Entry<RuoloFSCEnum,RiepilogoRuoliFSC> pairs = iterator.next();
+				if(((RuoloFSCEnum)pairs.getKey()) != null && ((RuoloFSCEnum)pairs.getKey()).getRuoloBase() == RuoloFSCBaseEnum.PARTECIPANTE && pairs.getValue().getTempoDedicato() > max)
+					max = pairs.getValue().getTempoDedicato();
 			 }
 		}
 
