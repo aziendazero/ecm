@@ -3,6 +3,7 @@ package it.tredi.ecm;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,7 @@ import it.tredi.ecm.dao.enumlist.TipologiaEventoFADEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoFSCEnum;
 import it.tredi.ecm.dao.enumlist.TipologiaEventoRESEnum;
 import it.tredi.ecm.dao.repository.AnagrafeRegionaleCreditiRepository;
+import it.tredi.ecm.dao.repository.EventoRepository;
 import it.tredi.ecm.service.AnagrafeRegionaleCreditiService;
 import it.tredi.ecm.service.EventoService;
 import it.tredi.ecm.service.FileService;
@@ -45,8 +47,8 @@ import it.tredi.ecm.utils.Utils;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@ActiveProfiles("abarducci")
-@WithUserDetails("segreteria1")
+@ActiveProfiles("demo")
+@WithUserDetails("test1")
 //@ActiveProfiles("dev")
 //@WithUserDetails("LBENEDETTI")
 @Rollback(false)
@@ -54,6 +56,7 @@ import it.tredi.ecm.utils.Utils;
 public class AnagrafeRegionaleCreditiTest {
 
 	@Autowired private EventoService eventoService;
+	@Autowired private EventoRepository eventoRepository;
 	@PersistenceContext EntityManager entityManager;
 
 	@Autowired private AnagrafeRegionaleCreditiRepository anagrafeRegionaleCreditiRepository;
@@ -87,6 +90,7 @@ public class AnagrafeRegionaleCreditiTest {
 
 	@Test
 	@Transactional
+	@Ignore
 	public void createFromFileXml() throws Exception {
 		String fileName = "report-20170511-0953.xml";
 		URL fileUrl = Thread.currentThread().getContextClassLoader().getResource("report-20170511-0953.xml");
@@ -116,17 +120,34 @@ public class AnagrafeRegionaleCreditiTest {
 	@Transactional
 	@Ignore
 	public void extractInfo() throws Exception {
-		Evento e = eventoService.getEvento(1357L);
-		//RendicontazioneInviata r = e.getUltimaRendicontazioneInviata();
+		Evento e = eventoService.getEvento(200000L);
+		RendicontazioneInviata r = e.getUltimaRendicontazioneInviata();
 
-		File file = fileService.getFile(1359L);
+//		File file = fileService.getFile(1359L);
+		File file =  r.getFileRendicontazione();
+
+		long providerId = e.getProvider().getId();
+		int annoRiferimento = 2018;
+		logAnagrafeRegionaleCreditiForRelazioneAnnuale(providerId, annoRiferimento);
 
 		Set<AnagrafeRegionaleCrediti> items = anagrafeRegionaleCreditiService.extractAnagrafeRegionaleCreditiPartecipantiFromXml(file.getNomeFile(), file.getData());
-
+		System.out.println("FILE_Trovati " + items.size() + " docenti");
 		for(AnagrafeRegionaleCrediti a : items)
 			System.out.println(a.getCodiceFiscale() + " : " + a.getCrediti() + " in data " + a.getData());
 
 		e.setAnagrafeRegionaleCrediti(items);
+		eventoRepository.save(e);
+		eventoService.save(e);
+
+		logAnagrafeRegionaleCreditiForRelazioneAnnuale(providerId, annoRiferimento);
+	}
+
+	private void logAnagrafeRegionaleCreditiForRelazioneAnnuale(long providerId, int annoRiferimento) {
+		List<Object[]> fromDB = anagrafeRegionaleCreditiRepository.getRuoliAventeCreditiPerAnno(providerId, LocalDate.of(annoRiferimento, 1, 1), LocalDate.of(annoRiferimento, 12, 31));
+		System.out.println("DATABASE_Trovati " + fromDB.size() + " docenti");
+		for(Object[] a : fromDB) {
+			System.out.println(a[0] + " | " + a[1] );
+		}
 	}
 
 	@Test
