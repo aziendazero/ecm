@@ -214,6 +214,8 @@ public class QuotaAnnualeServiceImpl implements QuotaAnnualeService {
 		quota.setPagato(true);
 		pagamentoService.save(quota.getPagamento());
 		save(quota);
+		if(quota.getPrimoAnno() != null && quota.getPrimoAnno().booleanValue())
+			providerService.abilitaFunzionalitaAfterPagamento(quota.getProvider().getId());
 	}
 
 	@Override

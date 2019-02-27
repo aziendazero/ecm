@@ -1944,6 +1944,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 
 			} else if(stato == AccreditamentoStatoEnum.DINIEGO) {
 				//Setto il flusso come concluso
+				settaStatusProviderAndDateAccreditamentoAndQuotaAnnuale(LocalDate.now(), accreditamentoId, stato);
 				workflowInCorso.setStato(StatoWorkflowEnum.CONCLUSO);
 			} else if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_FIRMA) {
 				//Ricavo la seduta
@@ -2292,7 +2293,7 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 			}
 		}
 		providerService.save(provider);
-		if(stato == AccreditamentoStatoEnum.ACCREDITATO)
+		if(stato == AccreditamentoStatoEnum.ACCREDITATO_IN_PROTOCOLLAZIONE)
 			quotaAnnualeService.createPagamentoProviderPerQuotaAnnuale(provider.getId(), LocalDate.now().getYear(), true);
 	}
 
