@@ -191,7 +191,7 @@
 
 	<include file="20190130_001_add_column_anno_piano_formativo_nativo_eventopfa.xml" relativeToChangelogFile="true"/>
 
-	<include file="20190225_002_applySQL_update_obiettivi_versione_3.xml" relativeToChangelogFile="true"/>
+	<include file="20190228_002_applySQL_update_obiettivi_versione_3.xml" relativeToChangelogFile="true"/>
 
 
 	<!-- Decommentare il prossimo per aggiungere i 2 nuovi obiettivi nazionali

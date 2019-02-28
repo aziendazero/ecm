@@ -3,13 +3,13 @@
 	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
-	logicalFilePath="v000/20190225_002_applySQL_update_obiettivi_versione_3.xml">
-    <changeSet author="lsopko" id="1">
-    	<comment>UPDATE OBIETTIVI VERSIONE 3</comment>
+	logicalFilePath="v000/20190228_002_applySQL_update_obiettivi_versione_3.xml">
+    <changeSet author="dpranteda" id="1">
+    	<comment>UPDATE OBIETTIVI VERSIONE 3 - bugfix</comment>
 		<sqlFile dbms="postgresql"
             encoding="utf8"
             endDelimiter=";"
-            path="20190225_001_update_obiettivi_versione_3.sql"
+            path="20190228_001_update_obiettivi_versione_3.sql"
             relativeToChangelogFile="true"
             splitStatements="false"
             stripComments="true"/>
