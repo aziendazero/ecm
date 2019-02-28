@@ -196,7 +196,7 @@ public class EventoCreditiVersioneTre {
 		calcolaCreditiPartecipantiFSC(evento, wrapper.getRiepilogoRuoliFSC());
 		crediti = getMaxCreditiPartecipantiFSC(wrapper.getRiepilogoRuoliFSC());
 		durataMax = getMaxDurataPartecipantiFSC(wrapper.getRiepilogoRuoliFSC());
-		calcolaCreditiAltriRuoliFSC(evento, wrapper.getRiepilogoRuoliFSC(), durataMax*2);
+		calcolaCreditiAltriRuoliFSC(evento, wrapper.getRiepilogoRuoliFSC(), durataMax);
 
 		return crediti;
 	}

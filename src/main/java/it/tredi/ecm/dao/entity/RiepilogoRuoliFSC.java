@@ -657,6 +657,7 @@ public class RiepilogoRuoliFSC {
 								if(checkIsCoordinatoreEnabled(evento)) {
 									crediti = 1 * (int) (tempoDedicato * 2);
 
+									maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
 									maxCrediti = (maxValue > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : maxValue;
 									crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -714,6 +715,7 @@ public class RiepilogoRuoliFSC {
 							case ESPERTO:
 								crediti = 1 * (int) (tempoDedicato * 2);
 
+								maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
 								maxCrediti = (maxValue > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
 								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -722,6 +724,7 @@ public class RiepilogoRuoliFSC {
 								if(checkIsCoordinatoreEnabled(evento)) {
 									crediti = 1 * (int) (tempoDedicato * 2);
 
+									maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
 									maxCrediti = (maxValue > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
 									crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -774,6 +777,7 @@ public class RiepilogoRuoliFSC {
 								if(checkIsCoordinatoreEnabled(evento)) {
 									crediti = 1 * (int) (tempoDedicato * 2);
 
+									maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
 									maxCrediti = (maxValue > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE : maxValue;
 									crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -832,6 +836,7 @@ public class RiepilogoRuoliFSC {
 							if(checkIsCoordinatoreEnabled(evento)) {
 								crediti = 1 * (int) (tempoDedicato * 2);
 
+								maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
 								maxCrediti = (maxValue > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
 								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -895,6 +900,7 @@ public class RiepilogoRuoliFSC {
 							if(checkIsCoordinatoreEnabled(evento)) {
 								crediti = 1 * (int) (tempoDedicato * 2);
 
+								maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
 								maxCrediti = (maxValue > ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
 								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
