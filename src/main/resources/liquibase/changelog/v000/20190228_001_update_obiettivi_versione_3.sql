@@ -17,4 +17,4 @@ UPDATE obiettivo SET nome = 'Sicurezza e igiene ambientali (aria, acqua e suolo)
 UPDATE obiettivo SET nome = 'Accreditamento strutture sanitarie e dei professionisti. La cultura della qualità, procedure e certificazione, con acquisizione di nozioni tecnico-professionali' WHERE codice_cogeaps = '34' AND versione = 3 AND nazionale = true;
 
 /* inserisco il codice cogeaps nella descrizione dell'obiettivo */
-update ecmdb.obiettivo set nome = '(' || codice_cogeaps || ') '  || nome where versione = 3;
+update ecmdb.obiettivo set nome = '(' || codice_cogeaps || ') '  || nome where versione = 3 AND codice_cogeaps <> '0';
