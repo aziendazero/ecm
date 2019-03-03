@@ -99,6 +99,11 @@ public class ObiettivoServiceImpl implements ObiettivoService {
 	public Obiettivo findOneByCodiceCogeaps(String codiceCogeaps, boolean nazionale) {
 		LOGGER.info("Retrieving Obiettivo by CodiceCogeaps (" + codiceCogeaps +") and Nazionale (" + nazionale + ")");
 		EventoVersioneEnum versione = ecmProperties.getEventoVersioneDefault();
+
+		//workaround in quanto gli obiettivi regionale versione 1 valgono anche per versione 2
+		if(!nazionale && eventoServiceController.isVersionDue(versione))
+			versione = EventoVersioneEnum.UNO_PRIMA_2018;
+
 		Obiettivo obiettivo = obiettivoRepository.findOneByCodiceCogeapsAndNazionaleAndVersione(codiceCogeaps, nazionale, versione.getNumeroVersione());
 		if (obiettivo == null)
 			return null;
