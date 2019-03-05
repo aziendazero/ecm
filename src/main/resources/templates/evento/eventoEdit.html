@@ -1232,7 +1232,7 @@
 						$("#container-svolgeAttivitaDiDocenza").hide();
 						if(target == 'responsabiliScientifici'){
 							$("#container-qualifica").show();
-							if (isFsc() && !versione === 1)
+							if (isFsc() && !(versione === 1))
 								$("#container-svolgeAttivitaDiDocenza").show();
 							$("#container-ruolo").hide();
 							$("#container-titolare").hide();
@@ -1295,7 +1295,7 @@
 					$(selectId).prop('disabled',false);
 
 					$.each($(selectId + " option"), function() {
-						if(!versione === 1 || ($(this).attr("value") != 'MODERATORE')) {
+						if(!(versione === 1) || ($(this).attr("value") != 'MODERATORE')) {
 							$(this).show();
 						} else {
 							$(this).hide();
@@ -1303,7 +1303,7 @@
 					});
 
 					if(precVal !== undefined && precVal != '') {
-						if(!versione === 1 || precVal != 'MODERATORE')
+						if(!(versione === 1) || precVal != 'MODERATORE')
 							$(selectId).val(precVal);
 					}
 					$(selectId).selectpicker('refresh');
