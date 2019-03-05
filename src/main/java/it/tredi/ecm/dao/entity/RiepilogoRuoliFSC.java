@@ -644,7 +644,13 @@ public class RiepilogoRuoliFSC {
 
 								break;
 							case ESPERTO:
-							//case COORDINATORE:
+								crediti = 1 * (int) (tempoDedicato * 2);
+
+								maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
+								maxCrediti = (maxValue > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : maxValue;
+								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
+								break;
 							//case RESPONSABILE:
 							case RESPONSABILE_SCIENTIFICO:
 								crediti = 1 * (int) (tempoDedicato * 2);
@@ -823,7 +829,13 @@ public class RiepilogoRuoliFSC {
 							crediti = (crediti > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : crediti;
 							break;
 						case ESPERTO:
-						//case RESPONSABILE:
+							crediti = 1 * (int) (tempoDedicato * 2);
+
+							maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
+							maxCrediti = (maxValue > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
+							crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
+							break;
 						case RESPONSABILE_SCIENTIFICO:
 						//case COORDINATORE:
 							crediti = 1 * (int) (tempoDedicato * 2);
@@ -887,7 +899,13 @@ public class RiepilogoRuoliFSC {
 							}
 							break;
 						case ESPERTO:
-						//case RESPONSABILE:
+							crediti = 1 * (int) (tempoDedicato * 2);
+
+							maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
+							maxCrediti = (maxValue > ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
+							crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
+							break;
 						case RESPONSABILE_SCIENTIFICO:
 						//case COORDINATORE:
 							crediti = 1 * (int) (tempoDedicato * 2);
