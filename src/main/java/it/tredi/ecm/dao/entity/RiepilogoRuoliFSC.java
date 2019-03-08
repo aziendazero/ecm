@@ -621,13 +621,11 @@ public class RiepilogoRuoliFSC {
 					{
 						/*
 						 * PARTECIPANTI:				1.5 credito ogni ora (max 50) NON FRAZIONABILE
-						 * TUTOR:						1 credito ogni ora (max 50)
+						 * TUTOR:						1 credito ogni ora | maxCrediti <= 1*orePatecipanti (max 50)
 						 Coordinatore, responsabile scientifico ed esperto:
-						 * ESPERTO:						1 credito ogni mezz'ora (max 50)
-						 * NO COORDINATORE					1 credito ogni mezz'ora (max 50)
-						 * COORDINATORE_X				1 credito ogni mezz'ora (max 50)
-						 * NO RESPONSABILE					1 credito ogni mezz'ora (max 50)
-						 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora (max 50)
+						 * ESPERTO:						1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
+						 * COORDINATORE_X				1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
+						 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
 						 *
 						 * */
 						switch(ruolo.getRuoloBase())
@@ -646,7 +644,7 @@ public class RiepilogoRuoliFSC {
 							case ESPERTO:
 								crediti = 1 * (int) (tempoDedicato * 2);
 
-								maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
+								maxValue = maxValue * 2;
 								maxCrediti = (maxValue > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : maxValue;
 								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -655,6 +653,7 @@ public class RiepilogoRuoliFSC {
 							case RESPONSABILE_SCIENTIFICO:
 								crediti = 1 * (int) (tempoDedicato * 2);
 
+								maxValue = maxValue * 2;
 								maxCrediti = (maxValue > TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE) ? TRAINING_INDIVIDUALIZZATO_MAX_CREDITI_RESPONSABILESCIENTIFICI_ESPERTO_COORDINATORE_VERSIONE_DUE : maxValue;
 								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -688,11 +687,9 @@ public class RiepilogoRuoliFSC {
 															b. partecipazione di un docente/tutor esperto esterno al gruppo di miglioramento, che validi le attività del gruppo: inserire la domanda, in sezione 3 : "È presente un Tutor esperto esterno che validi le attività del gruppo? scelta tra Sì o No. Se il provider sceglie Sì, il sistema attribuisce l'aumento del credito di 0,3 ora. Se sceglie No, il sistema non deve attribuire l'incremento del credito. Al Docente/tutor esperto non vengono attribuiti crediti.
 
 						 Responsabile scientifico/coordinatore
-						 * NO RESPONSABILE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-						 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-						 * NO COORDINATORE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-						 * COORDINATORE_X				1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-						 * ESPERTO:						1 credito ogni mezz'ora (max 50)
+						 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
+						 * COORDINATORE_X				1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
+						 * ESPERTO:						1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
 						 *
 						 * */
 						switch(ruolo.getRuoloBase())
@@ -717,11 +714,18 @@ public class RiepilogoRuoliFSC {
 
 							//case RESPONSABILE:
 							case RESPONSABILE_SCIENTIFICO:
+								crediti = 1 * (int) (tempoDedicato * 2);
+
+								maxValue = maxValue * 2;
+								maxCrediti = (maxValue > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
+								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
+
+								break;
 							//case COORDINATORE:
 							case ESPERTO:
 								crediti = 1 * (int) (tempoDedicato * 2);
 
-								maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
+								maxValue = maxValue * 2;
 								maxCrediti = (maxValue > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
 								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -730,7 +734,7 @@ public class RiepilogoRuoliFSC {
 								if(checkIsCoordinatoreEnabled(evento)) {
 									crediti = 1 * (int) (tempoDedicato * 2);
 
-									maxValue = maxValue * 2; //solo per esperto e coordinatore il limite è il doppio delle ore!
+									maxValue = maxValue * 2;
 									maxCrediti = (maxValue > GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? GRUPPI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
 									crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -753,10 +757,8 @@ public class RiepilogoRuoliFSC {
 														incremento di 0,3 crediti per ora, cumulabili tra loro nel caso di:
 															a. Partecipazione di un docente/tutor esperto, esterno al gruppo di miglioramento, che validi le attività del gruppo: Inserire la domanda, in sezione 3: "È presente un Tutor esperto esterno che validi le attività del gruppo? scelta tra Sì o NO. Se il provider sceglie SI il sistema attribuisce l'aumento del credito di 0,3 ora. Se sceglie No il sistema non deve attribuire l'incremento del credito.
 						responsabile scientifico e coordinatore
-						 * NO RESPONSABILE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-						 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-						 * NO COORDINATORE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-						 * COORDINATORE_X				1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
+						 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
+						 * COORDINATORE_X				1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
 						 *
 						 * */
 						switch(ruolo.getRuoloBase())
@@ -775,6 +777,7 @@ public class RiepilogoRuoliFSC {
 							//case COORDINATORE:
 								crediti = 1 * (int) (tempoDedicato * 2);
 
+								maxValue = maxValue * 2;
 								maxCrediti = (maxValue > AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE) ? AUDIT_CLINICO_ASSISTENZIALE_MAX_CREDITI_VERSIONE_DUE : maxValue;
 								crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -807,11 +810,9 @@ public class RiepilogoRuoliFSC {
 														b. partecipazione di un docente/tutor esperto esterno al gruppo di miglioramento, che validi le attività del gruppo: inserire la domanda, in sezione 3 : "È presente un Tutor esperto esterno che validi le attività del gruppo? scelta tra Sì o No. Se il provider sceglie Sì, il sistema attribuisce l'aumento del credito di 0,3 ora. Se sceglie No, il sistema non deve attribuire l'incremento del credito. Al Docente/tutor esperto non vengono attribuiti crediti.
 
 					 responsabile scientifico, coordinatore e esperto
-					 * ESPERTO						1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-					 * NO RESPONSABILE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-					 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-					 * NO COORDINATORE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-					 * COORDINATORE_X				1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
+					 * ESPERTO						1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
+					 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
+					 * COORDINATORE_X				1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
 					 *
 					 * */
 					switch(ruolo.getRuoloBase())
@@ -840,6 +841,7 @@ public class RiepilogoRuoliFSC {
 						//case COORDINATORE:
 							crediti = 1 * (int) (tempoDedicato * 2);
 
+							maxValue = maxValue * 2;
 							maxCrediti = (maxValue > PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
 							crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
@@ -873,11 +875,9 @@ public class RiepilogoRuoliFSC {
 					 * 					sperimentazioni di durata superiore a sei mesi e fino a dodici mesi: 10 crediti
 					 * 					sperimentazioni oltre i dodici mesi, non oltre i 24 mesi: 20 crediti
 					 Coordinatore/responsabile scientifico:
-					 * NO RESPONSABILE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-					 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-					 * NO COORDINATORE					1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-					 * COORDINATORE_X				1 credito ogni mezz'ora (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
-					 * ESPERTO:						1 credito ogni mezz'ora (max 50)
+					 * RESPONSABILE_SCIENTIFICO		1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
+					 * COORDINATORE_X				1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50) solo se fanno docenza, solo quelli che fanno docenza si possono selezionare in eszione 2
+					 * ESPERTO:						1 credito ogni mezz'ora | maxCrediti <= 2*orePatecipanti (max 50)
 					 * */
 					switch(ruolo.getRuoloBase())
 					{
@@ -910,6 +910,7 @@ public class RiepilogoRuoliFSC {
 						//case COORDINATORE:
 							crediti = 1 * (int) (tempoDedicato * 2);
 
+							maxValue = maxValue * 2;
 							maxCrediti = (maxValue > ATTIVITA_DI_RICERCA_MAX_CREDITI_VERSIONE_DUE) ? PROGETTI_DI_MIGLIORAMENTO_MAX_CREDITI_VERSIONE_DUE : maxValue;
 							crediti = (crediti > maxCrediti) ? maxCrediti : crediti;
 
