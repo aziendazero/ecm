@@ -390,7 +390,9 @@ public class AccreditamentoServiceImpl implements AccreditamentoService {
 //		accreditamento.setDataScadenza(accreditamento.getDataInvio().plusDays(massimaDurataProcedimento));
 		accreditamento.setMassimaDurataProcedimento(massimaDurataProcedimento);
 
-		accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
+		//dpranteda 20/03/2019: #17485 - Segnalazione su canale comunicazioni
+		if(accreditamento.getProvider().getStatus() == ProviderStatoEnum.INSERITO)
+			accreditamento.getProvider().setStatus(ProviderStatoEnum.VALIDATO);
 
 		if(accreditamento.isStandard()) {
 			accreditamento.getProvider().setCanInsertAccreditamentoStandard(false);
