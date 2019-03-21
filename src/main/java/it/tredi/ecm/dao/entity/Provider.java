@@ -331,7 +331,7 @@ public class Provider extends BaseEntity {
 	}
 
 	public boolean isAttivo() {
-		if (status == ProviderStatoEnum.ACCREDITATO_STANDARD|| status == ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE || status == ProviderStatoEnum.VALIDATO)
+		if (status == ProviderStatoEnum.ACCREDITATO_STANDARD|| status == ProviderStatoEnum.ACCREDITATO_PROVVISORIAMENTE)
 			return true;
 		return false;
 	}
