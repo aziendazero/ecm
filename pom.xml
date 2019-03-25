@@ -5,7 +5,7 @@
 
 	<groupId>it.tredi</groupId>
 	<artifactId>ecm</artifactId>
-	<version>3.0.5-SNAPSHOT</version>
+	<version>3.0.5</version>
 	<packaging>war</packaging>
 
 	<name>it.tredi.ecm</name>
