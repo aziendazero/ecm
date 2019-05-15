@@ -46,7 +46,7 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 	}
 
 	private boolean checkIfExistForProvider(AlertTipoEnum tipo, Long providerId, LocalDateTime dataScadenza) {
-		LOGGER.info("Verifica se Alert già registrato");
+		LOGGER.debug("Verifica se Alert già registrato");
 		AlertEmail alert = alertMailRepository.findByTipoAndProviderIdAndDataScadenza(tipo, providerId, dataScadenza);
 		if(alert != null)
 			return true;
@@ -54,7 +54,7 @@ public class AlertEmailServiceImpl implements AlertEmailService {
 	}
 
 	private boolean checkIfExistForEvento(AlertTipoEnum tipo, Long eventoId, LocalDateTime dataScadenza) {
-		LOGGER.info("Verifica se Alert già registrato");
+		LOGGER.debug("Verifica se Alert già registrato");
 		AlertEmail alert = alertMailRepository.findByTipoAndEventoIdAndDataScadenza(tipo, eventoId, dataScadenza);
 		if(alert != null)
 			return true;
