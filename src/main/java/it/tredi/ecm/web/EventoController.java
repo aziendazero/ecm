@@ -97,6 +97,7 @@ import it.tredi.ecm.dao.enumlist.TipologiaTematicheInteresseEnum;
 import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.exception.EventoAttuatoException;
 import it.tredi.ecm.exception.PagInCorsoException;
 import it.tredi.ecm.service.AccreditamentoService;
 import it.tredi.ecm.service.AlertEmailService;
@@ -733,7 +734,11 @@ public class EventoController {
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			if(ex instanceof EventoAttuatoException) {
+				redirectAttrs.addFlashAttribute("message", new Message("message.warning", "message.warning_evento_attuato", "warning"));
+			}else {
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));	
+			}
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
 			return "redirect:/provider/"+providerId+"/evento/list";
 		}

@@ -99,6 +99,7 @@ import it.tredi.ecm.dao.repository.PersonaEventoRepository;
 import it.tredi.ecm.dao.repository.SponsorRepository;
 import it.tredi.ecm.exception.AccreditamentoNotFoundException;
 import it.tredi.ecm.exception.EcmException;
+import it.tredi.ecm.exception.EventoAttuatoException;
 import it.tredi.ecm.service.bean.EcmProperties;
 import it.tredi.ecm.service.component.EventoCrediti;
 import it.tredi.ecm.service.component.EventoDurata;
@@ -176,6 +177,14 @@ public class EventoServiceImpl implements EventoService {
 		Map<String, Object> diffMap = new HashMap<String, Object>();
 		if(evento.isNew()) {
 			LOGGER.info(Utils.getLogMessage("provider/" + evento.getProvider().getId() + "/evento - Creazione"));
+			
+			//in caso di attuazione eventoDaPFA verifico che non sia stato già attuato nel frattempo (es.apertura multischeda)
+			if(evento.isEventoDaPianoFormativo() && evento.getEventoPianoFormativo() != null) {
+					EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(evento.getEventoPianoFormativo().getId());
+					if(epf.isAttuato()) 
+						throw new EventoAttuatoException("Evento PFA già attuato!");
+			}
+			
 			evento.handleDateScadenza();
 			eventoRepository.saveAndFlush(evento);
 			evento.buildPrefix();
