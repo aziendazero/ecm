@@ -86,6 +86,7 @@ public interface EventoService {
 	public Evento getEventoByPrefix(String idEventoLink);
 	public Evento getEventoByPrefixAndEdizione(String prefix, int edizione);
 	public Evento getEventoByCodiceIdentificativo(String codiceIdentificativo);
+	public boolean existsByPrefixAndStatoNot(String idEventoLink, EventoStatoEnum stato);
 
 	public Integer countAllEventiAlimentazionePrimaInfanzia();
 	public Set<Evento> getEventiAlimentazionePrimaInfanzia();

@@ -735,7 +735,7 @@ public class EventoController {
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/save"),ex);
 			if(ex instanceof EventoAttuatoException) {
-				redirectAttrs.addFlashAttribute("message", new Message("message.warning", "message.warning_evento_attuato", "warning"));
+				redirectAttrs.addFlashAttribute("message", new Message("message.warning", ex.getMessage(), "warning"));
 			}else {
 				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));	
 			}
@@ -830,7 +830,11 @@ public class EventoController {
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			if(ex instanceof EventoAttuatoException) {
+				redirectAttrs.addFlashAttribute("message", new Message("message.warning", ex.getMessage(), "warning"));
+			}else {
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));	
+			}
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
 			return "redirect:/provider/"+providerId+"/evento/list";
 		}
@@ -866,7 +870,11 @@ public class EventoController {
 		}
 		catch (Exception ex) {
 			LOGGER.error(Utils.getLogMessage("POST /provider/" + providerId + "/evento/validate"),ex);
-			redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));
+			if(ex instanceof EventoAttuatoException) {
+				redirectAttrs.addFlashAttribute("message", new Message("message.warning", ex.getMessage(), "warning"));
+			}else {
+				redirectAttrs.addFlashAttribute("message", new Message("message.errore", "message.errore_eccezione", "error"));	
+			}
 			LOGGER.info(Utils.getLogMessage("REDIRECT: /provider/{providerId}/evento/list"));
 			return "redirect:/provider/"+providerId+"/evento/list";
 		}
@@ -995,6 +1003,9 @@ public class EventoController {
 					eventoService.save(evento);
 					updateEventoList(evento.getId(), session);
 				}
+				
+				redirectAttrs.addFlashAttribute("message", new Message("message.completato", "message.evento_elimitato", "success"));
+				
 				if(model.asMap().containsKey("returnLink")) {
 					String returnLink = (String) model.asMap().get("returnLink");
 					return "redirect:" + returnLink;

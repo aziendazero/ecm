@@ -182,7 +182,15 @@ public class EventoServiceImpl implements EventoService {
 			if(evento.isEventoDaPianoFormativo() && evento.getEventoPianoFormativo() != null) {
 					EventoPianoFormativo epf = eventoPianoFormativoService.getEvento(evento.getEventoPianoFormativo().getId());
 					if(epf.isAttuato()) 
-						throw new EventoAttuatoException("Evento PFA già attuato!");
+						throw new EventoAttuatoException("message.warning_evento_attuato");
+					// verifico anche il caso stronzo in cui EPF non risulta attuato perchè sbloccato dalla cancellazione di un evento
+					// ma con la duplicazione dell'attuazione già in atto
+					if(existsByPrefixAndStatoNot(epf.getPrefix(), EventoStatoEnum.CANCELLATO)) {
+						//correggo lo stato dell'Evento Piano Formativo, in quanto dovrebbe risultare attuato
+						eventoPianoFormativoService.setAttuato(epf.getId(), true);
+						throw new EventoAttuatoException("message.warning_evento_attuato_residuo_duplicazione");
+					}
+					
 			}
 			
 			evento.handleDateScadenza();
@@ -278,11 +286,16 @@ public class EventoServiceImpl implements EventoService {
 		LocalDate dataFine = evento.getDataFine();
 		/* 1. se l'evento NON ha riedizioni */
 		if(!existRiedizioniOfEventoId(evento.getId())) {
+			// 0. verifico che per causa di bug precedente non ci siano duplicazioni dell'attuazione dell'evento, perchè altrimenti rischio di riabilitare l'attuazione  
+			// nonostante ci sia già, anche se vecchio
+			
+			
 			// 1. marcare eventoPFA come non attuato
 			eventoPianoFormativoService.setAttuato(epf.getId(), false);
 
 			// 2. togliere l'eventoPFA dal PFA anni successivi se era stato aggiunto
-			pianoFormativoService.removeEventoFromIfNotNativo(evento.getProvider().getId(), dataFine.getYear(), epf.getId());
+			if(dataFine != null)
+				pianoFormativoService.removeEventoFromIfNotNativo(evento.getProvider().getId(), dataFine.getYear(), epf.getId());
 		}else {
 			/* 2. se l'evento HA riedizioni */
 			// 1. togliere il link dall'evento padre e agganciarlo alla sua prima riedizione
@@ -723,6 +736,7 @@ public class EventoServiceImpl implements EventoService {
 				eventoRepository.delete(id);
 			}catch (Exception ex){
 				LOGGER.error(Utils.getLogMessage("Errore gestioneEventoPFACancellazione per evento: " + id));
+				LOGGER.error(ex.getMessage(),ex);
 			}
 		}else {
 			eventoRepository.delete(id);
@@ -2794,6 +2808,13 @@ public class EventoServiceImpl implements EventoService {
 	public Evento getEventoByPrefix(String prefix) {
 		LOGGER.info("Ricerca dell'Evento con prefisso: " + prefix);
 		return eventoRepository.findOneByPrefix(prefix);
+	}
+	
+	@Override
+	public boolean existsByPrefixAndStatoNot(String prefix, EventoStatoEnum stato) {
+		LOGGER.info("Ricerca presenza di un Evento con prefisso: " + prefix + " NON " + stato);
+		int count = eventoRepository.countAllByPrefixAndStatoNot(prefix, stato);
+		return count > 0;
 	}
 
 	@Override
