@@ -40,7 +40,9 @@ it:
     misureMinimeSicurezza: true
     gdpr: true
   piattaforme:
-    spid: true
+    mypay: true
+    Co.Ge.A.P.S: true
+    Age.Na.S: true
 description:
   it:
     genericName: ECM

@@ -303,10 +303,10 @@ firma.referer=http://ecmtest.demo.3di.it/ecm/*
 protocollo.service.versione=rv
 
 ######### PROTOCOLLO RV #########
-protocollo.codApplicativo=S051.001
-protocollo.operatore.entrata=tania-ferrotti
-protocollo.codStruttura=69.02.03.00.00
-protocollo.idc=C.120.23.1
+protocollo.codApplicativo=S05
+protocollo.operatore.entrata=utente
+protocollo.codStruttura=69
+protocollo.idc=C
 protocollo.endpoint=http://endpoint.fqdn/LapisWebSOAP/LapisWebSOAP.asp
 
 ######### PROTOCOLLO WEB RAINBOW #########
