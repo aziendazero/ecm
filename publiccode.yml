@@ -19,7 +19,6 @@ dependsOn:
   proprietary:
     - name: Bonita BPM 7.x
     - name: ProstgreSQL
-  open:
 maintenance:
   type: contract
   contractors:
