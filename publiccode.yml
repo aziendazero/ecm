@@ -4,7 +4,7 @@
 
 publiccodeYmlVersion: '0.2'
 name: Sistema documentale di gestione dell'Educazione Continua in Medicina (ECM)
-url: 'https://github.com'
+url: 'https://github.com/aziendazero/ecm'
 logo: logo.png
 releaseDate: '2020-01-23'
 developmentStatus: stable
@@ -23,25 +23,24 @@ maintenance:
   type: contract
   contractors:
     - name: 3D Informatica srl
-      website: 'https://www.3di.it'
+      website: 'http://www.3di.it'
       until: '2021-01-01'
 legal:
   license: AGPL-3.0-or-later
   mainCopyrightOwner: Regione del Veneto
   repoOwner: 3D Informatica srl
-  authorsFile: 3D Informatica srl
+  authorsFile: AUTHORS.txt 
 localisation:
   localisationReady: true
   availableLanguages:
     - it
 it:
+  countryExtensionVersion: '0.2'
   conforme:
     misureMinimeSicurezza: true
     gdpr: true
-  piattaforme:
-    mypay: true
-    Co.Ge.A.P.S: true
-    Age.Na.S: true
+  riuso:
+    codiceIPA: azero
 description:
   it:
     genericName: ECM
@@ -54,3 +53,4 @@ description:
     features:
       - Gestione avanzata delle attività
       - Portale formativo
+
