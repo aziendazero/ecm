@@ -27,9 +27,9 @@ maintenance:
       until: '2021-01-01'
 legal:
   license: AGPL-3.0-or-later
-  mainCopyrightOwner: Regione del Veneto
-  repoOwner: 3D Informatica srl
-  authorsFile: AUTHORS.txt 
+  mainCopyrightOwner: Azienda Zero
+  repoOwner: Azienda Zero
+  authorsFile: Azienda Zero
 localisation:
   localisationReady: true
   availableLanguages:
