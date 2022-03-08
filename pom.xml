@@ -26,7 +26,7 @@
 		<!-- tomcat.version>7.0.69</tomcat.version -->
 		<tomcat.version>8.0.28</tomcat.version>
 		<servlet-api.version>3.0.0</servlet-api.version>
-		<liquibasecore.version>3.5.3</liquibasecore.version>
+		<liquibasecore.version>4.8.0</liquibasecore.version>
 		<liquibaseplugin.version>3.5.3</liquibaseplugin.version>
 		<liquibase-hibernate4.version>3.6</liquibase-hibernate4.version>
 		<postgresql.version>9.4.1211</postgresql.version>
